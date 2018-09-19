@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Este anuncio terminará en xx",
+        "cuetext": "Anuncio",
+        "loadingAd": "Cargando anuncio",
+        "podmessage": "Anuncio xx de yy",
+        "skipmessage": "Saltar anuncio en xx",
+        "skiptext": "Saltar"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Pistas de Audio",
+    "auto": "Automática",
+    "buffer": "Cargando",
+    "cast": "Chromecast",
+    "cc": "Subtitulos Cerrados",
+    "close": "Cerrar",
+    "errors": {
+        "badConnection": "Este video no se puede reproducir debido a problema con su conexión a internet.",
+        "cantLoadPlayer": "Disculpe, no se pudo cargar el video.",
+        "cantPlayInBrowser": "El video no se puede reproducir en este navegador.",
+        "cantPlayVideo": "Este archivo de video no se puede reproducir.",
+        "errorCode": "Código de error",
+        "liveStreamEnded": "La emisión en directo no funciona o terminó.",
+        "protectedContent": "Hubo un problema al dar acceso a contenido protegido.",
+        "technicalError": "Este video no se puede reproducir por un error técnico."
+    },
+    "fullscreen": "Pantalla Completa",
+    "hd": "Calidad",
+    "liveBroadcast": "En Vivo",
+    "logo": "Logo",
+    "next": "Siguiente",
+    "nextUp": "Próximo",
+    "notLive": "Directo",
+    "off": "Apagar",
+    "pause": "Pausa",
+    "play": "Reproducir",
+    "playbackRates": "Velocidad de Reproducción",
+    "player": "Reproductor de Video",
+    "playlist": "Lista de Reproducción",
+    "poweredBy": "Reproducido por",
+    "prev": "Anterior",
+    "quality": "Calidad",
+    "related": {
+        "autoplaymessage": "Próximo en xx",
+        "heading": "Más Videos"
+    },
+    "replay": "Repetir",
+    "rewind": "Retroceder 10 Segundos",
+    "settings": "Configuración",
+    "sharing": {
+        "copied": "Copiado",
+        "email": "Correo electrónico",
+        "embed": "Insertar",
+        "heading": "Compartir",
+        "link": "Enlace"
+    },
+    "slider": "Barra de Reproduccion",
+    "stop": "Parar",
+    "videoInfo": "Acerca de Este Video",
+    "volume": "Volumen",
+    "volumeSlider": "Control de Volumen"
+}

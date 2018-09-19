@@ -1,4 +1,4 @@
-import { getLabel, getCode, getLanguage } from 'utils/language';
+import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable } from 'utils/language';
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import sinon from 'sinon';
@@ -257,6 +257,36 @@ describe('languageUtils', function() {
             nullifyNavigatorProperty('userLanguage');
             stubNavigatorProperty('systemLanguage', systemLanguage);
             expect(getLanguage()).to.equal(systemLanguage);
+        });
+    });
+
+    describe('JSON Translations', () => {
+        const context = require.context("../../src/assets/translations", true, /\.json$/);
+        const languageCodes = context.keys().map(key => key.substring(key.lastIndexOf('/') + 1, key.lastIndexOf('.')));
+
+        it('should match the list of supported translations', () => {
+            expect(languageCodes).to.deep.equal(translatedLanguageCodes);
+        });
+
+        it('should have same structure as localization default', () => {
+            // TODO: add test that compares the structure of all the translation jsons to that of the default localization block to ensure consistency.
+            // Limitation: require('../../src/assets/translations/fr.json') returns '264cfd10c44360a54a0772a576aa3dfd.json'
+        });
+    });
+
+    describe('translationAvailable', () => {
+        it('should be country code agnostic', () => {
+            const regionalLanguageCode = translatedLanguageCodes[0] + '-HT';
+            expect(isTranslationAvailable(regionalLanguageCode)).to.be.true;
+        });
+
+        it('should be caps agnostic', () => {
+            const capitalizedLanguageCode = translatedLanguageCodes[0].toUpperCase();
+            expect(isTranslationAvailable(capitalizedLanguageCode)).to.be.true;
+        });
+
+        it('should fail for codes that are not in translatedLanguageCodes', () => {
+            expect(isTranslationAvailable('zz')).to.be.false;
         });
     });
 });
