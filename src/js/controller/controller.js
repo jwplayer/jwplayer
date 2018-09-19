@@ -277,7 +277,7 @@ Object.assign(Controller.prototype, {
             }
 
             // Autostart immediately if we're not waiting for the player to become viewable first.
-            if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
+            if (_model.get('autostart') === true) {
                 _autoStart();
             }
             apiQueue.flush();
@@ -317,7 +317,7 @@ Object.assign(Controller.prototype, {
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     _autoStart();
-                } else if (OS.mobile) {
+                } else if (OS.mobile || (model.get('autoPause') && model.get('autoPause').viewability)) {
                     _this.pause({ reason: 'autostart' });
                 }
             }

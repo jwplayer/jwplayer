@@ -1,4 +1,3 @@
-import { OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
@@ -186,9 +185,7 @@ const Model = function() {
         if (autoStart !== undefined) {
             this.set('autostart', autoStart);
         }
-
-        const autoStartOnMobile = OS.mobile && this.get('autostart');
-        this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
+        this.set('playOnViewable', this.get('autostart'));
     };
 
     this.resetItem = function (item) {
