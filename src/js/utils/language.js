@@ -61,7 +61,6 @@ export function getLanguage() {
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'it', 'ja', 'nb', 'nl', 'pt', 'ro', 'sv', 'tr', 'zh'];
 
 export function isTranslationAvailable(language) {
-    // 'en' is our default language, therefore it is excluded from the translated language codes.
     return translatedLanguageCodes.indexOf(formatLanguageCode(language)) >= 0;
 }
 

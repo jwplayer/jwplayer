@@ -99,21 +99,23 @@ export function loadSkin(_model) {
 function loadTranslations(_model) {
     const language = getLanguage();
     const customizedLocalization = getCustomizedLocalization(_model, language);
-    if (!isTranslationAvailable(language) || customizationIsComplete(customizedLocalization)) {
-        console.log('not fetching');
-        setupLocalization(_model, customizedLocalization);
-        return Promise.resolve();
-    }
-    return loadJsonTranslation(_model.attributes.base, language)
-        .then(response => {
-            console.log('json fetch successful');
-            setupLocalization(_model, customizedLocalization, response);
-        })
-        .catch(() => {
-            // TODO: trigger warning
-            console.log('failed to fetch json');
-            setupLocalization(_model, customizedLocalization);
-        });
+    return new Promise(resolve => {
+        if (!isTranslationAvailable(language) || customizationIsComplete(customizedLocalization)) {
+            return resolve();
+        }
+        return loadJsonTranslation(_model.attributes.base, language)
+            .then(response => resolve(response))
+            .catch(() => {
+                // TODO: trigger warning (JW8-2244)
+                resolve();
+            });
+    }).then(response => {
+        if (destroyed(_model)) {
+            return;
+        }
+        setupLocalization(_model, customizedLocalization, response);
+    });
+
 }
 
 function customizationIsComplete(customizedLocalization) {
@@ -146,7 +148,6 @@ const startSetup = function(model, api, promises) {
     return Promise.all(promises.concat([
         loadProvider(model),
         loadSkin(model),
-        // fetchTranslations(model)
         loadTranslations(model)
     ]));
 };
