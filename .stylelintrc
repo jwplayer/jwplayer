@@ -77,7 +77,7 @@
             { "ignorePseudoElements": ["cue"] }
         ],
         "selector-type-case": "lower",
-        "selector-type-no-unknown": true,
+        "selector-type-no-unknown": [true, { "ignoreTypes": ["google-cast-launcher"] }],
         "selector-max-empty-lines": 0,
 
         "selector-list-comma-newline-after": "always",
