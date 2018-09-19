@@ -104,7 +104,7 @@ function loadTranslations(_model) {
             return resolve();
         }
         return loadJsonTranslation(_model.attributes.base, language)
-            .then(response => resolve(response))
+            .then(({ response }) => resolve(response))
             .catch(() => {
                 // TODO: trigger warning (JW8-2244)
                 resolve();

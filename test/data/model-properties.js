@@ -101,6 +101,7 @@ export default {
     flashBlocked: false,
     buffer: 0,
     itemMeta: {},
+    intl: {},
     castAvailable: false,
     qualityLabels: undefined,
     itemReady: false,

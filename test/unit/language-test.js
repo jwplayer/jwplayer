@@ -1,6 +1,7 @@
-import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable } from 'utils/language';
+import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable, loadJsonTranslation } from 'utils/language';
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
+import en from 'assets/translations/en';
 import sinon from 'sinon';
 
 describe('languageUtils', function() {
@@ -266,6 +267,19 @@ describe('languageUtils', function() {
 
         it('should fail for codes that are not in translatedLanguageCodes', () => {
             expect(isTranslationAvailable('zz')).to.be.false;
+        });
+    });
+
+    describe('Json translation load', () => {
+        this.timeout(8000);
+
+        it('should successfully fetch Spanish', () => {
+            loadJsonTranslation('/base/test/files/', 'es').then(result => {
+                expect(result).to.have.property('responseType').which.equals('json');
+                expect(result).to.have.property('status').which.equals(200);
+                expect(result).to.have.property('response').which.is.an('object');
+                expect(Object.keys(result.response)).to.deep.equal(Object.keys(en));
+            });
         });
     });
 });
