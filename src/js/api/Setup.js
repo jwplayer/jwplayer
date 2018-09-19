@@ -3,7 +3,7 @@ import startSetup from 'api/setup-steps';
 import loadPlugins from 'plugins/plugins';
 import { PlayerError, SETUP_ERROR_TIMEOUT, MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
-const SETUP_TIMEOUT_SECONDS = 30;
+const SETUP_TIMEOUT_SECONDS = 60;
 
 const Setup = function(_model) {
 
