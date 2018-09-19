@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Denna annons slutar om xx",
+        "cuetext": "Annons ",
+        "loadingAd": "Laddar annons",
+        "podmessage": "Annons xx av yy",
+        "skipmessage": "Skippa annons om xx",
+        "skiptext": "Skippa"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Ljudspår",
+    "auto": "Auto",
+    "buffer": "Laddar",
+    "cast": "Chromecast",
+    "cc": "Undertexter",
+    "close": "Stäng",
+    "errors": {
+        "badConnection": "Videon kan inte spelas på grund av ett fel med din internetanslutning.",
+        "cantLoadPlayer": "Tyvärr, videospelaren misslyckades med att ladda.",
+    	"cantPlayInBrowser": "Videon kan inte spelas i denna webbläsare.",
+        "cantPlayVideo": "Denna videofil kan inte spelas.",
+        "errorCode": "Felkod",
+        "liveStreamEnded": "Livestreamen är nere eller har avslutats.",
+        "protectedContent": "Det var problem med att ge tillgång till skyddat innehåll.",
+        "technicalError": "Videon kan inte spelas på grund av ett tekniskt problem."
+    },
+    "fullscreen": "Fullskärm",
+    "hd": "Kvalitet",
+    "liveBroadcast": "Live",
+    "logo": "Logotyp",
+    "next": "Nästa",
+    "nextUp": "Nästa Video",
+    "notLive": "Inte Live",
+    "off": "Av",
+    "pause": "Pausa",
+    "play": "Spela",
+    "playbackRates": "Uppspelningshastigheter",
+    "player": "Videospelare",
+    "playlist": "Spellista",
+    "poweredBy": "Drivs av",
+    "prev": "Föregående",
+    "quality": "Kvalitet",
+    "related": {
+        "autoplaymessage": "Nästa om xx",
+        "heading": "Fler Videor"
+    },
+    "replay": "Spela Om",
+    "rewind": "Spola Tillbaka 10 Sekunder",
+    "settings": "Inställningar",
+    "sharing": {
+        "copied": "Kopierad",
+        "email": "Email",
+        "embed": "Embed",
+        "heading": "Dela",
+        "link": "Länk"
+    },
+    "slider": "Sökreglage",
+    "stop": "Stoppa",
+    "videoInfo": "Om Denna Video",
+    "volume": "Volym",
+    "volumeSlider": "Ljudvolym"
+}

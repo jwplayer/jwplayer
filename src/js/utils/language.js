@@ -1,5 +1,6 @@
 import { invert } from 'utils/underscore';
 import { isIframe } from 'utils/browser';
+import { ajax } from 'utils/ajax';
 
 /**
  * A map of 2-letter language codes (ISO 639-1) to language name in English
@@ -20,6 +21,10 @@ const codeToLang = {
 
 const langToCode = invert(codeToLang);
 
+function formatLanguageCode(language) {
+    return language.substring(0, 2).toLowerCase();
+}
+
 export function getLabel(language) {
     if (!language) {
         return;
@@ -30,11 +35,16 @@ export function getLabel(language) {
         return language;
     }
 
-    return codeToLang[language.substr(0, 2)] || language;
+    return codeToLang[formatLanguageCode(language)] || language;
 }
 
 export function getCode(language) {
     return langToCode[language] || '';
+}
+
+function extractLanguage(doc) {
+    const htmlTag = doc.querySelector('html');
+    return htmlTag ? htmlTag.getAttribute('lang') : null;
 }
 
 export function getLanguage() {
@@ -42,10 +52,17 @@ export function getLanguage() {
     if (!language && isIframe()) {
         language = extractLanguage(window.top.document);
     }
-    return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage;
+    return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage || 'en';
 }
 
-function extractLanguage(doc) {
-    const htmlTag = doc.querySelector('html');
-    return htmlTag ? htmlTag.getAttribute('lang') : null;
+export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'it', 'ja', 'nb', 'nl', 'pt', 'ro', 'sv', 'tr', 'zh'];
+
+export function isTranslationAvailable(language) {
+    // 'en' is our default language, therefore it is excluded from the translated language codes.
+    return translatedLanguageCodes.indexOf(formatLanguageCode(language)) >= 0;
+}
+
+export function loadJsonTranslation(base, languageCode, oncomplete, onerror) {
+    const url = base + 'translations/' + languageCode + '.json';
+    ajax({ url, oncomplete, onerror, responseType: 'json' });
 }
