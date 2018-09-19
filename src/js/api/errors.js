@@ -86,6 +86,36 @@ export const FLASH_ERROR = 210000;
 export const FLASH_MEDIA_ERROR = 214000;
 
 /**
+ * @enum {ErrorCode} The play attempt failed for unknown reasons.
+ */
+const PLAY_ATTEMPT_FAILED_MISC = 303200;
+
+/**
+ * @enum {ErrorCode} The play attempt was interrupted for unknown reasons.
+ */
+const PLAY_ATTEMPT_FAILED_ABORT = 303210;
+
+/**
+ * @enum {ErrorCode} The play attempt was interrupted by a new load request.
+ */
+const PLAY_ATTEMPT_FAILED_ABORT_LOAD = 303212;
+
+/**
+ * @enum {ErrorCode} The play attempt was interrupted by a call to pause().
+ */
+const PLAY_ATTEMPT_FAILED_ABORT_PAUSE = 303213;
+
+/**
+ * @enum {ErrorCode} The play attempt failed because the user didn't interact with the document first.
+ */
+const PLAY_ATTEMPT_FAILED_NOT_ALLOWED = 303220;
+
+/**
+ * @enum {ErrorCode} The play attempt failed because no supported source was found.
+ */
+const PLAY_ATTEMPT_FAILED_NOT_SUPPORTED = 303230;
+
+/**
  * @enum {ErrorKey}
  */
 export const MSG_CANT_PLAY_VIDEO = 'cantPlayVideo';
@@ -158,4 +188,23 @@ export function composePlayerError(error, superCode) {
     const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, superCode, error);
     playerError.code = (error && error.code || 0) + superCode;
     return playerError;
+}
+
+export function getPlayAttemptFailedErrorCode(error) {
+    const { name, message } = error;
+    switch (name) {
+        case 'AbortError':
+            if (/pause/.test(message)) {
+                return PLAY_ATTEMPT_FAILED_ABORT_PAUSE;
+            } else if (/load/.test(message)) {
+                return PLAY_ATTEMPT_FAILED_ABORT_LOAD;
+            }
+            return PLAY_ATTEMPT_FAILED_ABORT;
+        case 'NotAllowedError':
+            return PLAY_ATTEMPT_FAILED_NOT_ALLOWED;
+        case 'NotSupportedError':
+            return PLAY_ATTEMPT_FAILED_NOT_SUPPORTED;
+        default:
+            return PLAY_ATTEMPT_FAILED_MISC;
+    }
 }
