@@ -83,7 +83,7 @@ function isSkinLoaded(skinPath) {
     return false;
 }
 
-function loadSkin(_model) {
+export function loadSkin(_model) {
     const skinUrl = _model.get('skin') ? _model.get('skin').url : undefined;
     if (typeof skinUrl === 'string' && !isSkinLoaded(skinUrl)) {
         const isStylesheet = true;

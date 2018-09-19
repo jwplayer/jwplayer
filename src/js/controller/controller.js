@@ -80,7 +80,7 @@ Object.assign(Controller.prototype, {
         _view = this._view = new View(_api, viewModel);
         _view.on('all', _trigger, _this);
 
-        const _programController = new ProgramController(_model, mediaPool);
+        const _programController = this._programController = new ProgramController(_model, mediaPool);
         updateProgramSoundSettings();
         addProgramControllerListeners();
         initQoe(_model, _programController);
@@ -359,7 +359,7 @@ Object.assign(Controller.prototype, {
                     loadPromise = _this.updatePlaylist(Playlist(item), feedData || {});
                     break;
                 case 'number':
-                    loadPromise = _setItem(item);
+                    loadPromise = _this.setItemIndex(item);
                     break;
                 default:
                     return;
@@ -422,7 +422,7 @@ Object.assign(Controller.prototype, {
 
             if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
-                _setItem(0);
+                _this.setItemIndex(0);
             }
 
             if (!_beforePlay) {
@@ -591,29 +591,9 @@ Object.assign(Controller.prototype, {
 
         function _item(index, meta) {
             _stop(true);
-            _setItem(index);
+            _this.setItemIndex(index);
             // Suppress "Uncaught (in promise) Error"
             _play(meta).catch(noop);
-        }
-
-        function _setItem(index) {
-            _programController.stopVideo();
-
-            const playlist = _model.get('playlist');
-            const length = playlist.length;
-
-            // If looping past the end, or before the beginning
-            index = (parseInt(index, 10) || 0) % length;
-            if (index < 0) {
-                index += length;
-            }
-
-            return _programController.setActiveItem(index).catch(error => {
-                if (error.code >= 151 && error.code <= 162) {
-                    error = composePlayerError(error, ERROR_LOADING_PROVIDER);
-                }
-                _this.triggerError(convertToPlayerError(MSG_CANT_PLAY_VIDEO, ERROR_LOADING_PLAYLIST_ITEM, error));
-            });
         }
 
         function _prev(meta) {
@@ -807,7 +787,25 @@ Object.assign(Controller.prototype, {
         this.setConfig = (newConfig) => {
             setConfig(_this, newConfig);
         };
-        this.setItemIndex = _setItem;
+        this.setItemIndex = (index) => {
+            _programController.stopVideo();
+
+            const playlist = _model.get('playlist');
+            const length = playlist.length;
+
+            // If looping past the end, or before the beginning
+            index = (parseInt(index, 10) || 0) % length;
+            if (index < 0) {
+                index += length;
+            }
+
+            return _programController.setActiveItem(index).catch(error => {
+                if (error.code >= 151 && error.code <= 162) {
+                    error = composePlayerError(error, ERROR_LOADING_PROVIDER);
+                }
+                this.triggerError(convertToPlayerError(MSG_CANT_PLAY_VIDEO, ERROR_LOADING_PLAYLIST_ITEM, error));
+            });
+        };
         this.detachMedia = _detachMedia;
         this.attachMedia = _attachMedia;
 
@@ -914,7 +912,7 @@ Object.assign(Controller.prototype, {
             } catch (error) {
                 return Promise.reject(error);
             }
-            return _setItem(_model.get('item'));
+            return this.setItemIndex(_model.get('item'));
         };
 
         this.setPlaylistItem = function (index, item) {
@@ -925,7 +923,7 @@ Object.assign(Controller.prototype, {
                 playlist[index] = item;
 
                 if (index === _model.get('item') && _model.get('state') === 'idle') {
-                    _setItem(index);
+                    this.setItemIndex(index);
                 }
             }
         };
