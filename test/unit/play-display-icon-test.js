@@ -61,9 +61,7 @@ describe('PlayDisplayIcon', function() {
             expect(displayIcon.icon.className).to.include('jw-idle-label');
             expect(displayIcon.icon.lastChild.className).to.include('jw-idle-icon-text');
             expect(displayIcon.icon.textContent).to.equal(localization.playback);
-            expect(displayIcon.icon.textContent).to.not.equal('Play');
             expect(displayIcon.icon.textContent).to.not.equal(defaultPlaybackLocalization);
-
         });
     });
 
