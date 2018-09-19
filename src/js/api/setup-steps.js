@@ -96,13 +96,6 @@ export function loadSkin(_model) {
     return Promise.resolve();
 }
 
-// function fetchTranslations(_model) {
-//     return loadTranslations(_model).then( ({ customizedLocalization, translation }) => {
-//         console.log('assign results');
-//         _model.attributes.localization = Object.assign({}, en, translation, customizedLocalization);
-//     });
-// }
-
 function loadTranslations(_model) {
     const language = getLanguage();
     const customizedLocalization = getCustomizedLocalization(_model, language);
@@ -111,38 +104,29 @@ function loadTranslations(_model) {
         setupLocalization(_model, customizedLocalization);
         return Promise.resolve();
     }
-    return new Promise((resolve, reject) => {
-        loadJsonTranslation(_model.attributes.base, language, ({ response }) => {
-            if (destroyed(_model)) {
-                reject();
-            }
+    return loadJsonTranslation(_model.attributes.base, language)
+        .then(response => {
             console.log('json fetch successful');
             setupLocalization(_model, customizedLocalization, response);
-            resolve();
-        }, () => {
+        })
+        .catch(() => {
             // TODO: trigger warning
             console.log('failed to fetch json');
             setupLocalization(_model, customizedLocalization);
-            resolve();
         });
-    });
 }
-/*
-function isTranslationRequired(language, customizedLocalization) {
-    return isTranslationAvailable(language) && !Object.keys(customizedLocalization).every(key => en[key]);
-}
-*/
 
 function customizationIsComplete(customizedLocalization) {
-    const customizationFields = Object.keys(customizedLocalization);
-    return customizationFields.length > 0 && customizationFields.every(key => en[key]);
+    const defaultFields = Object.keys(en);
+    return Object.keys(customizedLocalization).length >= defaultFields.length &&
+        defaultFields.every(key => customizedLocalization[key]);
 }
 
 function getCustomizedLocalization({ attributes }, languageAndCountryCode) {
     const formattedLanguageCode = formatLanguageCode(languageAndCountryCode);
-    return Object.assign({}, attributes.localization, attributes.intl[formattedLanguageCode], attributes.intl[languageAndCountryCode]);
+    return Object.assign({}, attributes.setupConfig.localization, attributes.intl[formattedLanguageCode], attributes.intl[languageAndCountryCode]);
 }
-//
+
 function setupLocalization(_model, customizedLocalization, translation) {
     _model.attributes.localization = Object.assign({}, en, translation, customizedLocalization);
 }

@@ -65,7 +65,11 @@ export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(formatLanguageCode(language)) >= 0;
 }
 
-export function loadJsonTranslation(base, languageCode, oncomplete, onerror) {
+export function loadJsonTranslation(base, languageCode) {
     const url = base + 'translations/' + languageCode + '.json';
-    ajax({ url, oncomplete, onerror, responseType: 'json' });
+    return new Promise((resolve, reject) => {
+        const oncomplete = ({ response }) => resolve(response);
+        const onerror = () => reject();
+        ajax({ url, oncomplete, onerror, responseType: 'json' });
+    });
 }

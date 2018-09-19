@@ -2,6 +2,7 @@ import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
 import { isValidNumber, isNumber, pick, isBoolean } from 'utils/underscore';
 import { Features } from 'environment/environment';
+import en from 'assets/translations/en.js';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -20,6 +21,7 @@ const Defaults = {
     height: 360,
     intl: {},
     liveTimeout: null,
+    localization: en,
     mute: false,
     nextUpDisplay: true,
     playbackRateControls: false,
@@ -61,6 +63,9 @@ const Config = function(options, persisted) {
     let allOptions = Object.assign({}, (window.jwplayer || {}).defaults, persisted, options);
 
     _deserialize(allOptions);
+
+    allOptions.localization = Object.assign({}, Defaults.localization, allOptions.localization);
+    allOptions.localization.errors = Object.assign({}, Defaults.localization.errors, allOptions.localization.errors);
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {
