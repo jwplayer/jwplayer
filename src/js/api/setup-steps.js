@@ -5,7 +5,7 @@ import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
-import { getLanguage, formatLanguageCode, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
+import { getLanguage, getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
 import en from 'assets/translations/en.js';
 
 export function loadPlaylist(_model) {
@@ -98,9 +98,9 @@ export function loadSkin(_model) {
 
 function loadTranslations(_model) {
     const language = getLanguage();
-    const customizedLocalization = getCustomizedLocalization(_model, language);
+    const customLocalization = getCustomLocalization(_model, language);
     return new Promise(resolve => {
-        if (!isTranslationAvailable(language) || customizationIsComplete(customizedLocalization)) {
+        if (!isTranslationAvailable(language) || isLocalizationComplete(customLocalization)) {
             return resolve();
         }
         return loadJsonTranslation(_model.attributes.base, language)
@@ -113,24 +113,12 @@ function loadTranslations(_model) {
         if (destroyed(_model)) {
             return;
         }
-        setupLocalization(_model, customizedLocalization, response);
+        setLocalization(_model, customLocalization, response);
     });
-
 }
 
-function customizationIsComplete(customizedLocalization) {
-    const defaultFields = Object.keys(en);
-    return Object.keys(customizedLocalization).length >= defaultFields.length &&
-        defaultFields.every(key => customizedLocalization[key]);
-}
-
-function getCustomizedLocalization({ attributes }, languageAndCountryCode) {
-    const formattedLanguageCode = formatLanguageCode(languageAndCountryCode);
-    return Object.assign({}, attributes.setupConfig.localization, attributes.intl[formattedLanguageCode], attributes.intl[languageAndCountryCode]);
-}
-
-function setupLocalization(_model, customizedLocalization, translation) {
-    _model.attributes.localization = Object.assign({}, en, translation, customizedLocalization);
+function setLocalization(_model, customLocalization, translation) {
+    _model.attributes.localization = Object.assign({}, en, translation, customLocalization);
 }
 
 export function loadModules(/* model, api */) {
