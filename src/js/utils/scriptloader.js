@@ -3,7 +3,7 @@ import { ERROR, STATE_COMPLETE } from 'events/events';
 
 const ScriptPromises = {};
 
-const SCRIPT_LOAD_TIMEOUT = 15000;
+const SCRIPT_LOAD_TIMEOUT = 45000;
 
 export const SCRIPT_LOAD_STATUS_NEW = 0;
 export const SCRIPT_LOAD_STATUS_LOADING = 1;
