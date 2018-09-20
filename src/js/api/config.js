@@ -64,9 +64,6 @@ const Config = function(options, persisted) {
 
     _deserialize(allOptions);
 
-    allOptions.localization = Object.assign({}, Defaults.localization, allOptions.localization);
-    allOptions.localization.errors = Object.assign({}, Defaults.localization.errors, allOptions.localization.errors);
-
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {
         config.base = getScriptPath('jwplayer.js');

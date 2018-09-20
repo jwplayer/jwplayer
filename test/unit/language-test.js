@@ -282,5 +282,41 @@ describe('languageUtils', function() {
             });
         });
     });
+
+    describe('Get Custom Localization', () => {
+        it('should override the custom localization with the intl block', () => {
+
+        });
+
+        it('should override the language code intl block with the language-Country code intl block', () => {
+
+        });
+
+        it('should only use the intl block matching the language code', () => {
+
+        });
+
+        it('should not use the intl block for a different country code', () => {
+
+        });
+
+        it('should fallback to the intl block for the matching language code if the country code is different', () => {
+
+        });
+    });
+
+    describe('Is Localization Complete check', () => {
+        it('should be true when custom localization has the same keys as default localization', () => {
+
+        });
+
+        it('should be false when custom localization is smaller than defaut localization', () => {
+
+        });
+
+        it('should be false when custom localization has different keys than default localization', () => {
+
+        });
+    });
 });
 
