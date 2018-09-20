@@ -118,6 +118,11 @@ const PLAY_ATTEMPT_FAILED_NOT_SUPPORTED = 303230;
 /**
  * @enum {ErrorKey}
  */
+export const ERROR_LOADING_CAPTIONS = 306000;
+
+/**
+ * @enum {ErrorKey}
+ */
 export const MSG_CANT_PLAY_VIDEO = 'cantPlayVideo';
 
 /**
