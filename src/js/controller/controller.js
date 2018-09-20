@@ -262,6 +262,12 @@ Object.assign(Controller.prototype, {
             // Run _checkAutoStart() last
             // 'viewable' changes can result in preload() being called on the initial provider instance
             _checkAutoStart();
+
+            _model.on('change:itemReady', (changeModel, itemReady) => {
+                if (itemReady) {
+                    apiQueue.flush();
+                }
+            });
         }
 
         function _updateViewable(model, visibility) {
@@ -401,6 +407,7 @@ Object.assign(Controller.prototype, {
 
         function _play(meta) {
             checkAutoStartCancelable.cancel();
+            _stopPlaylist = false;
 
             if (_model.get('state') === STATE_ERROR) {
                 return Promise.resolve();
@@ -594,8 +601,8 @@ Object.assign(Controller.prototype, {
         function _item(index, meta) {
             _stop(true);
             _this.setItemIndex(index);
-            // Suppress "Uncaught (in promise) Error"
-            _play(meta).catch(noop);
+            // Use this.play() so that command is queued until after "playlistItem" event
+            _this.play(meta);
         }
 
         function _prev(meta) {
