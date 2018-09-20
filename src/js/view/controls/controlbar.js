@@ -275,7 +275,15 @@ export default class Controlbar {
         _model.change('fullscreen', this.onFullscreen, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
-            toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive === false);
+            const element = this.elements.live.element();
+
+            toggleClass(element, 'jw-dvr-live', dvrLive === false);
+
+            if (element.getAttribute('aria-label') === 'Live') {
+                setAttribute(element, 'aria-label', localization.notLive);
+            } else {
+                setAttribute(element, 'aria-label', localization.liveBroadcast);
+            }
         }, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
@@ -479,7 +487,7 @@ export default class Controlbar {
 
         const logoButton = new CustomButton(
             logo.file,
-            'Logo',
+            this._model.get('localization').logo,
             () => {
                 if (logo.link) {
                     window.open(logo.link, '_blank');

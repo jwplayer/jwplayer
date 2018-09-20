@@ -85,12 +85,16 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             return;
         }
 
+        const localization = model.get('localization');
+
         addQualitiesSubmenu(
             settingsMenu,
             levels,
             (index) => api.setCurrentQuality(index),
             model.get('currentLevel'),
-            model.get('localization').hd
+            localization.hd,
+            localization.auto,
+            localization.quality
         );
     };
 
@@ -102,11 +106,14 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             return;
         }
 
+        const localization = model.get('localization');
+
         addCaptionsSubmenu(settingsMenu,
             captionsList,
             (index) => api.setCurrentCaptions(index),
             model.get('captionsIndex'),
-            model.get('localization').cc
+            localization.cc,
+            localization.off
         );
         controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
         controlbarButton.show();
