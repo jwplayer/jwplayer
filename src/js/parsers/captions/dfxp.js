@@ -1,5 +1,5 @@
 import { seconds, trim } from 'utils/strings';
-import { PlayerError, MSG_CAPTIONS_LOAD_FAILED } from 'api/errors';
+import { PlayerError, MSG_CAPTIONS_ERROR } from 'api/errors';
 
 // Component that loads and parses an DFXP file
 
@@ -65,5 +65,5 @@ export default function Dfxp(xmlDoc) {
 }
 
 function parseError(code) {
-    throw new PlayerError(MSG_CAPTIONS_LOAD_FAILED, code);
+    throw new PlayerError(MSG_CAPTIONS_ERROR, code);
 }

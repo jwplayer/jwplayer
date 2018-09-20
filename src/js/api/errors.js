@@ -153,18 +153,17 @@ export const MSG_TECHNICAL_ERROR = 'technicalError';
 /**
  * @enum {ErrorKey}
  */
-export const MSG_PLUGIN_LOAD_FAILED = 'pluginLoadFailed';
+export const MSG_PLUGIN_ERROR = 'pluginError';
 
 /**
  * @enum {ErrorKey}
  */
-export const MSG_PLUGIN_NOT_REGISTERED = 'pluginNotRegistered';
+export const MSG_CAPTIONS_ERROR = 'captionsError';
 
 /**
  * @enum {ErrorKey}
  */
-
-export const MSG_CAPTIONS_LOAD_FAILED = 'captionsLoadFailed';
+export const MSG_NETWORK_ERROR = 'networkError';
 
 
 /**

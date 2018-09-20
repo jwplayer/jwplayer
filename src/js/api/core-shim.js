@@ -112,16 +112,17 @@ Object.assign(CoreShim.prototype, {
                 throw composePlayerError(null, SETUP_ERROR_PROMISE_API_CONFLICT);
             }
 
-            setupResult.warnings.forEach(w => {
-                console.warn(PlayerError.logMessage(w.code));
-                this.trigger(WARNING, w);
-            });
-
             const CoreMixin = setupResult.core;
             if (!this.setup) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
             }
+
+            setupResult.warnings.forEach(w => {
+                console.warn(PlayerError.logMessage(w.code));
+                this.trigger(WARNING, w);
+            });
+
             const config = this.modelShim.clone();
             // Exit if embed config encountered an error
             if (config.error) {

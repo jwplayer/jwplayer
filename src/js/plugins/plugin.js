@@ -1,7 +1,7 @@
 import ScriptLoader from 'utils/scriptloader';
 import { getAbsolutePath } from 'utils/parser';
 import { extension } from 'utils/strings';
-import { PlayerError, MSG_PLUGIN_NOT_REGISTERED } from 'api/errors';
+import { PlayerError, MSG_PLUGIN_ERROR } from 'api/errors';
 import { mapPluginToCode } from 'plugins/utils';
 
 const PLUGIN_PATH_TYPE_ABSOLUTE = 0;
@@ -77,7 +77,7 @@ Object.assign(Plugin.prototype, {
     getNewInstance(api, config, div) {
         const PluginClass = this.js;
         if (typeof PluginClass !== 'function') {
-            throw new PlayerError(MSG_PLUGIN_NOT_REGISTERED, mapPluginToCode(this.url) + 100);
+            throw new PlayerError(MSG_PLUGIN_ERROR, mapPluginToCode(this.url) + 100);
         }
         const pluginInstance = new PluginClass(api, config, div);
 

@@ -2,7 +2,7 @@ import { loadFile } from 'controller/tracks-loader';
 import { createId, createLabel } from 'controller/tracks-helper';
 import Events from 'utils/backbone.events';
 import { WARNING } from 'events/events';
-import { PlayerError, MSG_CAPTIONS_LOAD_FAILED } from 'api/errors';
+import { PlayerError, MSG_NETWORK_ERROR } from 'api/errors';
 
 /* Displays closed captions or subtitles on top of the video */
 const Captions = function(_model) {
@@ -39,7 +39,7 @@ const Captions = function(_model) {
                     loadFile(track, (vttCues) => {
                         _addVTTCuesToTrack(track, vttCues);
                     }, (key, url, xhr, error) => {
-                        this.trigger(WARNING, new PlayerError(MSG_CAPTIONS_LOAD_FAILED, 306000 + error.code, error));
+                        this.trigger(WARNING, new PlayerError(MSG_NETWORK_ERROR, 306000 + error.code, error));
                     });
                 }
             }

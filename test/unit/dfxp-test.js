@@ -1,5 +1,5 @@
 import dfxp from 'parsers/captions/dfxp';
-import { MSG_CAPTIONS_LOAD_FAILED } from 'api/errors';
+import { MSG_CAPTIONS_ERROR } from 'api/errors';
 
 describe('dfxp', function() {
 
@@ -12,7 +12,7 @@ describe('dfxp', function() {
             dfxp(null);
         } catch (e) {
             expect(e.code).to.equal(306007);
-            expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
+            expect(e.key).to.equal(MSG_CAPTIONS_ERROR);
         }
     });
 
@@ -21,7 +21,7 @@ describe('dfxp', function() {
             parseDFXP('<?xml version="1.0" encoding="UTF-8"?><tt xmlns="http://www.w3.org/2006/10/ttaf1"><head></head><body><div></div></body></tt>');
         } catch (e) {
             expect(e.code).to.equal(306005);
-            expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
+            expect(e.key).to.equal(MSG_CAPTIONS_ERROR);
         }
     });
 
@@ -30,7 +30,7 @@ describe('dfxp', function() {
             parseDFXP('<?xml version="1.0" encoding="UTF-8"?><tt xmlns="http://www.w3.org/2006/10/ttaf1"><head></head><body><div><p begin="00:00:31" end="00:00:33"></p></div></body></tt>');
         } catch (e) {
             expect(e.code).to.equal(306005);
-            expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
+            expect(e.key).to.equal(MSG_CAPTIONS_ERROR);
         }
     });
 
