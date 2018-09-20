@@ -69,7 +69,7 @@ export default class MediaController extends Eventable {
             return;
         }
         // The provider has a video tag, but has not started nor preloaded
-        if (this.attached && !this.setup && !this.preloaded) {998
+        if (this.attached && !this.setup && !this.preloaded) {
             mediaModel.set('preloaded', true);
             provider.preload(item);
         }
