@@ -358,8 +358,12 @@ export default class Controlbar {
         const volumeTooltip = this.elements.volumetooltip;
         // mute, volume, and volumetooltip do not exist on mobile devices.
         if (mute) {
-            toggleClass(mute.element(), 'jw-off', muted);
-            toggleClass(mute.element(), 'jw-full', !muted);
+            const muteElement = mute.element();
+            toggleClass(muteElement, 'jw-off', muted);
+            toggleClass(muteElement, 'jw-full', !muted);
+
+            const ariaText = muted ? this._model.get('localization').unmute : 'Volume';
+            setAttribute(muteElement, 'aria-label', ariaText);
         }
         if (volumeTooltip) {
             const volume = muted ? 0 : vol;
