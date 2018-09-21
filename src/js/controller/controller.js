@@ -26,7 +26,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
-import { composePlayerError, convertToPlayerError, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
+import { composePlayerError, convertToPlayerError, getPlayAttemptFailedErrorCode, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
     ERROR_COMPLETING_SETUP, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
 
 // The model stores a different state than the provider
@@ -262,6 +262,12 @@ Object.assign(Controller.prototype, {
             // Run _checkAutoStart() last
             // 'viewable' changes can result in preload() being called on the initial provider instance
             _checkAutoStart();
+
+            _model.on('change:itemReady', (changeModel, itemReady) => {
+                if (itemReady) {
+                    apiQueue.flush();
+                }
+            });
         }
 
         function _updateViewable(model, visibility) {
@@ -401,6 +407,7 @@ Object.assign(Controller.prototype, {
 
         function _play(meta) {
             checkAutoStartCancelable.cancel();
+            _stopPlaylist = false;
 
             if (_model.get('state') === STATE_ERROR) {
                 return Promise.resolve();
@@ -507,8 +514,10 @@ Object.assign(Controller.prototype, {
                 // Emit event unless test was explicitly canceled.
                 if (!checkAutoStartCancelable.cancelled()) {
                     const { reason } = error;
+                    const code = getPlayAttemptFailedErrorCode(error);
                     _this.trigger(AUTOSTART_NOT_ALLOWED, {
                         reason,
+                        code,
                         error
                     });
                 }
@@ -592,8 +601,8 @@ Object.assign(Controller.prototype, {
         function _item(index, meta) {
             _stop(true);
             _this.setItemIndex(index);
-            // Suppress "Uncaught (in promise) Error"
-            _play(meta).catch(noop);
+            // Use this.play() so that command is queued until after "playlistItem" event
+            _this.play(meta);
         }
 
         function _prev(meta) {

@@ -1,6 +1,7 @@
 import cancelable from 'utils/cancelable';
 import Eventable from 'utils/eventable';
 import ApiQueueDecorator from 'api/api-queue';
+import { PlayerError, getPlayAttemptFailedErrorCode } from 'api/errors';
 import { ProviderListener } from 'program/program-listeners';
 import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
@@ -154,11 +155,14 @@ export default class MediaController extends Eventable {
                     }
                     mediaModel.set('mediaState', STATE_PAUSED);
                 }
-                this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+
+                const playerError = Object.assign(new PlayerError(null, getPlayAttemptFailedErrorCode(error), error), {
                     error,
                     item,
                     playReason
                 });
+                delete playerError.key;
+                this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, playerError);
                 throw error;
             }
         });
