@@ -95,7 +95,7 @@ export function loadSkin(_model) {
     return Promise.resolve();
 }
 
-function loadTranslations(_model) {
+export function loadTranslations(_model) {
     const language = getLanguage();
     const customLocalization = getCustomLocalization(_model, language);
     return new Promise(resolve => {
@@ -117,8 +117,12 @@ function loadTranslations(_model) {
 }
 
 function setLocalization(_model, customLocalization, translation) {
-    Object.assign(_model.attributes.localization, translation, customLocalization);
-    // allOptions.localization.errors = Object.assign({}, Defaults.localization.errors, allOptions.localization.errors);
+    const localization = _model.attributes.localization;
+    Object.assign(localization, translation, customLocalization);
+    Object.assign(localization.errors, translation.errors, customLocalization.errors);
+    Object.assign(localization.related, translation.related, customLocalization.related);
+    Object.assign(localization.sharing, translation.sharing, customLocalization.sharing);
+    Object.assign(localization.advertising, translation.advertising, customLocalization.advertising);
 }
 
 export function loadModules(/* model, api */) {
@@ -128,16 +132,3 @@ export function loadModules(/* model, api */) {
 function destroyed(_model) {
     return _model.attributes._destroyed;
 }
-
-const startSetup = function(model, api, promises) {
-    if (destroyed(model)) {
-        return Promise.reject();
-    }
-    return Promise.all(promises.concat([
-        loadProvider(model),
-        loadSkin(model),
-        loadTranslations(model)
-    ]));
-};
-
-export default startSetup;

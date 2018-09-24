@@ -67,7 +67,8 @@ export function isTranslationAvailable(language) {
 
 export function getCustomLocalization({ attributes }, languageAndCountryCode) {
     const formattedLanguageCode = formatLanguageCode(languageAndCountryCode);
-    return Object.assign({}, attributes.setupConfig.localization, attributes.intl[formattedLanguageCode], attributes.intl[languageAndCountryCode]);
+    const { setupConfig, intl } = attributes;
+    return Object.assign({}, setupConfig.localization, intl[formattedLanguageCode], intl[languageAndCountryCode]);
 }
 
 export function isLocalizationComplete(customLocalization) {
