@@ -50,7 +50,10 @@ function extractLanguage(doc) {
 export function getLanguage() {
     let language = extractLanguage(document);
     if (!language && isIframe()) {
-        language = extractLanguage(window.top.document);
+        try {
+            // Exception is thrown if iFrame is on a different domain name.
+            language = extractLanguage(window.top.document);
+        } catch (e) {/* ignore */}
     }
     return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage || 'en';
 }
