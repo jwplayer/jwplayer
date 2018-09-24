@@ -1,14 +1,12 @@
 @import "../../shared-imports/vars.less";
 
 .jw-settings-menu {
-    display: none;
-    position: absolute;
-    flex-flow: column nowrap;
+    .bottomright(@controlbar-height, 12px);
     align-items: flex-start;
-    right: 12px;
-    bottom: @controlbar-height;
-    max-width: 284px;
     background-color: @menu-background-color;
+    display: none;
+    flex-flow: column nowrap;
+    max-width: 284px;
     pointer-events: auto;
 
     .jw-settings-open & {
@@ -34,10 +32,7 @@
     }
 
     .jw-flag-small-player & {
-        bottom: 0;
-        right: 0;
-        height: 100%;
-        width: 100%;
+        &:extend(._bottomright, ._stretch);
         max-width: none;
     }
 
@@ -60,12 +55,12 @@
 }
 
 .jw-settings-topbar {
+    align-items: center;
+    background-color: @controlbar-background;
     display: flex;
     flex: 0 0 auto;
-    align-items: center;
-    width: 100%;
-    background-color: @controlbar-background;
     padding: 3px 5px 0;
+    width: 100%;
 
     .jw-settings-close {
         margin-left: auto;
@@ -92,36 +87,45 @@
 }
 
 .jw-auto-label {
-    font-weight: initial;
     font-size: 10px;
+    font-weight: initial;
     opacity: 0.5;
     padding-left: 5px;
 }
 
 .jw-settings-content-item {
     color: @inactive-color;
-    width: 100%;
+    cursor: pointer;
     font-size: 12px;
     line-height: 1;
     padding: 7px 0 7px 15px;
-    cursor: pointer;
+    width: 100%;
 
-    &.jw-settings-item-active {
-        color: @active-color;
-        font-weight: bold;
-    }
-
-    &:hover,
-    &:focus {
+    &:hover {
         color: @hover-color;
     }
 
     &:focus {
+        font-weight: bold;
         outline: none;
     }
 
     .jw-flag-small-player & {
         line-height: 1.75;
+    }
+}
+
+.jw-settings-item-active {
+    font-weight: bold;
+    position: relative;
+
+    &::before {
+        &:extend(._topleft);
+        .rect(1em, 100%);
+        align-items: center;
+        content: "\2022";
+        display: inline-flex;
+        justify-content: center;
     }
 }
 

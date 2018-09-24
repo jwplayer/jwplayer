@@ -8,7 +8,6 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
@@ -150,7 +149,7 @@ Object.assign(CoreShim.prototype, {
             if (!this.setup) {
                 return;
             }
-            setupError(this, error);
+            setupError(this, api, error);
         });
     },
     playerDestroy() {
@@ -255,8 +254,8 @@ Object.assign(CoreShim.prototype, {
     }
 });
 
-function setupError(core, error) {
-    resolved.then(() => {
+function setupError(core, api, error) {
+    Promise.resolve().then(() => {
         const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         const model = core._model || core.modelShim;
 
@@ -264,16 +263,25 @@ function setupError(core, error) {
         playerError.message = playerError.message || model.get('localization').errors[playerError.key];
         delete playerError.key;
 
-        const errorContainer = ErrorContainer(core, playerError);
-        if (ErrorContainer.cloneIcon) {
-            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+        const contextual = model.get('contextual');
+        // Remove (and hide) the player if it failed to set up in contextual mode; otherwise, show the error view
+        if (!contextual) {
+            const errorContainer = ErrorContainer(core, playerError);
+            if (ErrorContainer.cloneIcon) {
+                errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+            }
+            showView(core, errorContainer);
         }
-        showView(core, errorContainer);
 
         model.set('errorEvent', playerError);
         model.set('state', STATE_ERROR);
 
         core.trigger(SETUP_ERROR, playerError);
+
+        // Trigger remove after SETUP_ERROR so that any event listeners receive the event before being detached
+        if (contextual) {
+            api.remove();
+        }
     });
 }
 

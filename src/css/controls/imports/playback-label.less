@@ -1,0 +1,41 @@
+@import "../../shared-imports/vars.less";
+
+.jw-idle-icon-text {
+    display: none;
+    line-height: 1;
+    position: absolute;
+    text-align: center;
+    text-indent: 0.35em;
+    top: 100%;
+    white-space: nowrap;
+}
+
+.jw-idle-label {
+    border-radius: 50%;
+    color: @white;
+    filter: drop-shadow(1px 1px 5px rgba(12, 26, 71, 0.25));
+    font: normal 16px/1 Arial, Helvetica, sans-serif;
+    position: relative;
+    transition: background-color @default-transition;
+    transition-property: background-color, filter;
+    -webkit-font-smoothing: antialiased;
+}
+
+.jw-state-idle {
+    .jw-icon-display {
+        &.jw-idle-label {
+            .jw-idle-icon-text {
+                display: block;
+            }
+
+            .jw-svg-icon-play {
+                transform: scale(0.7, 0.7);
+            }
+
+            .jw-breakpoint-0& {
+                font-size: 12px;
+            }
+        }
+    }
+}
+

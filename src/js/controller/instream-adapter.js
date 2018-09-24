@@ -4,7 +4,6 @@ import { STATE_BUFFERING, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
     INSTREAM_CLICK,
     AD_PLAY, AD_PAUSE, AD_TIME, AD_CLICK, AD_SKIPPED } from 'events/events';
 import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
-import Promise from 'polyfills/promise';
 import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
 import AdProgramController from 'program/ad-program-controller';

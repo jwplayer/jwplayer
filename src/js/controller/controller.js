@@ -16,7 +16,6 @@ import Events from 'utils/backbone.events';
 import { AUTOPLAY_DISABLED, AUTOPLAY_MUTED, canAutoplay, startPlayback } from 'utils/can-autoplay';
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
-import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import { isUndefined, isBoolean } from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
@@ -27,7 +26,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
-import { composePlayerError, convertToPlayerError, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
+import { composePlayerError, convertToPlayerError, getPlayAttemptFailedErrorCode, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
     ERROR_COMPLETING_SETUP, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
 
 // The model stores a different state than the provider
@@ -81,7 +80,7 @@ Object.assign(Controller.prototype, {
         _view = this._view = new View(_api, viewModel);
         _view.on('all', _trigger, _this);
 
-        const _programController = new ProgramController(_model, mediaPool);
+        const _programController = this._programController = new ProgramController(_model, mediaPool);
         updateProgramSoundSettings();
         addProgramControllerListeners();
         initQoe(_model, _programController);
@@ -263,6 +262,12 @@ Object.assign(Controller.prototype, {
             // Run _checkAutoStart() last
             // 'viewable' changes can result in preload() being called on the initial provider instance
             _checkAutoStart();
+
+            _model.on('change:itemReady', (changeModel, itemReady) => {
+                if (itemReady) {
+                    apiQueue.flush();
+                }
+            });
         }
 
         function _updateViewable(model, visibility) {
@@ -278,7 +283,7 @@ Object.assign(Controller.prototype, {
             }
 
             // Autostart immediately if we're not waiting for the player to become viewable first.
-            if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
+            if (_model.get('autostart') === true) {
                 _autoStart();
             }
             apiQueue.flush();
@@ -303,7 +308,7 @@ Object.assign(Controller.prototype, {
                 if (!mediaPool.primed() && OS.android) {
                     const video = mediaPool.getTestElement();
                     const muted = _this.getMute();
-                    resolved.then(() => startPlayback(video, { muted })).then(() => {
+                    Promise.resolve().then(() => startPlayback(video, { muted })).then(() => {
                         if (_model.get('state') === 'idle') {
                             _programController.preloadVideo();
                         }
@@ -318,7 +323,7 @@ Object.assign(Controller.prototype, {
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     _autoStart();
-                } else if (OS.mobile) {
+                } else if (OS.mobile || (model.get('autoPause') && model.get('autoPause').viewability)) {
                     _this.pause({ reason: 'autostart' });
                 }
             }
@@ -360,7 +365,7 @@ Object.assign(Controller.prototype, {
                     loadPromise = _this.updatePlaylist(Playlist(item), feedData || {});
                     break;
                 case 'number':
-                    loadPromise = _setItem(item);
+                    loadPromise = _this.setItemIndex(item);
                     break;
                 default:
                     return;
@@ -402,9 +407,10 @@ Object.assign(Controller.prototype, {
 
         function _play(meta) {
             checkAutoStartCancelable.cancel();
+            _stopPlaylist = false;
 
             if (_model.get('state') === STATE_ERROR) {
-                return resolved;
+                return Promise.resolve();
             }
 
             const playReason = _getReason(meta);
@@ -418,12 +424,12 @@ Object.assign(Controller.prototype, {
             if (adState) {
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false, meta);
-                return resolved;
+                return Promise.resolve();
             }
 
             if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
-                _setItem(0);
+                _this.setItemIndex(0);
             }
 
             if (!_beforePlay) {
@@ -446,7 +452,7 @@ Object.assign(Controller.prototype, {
                     }
                     _interruptPlay = false;
                     _actionOnAttach = null;
-                    return resolved;
+                    return Promise.resolve();
                 }
             }
 
@@ -508,8 +514,10 @@ Object.assign(Controller.prototype, {
                 // Emit event unless test was explicitly canceled.
                 if (!checkAutoStartCancelable.cancelled()) {
                     const { reason } = error;
+                    const code = getPlayAttemptFailedErrorCode(error);
                     _this.trigger(AUTOSTART_NOT_ALLOWED, {
                         reason,
+                        code,
                         error
                     });
                 }
@@ -592,29 +600,9 @@ Object.assign(Controller.prototype, {
 
         function _item(index, meta) {
             _stop(true);
-            _setItem(index);
-            // Suppress "Uncaught (in promise) Error"
-            _play(meta).catch(noop);
-        }
-
-        function _setItem(index) {
-            _programController.stopVideo();
-
-            const playlist = _model.get('playlist');
-            const length = playlist.length;
-
-            // If looping past the end, or before the beginning
-            index = (parseInt(index, 10) || 0) % length;
-            if (index < 0) {
-                index += length;
-            }
-
-            return _programController.setActiveItem(index).catch(error => {
-                if (error.code >= 151 && error.code <= 162) {
-                    error = composePlayerError(error, ERROR_LOADING_PROVIDER);
-                }
-                _this.triggerError(convertToPlayerError(MSG_CANT_PLAY_VIDEO, ERROR_LOADING_PLAYLIST_ITEM, error));
-            });
+            _this.setItemIndex(index);
+            // Use this.play() so that command is queued until after "playlistItem" event
+            _this.play(meta);
         }
 
         function _prev(meta) {
@@ -767,7 +755,7 @@ Object.assign(Controller.prototype, {
                 }, _this)
                 .on(MEDIA_COMPLETE, () => {
                     // Insert a small delay here so that other complete handlers can execute
-                    resolved.then(_completeHandler);
+                    Promise.resolve().then(_completeHandler);
                 }, _this)
                 .on(MEDIA_ERROR, _this.triggerError, _this);
         }
@@ -808,7 +796,25 @@ Object.assign(Controller.prototype, {
         this.setConfig = (newConfig) => {
             setConfig(_this, newConfig);
         };
-        this.setItemIndex = _setItem;
+        this.setItemIndex = (index) => {
+            _programController.stopVideo();
+
+            const playlist = _model.get('playlist');
+            const length = playlist.length;
+
+            // If looping past the end, or before the beginning
+            index = (parseInt(index, 10) || 0) % length;
+            if (index < 0) {
+                index += length;
+            }
+
+            return _programController.setActiveItem(index).catch(error => {
+                if (error.code >= 151 && error.code <= 162) {
+                    error = composePlayerError(error, ERROR_LOADING_PROVIDER);
+                }
+                this.triggerError(convertToPlayerError(MSG_CANT_PLAY_VIDEO, ERROR_LOADING_PLAYLIST_ITEM, error));
+            });
+        };
         this.detachMedia = _detachMedia;
         this.attachMedia = _attachMedia;
 
@@ -915,7 +921,7 @@ Object.assign(Controller.prototype, {
             } catch (error) {
                 return Promise.reject(error);
             }
-            return _setItem(_model.get('item'));
+            return this.setItemIndex(_model.get('item'));
         };
 
         this.setPlaylistItem = function (index, item) {
@@ -926,7 +932,7 @@ Object.assign(Controller.prototype, {
                 playlist[index] = item;
 
                 if (index === _model.get('item') && _model.get('state') === 'idle') {
-                    _setItem(index);
+                    this.setItemIndex(index);
                 }
             }
         };

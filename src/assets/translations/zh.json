@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "该广告将在 xx 后结束",
+        "cuetext": "广告",
+        "loadingAd": "正在加载广告",
+        "podmessage": "第 xx/yy 条广告",
+        "skipmessage": "xx 后跳过广告",
+        "skiptext": "跳过"
+    },
+    "airplay": "隔空播放",
+    "audioTracks": "音轨",
+    "auto": "自动",
+    "buffer": "加载中",
+    "cast": "谷歌电视棒",
+    "cc": "隐藏式字幕",
+    "close": "关闭",
+    "errors": {
+        "badConnection": "您的网络连接存在问题，无法播放该视频。",
+        "cantLoadPlayer": "对不起，视频播放器加载失败。",
+        "cantPlayInBrowser": "视频无法在该浏览器中播放。",
+        "cantPlayVideo": "无法播放该视频文件。",
+        "errorCode": "错误代码",
+        "liveStreamEnded": "直播故障或已结束。",
+        "protectedContent": "无法访问受保护内容。",
+        "technicalError": "由于技术故障，无法播放该视频。"
+    },
+    "fullscreen": "全屏",
+    "hd": "视频质量",
+    "liveBroadcast": "直播",
+    "logo": "标识",
+    "next": "下一个",
+    "nextUp": "接下来播放",
+    "notLive": "非直播",
+    "off": "关闭选项",
+    "pause": "暂停",
+    "play": "播放",
+    "playbackRates": "播放速率",
+    "player": "视频播放器",
+    "playlist": "播放列表",
+    "poweredBy": "技术支持",
+    "prev": "上一个",
+    "quality": "视频质量",
+    "related": {
+        "autoplaymessage": "xx 后播放下一个视频",
+        "heading": "更多视频"
+    },
+    "replay": "重播",
+    "rewind": "快退10秒",
+    "settings": "设置",
+    "sharing": {
+        "copied": "已复制",
+        "email": "发邮件",
+        "embed": "嵌入代码",
+        "heading": "分享",
+        "link": "链接"
+    },
+    "slider": "滑动查找",
+    "stop": "停止",
+    "videoInfo": "关于该视频",
+    "volume": "音量",
+    "volumeSlider": "音量滑块"
+}

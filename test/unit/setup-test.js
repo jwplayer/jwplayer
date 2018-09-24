@@ -213,4 +213,19 @@ describe('api.setup', function() {
             expect(removeSpy2, 'second setup: second listener').to.have.callCount(0);
         });
     });
+
+    describe('contextual setup error', function () {
+        it('removes and hides when encountering a setupError in contextual mode', function () {
+            const removeSpy = sinon.spy();
+            return expectSetupError({
+                playlist: [],
+                contextual: true,
+                events: {
+                    remove: removeSpy
+                }
+            }).then(() => {
+                expect(removeSpy).to.have.callCount(1);
+            });
+        });
+    });
 });

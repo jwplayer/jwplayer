@@ -1,33 +1,33 @@
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
-import Promise, { resolved } from 'polyfills/promise';
 import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
+import { getLanguage, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
-    if (typeof playlist === 'string') {
-        return new Promise((resolve, reject) => {
-            const playlistLoader = new PlaylistLoader();
-            playlistLoader.on(PLAYLIST_LOADED, function(data) {
-                const loadedPlaylist = data.playlist;
-                delete data.playlist;
-                setPlaylistAttributes(_model, loadedPlaylist, data);
-                resolve();
-            });
-            playlistLoader.on(ERROR, e => {
-                setPlaylistAttributes(_model, [], {});
-                reject(composePlayerError(e, SETUP_ERROR_LOADING_PLAYLIST));
-            });
-            playlistLoader.load(playlist);
+    return new Promise((resolve, reject) => {
+        if (typeof playlist !== 'string') {
+            const feedData = _model.get('feedData') || {};
+            setPlaylistAttributes(_model, playlist, feedData);
+            return resolve();
+        }
+        const playlistLoader = new PlaylistLoader();
+        playlistLoader.on(PLAYLIST_LOADED, function(data) {
+            const loadedPlaylist = data.playlist;
+            delete data.playlist;
+            setPlaylistAttributes(_model, loadedPlaylist, data);
+            resolve();
         });
-    }
-    const feedData = _model.get('feedData') || {};
-    setPlaylistAttributes(_model, playlist, feedData);
-    return resolved;
+        playlistLoader.on(ERROR, e => {
+            setPlaylistAttributes(_model, [], {});
+            reject(composePlayerError(e, SETUP_ERROR_LOADING_PLAYLIST));
+        });
+        playlistLoader.load(playlist);
+    });
 }
 
 function setPlaylistAttributes(model, playlist, feedData) {
@@ -36,7 +36,7 @@ function setPlaylistAttributes(model, playlist, feedData) {
     attributes.feedData = feedData;
 }
 
-function loadProvider(_model) {
+export function loadProvider(_model) {
     return loadPlaylist(_model).then(() => {
         if (destroyed(_model)) {
             return;
@@ -83,7 +83,7 @@ function isSkinLoaded(skinPath) {
     return false;
 }
 
-function loadSkin(_model) {
+export function loadSkin(_model) {
     const skinUrl = _model.get('skin') ? _model.get('skin').url : undefined;
     if (typeof skinUrl === 'string' && !isSkinLoaded(skinUrl)) {
         const isStylesheet = true;
@@ -92,21 +92,32 @@ function loadSkin(_model) {
             return error;
         });
     }
-    return resolved;
+    return Promise.resolve();
+}
+
+export function loadTranslations(_model) {
+    const language = getLanguage();
+    if (language && isTranslationAvailable(language)) {
+        return new Promise((resolve, reject) => {
+            loadJsonTranslation(_model.attributes.base, language, ({ response }) => {
+                // TODO: update localization with translations (JW8-1346)
+                if (destroyed(_model)) {
+                    reject();
+                }
+                resolve(response);
+            }, () => {
+                // TODO: trigger warning
+                resolve();
+            });
+        });
+    }
+    return Promise.resolve();
+}
+
+export function loadModules(/* model, api */) {
+    return Promise.resolve();
 }
 
 function destroyed(_model) {
     return _model.attributes._destroyed;
 }
-
-const startSetup = function(model, api, promises) {
-    if (destroyed(model)) {
-        return Promise.reject();
-    }
-    return Promise.all(promises.concat([
-        loadProvider(model),
-        loadSkin(model)
-    ]));
-};
-
-export default startSetup;
