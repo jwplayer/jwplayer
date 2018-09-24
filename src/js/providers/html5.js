@@ -159,6 +159,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         webkitendfullscreen(e) {
             _fullscreenState = false;
             _sendFullscreen(e);
+        },
+
+        error() {
+            _clearVideotagSource();
+            VideoEvents.error.call(_this);
         }
     };
     Object.keys(VideoEvents).forEach(eventName => {

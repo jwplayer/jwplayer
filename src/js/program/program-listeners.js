@@ -8,7 +8,7 @@ import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
 export function ProviderListener(mediaController) {
     return function (type, data) {
         const { mediaModel } = mediaController;
-        const event = Object.assign({}, data, {
+        let event = Object.assign({}, data, {
             type: type
         });
 
@@ -47,8 +47,16 @@ export function ProviderListener(mediaController) {
                 }
                 return;
             case MEDIA_ERROR:
-                mediaController.thenPlayPromise.cancel();
-                mediaModel.srcReset();
+                if (mediaModel.get('setup')) {
+                    mediaController.thenPlayPromise.cancel();
+                    mediaModel.srcReset();
+                } else {
+                    // A MEDIA_ERROR received before setup is a preload error
+                    // We stop propagation here allow the player to try loading once more when playback is initiated
+                    // MEDIA_ERROR codes are in the 200,000 range; adding 100,000 puts it in the 300,000 warning range.
+                    type = 'warning';
+                    event.code += 100000;
+                }
                 break;
             case MEDIA_META: {
                 const duration = data.duration;
