@@ -55,7 +55,7 @@ export function getLanguage() {
             language = extractLanguage(window.top.document);
         } catch (e) {/* ignore */}
     }
-    return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage || 'en';
+    return language || navigator.language || 'en';
 }
 
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'it', 'ja', 'nb', 'nl', 'pt', 'ro', 'sv', 'tr', 'zh'];

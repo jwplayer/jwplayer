@@ -231,32 +231,11 @@ describe('languageUtils', function() {
             expect(getLanguage()).to.equal(language);
         });
 
-        it('should fallback to navigator.browserLanguage when navigator.language is undefined', () => {
-            const browserLanguage = 'browserLanguage';
-            stubHtmlLanguage(document, null);
-            nullifyNavigatorProperty('language');
-            stubNavigatorProperty('browserLanguage', browserLanguage);
-            expect(getLanguage()).to.equal(browserLanguage);
-
-        });
-
-        it('should fallback to navigator.userLanguage when navigator.browserLanguage is undefined', () => {
-            const userLanguage = 'userLanguage';
-            stubHtmlLanguage(document, null);
-            nullifyNavigatorProperty('language');
-            nullifyNavigatorProperty('browserLanguage');
-            stubNavigatorProperty('userLanguage', userLanguage);
-            expect(getLanguage()).to.equal(userLanguage);
-        });
-
-        it('should fallback to navigator.systemLanguage when navigator.userLanguage is undefined', () => {
+        it('should fallback to en when navigator.language is undefined', () => {
             const systemLanguage = 'systemLanguage';
             stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
-            nullifyNavigatorProperty('browserLanguage');
-            nullifyNavigatorProperty('userLanguage');
-            stubNavigatorProperty('systemLanguage', systemLanguage);
-            expect(getLanguage()).to.equal(systemLanguage);
+            expect(getLanguage()).to.equal('en');
         });
     });
 
