@@ -1,4 +1,4 @@
-import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable, loadJsonTranslation } from 'utils/language';
+import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable, loadJsonTranslation, getCustomLocalization } from 'utils/language';
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import en from 'assets/translations/en';
@@ -284,24 +284,65 @@ describe('languageUtils', function() {
     });
 
     describe('Get Custom Localization', () => {
+        let model;
+        const frPlay = 'frPlay';
+        const frPause = 'frPause';
+        const frHtPlay = 'fr-HT-Play';
+        const localizationPlay = 'localizationPlay';
+        const localizationPause = 'localizationPause';
+        const localizationStop = 'localizationStop';
+
+        before(() => {
+            model = {
+                attributes: {
+                    intl: {
+                        fr: {
+                            play: frPlay,
+                            pause: frPause
+                        },
+
+                        fr_HT: {
+                            play: frHtPlay
+                        }
+                    },
+                    setupConfig: {
+                        localization: {
+                            play: localizationPlay,
+                            pause: localizationPause,
+                            stop: localizationStop
+                        }
+                    }
+                }
+            };
+        });
+
         it('should override the custom localization with the intl block', () => {
+            const customLocalization = getCustomLocalization(model, 'fr');
+            expect(customLocalization.play).to.equal(frPlay);
+            expect(customLocalization.pause).to.equal(frPause);
+            expect(customLocalization.stop).to.equal(localizationStop);
 
         });
 
         it('should override the language code intl block with the language-Country code intl block', () => {
-
-        });
-
-        it('should only use the intl block matching the language code', () => {
-
-        });
-
-        it('should not use the intl block for a different country code', () => {
-
+            const customLocalization = getCustomLocalization(model, 'fr-HT');
+            expect(customLocalization.play).to.equal(frHtPlay);
+            expect(customLocalization.pause).to.equal(frPause);
+            expect(customLocalization.stop).to.equal(localizationStop);
         });
 
         it('should fallback to the intl block for the matching language code if the country code is different', () => {
+            const customLocalization = getCustomLocalization(model, 'fr-CA');
+            expect(customLocalization.play).to.equal(frPlay);
+            expect(customLocalization.pause).to.equal(frPause);
+            expect(customLocalization.stop).to.equal(localizationStop);
+        });
 
+        it('should fallback to localization if country code is not defined in intl block', () => {
+            const customLocalization = getCustomLocalization(model, 'zz');
+            expect(customLocalization.play).to.equal(localizationPlay);
+            expect(customLocalization.pause).to.equal(localizationPause);
+            expect(customLocalization.stop).to.equal(localizationStop);
         });
     });
 
