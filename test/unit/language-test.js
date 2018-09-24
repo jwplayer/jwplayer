@@ -1,4 +1,4 @@
-import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable, loadJsonTranslation, getCustomLocalization } from 'utils/language';
+import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable, loadJsonTranslation, getCustomLocalization, isLocalizationComplete } from 'utils/language';
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import en from 'assets/translations/en';
@@ -347,16 +347,39 @@ describe('languageUtils', function() {
     });
 
     describe('Is Localization Complete check', () => {
-        it('should be true when custom localization has the same keys as default localization', () => {
+        let customLocalization;
+        beforeEach(() => {
+            customLocalization = en;
+            customLocalization.play = 'customPlay';
+            customLocalization.pause = 'customPause';
+            customLocalization.stop = 'customStop';
+            customLocalization.related.heading = 'customRelatedHeading';
+        });
 
+        it('should be true when custom localization has the same keys as default localization', () => {
+            expect(isLocalizationComplete(customLocalization)).to.be.true;
         });
 
         it('should be false when custom localization is smaller than defaut localization', () => {
+            customLocalization.play = undefined;
+            expect(isLocalizationComplete(customLocalization)).to.be.false;
+        });
 
+        it('should be false when custom localization sub-blocks are smaller than defaut localization', () => {
+            customLocalization.advertising.admessage = undefined;
+            expect(isLocalizationComplete(customLocalization)).to.be.false;
         });
 
         it('should be false when custom localization has different keys than default localization', () => {
+            customLocalization.play = undefined;
+            customLocalization.newKey = 'new key';
+            expect(isLocalizationComplete(customLocalization)).to.be.false;
+        });
 
+        it('should be false when custom localization sub-blocks have different keys than defaut localization', () => {
+            customLocalization.sharing.copied = undefined;
+            customLocalization.sharing.newKey = 'new key';
+            expect(isLocalizationComplete(customLocalization)).to.be.false;
         });
     });
 });

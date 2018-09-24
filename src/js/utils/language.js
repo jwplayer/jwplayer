@@ -73,9 +73,19 @@ export function getCustomLocalization({ attributes }, languageAndCountryCode) {
 }
 
 export function isLocalizationComplete(customLocalization) {
-    const defaultFields = Object.keys(en);
-    return Object.keys(customLocalization).length >= defaultFields.length &&
-        defaultFields.every(key => customLocalization[key]);
+    return isDeepComplete(en, customLocalization);
+}
+
+function isDeepComplete(defaultObj, customObj) {
+    const defaultFields = Object.keys(defaultObj);
+    return Object.keys(customObj).length  >= defaultFields.length &&
+        defaultFields.every(key => {
+            const customProperty = customObj[key];
+            if (typeof customProperty === 'object') {
+                return isDeepComplete(defaultObj[key], customProperty);
+            }
+            return !!customProperty;
+        });
 }
 
 export function loadJsonTranslation(base, languageCode) {
