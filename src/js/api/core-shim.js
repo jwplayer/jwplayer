@@ -118,7 +118,10 @@ Object.assign(CoreShim.prototype, {
                 return;
             }
 
-            setupResult.warnings.forEach(w => logWarning(w));
+            this.on(WARNING, logWarning);
+            setupResult.warnings.forEach(w => {
+                this.trigger(WARNING, w);
+            });
 
             const config = this.modelShim.clone();
             // Exit if embed config encountered an error
@@ -137,7 +140,6 @@ Object.assign(CoreShim.prototype, {
             // Switch the error log handlers after the real model has been set
             model.off('change:errorEvent', logError);
             coreModel.on('change:errorEvent', logError);
-            this.on(WARNING, logWarning);
             storage.track(coreModel);
 
             // Set the active playlist item after plugins are loaded and the view is setup
