@@ -275,15 +275,10 @@ export default class Controlbar {
         _model.change('fullscreen', this.onFullscreen, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
-            const element = this.elements.live.element();
+            const liveElement = this.elements.live.element();
 
-            toggleClass(element, 'jw-dvr-live', dvrLive === false);
-
-            if (element.getAttribute('aria-label') === 'Live') {
-                setAttribute(element, 'aria-label', localization.notLive);
-            } else {
-                setAttribute(element, 'aria-label', localization.liveBroadcast);
-            }
+            toggleClass(liveElement, 'jw-dvr-live', !dvrLive);
+            setAttribute(liveElement, 'aria-label', !dvrLive ? localization.notLive : localization.liveBroadcast);
         }, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
