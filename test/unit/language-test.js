@@ -179,7 +179,7 @@ describe('languageUtils', function() {
         });
     });
 
-    describe('getLanguage', () => {
+    describe('getLanguage', function() {
         const sandbox = sinon.sandbox.create();
 
         before(function() {
@@ -188,7 +188,7 @@ describe('languageUtils', function() {
             }
         });
 
-        afterEach(() => {
+        afterEach(function() {
             sandbox.restore();
         });
 
@@ -211,13 +211,13 @@ describe('languageUtils', function() {
             sandbox.stub(htmlTag, 'getAttribute').withArgs('lang').returns(value);
         }
 
-        it('should return the htlm lang attribute', () => {
+        it('should return the htlm lang attribute', function() {
             const htmlLanguage = 'htmlLanguage';
             stubHtmlLanguage(document, htmlLanguage);
             expect(getLanguage()).to.equal(htmlLanguage);
         });
 
-        it('should return the top htlm lang attribute when iframe has no lang attribute', () => {
+        it('should return the top htlm lang attribute when iframe has no lang attribute', function() {
             const topHtmlLanguage = 'topHtmlLanguage';
             stubHtmlLanguage(document, null);
             stubHtmlLanguage(window.top.document, topHtmlLanguage);
@@ -225,14 +225,14 @@ describe('languageUtils', function() {
             expect(getLanguage()).to.equal(topHtmlLanguage);
         });
 
-        it('should fallback to navigator.language when html lang attribute is absent', () => {
+        it('should fallback to navigator.language when html lang attribute is absent', function() {
             const language = 'language';
             stubHtmlLanguage(document, null);
             stubNavigatorProperty('language', language);
             expect(getLanguage()).to.equal(language);
         });
 
-        it('should fallback to en when navigator.language is undefined', () => {
+        it('should fallback to en when navigator.language is undefined', function() {
             const systemLanguage = 'systemLanguage';
             stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
@@ -240,40 +240,40 @@ describe('languageUtils', function() {
         });
     });
 
-    describe('JSON Translations', () => {
+    describe('JSON Translations', function() {
         const context = require.context("../../src/assets/translations", true, /\.json$/);
         const languageCodes = context.keys().map(key => key.substring(key.lastIndexOf('/') + 1, key.lastIndexOf('.')));
 
-        it('should match the list of supported translations', () => {
+        it('should match the list of supported translations', function() {
             expect(languageCodes).to.deep.equal(translatedLanguageCodes);
         });
 
-        it('should have same structure as localization default', () => {
+        it('should have same structure as localization default', function() {
             // TODO: add test that compares the structure of all the translation jsons to that of the default localization block to ensure consistency.
             // Limitation: require('../../src/assets/translations/fr.json') returns '264cfd10c44360a54a0772a576aa3dfd.json'
         });
     });
 
-    describe('translationAvailable', () => {
-        it('should be country code agnostic', () => {
+    describe('translationAvailable', function() {
+        it('should be country code agnostic', function() {
             const regionalLanguageCode = translatedLanguageCodes[0] + '-HT';
             expect(isTranslationAvailable(regionalLanguageCode)).to.be.true;
         });
 
-        it('should be caps agnostic', () => {
+        it('should be caps agnostic', function() {
             const capitalizedLanguageCode = translatedLanguageCodes[0].toUpperCase();
             expect(isTranslationAvailable(capitalizedLanguageCode)).to.be.true;
         });
 
-        it('should fail for codes that are not in translatedLanguageCodes', () => {
+        it('should fail for codes that are not in translatedLanguageCodes', function() {
             expect(isTranslationAvailable('zz')).to.be.false;
         });
     });
 
-    describe('Json translation load', () => {
+    describe('Json translation load', function() {
         this.timeout(8000);
 
-        it('should successfully fetch Spanish', () => {
+        it('should successfully fetch Spanish', function() {
             loadJsonTranslation('/base/test/files/', 'es').then(result => {
                 expect(result).to.have.property('responseType').which.equals('json');
                 expect(result).to.have.property('status').which.equals(200);
@@ -283,7 +283,7 @@ describe('languageUtils', function() {
         });
     });
 
-    describe('Get Custom Localization', () => {
+    describe('Get Custom Localization', function() {
         let model;
         const frPlay = 'frPlay';
         const frPause = 'frPause';
@@ -292,7 +292,7 @@ describe('languageUtils', function() {
         const localizationPause = 'localizationPause';
         const localizationStop = 'localizationStop';
 
-        before(() => {
+        before(function() {
             model = {
                 attributes: {
                     intl: {
@@ -316,7 +316,7 @@ describe('languageUtils', function() {
             };
         });
 
-        it('should override the custom localization with the intl block', () => {
+        it('should override the custom localization with the intl block', function() {
             const customLocalization = getCustomLocalization(model, 'fr');
             expect(customLocalization.play).to.equal(frPlay);
             expect(customLocalization.pause).to.equal(frPause);
@@ -324,21 +324,21 @@ describe('languageUtils', function() {
 
         });
 
-        it('should override the language code intl block with the language-Country code intl block', () => {
+        it('should override the language code intl block with the language-Country code intl block', function() {
             const customLocalization = getCustomLocalization(model, 'fr-HT');
             expect(customLocalization.play).to.equal(frHtPlay);
             expect(customLocalization.pause).to.equal(frPause);
             expect(customLocalization.stop).to.equal(localizationStop);
         });
 
-        it('should fallback to the intl block for the matching language code if the country code is different', () => {
+        it('should fallback to the intl block for the matching language code if the country code is different', function() {
             const customLocalization = getCustomLocalization(model, 'fr-CA');
             expect(customLocalization.play).to.equal(frPlay);
             expect(customLocalization.pause).to.equal(frPause);
             expect(customLocalization.stop).to.equal(localizationStop);
         });
 
-        it('should fallback to localization if country code is not defined in intl block', () => {
+        it('should fallback to localization if country code is not defined in intl block', function() {
             const customLocalization = getCustomLocalization(model, 'zz');
             expect(customLocalization.play).to.equal(localizationPlay);
             expect(customLocalization.pause).to.equal(localizationPause);
@@ -346,9 +346,9 @@ describe('languageUtils', function() {
         });
     });
 
-    describe('Is Localization Complete check', () => {
+    describe('Is Localization Complete check', function() {
         let customLocalization;
-        beforeEach(() => {
+        beforeEach(function() {
             customLocalization = en;
             customLocalization.play = 'customPlay';
             customLocalization.pause = 'customPause';
@@ -356,27 +356,27 @@ describe('languageUtils', function() {
             customLocalization.related.heading = 'customRelatedHeading';
         });
 
-        it('should be true when custom localization has the same keys as default localization', () => {
+        it('should be true when custom localization has the same keys as default localization', function() {
             expect(isLocalizationComplete(customLocalization)).to.be.true;
         });
 
-        it('should be false when custom localization is smaller than defaut localization', () => {
+        it('should be false when custom localization is smaller than defaut localization', function() {
             customLocalization.play = undefined;
             expect(isLocalizationComplete(customLocalization)).to.be.false;
         });
 
-        it('should be false when custom localization sub-blocks are smaller than defaut localization', () => {
+        it('should be false when custom localization sub-blocks are smaller than defaut localization', function() {
             customLocalization.advertising.admessage = undefined;
             expect(isLocalizationComplete(customLocalization)).to.be.false;
         });
 
-        it('should be false when custom localization has different keys than default localization', () => {
+        it('should be false when custom localization has different keys than default localization', function() {
             customLocalization.play = undefined;
             customLocalization.newKey = 'new key';
             expect(isLocalizationComplete(customLocalization)).to.be.false;
         });
 
-        it('should be false when custom localization sub-blocks have different keys than defaut localization', () => {
+        it('should be false when custom localization sub-blocks have different keys than defaut localization', function() {
             customLocalization.sharing.copied = undefined;
             customLocalization.sharing.newKey = 'new key';
             expect(isLocalizationComplete(customLocalization)).to.be.false;
