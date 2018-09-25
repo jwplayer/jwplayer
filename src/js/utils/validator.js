@@ -57,3 +57,21 @@ export function typeOf(value) {
     }
     return typeofString;
 }
+
+/**
+ * @param {object} defaultObj - The object that determines the desired set of keys.
+ * @param {object} customObj - The object we want to verify has the desired set of keys.
+ * @returns {boolean} Does the customObj have the same keys as defaultObj, and do their properties also share the same keys ?
+ */
+export function isDeepKeyMatch(defaultObj, customObj) {
+    const defaultKeys = Object.keys(defaultObj);
+    return Object.keys(customObj).length >= defaultKeys.length &&
+        defaultKeys.every(key => {
+            const defaultProperty = defaultObj[key];
+            const customProperty = customObj[key];
+            if (typeof defaultProperty === 'object') {
+                return isDeepKeyMatch(defaultProperty, customProperty);
+            }
+            return !!customProperty;
+        });
+}

@@ -1,6 +1,7 @@
 import { invert } from 'utils/underscore';
 import { isIframe } from 'utils/browser';
 import { ajax } from 'utils/ajax';
+import { isDeepKeyMatch } from 'utils/validator';
 import en from 'assets/translations/en.js';
 
 /**
@@ -66,26 +67,13 @@ export function isTranslationAvailable(language) {
 }
 
 export function getCustomLocalization({ attributes }, languageAndCountryCode) {
-    const formattedLanguageCode = formatLanguageCode(languageAndCountryCode);
     const { setupConfig, intl } = attributes;
     languageAndCountryCode = languageAndCountryCode in intl ? languageAndCountryCode : languageAndCountryCode.replace('-', '_');
-    return Object.assign({}, setupConfig.localization, intl[formattedLanguageCode], intl[languageAndCountryCode]);
+    return Object.assign({}, setupConfig.localization, intl[formatLanguageCode(languageAndCountryCode)], intl[languageAndCountryCode]);
 }
 
 export function isLocalizationComplete(customLocalization) {
-    return isDeepComplete(en, customLocalization);
-}
-
-function isDeepComplete(defaultObj, customObj) {
-    const defaultFields = Object.keys(defaultObj);
-    return Object.keys(customObj).length  >= defaultFields.length &&
-        defaultFields.every(key => {
-            const customProperty = customObj[key];
-            if (typeof customProperty === 'object') {
-                return isDeepComplete(defaultObj[key], customProperty);
-            }
-            return !!customProperty;
-        });
+    return isDeepKeyMatch(en, customLocalization);
 }
 
 export function loadJsonTranslation(base, languageCode) {

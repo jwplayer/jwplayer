@@ -97,32 +97,33 @@ export function loadSkin(_model) {
 
 export function loadTranslations(_model) {
     const language = getLanguage();
+    const { attributes } = _model;
     const customLocalization = getCustomLocalization(_model, language);
     return new Promise(resolve => {
         if (!isTranslationAvailable(language) || isLocalizationComplete(customLocalization)) {
             return resolve();
         }
-        return loadJsonTranslation(_model.attributes.base, language)
+        return loadJsonTranslation(attributes.base, language)
             .then(({ response }) => resolve(response))
             .catch(() => {
                 // TODO: trigger warning (JW8-2244)
                 resolve();
             });
-    }).then(response => {
+    }).then(translation => {
         if (destroyed(_model)) {
             return;
         }
-        setLocalization(_model, customLocalization, response);
+        translation = translation || {};
+        const { localization } = attributes;
+        const { errors: localErr, related: localRel, sharing: localSha, advertising: localAdv } = localization;
+        const { errors: translErr, related: translRel, sharing: translSha, advertising: translAdv } = translation;
+        const { errors: customErr, related: customRel, sharing: customSha, advertising: customAdv } = customLocalization;
+        Object.assign(localization, translation, customLocalization);
+        Object.assign(localErr, translErr, customErr);
+        Object.assign(localRel, translRel, customRel);
+        Object.assign(localSha, translSha, customSha);
+        Object.assign(localAdv, translAdv, customAdv);
     });
-}
-
-function setLocalization(_model, customLocalization, translation) {
-    const localization = _model.attributes.localization;
-    Object.assign(localization, translation, customLocalization);
-    Object.assign(localization.errors, translation.errors, customLocalization.errors);
-    Object.assign(localization.related, translation.related, customLocalization.related);
-    Object.assign(localization.sharing, translation.sharing, customLocalization.sharing);
-    Object.assign(localization.advertising, translation.advertising, customLocalization.advertising);
 }
 
 export function loadModules(/* model, api */) {
