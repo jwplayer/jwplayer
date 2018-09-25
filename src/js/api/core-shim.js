@@ -137,7 +137,7 @@ Object.assign(CoreShim.prototype, {
             // Switch the error log handlers after the real model has been set
             model.off('change:errorEvent', logError);
             coreModel.on('change:errorEvent', logError);
-            this.on('warning', emitWarning);
+            this.on(WARNING, emitWarning);
             storage.track(coreModel);
 
             // Set the active playlist item after plugins are loaded and the view is setup
