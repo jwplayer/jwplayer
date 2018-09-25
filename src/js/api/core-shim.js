@@ -118,10 +118,7 @@ Object.assign(CoreShim.prototype, {
                 return;
             }
 
-            setupResult.warnings.forEach(w => {
-                console.warn(PlayerError.logMessage(w.code));
-                this.trigger(WARNING, w);
-            });
+            setupResult.warnings.forEach(w => emitWarning(w));
 
             const config = this.modelShim.clone();
             // Exit if embed config encountered an error
@@ -140,6 +137,7 @@ Object.assign(CoreShim.prototype, {
             // Switch the error log handlers after the real model has been set
             model.off('change:errorEvent', logError);
             coreModel.on('change:errorEvent', logError);
+            this.on('warning', emitWarning);
             storage.track(coreModel);
 
             // Set the active playlist item after plugins are loaded and the view is setup
@@ -300,6 +298,13 @@ function logError(model, error) {
         console.error(error.sourceError);
     }
     console.error(PlayerError.logMessage(error.code));
+}
+
+function emitWarning(warning) {
+    if (!warning || !warning.code) {
+        return;
+    }
+    console.warn(PlayerError.logMessage(warning.code));
 }
 
 export function showView(core, viewElement) {
