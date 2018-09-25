@@ -193,7 +193,10 @@ export class PlayerError {
         if (suffix >= 400 && suffix < 600) {
             codeStr = `${prefix}400-${prefix}599`;
         }
-        return `JW Player Error ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
+
+        // Warnings are in the 3xx,xxx range
+        const isWarning = code > 299999 && code < 400000;
+        return `JW Player ${isWarning ? 'Warning' : 'Error'} ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
     }
 }
 
