@@ -1,4 +1,4 @@
-import { PlayerError, MSG_NETWORK_ERROR } from 'api/errors';
+import { PlayerError } from 'api/errors';
 import { configurePlugin, mapPluginToCode } from 'plugins/utils';
 
 const PluginLoader = function () {
@@ -19,7 +19,7 @@ const PluginLoader = function () {
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
                     if (!error.code) {
-                        return new PlayerError(MSG_NETWORK_ERROR, mapPluginToCode(pluginUrl), error);
+                        return new PlayerError(null, mapPluginToCode(pluginUrl), error);
                     }
                     return error;
                 });

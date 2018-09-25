@@ -181,8 +181,10 @@ export const MSG_NETWORK_ERROR = 'networkError';
 export class PlayerError {
     constructor(key, code, sourceError = null) {
         this.code = isValidNumber(code) ? code : 0;
-        this.key = key;
         this.sourceError = sourceError;
+        if (key) {
+            this.key = key;
+        }
     }
 
     static logMessage(code) {

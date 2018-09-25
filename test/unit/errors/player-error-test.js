@@ -18,6 +18,14 @@ describe('PlayerError', function () {
             expect(PlayerError.logMessage(312345)).to.equal(generateCopy(312345, 312345, true));
         });
     });
+
+    it('sets the key property if the key argument exists', function () {
+        expect(new PlayerError('foo')).to.have.property('key').which.equals('foo');
+    });
+
+    it('does not set the key property if the key argument does not exist', function () {
+        expect(new PlayerError(null)).to.not.have.property('key');
+    });
 });
 
 function generateCopy(code, hash, isWarning = false) {

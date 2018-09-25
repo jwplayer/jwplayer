@@ -2,7 +2,6 @@ import loadPlugins, { registerPlugin } from 'plugins/plugins';
 import PluginsModel from 'plugins/model';
 import Plugin from 'plugins/plugin';
 import SimpleModel from 'model/simplemodel';
-import { MSG_PLUGIN_ERROR, MSG_NETWORK_ERROR } from 'api/errors';
 import sinon from 'sinon';
 
 // Any instance of PluginsModel provides access to registered plugins
@@ -264,7 +263,6 @@ describe('plugins', function() {
                 expect(api.addPlugin).to.have.callCount(0);
 
                 expect(results[0].code).to.equal(305000);
-                expect(results[0].key).to.equal(MSG_NETWORK_ERROR);
             });
         });
 
@@ -360,7 +358,6 @@ describe('plugins', function() {
                 expect(Object.keys(registeredPlugins), 'The JavaScript did not call registerPlugin()').to.have.lengthOf(0);
                 expect(api.addPlugin, 'No instance was added').to.have.callCount(0);
                 expect(results[0].code).to.equal(305100);
-                expect(results[0].key).to.equal(MSG_PLUGIN_ERROR);
             });
         });
 
@@ -376,7 +373,6 @@ describe('plugins', function() {
                 expect(Object.keys(registeredPlugins), 'registry is empty').to.have.lengthOf(0);
                 expect(api.addPlugin, 'no instance was added').to.have.callCount(0);
                 expect(results[0].code).to.equal(305100);
-                expect(results[0].key).to.equal(MSG_PLUGIN_ERROR);
             });
         });
 

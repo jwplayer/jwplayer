@@ -108,11 +108,11 @@ Object.assign(CoreShim.prototype, {
         model.on('change:errorEvent', logError);
 
         return this.setup.start(api).then(setupResult => {
-            if (!setupResult.core) {
+            const CoreMixin = setupResult.core;
+            if (!CoreMixin) {
                 throw composePlayerError(null, SETUP_ERROR_PROMISE_API_CONFLICT);
             }
 
-            const CoreMixin = setupResult.core;
             if (!this.setup) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
