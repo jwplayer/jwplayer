@@ -57,7 +57,6 @@ const Defaults = {
         playlist: 'Playlist',
         poweredBy: 'Powered by',
         prev: 'Previous',
-        quality: 'Quality',
         related: 'More Videos',
         replay: 'Replay',
         rewind: 'Rewind 10 Seconds',

@@ -94,7 +94,6 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             model.get('currentLevel'),
             localization.hd,
             localization.auto,
-            localization.quality
         );
     };
 

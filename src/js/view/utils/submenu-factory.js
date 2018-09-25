@@ -10,7 +10,7 @@ const QUALITIES_SUBMENU = 'quality';
 const PLAYBACK_RATE_SUBMENU = 'playbackRates';
 const DEFAULT_SUBMENU = QUALITIES_SUBMENU;
 
-export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText, qualityText) => {
+export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText) => {
     let submenu = settingsMenu.getSubmenu(name);
     if (submenu) {
         submenu.replaceContent(contentItems);
@@ -23,8 +23,8 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText,
         categoryButtonElement.setAttribute('role', 'menuitemradio');
         categoryButtonElement.setAttribute('aria-checked', 'false');
 
-        if (name === QUALITIES_SUBMENU && qualityText) {
-            categoryButtonElement.setAttribute('aria-label', qualityText);
+        if (name === QUALITIES_SUBMENU) {
+            categoryButtonElement.setAttribute('aria-label', tooltipText);
         }
 
         // Qualities submenu is the default submenu
@@ -78,7 +78,7 @@ export function removeAudioTracksSubmenu(settingsMenu) {
     settingsMenu.removeSubmenu(AUDIO_TRACKS_SUBMENU);
 }
 
-export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, tooltipText, autoText, qualityText) {
+export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, tooltipText, autoText) {
     const qualitiesItems = qualitiesList.map((track, index) => {
         let content = track.label;
         if (content === 'Auto' && index === 0) {
@@ -91,7 +91,7 @@ export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initial
         });
     });
 
-    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, cloneIcon('quality-100'), tooltipText, qualityText);
+    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, cloneIcon('quality-100'), tooltipText);
     qualitiesSubmenu.activateItem(initialSelectionIndex);
 }
 
