@@ -156,22 +156,6 @@ export const MSG_PROTECTED_CONTENT = 'protectedContent';
 export const MSG_TECHNICAL_ERROR = 'technicalError';
 
 /**
- * @enum {ErrorKey}
- */
-export const MSG_PLUGIN_ERROR = 'pluginError';
-
-/**
- * @enum {ErrorKey}
- */
-export const MSG_CAPTIONS_ERROR = 'captionsError';
-
-/**
- * @enum {ErrorKey}
- */
-export const MSG_NETWORK_ERROR = 'networkError';
-
-
-/**
  * Class used to create "setupError" and "error" event instances.
  * @class PlayerError
  * @param {message} string - The error message.

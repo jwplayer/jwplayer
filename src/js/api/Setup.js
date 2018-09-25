@@ -74,7 +74,7 @@ export function setupResult(allPromises) {
 
     const warnings = allPromises
         .reduce((acc, val) => acc.concat(val), []) // Flattens the sub-arrays of allPromises into a single array
-        .filter(p => p && p.code);
+        .filter(result => result && result.code);
 
     return {
         core: allPromises[0],
