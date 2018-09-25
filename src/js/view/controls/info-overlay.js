@@ -21,7 +21,7 @@ export default function (container, model, api, onVisibility) {
     const append = () => {
         const closeButton = button('jw-info-close', () => {
             instance.close();
-        }, 'Close Info Overlay', [cloneIcon('close')]);
+        }, model.get('localization').close, [cloneIcon('close')]);
         closeButton.show();
         prependChild(template, closeButton.element());
         attachListeners();

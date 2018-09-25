@@ -2,6 +2,7 @@ import Tooltip from 'view/controls/components/tooltip';
 import Slider from 'view/controls/components/slider';
 import UI from 'utils/ui';
 import { setAttribute } from 'utils/dom';
+
 export default class VolumeTooltip extends Tooltip {
     constructor(_model, name, ariaText, svgIcons) {
         super(name, ariaText, true, svgIcons);

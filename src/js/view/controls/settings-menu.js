@@ -10,7 +10,7 @@ import {
     removePlaybackRatesSubmenu
 } from 'view/utils/submenu-factory';
 
-export function createSettingsMenu(controlbar, onVisibility) {
+export function createSettingsMenu(controlbar, onVisibility, localization) {
     const settingsButton = controlbar.elements.settingsButton;
     const onSubmenuAdded = () => {
         settingsButton.show();
@@ -19,7 +19,7 @@ export function createSettingsMenu(controlbar, onVisibility) {
         settingsButton.hide();
     };
 
-    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty);
+    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localization);
 
     controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
@@ -85,15 +85,15 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             return;
         }
 
-        const localization = model.get('localization');
+        const { hd, auto } = model.get('localization');
 
         addQualitiesSubmenu(
             settingsMenu,
             levels,
             (index) => api.setCurrentQuality(index),
             model.get('currentLevel'),
-            localization.hd,
-            localization.auto
+            hd,
+            auto
         );
     };
 
@@ -105,14 +105,14 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             return;
         }
 
-        const localization = model.get('localization');
+        const { cc, off } = model.get('localization');
 
         addCaptionsSubmenu(settingsMenu,
             captionsList,
             (index) => api.setCurrentCaptions(index),
             model.get('captionsIndex'),
-            localization.cc,
-            localization.off
+            cc,
+            off
         );
         controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
         controlbarButton.show();
