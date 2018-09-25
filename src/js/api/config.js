@@ -70,7 +70,6 @@ const Defaults = {
             share: 'Share',
 
         },
-        unmute: 'Unmute',
         videoInfo: 'About This Video',
         volume: 'Volume',
         volumeSlider: 'Volume Slider'
