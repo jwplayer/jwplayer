@@ -67,8 +67,7 @@ const Defaults = {
             email: 'Email',
             embed: 'Embed',
             link: 'Link',
-            share: 'Share',
-
+            share: 'Share'
         },
         videoInfo: 'About This Video',
         volume: 'Volume',
