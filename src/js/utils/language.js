@@ -77,7 +77,7 @@ export function isLocalizationComplete(customLocalization) {
 }
 
 export function loadJsonTranslation(base, languageCode) {
-    const url = base + 'translations/' + languageCode + '.json';
+    const url = `${base}translations/${languageCode}.json`;
     return new Promise((resolve, reject) => {
         const oncomplete = (result) => resolve(result);
         const onerror = () => reject();
