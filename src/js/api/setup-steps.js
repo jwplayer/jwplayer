@@ -6,6 +6,7 @@ import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
 import { getLanguage, getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
+import en from 'assets/translations/en.js';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -113,8 +114,7 @@ export function loadTranslations(_model) {
         if (destroyed(_model)) {
             return;
         }
-        const { localization } = attributes;
-        Object.assign(localization, translation || {}, customLocalization);
+        attributes.localization = Object.assign(en, translation || {}, customLocalization);
     });
 }
 

@@ -68,8 +68,11 @@ export function isTranslationAvailable(language) {
 
 export function getCustomLocalization({ attributes }, languageAndCountryCode) {
     const { setupConfig, intl } = attributes;
-    languageAndCountryCode = languageAndCountryCode in intl ? languageAndCountryCode : languageAndCountryCode.replace('-', '_');
-    return Object.assign({}, setupConfig.localization, intl[formatLanguageCode(languageAndCountryCode)], intl[languageAndCountryCode]);
+    const languageCode = formatLanguageCode(languageAndCountryCode);
+    const languageAndCountryCustomization = languageCode === languageAndCountryCode ? {} :
+        intl[languageAndCountryCode] || intl[languageAndCountryCode.toLowerCase()] ||
+        intl[languageAndCountryCode.replace('-', '_')] || intl[languageAndCountryCode.toLowerCase().replace('-', '_')];
+    return Object.assign({}, setupConfig.localization, intl[languageCode], languageAndCountryCustomization);
 }
 
 export function isLocalizationComplete(customLocalization) {
@@ -77,7 +80,7 @@ export function isLocalizationComplete(customLocalization) {
 }
 
 export function loadJsonTranslation(base, languageCode) {
-    const url = `${base}translations/${languageCode}.json`;
+    const url = `${base}translations/${formatLanguageCode(languageCode)}.json`;
     return new Promise((resolve, reject) => {
         const oncomplete = (result) => resolve(result);
         const onerror = () => reject();
