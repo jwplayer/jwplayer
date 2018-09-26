@@ -66,13 +66,12 @@ export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(formatLanguageCode(language)) >= 0;
 }
 
-export function getCustomLocalization({ attributes }, languageAndCountryCode) {
-    const { setupConfig, intl } = attributes;
+export function getCustomLocalization(localization, intl, languageAndCountryCode) {
     const languageCode = formatLanguageCode(languageAndCountryCode);
     const languageAndCountryCustomization = languageCode === languageAndCountryCode ? {} :
         intl[languageAndCountryCode] || intl[languageAndCountryCode.toLowerCase()] ||
         intl[languageAndCountryCode.replace('-', '_')] || intl[languageAndCountryCode.toLowerCase().replace('-', '_')];
-    return Object.assign({}, setupConfig.localization, intl[languageCode], languageAndCountryCustomization);
+    return Object.assign({}, localization, intl[languageCode], languageAndCountryCustomization);
 }
 
 export function isLocalizationComplete(customLocalization) {

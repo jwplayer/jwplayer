@@ -3,6 +3,7 @@ import { serialize } from 'utils/parser';
 import { isValidNumber, isNumber, pick, isBoolean } from 'utils/underscore';
 import { Features } from 'environment/environment';
 import en from 'assets/translations/en.js';
+import { getLanguage, getCustomLocalization } from 'utils/language';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -20,6 +21,7 @@ const Defaults = {
     displayPlaybackLabel: false,
     height: 360,
     intl: {},
+    language: 'en',
     liveTimeout: null,
     localization: en,
     mute: false,
@@ -64,8 +66,15 @@ const Config = function(options, persisted) {
 
     _deserialize(allOptions);
 
-    allOptions.localization = Object.assign({}, Defaults.localization, allOptions.localization);
-    allOptions.localization.errors = Object.assign({}, Defaults.localization.errors, allOptions.localization.errors);
+    const language = getLanguage();
+    let { localization, intl } = allOptions;
+    const customLocalization = getCustomLocalization(localization || {}, intl || {}, language);
+
+    localization = Object.assign({}, Defaults.localization, customLocalization);
+    localization.errors = Object.assign({}, Defaults.localization.errors, customLocalization.errors);
+    localization.related = Object.assign({}, Defaults.localization.related, customLocalization.related);
+    localization.sharing = Object.assign({}, Defaults.localization.sharing, customLocalization.sharing);
+    localization.advertising = Object.assign({}, Defaults.localization.advertising, customLocalization.advertising);
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {
@@ -78,6 +87,7 @@ const Config = function(options, persisted) {
     config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
     config.volume = isValidNumber(config.volume) ? Math.min(Math.max(0, config.volume), 100) : Defaults.volume;
     config.mute = !!config.mute;
+    config.language = language;
 
     let rateControls = config.playbackRateControls;
 

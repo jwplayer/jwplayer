@@ -102,6 +102,7 @@ export default {
     buffer: 0,
     itemMeta: {},
     intl: {},
+    language: 'en',
     castAvailable: false,
     qualityLabels: undefined,
     itemReady: false,

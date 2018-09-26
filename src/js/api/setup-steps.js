@@ -5,7 +5,7 @@ import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
-import { getLanguage, getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
+import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
 import en from 'assets/translations/en.js';
 
 export function loadPlaylist(_model) {
@@ -97,24 +97,25 @@ export function loadSkin(_model) {
 }
 
 export function loadTranslations(_model) {
-    const language = getLanguage();
     const { attributes } = _model;
-    const customLocalization = getCustomLocalization(_model, language);
+    const { language, base, setupConfig, intl } = attributes;
+    const customLocalization = getCustomLocalization(setupConfig.localization, intl, language);
+    if (!isTranslationAvailable(language) || isLocalizationComplete(customLocalization)) {
+        return Promise.resolve();
+    }
     return new Promise(resolve => {
-        if (!isTranslationAvailable(language) || isLocalizationComplete(customLocalization)) {
-            return resolve();
-        }
-        return loadJsonTranslation(attributes.base, language)
-            .then(({ response }) => resolve(response))
+        return loadJsonTranslation(base, language)
+            .then(({ response }) => {
+                if (destroyed(_model)) {
+                    return;
+                }
+                attributes.localization = Object.assign(en, response || {}, customLocalization);
+                resolve();
+            })
             .catch(() => {
                 // TODO: trigger warning (JW8-2244)
                 resolve();
             });
-    }).then(translation => {
-        if (destroyed(_model)) {
-            return;
-        }
-        attributes.localization = Object.assign(en, translation || {}, customLocalization);
     });
 }
 
