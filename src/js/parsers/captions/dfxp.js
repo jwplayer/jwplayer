@@ -1,9 +1,13 @@
 import { seconds, trim } from 'utils/strings';
+import { PlayerError } from 'api/errors';
 
 // Component that loads and parses an DFXP file
 
 export default function Dfxp(xmlDoc) {
-    validate(xmlDoc);
+    if (!xmlDoc) {
+        parseError(306007);
+    }
+
     const _captions = [];
     let paragraphs = xmlDoc.getElementsByTagName('p');
     // Default frameRate is 30
@@ -15,7 +19,10 @@ export default function Dfxp(xmlDoc) {
             frameRate = parsedFrameRate;
         }
     }
-    validate(paragraphs);
+
+    if (!paragraphs) {
+        parseError(306005);
+    }
     if (!paragraphs.length) {
         paragraphs = xmlDoc.getElementsByTagName('tt:p');
         if (!paragraphs.length) {
@@ -52,17 +59,11 @@ export default function Dfxp(xmlDoc) {
         }
     }
     if (!_captions.length) {
-        parseError();
+        parseError(306005);
     }
     return _captions;
 }
 
-function validate(object) {
-    if (!object) {
-        parseError();
-    }
-}
-
-function parseError() {
-    throw new Error('Invalid DFXP file');
+function parseError(code) {
+    throw new PlayerError(null, code);
 }

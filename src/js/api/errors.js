@@ -118,6 +118,11 @@ const PLAY_ATTEMPT_FAILED_NOT_SUPPORTED = 303230;
 /**
  * @enum {ErrorKey}
  */
+export const ERROR_LOADING_CAPTIONS = 306000;
+
+/**
+ * @enum {ErrorKey}
+ */
 export const MSG_CANT_PLAY_VIDEO = 'cantPlayVideo';
 
 /**
@@ -160,8 +165,10 @@ export const MSG_TECHNICAL_ERROR = 'technicalError';
 export class PlayerError {
     constructor(key, code, sourceError = null) {
         this.code = isValidNumber(code) ? code : 0;
-        this.key = key;
         this.sourceError = sourceError;
+        if (key) {
+            this.key = key;
+        }
     }
 
     static logMessage(code) {
@@ -172,7 +179,10 @@ export class PlayerError {
         if (suffix >= 400 && suffix < 600) {
             codeStr = `${prefix}400-${prefix}599`;
         }
-        return `JW Player Error ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
+
+        // Warnings are in the 3xx,xxx range
+        const isWarning = code > 299999 && code < 400000;
+        return `JW Player ${isWarning ? 'Warning' : 'Error'} ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
     }
 }
 

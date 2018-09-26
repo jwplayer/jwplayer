@@ -107,6 +107,11 @@ export const OUT = 'out';
 */
 export const ERROR = STATE_ERROR;
 
+/**
+ * Event triggered when a non-fatal error is encountered
+ */
+export const WARNING = 'warning';
+
 // Ad events
 
 /**
