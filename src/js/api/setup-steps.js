@@ -113,16 +113,8 @@ export function loadTranslations(_model) {
         if (destroyed(_model)) {
             return;
         }
-        translation = translation || {};
         const { localization } = attributes;
-        const { errors: localErr, related: localRel, sharing: localSha, advertising: localAdv } = localization;
-        const { errors: translErr, related: translRel, sharing: translSha, advertising: translAdv } = translation;
-        const { errors: customErr, related: customRel, sharing: customSha, advertising: customAdv } = customLocalization;
-        Object.assign(localization, translation, customLocalization);
-        Object.assign(localErr, translErr, customErr);
-        Object.assign(localRel, translRel, customRel);
-        Object.assign(localSha, translSha, customSha);
-        Object.assign(localAdv, translAdv, customAdv);
+        Object.assign(localization, translation || {}, customLocalization);
     });
 }
 
