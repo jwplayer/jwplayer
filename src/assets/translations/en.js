@@ -59,7 +59,6 @@ export default {
     },
     slider: 'Seek Slider',
     stop: 'Stop',
-    unmute: 'Unmute',
     videoInfo: 'About This Video',
     volume: 'Volume',
     volumeSlider: 'Volume Slider'
