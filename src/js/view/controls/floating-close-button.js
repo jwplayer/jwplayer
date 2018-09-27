@@ -1,7 +1,7 @@
 import {
     createElement,
     removeClass
-} from 'os/utils/dom';
+} from 'utils/dom';
 import UI from 'os/utils/ui';
 import floatingCloseButton from 'view/controls/templates/floating-close-button';
 import { cloneIcon } from 'os/view/controls/icons';
