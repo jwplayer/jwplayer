@@ -112,7 +112,7 @@ export function loadTranslations(_model) {
                 resolve();
             })
             .catch(() => {
-                // TODO: trigger warning (JW8-2244)
+                // TODO: trigger warning (JW8-2244). Calling resolve(PlayerError(warning, warningCode,...)) might handle this.
                 resolve();
             });
     });

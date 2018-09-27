@@ -80,7 +80,7 @@ export function isTranslationAvailable(language) {
 }
 
 export function getCustomLocalization(localization, intl, languageAndCountryCode) {
-    intl = normalizeIntl(intl || {});
+    intl = normalizeIntl(intl);
     return Object.assign({}, localization || {}, intl[normalizeLanguageCode(languageAndCountryCode)], intl[normalizeLanguageAndCountryCode(languageAndCountryCode)]);
 }
 
