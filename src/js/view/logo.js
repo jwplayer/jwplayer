@@ -85,7 +85,7 @@ export default function Logo(_model) {
 
         if (_settings.link) {
             _logo.setAttribute('tabindex', '0');
-            _logo.setAttribute('aria-label', 'Logo');
+            _logo.setAttribute('aria-label', _model.get('localization').logo);
         }
 
         this.ui = new UI(_logo).on('click tap enter', function (evt) {

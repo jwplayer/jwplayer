@@ -64,10 +64,11 @@ const Defaults = {
         settings: 'Settings',
         stop: 'Stop',
         sharing: {
+            copied: 'Copied',
             email: 'Email',
             embed: 'Embed',
-            link: 'Link',
-            share: 'Share'
+            heading: 'Share',
+            link: 'Link'
         },
         videoInfo: 'About This Video',
         volume: 'Volume',
