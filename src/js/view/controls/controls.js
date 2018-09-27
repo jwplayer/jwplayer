@@ -15,6 +15,7 @@ import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
+import FloatingCloseButton from 'view/controls/floating-close-button';
 
 require('css/controls.less');
 
@@ -352,6 +353,8 @@ export default class Controls {
 
         this.addBackdrop();
 
+        this.addFloatCloseButton(api, model);
+
         model.set('controlsEnabled', true);
     }
 
@@ -499,6 +502,13 @@ export default class Controls {
         const parent = this.backdrop.parentNode;
         if (parent) {
             parent.removeChild(this.backdrop);
+        }
+    }
+
+    addFloatCloseButton(api, model) {
+        if (model.get('floatOnScroll')) {
+            const floatCloseButton = new FloatingCloseButton(api, this.playerContainer);
+            floatCloseButton.setup();
         }
     }
 

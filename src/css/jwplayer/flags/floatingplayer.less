@@ -3,9 +3,28 @@
     background-size: cover;
 }
 
+.jw-float-close {
+    display: none;
+}
+
 .jw-flag-floating {
     bottom: 2rem;
     right: 2rem;
     position: fixed;
     z-index: 1;
+    margin-top: 2em;
+
+    .jw-float-close {
+        position: absolute;
+        width: 100%;
+        text-align: right;
+        top: -2em;
+        display: block;
+
+        .jw-icon {
+            cursor: pointer;
+            pointer-events: all;
+            opacity: 0.8;
+        }
+    }
 }
