@@ -34,6 +34,7 @@ import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
+import FloatingCloseButton from 'view/floating-close-button';
 
 require('css/jwplayer.less');
 
@@ -55,9 +56,11 @@ function View(_api, _model) {
     const _videoLayer = _playerElement.querySelector('.jw-media');
     const _image = _model.get('image');
 
-    if (floatOnScroll && typeof _image === 'string') {
-        const backgroundImage = 'url("' + _image + '")';
-        style(_containerElement, { backgroundImage });
+    if (floatOnScroll) {
+        if (typeof _image === 'string') {
+            const backgroundImage = 'url("' + _image + '")';
+            style(_containerElement, { backgroundImage });
+        }
     }
 
     const _preview = new Preview(_model);
@@ -192,6 +195,13 @@ function View(_api, _model) {
         }
     }
 
+    this.stopFloating = function () {
+        if (hasClass(_playerElement, 'jw-flag-floating')) {
+            removeClass(_playerElement, 'jw-flag-floating');
+            _this.resize(_containerElement.offsetWidth, _containerElement.offsetHeight);
+        }
+    };
+
     this.setup = function () {
         _preview.setup(_playerElement.querySelector('.jw-preview'));
         _title.setup(_playerElement.querySelector('.jw-title'));
@@ -277,6 +287,8 @@ function View(_api, _model) {
         if (inDOM) {
             viewsManager.observe(_playerElement);
             if (floatOnScroll) {
+                const floatCloseButton = new FloatingCloseButton(_playerElement);
+                floatCloseButton.setup(this.stopFloating);
                 viewsManager.observe(_containerElement);
             }
         }
@@ -842,11 +854,12 @@ function View(_api, _model) {
             const height = _containerElement.offsetHeight;
 
             addClass(_playerElement, 'jw-flag-floating');
+            _this.trigger('floating', { floating: true });
+
             _this.resize(320, 320 * height / width);
             style(_containerElement, { width, height }); // Keep original dimensions.
         } else {
-            removeClass(_playerElement, 'jw-flag-floating');
-            _this.resize(_containerElement.offsetWidth, _containerElement.offsetHeight);
+            _this.stopFloating();
         }
     }
 
