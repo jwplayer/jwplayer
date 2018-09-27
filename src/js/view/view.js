@@ -2,7 +2,6 @@ import playerTemplate from 'templates/player';
 import ErrorContainer from 'view/error-container';
 import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
-import floatingViewsManager from 'view/utils/floating-manager';
 import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
@@ -55,14 +54,10 @@ function View(_api, _model) {
     const _playerElement = floatOnScroll ? _containerElement.querySelector('.jwplayer') : _containerElement;
     const _videoLayer = _playerElement.querySelector('.jw-media');
     const _image = _model.get('image');
-    if (floatOnScroll) {
-        if (typeof _image === 'string') {
-            const backgroundImage = 'url("' + _image + '")';
-            style(_containerElement, {
-                backgroundImage: backgroundImage
-            });
-        }
 
+    if (floatOnScroll && typeof _image === 'string') {
+        const backgroundImage = 'url("' + _image + '")';
+        style(_containerElement, { backgroundImage });
     }
 
     const _preview = new Preview(_model);
@@ -86,7 +81,6 @@ function View(_api, _model) {
 
     let _breakpoint = null;
     let _controls;
-    let _floatReady = false;
 
     function reasonInteraction() {
         return { reason: 'interaction' };
@@ -94,7 +88,7 @@ function View(_api, _model) {
 
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
-        const inDOM = document.body.contains(_containerElement);
+        const inDOM = document.body.contains(_playerElement);
         const rect = bounds(_playerElement);
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
@@ -125,7 +119,9 @@ function View(_api, _model) {
 
         if (inDOM) {
             viewsManager.observe(_playerElement);
-            floatingViewsManager.observe(_containerElement);
+            if (floatOnScroll) {
+                viewsManager.observe(_containerElement);
+            }
         }
     };
 
@@ -269,7 +265,6 @@ function View(_api, _model) {
         _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT));
 
         viewsManager.add(this);
-        floatingViewsManager.add(this);
 
         if (_model.get('enableGradient') && !_isIE) {
             addClass(_playerElement, 'jw-ab-drop-shadow');
@@ -278,10 +273,12 @@ function View(_api, _model) {
         this.isSetup = true;
         _model.trigger('viewSetup', _containerElement);
 
-        const inDOM = document.body.contains(_containerElement);
+        const inDOM = document.body.contains(_playerElement);
         if (inDOM) {
             viewsManager.observe(_playerElement);
-            floatingViewsManager.observe(_containerElement);
+            if (floatOnScroll) {
+                viewsManager.observe(_containerElement);
+            }
         }
         _model.set('inDom', inDOM);
     };
@@ -538,7 +535,7 @@ function View(_api, _model) {
         }
     };
 
-    function _resizePlayer(playerWidth, playerHeight, resetAspectMode, startFloating) {
+    function _resizePlayer(playerWidth, playerHeight, resetAspectMode) {
         const widthSet = playerWidth !== undefined;
         const heightSet = playerHeight !== undefined;
         const playerStyle = {
@@ -565,7 +562,7 @@ function View(_api, _model) {
         }
 
         style(_playerElement, playerStyle);
-        if (!startFloating) {
+        if (floatOnScroll) {
             style(_containerElement, playerStyle);
         }
     }
@@ -595,9 +592,9 @@ function View(_api, _model) {
         provider.resize(containerWidth, containerHeight, _model.get('stretching'));
     }
 
-    this.resize = function (playerWidth, playerHeight, startFloating) {
+    this.resize = function (playerWidth, playerHeight) {
         const resetAspectMode = true;
-        _resizePlayer(playerWidth, playerHeight, resetAspectMode, startFloating);
+        _resizePlayer(playerWidth, playerHeight, resetAspectMode);
         _responsiveUpdate();
     };
     this.resizeMedia = _resizeMedia;
@@ -831,32 +828,34 @@ function View(_api, _model) {
     };
 
     this.setIntersection = function (entry) {
-        _model.set('intersectionRatio', entry.intersectionRatio);
-    };
-
-    this.setFloatingIntersection = function (entry) {
-        if (entry.intersectionRatio === 1) {
-            if (_model.get('state') !== STATE_IDLE) {
-                _floatReady = true;
-            } else {
-                _model.off('change:state', () => { _floatReady = true; }, floatingViewsManager);
-                _model.once('change:state', () => { _floatReady = true; }, floatingViewsManager);
-            }
-            // TODO: fire API event when floating/not floating
-            removeClass(_playerElement, 'jw-flag-floating');
-            // TODO: fix width/height
-            this.resize(_containerElement.offsetWidth, _containerElement.offsetHeight, true);
-        } else if (_floatReady) {
-            addClass(_playerElement, 'jw-flag-floating');
-            // TODO: fix width/height, same aspect ratio
-            this.resize(320, 180, true);
+        if (entry.target === _playerElement) {
+            _model.set('intersectionRatio', entry.intersectionRatio);
+        } else if (entry.target === _containerElement) {
+            _setFloatingIntersection(entry);
         }
     };
+
+    function _setFloatingIntersection(entry) {
+        // TODO: fire API event when floating/not floating
+        if (entry.intersectionRatio === 0 && _model.get('state') !== STATE_IDLE) { // Entirely invisible.
+            const width = _containerElement.offsetWidth;
+            const height = _containerElement.offsetHeight;
+
+            addClass(_playerElement, 'jw-flag-floating');
+            _this.resize(320, 320 * height / width);
+            style(_containerElement, { width, height }); // Keep original dimensions.
+        } else {
+            removeClass(_playerElement, 'jw-flag-floating');
+            _this.resize(_containerElement.offsetWidth, _containerElement.offsetHeight);
+        }
+    }
 
     this.destroy = function () {
         _model.destroy();
         viewsManager.unobserve(_playerElement);
-        floatingViewsManager.unobserve(_containerElement);
+        if (floatOnScroll) {
+            viewsManager.unobserve(_containerElement);
+        }
         viewsManager.remove(this);
         this.isSetup = false;
         this.off();
