@@ -3,7 +3,7 @@ import { serialize } from 'utils/parser';
 import { isValidNumber, isNumber, pick, isBoolean } from 'utils/underscore';
 import { Features } from 'environment/environment';
 import en from 'assets/translations/en.js';
-import { getLanguage, getCustomLocalization } from 'utils/language';
+import { getLanguage, getCustomLocalization, applyTranslation } from 'utils/language';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -67,14 +67,10 @@ const Config = function(options, persisted) {
     _deserialize(allOptions);
 
     const language = getLanguage();
-    let { localization, intl } = allOptions;
-    const customLocalization = getCustomLocalization(localization || {}, intl || {}, language);
+    const { localization, intl } = allOptions;
+    const customLocalization = getCustomLocalization(localization, intl, language);
 
-    localization = Object.assign({}, Defaults.localization, customLocalization);
-    localization.errors = Object.assign({}, Defaults.localization.errors, customLocalization.errors);
-    localization.related = Object.assign({}, Defaults.localization.related, customLocalization.related);
-    localization.sharing = Object.assign({}, Defaults.localization.sharing, customLocalization.sharing);
-    localization.advertising = Object.assign({}, Defaults.localization.advertising, customLocalization.advertising);
+    allOptions.localization = applyTranslation({}, customLocalization);
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {

@@ -5,7 +5,7 @@ import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
-import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
+import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation } from 'utils/language';
 import en from 'assets/translations/en.js';
 
 export function loadPlaylist(_model) {
@@ -109,7 +109,7 @@ export function loadTranslations(_model) {
                 if (destroyed(_model)) {
                     return;
                 }
-                attributes.localization = Object.assign(en, response || {}, customLocalization);
+                attributes.localization = applyTranslation(response, customLocalization);
                 resolve();
             })
             .catch(() => {

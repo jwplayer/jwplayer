@@ -67,10 +67,14 @@ export function isTranslationAvailable(language) {
 }
 
 export function getCustomLocalization(localization, intl, languageAndCountryCode) {
+    localization = localization || {};
+    intl = intl || {};
     const languageCode = formatLanguageCode(languageAndCountryCode);
     const languageAndCountryCustomization = languageCode === languageAndCountryCode ? {} :
         intl[languageAndCountryCode] || intl[languageAndCountryCode.toLowerCase()] ||
         intl[languageAndCountryCode.replace('-', '_')] || intl[languageAndCountryCode.toLowerCase().replace('-', '_')];
+        // TODO: Country codes are generally seen in upper case, but we have yet to find documentation enforcing this format.
+        // When the documentation is found, remove lower case support and update our docs with reference to standards.
     return Object.assign({}, localization, intl[languageCode], languageAndCountryCustomization);
 }
 
@@ -85,4 +89,15 @@ export function loadJsonTranslation(base, languageCode) {
         const onerror = () => reject();
         ajax({ url, oncomplete, onerror, responseType: 'json' });
     });
+}
+
+export function applyTranslation(translationJson, customization) {
+    translationJson = translationJson || {};
+    const localization = Object.assign({}, en, translationJson, customization);
+    localization.errors = Object.assign({}, en.errors, translationJson.errors, customization.errors);
+    localization.related = Object.assign({}, en.related, translationJson.related, customization.related);
+    localization.sharing = Object.assign({}, en.sharing, translationJson.sharing, customization.sharing);
+    localization.advertising = Object.assign({}, en.advertising, translationJson.advertising, customization.advertising);
+    return localization;
+
 }
