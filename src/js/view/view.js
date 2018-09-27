@@ -1,5 +1,4 @@
 import playerTemplate from 'templates/player';
-import floatingPlayerTemplate from 'templates/floatingPlayer';
 import ErrorContainer from 'view/error-container';
 import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
@@ -52,8 +51,7 @@ function View(_api, _model) {
     });
 
     const floatOnScroll = _model.get('floatOnScroll');
-    const template = floatOnScroll ? floatingPlayerTemplate : playerTemplate;
-    const _containerElement = createElement(template(_model.get('id'), _model.get('localization').player));
+    const _containerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player, floatOnScroll));
     const _playerElement = floatOnScroll ? _containerElement.querySelector('.jwplayer') : _containerElement;
     const _videoLayer = _playerElement.querySelector('.jw-media');
     const _image = _model.get('image');
@@ -62,10 +60,6 @@ function View(_api, _model) {
             const backgroundImage = 'url("' + _image + '")';
             style(_containerElement, {
                 backgroundImage: backgroundImage
-            });
-        } else {
-            style(_containerElement, {
-                backgroundColor: 'black'
             });
         }
 
@@ -841,7 +835,6 @@ function View(_api, _model) {
     };
 
     this.setFloatingIntersection = function (entry) {
-        console.log(entry.intersectionRatio);
         if (entry.intersectionRatio === 1) {
             if (_model.get('state') !== STATE_IDLE) {
                 _floatReady = true;
