@@ -88,7 +88,7 @@ function View(_api, _model) {
 
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
-        const inDOM = document.body.contains(_containerElement);
+        const inDOM = document.body.contains(_playerElement);
         const rect = bounds(_playerElement);
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
@@ -273,7 +273,7 @@ function View(_api, _model) {
         this.isSetup = true;
         _model.trigger('viewSetup', _containerElement);
 
-        const inDOM = document.body.contains(_containerElement);
+        const inDOM = document.body.contains(_playerElement);
         if (inDOM) {
             viewsManager.observe(_playerElement);
             if (floatOnScroll) {
@@ -853,7 +853,9 @@ function View(_api, _model) {
     this.destroy = function () {
         _model.destroy();
         viewsManager.unobserve(_playerElement);
-        viewsManager.unobserve(_containerElement);
+        if (floatOnScroll) {
+            viewsManager.unobserve(_containerElement);
+        }
         viewsManager.remove(this);
         this.isSetup = false;
         this.off();
