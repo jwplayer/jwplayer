@@ -23,6 +23,10 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
         categoryButtonElement.setAttribute('role', 'menuitemradio');
         categoryButtonElement.setAttribute('aria-checked', 'false');
 
+        if (name === QUALITIES_SUBMENU) {
+            categoryButtonElement.setAttribute('aria-label', tooltipText);
+        }
+
         // Qualities submenu is the default submenu
         submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);
         submenu.addContent(contentItems);
@@ -35,9 +39,13 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
     return submenu;
 };
 
-export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSelectionIndex, tooltipText) {
+export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSelectionIndex, tooltipText, offText) {
     const captionsContentItems = captionsList.map((track, index) => {
-        const contentItemElement = SettingsContentItem(track.id, track.label, (evt) => {
+        let content = track.label;
+        if ((content === 'Off' || track.id === 'off') && index === 0) {
+            content = offText;
+        }
+        const contentItemElement = SettingsContentItem(track.id, content, (evt) => {
             action(index);
             settingsMenu.close(evt);
         });
@@ -70,11 +78,11 @@ export function removeAudioTracksSubmenu(settingsMenu) {
     settingsMenu.removeSubmenu(AUDIO_TRACKS_SUBMENU);
 }
 
-export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, tooltipText) {
+export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, tooltipText, autoText) {
     const qualitiesItems = qualitiesList.map((track, index) => {
         let content = track.label;
         if (content === 'Auto' && index === 0) {
-            content += '&nbsp;<span class="jw-reset jw-auto-label"></span>';
+            content = `${autoText}&nbsp;<span class="jw-reset jw-auto-label"></span>`;
         }
 
         return SettingsContentItem(track.label, content, (evt) => {

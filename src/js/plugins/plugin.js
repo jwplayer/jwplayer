@@ -1,6 +1,8 @@
 import ScriptLoader from 'utils/scriptloader';
 import { getAbsolutePath } from 'utils/parser';
 import { extension } from 'utils/strings';
+import { PlayerError } from 'api/errors';
+import { mapPluginToCode } from 'plugins/utils';
 
 const PLUGIN_PATH_TYPE_ABSOLUTE = 0;
 const PLUGIN_PATH_TYPE_RELATIVE = 1;
@@ -75,7 +77,7 @@ Object.assign(Plugin.prototype, {
     getNewInstance(api, config, div) {
         const PluginClass = this.js;
         if (typeof PluginClass !== 'function') {
-            throw new Error(`"${this.url}" did not call registerPlugin`);
+            throw new PlayerError(null, mapPluginToCode(this.url) + 100);
         }
         const pluginInstance = new PluginClass(api, config, div);
 
@@ -100,19 +102,5 @@ Object.assign(Plugin.prototype, {
         return pluginInstance;
     }
 });
-
-export function configurePlugin(pluginObj, pluginConfig, api) {
-    const pluginName = pluginObj.name;
-
-    const div = document.createElement('div');
-    div.id = api.id + '_' + pluginName;
-    div.className = 'jw-plugin jw-reset';
-
-    const pluginOptions = Object.assign({}, pluginConfig);
-    const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
-
-    api.addPlugin(pluginName, pluginInstance);
-    return pluginInstance;
-}
 
 export default Plugin;

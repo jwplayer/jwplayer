@@ -473,7 +473,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _autoStart() {
-            const state = _model.get('state');
+            const state = _getState();
             if (state !== STATE_IDLE && state !== STATE_PAUSED) {
                 return;
             }

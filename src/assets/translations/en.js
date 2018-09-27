@@ -46,7 +46,6 @@ export default {
         autoplaymessage: 'Next up in xx',
         heading: 'More Videos'
     },
-
     replay: 'Replay',
     rewind: 'Rewind 10 Seconds',
     settings: 'Settings',

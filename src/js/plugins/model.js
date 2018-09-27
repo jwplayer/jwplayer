@@ -1,14 +1,8 @@
 import Plugin from 'plugins/plugin';
 import { log } from 'utils/log';
+import { getPluginName } from 'plugins/utils';
 
 const pluginsRegistered = {};
-
-// Extract a plugin name from a string
-const getPluginName = function(url) {
-    // Regex locates the characters after the last slash, until it encounters a dash.
-    return url.replace(/^(.*\/)?([^-]*)-?.*\.(js)$/, '$2');
-};
-
 const PluginModel = function() {};
 const prototype = PluginModel.prototype;
 

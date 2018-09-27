@@ -69,7 +69,6 @@ const Config = function(options, persisted) {
     const language = getLanguage();
     const { localization, intl } = allOptions;
     const customLocalization = getCustomLocalization(localization, intl, language);
-
     allOptions.localization = applyTranslation({}, customLocalization);
 
     let config = Object.assign({}, Defaults, allOptions);

@@ -1,6 +1,5 @@
 import PluginsLoader from 'plugins/loader';
 import PluginsModel from 'plugins/model';
-import { log } from 'utils/log';
 
 const pluginsModel = new PluginsModel();
 
@@ -23,13 +22,6 @@ export default function loadPlugins(model, api) {
         if (model.attributes._destroyed) {
             // Player and plugin loader was replaced
             return;
-        }
-        if (results) {
-            results.forEach(object => {
-                if (object instanceof Error) {
-                    log(object.message);
-                }
-            });
         }
         delete window.jwplayerPluginJsonp;
         return results;
