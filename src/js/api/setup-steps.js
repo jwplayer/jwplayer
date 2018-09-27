@@ -6,7 +6,6 @@ import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
 import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation } from 'utils/language';
-import en from 'assets/translations/en.js';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
