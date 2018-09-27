@@ -1,4 +1,5 @@
-import { configurePlugin } from 'plugins/plugin';
+import { PlayerError } from 'api/errors';
+import { configurePlugin, mapPluginToCode } from 'plugins/utils';
 
 const PluginLoader = function () {
     this.load = function (api, pluginsModel, pluginsConfig, model) {
@@ -17,8 +18,8 @@ const PluginLoader = function () {
                     return configurePlugin(plugin, pluginConfig, api);
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
-                    if (!(error instanceof Error)) {
-                        return new Error(`Error in ${pluginUrl} "${error}"`);
+                    if (!error.code) {
+                        return new PlayerError(null, mapPluginToCode(pluginUrl), error);
                     }
                     return error;
                 });

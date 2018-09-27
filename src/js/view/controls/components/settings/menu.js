@@ -15,7 +15,7 @@ function focusSettingsElement(direction) {
     }
 }
 
-export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
+export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localzation) {
     const documentClickHandler = (e) => {
         // Close if anything other than the settings menu has been clicked
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
@@ -72,7 +72,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const closeButton = button('jw-settings-close', () => {
         instance.close();
-    }, 'Close Settings', [cloneIcon('close')]);
+    }, localzation.close, [cloneIcon('close')]);
 
     const closeOnButton = function(evt) {
         const key = evt.key.replace(/(Arrow|ape)/, '');
