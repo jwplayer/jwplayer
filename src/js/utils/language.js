@@ -23,8 +23,21 @@ const codeToLang = {
 
 const langToCode = invert(codeToLang);
 
-function formatLanguageCode(language) {
+function normalizeLanguageCode(language) {
     return language.substring(0, 2).toLowerCase();
+}
+
+function normalizeLanguageAndCountryCode(language) {
+    return language.toLowerCase().replace('-', '_');
+}
+
+function normalizeIntl(intl) {
+    // TODO: Country codes are generally seen in upper case, but we have yet to find documentation confirming that this is the standard.
+    // When the documentation is found, remove lower case support and update our docs with reference to standards.
+    return Object.keys(intl).reduce((obj, key) => {
+        obj[normalizeLanguageAndCountryCode(key)] = intl[key];
+        return obj;
+    }, {});
 }
 
 export function getLabel(language) {
@@ -37,7 +50,7 @@ export function getLabel(language) {
         return language;
     }
 
-    return codeToLang[formatLanguageCode(language)] || language;
+    return codeToLang[normalizeLanguageCode(language)] || language;
 }
 
 export function getCode(language) {
@@ -63,19 +76,12 @@ export function getLanguage() {
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'it', 'ja', 'nb', 'nl', 'pt', 'ro', 'sv', 'tr', 'zh'];
 
 export function isTranslationAvailable(language) {
-    return translatedLanguageCodes.indexOf(formatLanguageCode(language)) >= 0;
+    return translatedLanguageCodes.indexOf(normalizeLanguageCode(language)) >= 0;
 }
 
 export function getCustomLocalization(localization, intl, languageAndCountryCode) {
-    localization = localization || {};
-    intl = intl || {};
-    const languageCode = formatLanguageCode(languageAndCountryCode);
-    const languageAndCountryCustomization = languageCode === languageAndCountryCode ? {} :
-        intl[languageAndCountryCode] || intl[languageAndCountryCode.toLowerCase()] ||
-        intl[languageAndCountryCode.replace('-', '_')] || intl[languageAndCountryCode.toLowerCase().replace('-', '_')];
-        // TODO: Country codes are generally seen in upper case, but we have yet to find documentation enforcing this format.
-        // When the documentation is found, remove lower case support and update our docs with reference to standards.
-    return Object.assign({}, localization, intl[languageCode], languageAndCountryCustomization);
+    intl = normalizeIntl(intl || {});
+    return Object.assign({}, localization || {}, intl[normalizeLanguageCode(languageAndCountryCode)], intl[normalizeLanguageAndCountryCode(languageAndCountryCode)]);
 }
 
 export function isLocalizationComplete(customLocalization) {
@@ -83,21 +89,21 @@ export function isLocalizationComplete(customLocalization) {
 }
 
 export function loadJsonTranslation(base, languageCode) {
-    const url = `${base}translations/${formatLanguageCode(languageCode)}.json`;
+    const url = `${base}translations/${normalizeLanguageCode(languageCode)}.json`;
     return new Promise((resolve, reject) => {
-        const oncomplete = (result) => resolve(result);
-        const onerror = () => reject();
-        ajax({ url, oncomplete, onerror, responseType: 'json' });
+        ajax({ url, resolve, reject, responseType: 'json' });
     });
 }
 
-export function applyTranslation(translationJson, customization) {
-    translationJson = translationJson || {};
-    const localization = Object.assign({}, en, translationJson, customization);
-    localization.errors = Object.assign({}, en.errors, translationJson.errors, customization.errors);
-    localization.related = Object.assign({}, en.related, translationJson.related, customization.related);
-    localization.sharing = Object.assign({}, en.sharing, translationJson.sharing, customization.sharing);
-    localization.advertising = Object.assign({}, en.advertising, translationJson.advertising, customization.advertising);
+export function applyTranslation(baseLocalization, customization) {
+    const localization = Object.assign({}, baseLocalization, customization);
+    merge(localization, 'errors', baseLocalization, customization);
+    merge(localization, 'related', baseLocalization, customization);
+    merge(localization, 'sharing', baseLocalization, customization);
+    merge(localization, 'advertising', baseLocalization, customization);
     return localization;
+}
 
+function merge(z, prop, a, b) {
+    z[prop] = Object.assign({}, a[prop], b[prop]);
 }

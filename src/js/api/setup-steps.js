@@ -105,7 +105,7 @@ export function loadTranslations(_model) {
     return new Promise(resolve => {
         return loadJsonTranslation(base, language)
             .then(({ response }) => {
-                if (destroyed(_model)) {
+                if (destroyed(_model) || !response) {
                     return;
                 }
                 attributes.localization = applyTranslation(response, customLocalization);
