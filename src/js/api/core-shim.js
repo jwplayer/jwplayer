@@ -120,6 +120,7 @@ Object.assign(CoreShim.prototype, {
 
             this.on(WARNING, logWarning);
             setupResult.warnings.forEach(w => {
+                delete w.key;
                 this.trigger(WARNING, w);
             });
 

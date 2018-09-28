@@ -18,7 +18,7 @@ const rightClickItem = (item, localization) => {
 const itemContentTypes = {
     link: ({ link, title, logo }) => `<a href="${link || ''}" class="jw-rightclick-link jw-reset" target="_blank">${logo}${title || ''}</a>`,
     info: (item, localization) => `<button type="button" class="jw-reset jw-rightclick-link jw-info-overlay-item">${localization.videoInfo}</button>`,
-    share: (item, localization) => `<button type="button" class="jw-reset jw-rightclick-link jw-share-item">${localization.sharing.share}</button>`
+    share: (item, localization) => `<button type="button" class="jw-reset jw-rightclick-link jw-share-item">${localization.sharing.heading}</button>`
 };
 
 
