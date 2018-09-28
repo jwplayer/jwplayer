@@ -9,28 +9,33 @@
 
 .jw-float-close {
     display: none;
+
+    position: absolute;
+    text-align: right;
+    top: -2em;
+    width: 100%;
+
+    .jw-icon {
+        cursor: pointer;
+        pointer-events: all;
+        opacity: 0.8;
+    }
 }
 
 .jw-flag-floating {
-    margin: 20px;
     overflow: visible;
     position: fixed;
-    bottom: 0;
-    right: 0;
+    bottom: 1rem;
+    right: 1rem;
     z-index: 1;
     margin-top: 2em;
 
-    .jw-float-close {
-        position: absolute;
-        width: 100%;
-        text-align: right;
-        top: -2em;
-        display: block;
+    &.jw-flag-small-player {
+        right: 50%;
+        margin-right: -160px;
+    }
 
-        .jw-icon {
-            cursor: pointer;
-            pointer-events: all;
-            opacity: 0.8;
-        }
+    .jw-float-close {
+        display: block;
     }
 }
