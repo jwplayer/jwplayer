@@ -77,7 +77,7 @@ function _copyToLocalization(allOptions) {
     }
 
     if (related) {
-        if (typeof localization.related === 'object') {
+        if (typeof related === 'object') {
             localization.related = Object.assign({}, localization.related, {
                 autoplaymessage: related.autoplaymessage,
                 heading: localization.nextUp || related.heading,
