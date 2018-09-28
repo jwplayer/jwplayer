@@ -10,7 +10,7 @@ import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
 import { ControlsLoader, loadControls } from 'controller/controls-loader';
 import {
-    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
+    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, FLOATING,
     RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, WARNING, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
@@ -198,6 +198,7 @@ function View(_api, _model) {
     this.stopFloating = function () {
         if (hasClass(_playerElement, 'jw-flag-floating')) {
             removeClass(_playerElement, 'jw-flag-floating');
+            _this.trigger(FLOATING, { floating: false });
             _this.resize(_containerElement.offsetWidth, _containerElement.offsetHeight);
         }
     };
@@ -848,13 +849,12 @@ function View(_api, _model) {
     };
 
     function _setFloatingIntersection(entry) {
-        // TODO: fire API event when floating/not floating
         if (entry.intersectionRatio === 0 && _model.get('state') !== STATE_IDLE) { // Entirely invisible.
             const width = _containerElement.offsetWidth;
             const height = _containerElement.offsetHeight;
 
             addClass(_playerElement, 'jw-flag-floating');
-            _this.trigger('floating', { floating: true });
+            _this.trigger(FLOATING, { floating: true });
 
             _this.resize(320, 320 * height / width);
             style(_containerElement, { width, height }); // Keep original dimensions.

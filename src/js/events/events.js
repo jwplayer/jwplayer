@@ -423,3 +423,8 @@ export const NATIVE_FULLSCREEN = 'fullscreenchange';
  * Triggered when a new bandwidth estimate is available
  */
 export const BANDWIDTH_ESTIMATE = 'bandwidthEstimate';
+
+/**
+ * Triggered when the player starts/stops floating
+ */
+export const FLOATING = 'floating';
