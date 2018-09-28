@@ -23,12 +23,18 @@
 }
 
 .jw-flag-floating {
+    animation: jw-float 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
+
     overflow: visible;
     position: fixed;
     bottom: 1rem;
     right: 1rem;
     z-index: 1;
     margin-top: 2em;
+
+    &.jw-flag-outstream {
+        transition: none;
+    }
 
     &.jw-flag-small-player {
         right: 50%;
@@ -37,5 +43,15 @@
 
     .jw-float-close {
         display: block;
+    }
+}
+
+@keyframes jw-float {
+    from {
+        transform: translate(0, 100%);
+    }
+
+    to {
+        transform: translate(0, 0);
     }
 }
