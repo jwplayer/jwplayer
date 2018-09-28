@@ -63,37 +63,26 @@ function _adjustDefaultBwEstimate(estimate) {
 
 function _copyToLocalization(allOptions) {
     const { advertising, related, sharing } = allOptions;
-    const localization = Object.assign({}, Defaults.localization, allOptions.localization);
+    const localization = Object.assign({}, allOptions.localization);
 
     if (advertising) {
-        localization.advertising = Object.assign({}, localization.advertising, {
-            admessage: advertising.admessage,
-            cuetext: advertising.cuetext,
-            loadingAd: localization.loadingAd,
-            podmessage: advertising.podmessage,
-            skipmessage: advertising.skipmessage,
-            skiptext: advertising.skiptext
-        });
+        localization.advertising = Object.assign({}, localization.advertising, advertising);
     }
 
     if (related) {
+        localization.related = localization.related || {};
         if (typeof related === 'object') {
-            localization.related = Object.assign({}, localization.related, {
-                autoplaymessage: related.autoplaymessage,
-                heading: related.heading,
-            });
+            localization.related.heading = localization.related.heading || related.heading;
+            localization.related.autoplaymessage = localization.related.autoplaymessage || related.autoplaymessage;
         } else {
-            localization.related = Object.assign({}, Defaults.localization.related, {
-                heading: related.heading
-            });
+            localization.related.heading = localization.related.heading || localization.related;
         }
     }
 
     if (sharing) {
-        localization.sharing = Object.assign({}, localization.sharing, {
-            copied: localization.copied,
-            heading: sharing.heading
-        });
+        localization.sharing = localization.sharing || {};
+        localization.sharing.heading = localization.sharing.heading || sharing.heading;
+        localization.sharing.copied = localization.sharing.copied || localization.copied;
     }
 
     localization.abouttext = localization.abouttext || allOptions.abouttext;
