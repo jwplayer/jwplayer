@@ -86,8 +86,7 @@ function _copyToLocalization(allOptions) {
     if (sharing) {
         localization.sharing = Object.assign({}, localization.sharing, {
             copied: localization.copied,
-            heading: sharing.heading,
-            link: sharing.link,
+            heading: sharing.heading
         });
     }
 
