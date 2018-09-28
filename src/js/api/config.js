@@ -80,11 +80,11 @@ function _copyToLocalization(allOptions) {
         if (typeof related === 'object') {
             localization.related = Object.assign({}, localization.related, {
                 autoplaymessage: related.autoplaymessage,
-                heading: localization.nextUp || related.heading,
+                heading: related.heading,
             });
         } else {
             localization.related = Object.assign({}, Defaults.localization.related, {
-                heading: localization.related
+                heading: related.heading
             });
         }
     }
