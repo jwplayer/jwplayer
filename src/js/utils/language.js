@@ -89,7 +89,7 @@ export function getCustomLocalization(localization, intl, languageAndCountryCode
 export function isLocalizationComplete(customLocalization) {
     return isDeepKeyCompliant(en, customLocalization, (key, obj) => {
         const value = obj[key];
-        return !!value && typeof value === 'string';
+        return typeof value === 'string';
     });
 }
 
