@@ -142,7 +142,7 @@ module.exports = function(config) {
         files: [
             { pattern: './node_modules/intersection-observer/intersection-observer.js' },
             { pattern: './test/index.js' },
-            { pattern: './test/files/*', included: false },
+            { pattern: './test/files/**', included: false },
             { pattern: './src/js/*', included: false }
         ],
 
