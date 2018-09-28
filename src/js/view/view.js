@@ -851,7 +851,8 @@ function View(_api, _model) {
 
     function _setFloatingIntersection(entry) {
         // Entirely invisible and no floating player already in the DOM
-        if (entry.intersectionRatio === 0 && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
+        const isVisible = entry.intersectionRatio === 1;
+        if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _containerElement;
 
             const width = _containerElement.offsetWidth;
@@ -862,7 +863,7 @@ function View(_api, _model) {
 
             _this.resize(320, 320 * height / width);
             style(_containerElement, { width, height }); // Keep original dimensions.
-        } else {
+        } else if (isVisible) {
             stopFloating();
         }
     }
