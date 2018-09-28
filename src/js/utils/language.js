@@ -1,7 +1,7 @@
 import { invert } from 'utils/underscore';
 import { isIframe } from 'utils/browser';
 import { ajax } from 'utils/ajax';
-import { isDeepKeyMatch } from 'utils/validator';
+import { isDeepKeyCompliant } from 'utils/validator';
 import en from 'assets/translations/en.js';
 
 /**
@@ -85,7 +85,10 @@ export function getCustomLocalization(localization, intl, languageAndCountryCode
 }
 
 export function isLocalizationComplete(customLocalization) {
-    return isDeepKeyMatch(en, customLocalization);
+    return isDeepKeyCompliant(en, customLocalization, (key, obj) => {
+        const value = obj[key];
+        return !!value && typeof value === 'string';
+    });
 }
 
 export function loadJsonTranslation(base, languageCode) {
