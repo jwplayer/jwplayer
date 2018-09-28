@@ -874,6 +874,9 @@ function View(_api, _model) {
         if (floatOnScroll) {
             viewsManager.unobserve(_containerElement);
         }
+        if (floatingPlayer === _containerElement) {
+            floatingPlayer = null;
+        }
         viewsManager.remove(this);
         this.isSetup = false;
         this.off();
