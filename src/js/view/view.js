@@ -849,7 +849,8 @@ function View(_api, _model) {
     };
 
     function _setFloatingIntersection(entry) {
-        if (entry.intersectionRatio === 0 && _model.get('state') !== STATE_IDLE) { // Entirely invisible.
+        // Entirely invisible and no floating player already in the DOM
+        if (entry.intersectionRatio === 0 && _model.get('state') !== STATE_IDLE && !document.querySelector('.jw-flag-floating')) {
             const width = _containerElement.offsetWidth;
             const height = _containerElement.offsetHeight;
 
