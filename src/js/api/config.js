@@ -77,10 +77,16 @@ function _copyToLocalization(allOptions) {
     }
 
     if (related) {
-        localization.related = Object.assign({}, localization.related, {
-            autoplaymessage: related.autoplaymessage,
-            heading: localization.nextUp || related.heading,
-        });
+        if (typeof localization.related === 'object') {
+            localization.related = Object.assign({}, localization.related, {
+                autoplaymessage: related.autoplaymessage,
+                heading: localization.nextUp || related.heading,
+            });
+        } else {
+            localization.related = Object.assign({}, Defaults.localization.related, {
+                heading: localization.related
+            });
+        }
     }
 
     if (sharing) {
