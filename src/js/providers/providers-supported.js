@@ -47,11 +47,18 @@ export function supportsType(source) {
             return false;
         }
 
-        const mimeType = source.mimeType || MimeTypes[type];
+        let mimeType = source.mimeType || MimeTypes[type];
 
         // Not OK to use HTML5 with no extension
         if (!mimeType) {
             return false;
+        }
+
+        // source.mediaTypes is an Array of media types that MediaSource must support for the stream to play
+        // Ex: ['video/webm; codecs="vp9"', 'audio/webm; codecs="vorbis"']
+        const mediaTypes = source.mediaTypes;
+        if (mediaTypes && mediaTypes.length) {
+            mimeType = [mimeType].concat(mediaTypes.slice()).join('; ');
         }
 
         // Last, but not least, we ask the browser
