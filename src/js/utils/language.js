@@ -24,7 +24,9 @@ const codeToLang = {
 const langToCode = invert(codeToLang);
 
 function normalizeLanguageCode(language) {
-    return language.substring(0, 2).toLowerCase();
+    const languageAndCountryCode = normalizeLanguageAndCountryCode(language);
+    const underscoreIndex = languageAndCountryCode.indexOf('_');
+    return underscoreIndex === -1 ? languageAndCountryCode : languageAndCountryCode.substring(0, underscoreIndex);
 }
 
 function normalizeLanguageAndCountryCode(language) {
