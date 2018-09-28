@@ -10,7 +10,7 @@ import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
 import { ControlsLoader, loadControls } from 'controller/controls-loader';
 import {
-    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, FLOATING,
+    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, FLOAT,
     RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, WARNING, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
@@ -43,6 +43,8 @@ let ControlsModule;
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
 
+let floatingPlayer = null;
+
 function View(_api, _model) {
     const _this = Object.assign(this, Events, {
         isSetup: false,
@@ -56,11 +58,9 @@ function View(_api, _model) {
     const _videoLayer = _playerElement.querySelector('.jw-media');
     const _image = _model.get('image');
 
-    if (floatOnScroll) {
-        if (typeof _image === 'string') {
-            const backgroundImage = 'url("' + _image + '")';
-            style(_containerElement, { backgroundImage });
-        }
+    if (floatOnScroll && typeof _image === 'string') {
+        const backgroundImage = 'url("' + _image + '")';
+        style(_containerElement, { backgroundImage });
     }
 
     const _preview = new Preview(_model);
@@ -177,6 +177,15 @@ function View(_api, _model) {
         _this.checkResized();
     }
 
+    function stopFloating() {
+        if (floatingPlayer === _containerElement) {
+            floatingPlayer = null;
+            removeClass(_playerElement, 'jw-flag-floating');
+            _this.trigger(FLOAT, { floating: false });
+            _this.resize(_containerElement.offsetWidth, _containerElement.offsetHeight);
+        }
+    }
+
     function updateContainerStyles(width, height) {
         // Set responsive player classes
         if (isNumber(width) && isNumber(height)) {
@@ -194,14 +203,6 @@ function View(_api, _model) {
             _model.set('audioMode', audioMode);
         }
     }
-
-    this.stopFloating = function () {
-        if (hasClass(_playerElement, 'jw-flag-floating')) {
-            removeClass(_playerElement, 'jw-flag-floating');
-            _this.trigger(FLOATING, { floating: false });
-            _this.resize(_containerElement.offsetWidth, _containerElement.offsetHeight);
-        }
-    };
 
     this.setup = function () {
         _preview.setup(_playerElement.querySelector('.jw-preview'));
@@ -289,7 +290,7 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
             if (floatOnScroll) {
                 const floatCloseButton = new FloatingCloseButton(_playerElement);
-                floatCloseButton.setup(this.stopFloating);
+                floatCloseButton.setup(stopFloating);
                 viewsManager.observe(_containerElement);
             }
         }
@@ -850,17 +851,19 @@ function View(_api, _model) {
 
     function _setFloatingIntersection(entry) {
         // Entirely invisible and no floating player already in the DOM
-        if (entry.intersectionRatio === 0 && _model.get('state') !== STATE_IDLE && !document.querySelector('.jw-flag-floating')) {
+        if (entry.intersectionRatio === 0 && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
+            floatingPlayer = _containerElement;
+
             const width = _containerElement.offsetWidth;
             const height = _containerElement.offsetHeight;
 
             addClass(_playerElement, 'jw-flag-floating');
-            _this.trigger(FLOATING, { floating: true });
+            _this.trigger(FLOAT, { floating: true });
 
             _this.resize(320, 320 * height / width);
             style(_containerElement, { width, height }); // Keep original dimensions.
         } else {
-            _this.stopFloating();
+            stopFloating();
         }
     }
 
