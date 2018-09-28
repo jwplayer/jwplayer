@@ -61,9 +61,45 @@ function _adjustDefaultBwEstimate(estimate) {
     return Defaults.bandwidthEstimate;
 }
 
+function _copyToLocalization(allOptions) {
+    const { advertising, related, sharing } = allOptions;
+    const localization = Object.assign({}, Defaults.localization, allOptions.localization);
+
+    if (advertising) {
+        localization.advertising = Object.assign({}, localization.advertising, {
+            admessage: advertising.admessage,
+            cuetext: advertising.cuetext,
+            loadingAd: localization.loadingAd,
+            podmessage: advertising.podmessage,
+            skipmessage: advertising.skipmessage,
+            skiptext: advertising.skiptext
+        });
+    }
+
+    if (related) {
+        localization.related = Object.assign({}, localization.related, {
+            autoplaymessage: related.autoplaymessage,
+            heading: localization.nextUp || related.heading,
+        });
+    }
+
+    if (sharing) {
+        localization.sharing = Object.assign({}, localization.sharing, {
+            copied: localization.copied,
+            heading: sharing.heading,
+            link: sharing.link,
+        });
+    }
+
+    localization.abouttext = localization.abouttext || allOptions.abouttext;
+
+    allOptions.localization = localization;
+}
+
 const Config = function(options, persisted) {
     let allOptions = Object.assign({}, (window.jwplayer || {}).defaults, persisted, options);
 
+    _copyToLocalization(allOptions);
     _deserialize(allOptions);
 
     const language = getLanguage();
