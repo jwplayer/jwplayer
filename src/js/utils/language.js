@@ -34,8 +34,7 @@ function normalizeLanguageAndCountryCode(language) {
 }
 
 function normalizeIntl(intl) {
-    // TODO: Country codes are generally seen in upper case, but we have yet to find documentation confirming that this is the standard.
-    // When the documentation is found, remove lower case support and update our docs with reference to standards.
+    // Country codes are generally seen in upper case, but we have yet to find documentation confirming that this is the standard.
     return Object.keys(intl).reduce((obj, key) => {
         obj[normalizeLanguageAndCountryCode(key)] = intl[key];
         return obj;

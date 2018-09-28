@@ -108,6 +108,10 @@ export function loadTranslations(_model) {
                 if (destroyed(_model) || !response) {
                     return;
                 }
+                if (!response) {
+                    // TODO: throw a standardized player warning with a different code than catch-block to highlight empty response (JW8-2244)
+                    throw new Error();
+                }
                 attributes.localization = applyTranslation(response, customLocalization);
                 resolve();
             })
