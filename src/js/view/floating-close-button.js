@@ -11,13 +11,17 @@ const FloatingCloseButton = function(playerElement) {
 Object.assign(FloatingCloseButton.prototype, {
     setup: function(callback) {
         this.element = createElement(floatingCloseButton());
-        new UI(this.element).on('click tap enter', callback, this);
-        this.element.querySelector('.jw-icon').appendChild(cloneIcon('close'));
+
+        const icon = this.element.querySelector('.jw-icon');
+        icon.appendChild(cloneIcon('close'));
+        this.ui = new UI(icon).on('click tap enter', callback, this);
+
         this.playerElement.appendChild(this.element);
     },
 
     destroy: function() {
         if (this.element) {
+            this.ui.destroy();
             this.element.parentNode.removeChild(this.element);
             this.element = null;
         }
