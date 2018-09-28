@@ -94,8 +94,8 @@ export function isLocalizationComplete(customLocalization) {
 
 export function loadJsonTranslation(base, languageCode) {
     const url = `${base}translations/${normalizeLanguageCode(languageCode)}.json`;
-    return new Promise((resolve, reject) => {
-        ajax({ url, resolve, reject, responseType: 'json' });
+    return new Promise((oncomplete, onerror) => {
+        ajax({ url, oncomplete, onerror, responseType: 'json' });
     });
 }
 
