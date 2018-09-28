@@ -8,11 +8,11 @@ describe('CoreShim', function() {
     let sandbox = sinon.sandbox.create();
     beforeEach(function() {
         core = new CoreShim(document.createElement('div'));
-        console.error = sinon.stub();
+        sandbox.spy(console, 'error');
     });
 
     afterEach(function() {
-        console.error.reset();
+        console.error.restore();
     });
 
     function expectError(expectedCode) {

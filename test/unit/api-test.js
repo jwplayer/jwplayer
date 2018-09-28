@@ -25,9 +25,12 @@ describe('Api', function() {
 
     this.timeout(6000);
 
+    const sandbox = sinon.sandbox.create();
+
     beforeEach(function() {
-        utils.log = sinon.stub();
-        console.error = sinon.stub();
+        sandbox.spy(utils, 'log');
+        sandbox.spy(console, 'log');
+        sandbox.spy(console, 'error');
     });
 
     afterEach(function() {
@@ -39,8 +42,9 @@ describe('Api', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
-        utils.log.reset();
-        console.error.reset();
+        utils.log.restore();
+        console.log.restore();
+        console.error.restore();
     });
 
     it('instances has a uniqueIds greater than 0', function() {
@@ -81,8 +85,6 @@ describe('Api', function() {
     it('bad events do not break player', function() {
         ApiSettings.debug = false;
 
-        console.log = sinon.stub();
-
         const api = createApi('player');
         const validEvent = sinon.stub();
         const invalidEvent = sinon.stub().throws('TypeError');
@@ -98,8 +100,6 @@ describe('Api', function() {
         expect(invalidEvent).to.have.callCount(2);
         expect(validEvent).to.have.callCount(1);
         expect(console.log).to.have.callCount(2);
-
-        console.log.reset();
     });
 
     it('throws exceptions when debug is true', function() {

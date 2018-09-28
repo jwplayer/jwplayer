@@ -11,6 +11,8 @@ describe('api.setup', function() {
 
     this.timeout(6000);
 
+    const sandbox = sinon.sandbox.create();
+
     const errorMessage = 'This video file cannot be played.';
 
     beforeEach(function () {
@@ -22,7 +24,7 @@ describe('api.setup', function() {
         container.id = 'player';
         fixture.appendChild(container);
         document.body.appendChild(fixture);
-        console.error = sinon.stub();
+        sandbox.spy(console, 'error');
     });
 
     afterEach(function() {
@@ -35,7 +37,7 @@ describe('api.setup', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
-        console.error.reset();
+        console.error.restore();
     });
 
     function expectReady(model) {
