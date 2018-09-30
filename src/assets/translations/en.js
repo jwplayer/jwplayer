@@ -28,7 +28,6 @@ export default {
     hd: 'Quality',
     liveBroadcast: 'Live',
     logo: 'Logo',
-    more: 'More',
     next: 'Next',
     nextUp: 'Next Up',
     notLive: 'Not Live',
