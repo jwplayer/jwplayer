@@ -31,7 +31,6 @@ export default {
     more: 'More',
     next: 'Next',
     nextUp: 'Next Up',
-    nextUpClose: 'Next Up Close',
     notLive: 'Not Live',
     off: 'Off',
     pause: 'Pause',
