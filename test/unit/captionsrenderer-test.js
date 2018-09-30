@@ -37,8 +37,8 @@ describe('CaptionsRenderer.getCurrentCues', function() {
         return new Promise((resolve, reject) => {
             captionsRenderer.on(WARNING, e => {
                 const { code, key } = e.reason;
-                if (code !== 300121) {
-                    reject(`Expected code 300121, got ${code}`);
+                if (code !== 301121) {
+                    reject(`Expected code 301121, got ${code}`);
                 } else if (key !== MSG_CANT_LOAD_PLAYER) {
                     reject(`Expected key cantLoadPlayer, got ${code}`);
                 }
