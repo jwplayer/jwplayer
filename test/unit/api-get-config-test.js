@@ -5,11 +5,13 @@ import sinon from 'sinon';
 
 describe('Api.getConfig', function() {
 
+    const sandbox = sinon.sandbox.create();
+
     beforeEach(() => {
         const container = document.createElement('div');
         container.id = 'player';
         document.body.appendChild(container);
-        console.error = sinon.stub();
+        sandbox.spy(console, 'error');
     });
 
     afterEach(() => {
@@ -21,7 +23,7 @@ describe('Api.getConfig', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
-        console.error.reset();
+        sandbox.restore();
     });
 
     it('has expected model members', function() {
