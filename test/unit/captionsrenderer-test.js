@@ -2,8 +2,6 @@ import MockModel from 'mock/mock-model';
 import ViewModel from 'view/view-model';
 import CaptionsRenderer from 'view/captionsrenderer';
 import VTTCue from 'parsers/captions/vttcue';
-import { WARNING } from 'events/events';
-import { MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
 describe('CaptionsRenderer.getCurrentCues', function() {
     let captionsRenderer;
@@ -31,25 +29,6 @@ describe('CaptionsRenderer.getCurrentCues', function() {
         for (let i = 0; i < currentNumCues.length; i += 1) {
             expect(captionsRenderer.getCurrentCues(allCues, i).length, 'Invalid number of cues at position ' + i).to.equal(currentNumCues[i]);
         }
-    });
-
-    it('triggers a standardized warning if the WebVTT polyfill fails to load', function () {
-        return new Promise((resolve, reject) => {
-            captionsRenderer.on(WARNING, e => {
-                const { code, key } = e.reason;
-                if (code !== 300121) {
-                    reject(`Expected code 300121, got ${code}`);
-                } else if (key !== MSG_CANT_LOAD_PLAYER) {
-                    reject(`Expected key cantLoadPlayer, got ${code}`);
-                }
-                resolve();
-            });
-
-            // The captionsRenderer will try to load the VTT polyfill in response to the captionsList change event; it
-            // will load with a 404 because unit tests don't chunk polyfills.webvtt.js
-            model.set('renderCaptionsNatively', false);
-            model.set('captionsList', [ {}, {} ]);
-        });
     });
 });
 
