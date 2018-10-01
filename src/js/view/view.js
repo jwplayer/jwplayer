@@ -833,8 +833,8 @@ function View(_api, _model) {
     };
 
     this.setIntersection = function (entry) {
-        if (entry.target === _playerElement) {
-            _model.set('intersectionRatio', entry.intersectionRatio);
+        _model.set('intersectionRatio', entry.intersectionRatio);
+        if (_floatOnScroll) {
             _setFloatingIntersection(entry);
         }
     };
