@@ -85,6 +85,11 @@ function View(_api, _model) {
     let _breakpoint = null;
     let _controls;
 
+    const defaultStyle = {
+        width: '100%',
+        height: '100%'
+    };
+
     function reasonInteraction() {
         return { reason: 'interaction' };
     }
@@ -182,7 +187,7 @@ function View(_api, _model) {
             floatingPlayer = null;
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });
-            _this.resize(_containerElement.offsetWidth, _containerElement.offsetHeight);
+            _this.resize(_model.get('width'), _model.get('height'));
         }
     }
 
@@ -549,7 +554,7 @@ function View(_api, _model) {
         }
     };
 
-    function _resizePlayer(playerWidth, playerHeight, resetAspectMode) {
+    function _resizePlayer(playerWidth, playerHeight, resetAspectMode, resizeOnFloat) {
         const widthSet = playerWidth !== undefined;
         const heightSet = playerHeight !== undefined;
         const playerStyle = {
@@ -570,14 +575,16 @@ function View(_api, _model) {
             playerStyle.height = height;
         }
 
-        if (widthSet && heightSet) {
+        if (widthSet && heightSet && !resizeOnFloat) {
             _model.set('width', playerWidth);
             _model.set('height', playerHeight);
         }
 
-        style(_playerElement, playerStyle);
-        if (floatOnScroll) {
+        if (floatOnScroll && !resizeOnFloat) {
             style(_containerElement, playerStyle);
+            style(_playerElement, defaultStyle);
+        } else {
+            style(_playerElement, playerStyle);
         }
     }
 
@@ -606,9 +613,9 @@ function View(_api, _model) {
         provider.resize(containerWidth, containerHeight, _model.get('stretching'));
     }
 
-    this.resize = function (playerWidth, playerHeight) {
+    this.resize = function (playerWidth, playerHeight, resizeFromFloat) {
         const resetAspectMode = true;
-        _resizePlayer(playerWidth, playerHeight, resetAspectMode);
+        _resizePlayer(playerWidth, playerHeight, resetAspectMode, resizeFromFloat);
         _responsiveUpdate();
     };
     this.resizeMedia = _resizeMedia;
@@ -861,8 +868,7 @@ function View(_api, _model) {
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
 
-            _this.resize(320, 320 * height / width);
-            style(_containerElement, { width, height }); // Keep original dimensions.
+            _this.resize(320, 320 * height / width, true);
         } else if (isVisible) {
             stopFloating();
         }
