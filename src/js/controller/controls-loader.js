@@ -1,4 +1,4 @@
-import { chunkLoadErrorHandler } from '../api/core-loader';
+import { chunkLoadWarningHandler } from '../api/core-loader';
 
 let controlsPromise = null;
 
@@ -12,7 +12,7 @@ export function loadControls() {
             return ControlsModule;
         }, function() {
             controlsPromise = null;
-            chunkLoadErrorHandler(300130)();
+            chunkLoadWarningHandler(300130)();
         }, 'jwplayer.controls');
     }
     return controlsPromise;

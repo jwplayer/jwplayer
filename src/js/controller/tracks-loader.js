@@ -1,5 +1,5 @@
 import VTTCue from 'parsers/captions/vttcue';
-import { chunkLoadErrorHandler } from '../api/core-loader';
+import { chunkLoadWarningHandler } from '../api/core-loader';
 import { ajax } from 'utils/ajax';
 import { localName } from 'parsers/parsers';
 import srt from 'parsers/captions/srt';
@@ -96,5 +96,5 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
 function loadVttParser() {
     return require.ensure(['parsers/captions/vttparser'], function (require) {
         return require('parsers/captions/vttparser').default;
-    }, chunkLoadErrorHandler(300131), 'vttparser');
+    }, chunkLoadWarningHandler(300131), 'vttparser');
 }

@@ -1,5 +1,5 @@
 import { Browser, OS } from 'environment/environment';
-import { chunkLoadErrorHandler } from '../api/core-loader';
+import { chunkLoadWarningHandler } from '../api/core-loader';
 import Events from 'utils/backbone.events';
 import { WARNING } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
@@ -352,7 +352,7 @@ const CaptionsRenderer = function (viewModel) {
     function loadWebVttPolyfill() {
         return require.ensure(['polyfills/webvtt'], function (require) {
             _WebVTT = require('polyfills/webvtt').default;
-        }, chunkLoadErrorHandler(300121), 'polyfills.webvtt');
+        }, chunkLoadWarningHandler(300121), 'polyfills.webvtt');
     }
 
     _model.on('change:playlistItem', function () {
