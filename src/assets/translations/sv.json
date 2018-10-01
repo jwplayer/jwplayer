@@ -34,12 +34,12 @@
     "off": "Av",
     "pause": "Pausa",
     "play": "Spela",
+    "playback": "Spela",
     "playbackRates": "Uppspelningshastigheter",
     "player": "Videospelare",
     "playlist": "Spellista",
     "poweredBy": "Drivs av",
     "prev": "Föregående",
-    "quality": "Kvalitet",
     "related": {
         "autoplaymessage": "Nästa om xx",
         "heading": "Fler Videor"

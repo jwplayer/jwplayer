@@ -2,6 +2,8 @@ import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
 import { isValidNumber, isNumber, pick, isBoolean } from 'utils/underscore';
 import { Features } from 'environment/environment';
+import en from 'assets/translations/en.js';
+import { getLanguage, getCustomLocalization, applyTranslation } from 'utils/language';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -18,52 +20,10 @@ const Defaults = {
     displaytitle: true,
     displayPlaybackLabel: false,
     height: 360,
+    intl: {},
+    language: 'en',
     liveTimeout: null,
-    localization: {
-        airplay: 'AirPlay',
-        audioTracks: 'Audio Tracks',
-        buffer: 'Loading',
-        cast: 'Chromecast',
-        cc: 'Closed Captions',
-        close: 'Close',
-        copied: 'Copied',
-        errors: {
-            badConnection: 'This video cannot be played because of a problem with your internet connection.',
-            cantLoadPlayer: 'Sorry, the video player failed to load.',
-            cantPlayInBrowser: 'The video cannot be played in this browser.',
-            cantPlayVideo: 'This video file cannot be played.',
-            errorCode: 'Error Code',
-            liveStreamDown: 'The live stream is either down or has ended.',
-            protectedContent: 'There was a problem providing access to protected content.',
-            technicalError: 'This video cannot be played because of a technical error.'
-        },
-        fullscreen: 'Fullscreen',
-        hd: 'Quality',
-        liveBroadcast: 'Live',
-        loadingAd: 'Loading ad',
-        more: 'More',
-        next: 'Next',
-        nextUp: 'Next Up',
-        nextUpClose: 'Next Up Close',
-        pause: 'Pause',
-        player: 'Video Player',
-        play: 'Play',
-        playback: 'Play',
-        playbackRates: 'Playback Rates',
-        playlist: 'Playlist',
-        prev: 'Previous',
-        related: 'More Videos',
-        replay: 'Replay',
-        rewind: 'Rewind 10 Seconds',
-        settings: 'Settings',
-        stop: 'Stop',
-        sharing: {
-            share: 'Share'
-        },
-        unmute: 'Unmute',
-        videoInfo: 'About This Video',
-        volume: 'Volume'
-    },
+    localization: en,
     mute: false,
     nextUpDisplay: true,
     playbackRateControls: false,
@@ -106,8 +66,9 @@ const Config = function(options, persisted) {
 
     _deserialize(allOptions);
 
-    allOptions.localization = Object.assign({}, Defaults.localization, allOptions.localization);
-    allOptions.localization.errors = Object.assign({}, Defaults.localization.errors, allOptions.localization.errors);
+    const language = getLanguage();
+    const { localization, intl } = allOptions;
+    allOptions.localization = applyTranslation(en, getCustomLocalization(localization, intl || {}, language));
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {
@@ -120,6 +81,7 @@ const Config = function(options, persisted) {
     config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
     config.volume = isValidNumber(config.volume) ? Math.min(Math.max(0, config.volume), 100) : Defaults.volume;
     config.mute = !!config.mute;
+    config.language = language;
 
     let rateControls = config.playbackRateControls;
 

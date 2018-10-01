@@ -1,6 +1,7 @@
 import Tooltip from 'view/controls/components/tooltip';
 import Slider from 'view/controls/components/slider';
 import UI from 'utils/ui';
+import { setAttribute } from 'utils/dom';
 
 export default class VolumeTooltip extends Tooltip {
     constructor(_model, name, ariaText, svgIcons) {
@@ -10,6 +11,8 @@ export default class VolumeTooltip extends Tooltip {
         this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', 'vertical');
         this.volumeSlider.setup();
         this.volumeSlider.element().classList.remove('jw-background-color');
+
+        setAttribute(this.volumeSlider.element(), 'aria-label', this._model.get('localization').volumeSlider);
 
         this.addContent(this.volumeSlider.element());
 

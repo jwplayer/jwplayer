@@ -34,12 +34,12 @@
     "off": "Fra",
     "pause": "Pause",
     "play": "Afspil",
+    "playback": "Afspil",
     "playbackRates": "Afspilningshastighed",
     "player": "Videoafspiller",
     "playlist": "Afspilningsliste",
     "poweredBy": "Bragt til dig af",
     "prev": "Tidligere",
-    "quality": "Kvalitet",
     "related": {
         "autoplaymessage": "Se næste om xx",
         "heading": "Flere Videoer"

@@ -34,12 +34,12 @@
     "off": "Aus",
     "pause": "Pause",
     "play": "Spielen",
+    "playback": "Spielen",
     "playbackRates": "Abspielrate",
     "player": "Videoplayer",
     "playlist": "Playlist",
     "poweredBy": "Unterstützt von",
     "prev": "Zurück",
-    "quality": "Qualität",
     "related": {
         "autoplaymessage": "Als Nächstes in xx",
         "heading": "Weitere Videos"

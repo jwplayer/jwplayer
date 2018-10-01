@@ -107,7 +107,7 @@ class TimeSlider extends Slider {
 
         setAttribute(this.el, 'tabindex', '0');
         setAttribute(this.el, 'role', 'slider');
-        setAttribute(this.el, 'aria-label', 'Time Slider');
+        setAttribute(this.el, 'aria-label', this._model.get('localization').slider);
         this.el.removeAttribute('aria-hidden');
         this.elementRail.appendChild(this.timeTip.element());
 

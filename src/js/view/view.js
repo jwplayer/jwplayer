@@ -11,7 +11,7 @@ import { Browser, OS, Features } from 'environment/environment';
 import { ControlsLoader, loadControls } from 'controller/controls-loader';
 import {
     STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
-    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS } from 'events/events';
+    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, WARNING, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
     addClass,
@@ -325,7 +325,7 @@ function View(_api, _model) {
                     return enabledState;
                 });
                 controlsEvent.loadPromise.catch(function (reason) {
-                    _this.trigger(ERROR, {
+                    _this.trigger(WARNING, {
                         message: 'Controls failed to load',
                         reason: reason
                     });

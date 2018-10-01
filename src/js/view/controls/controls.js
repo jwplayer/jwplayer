@@ -175,7 +175,11 @@ export default class Controls {
                 settingsButton.element().focus();
             }
         };
-        const settingsMenu = this.settingsMenu = createSettingsMenu(controlbar, visibilityChangeHandler);
+        const settingsMenu = this.settingsMenu = createSettingsMenu(
+            controlbar, 
+            visibilityChangeHandler, 
+            model.get('localization')
+        );
         setupSubmenuListeners(settingsMenu, controlbar, model, api);
 
         if (OS.mobile) {

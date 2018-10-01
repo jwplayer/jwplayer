@@ -34,12 +34,12 @@
     "off": "Desligar",
     "pause": "Pausar",
     "play": "Reproduzir",
+    "playback": "Reproduzir",
     "playbackRates": "Taxas de Reprodução",
     "player": "Reprodutor de Vídeo",
     "playlist": "Lista de Reprodução",
     "poweredBy": "Produzido por",
     "prev": "Anterior",
-    "quality": "Qualidade",
     "related": {
         "autoplaymessage": "A Seguir em xx",
         "heading": "Mais Vídeos"

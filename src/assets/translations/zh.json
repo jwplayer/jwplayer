@@ -34,12 +34,12 @@
     "off": "关闭选项",
     "pause": "暂停",
     "play": "播放",
+    "playback": "播放",
     "playbackRates": "播放速率",
     "player": "视频播放器",
     "playlist": "播放列表",
     "poweredBy": "技术支持",
     "prev": "上一个",
-    "quality": "视频质量",
     "related": {
         "autoplaymessage": "xx 后播放下一个视频",
         "heading": "更多视频"

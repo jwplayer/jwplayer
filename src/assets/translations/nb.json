@@ -34,12 +34,12 @@
     "off": "Av",
     "pause": "Pause",
     "play": "Spill av",
+    "playback": "Spill av",
     "playbackRates": "Avspillingstempo",
     "player": "Videospiller",
     "playlist": "Spilleliste",
     "poweredBy": "Driftes av",
     "prev": "Forrige",
-    "quality": "Kvalitet",
     "related": {
         "autoplaymessage": "Neste om xx",
 		"heading": "Flere Videoer"

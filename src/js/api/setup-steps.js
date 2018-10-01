@@ -5,7 +5,7 @@ import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
-import { getLanguage, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
+import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation } from 'utils/language';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -96,22 +96,30 @@ export function loadSkin(_model) {
 }
 
 export function loadTranslations(_model) {
-    const language = getLanguage();
-    if (language && isTranslationAvailable(language)) {
-        return new Promise((resolve, reject) => {
-            loadJsonTranslation(_model.attributes.base, language, ({ response }) => {
-                // TODO: update localization with translations (JW8-1346)
-                if (destroyed(_model)) {
-                    reject();
+    const { attributes } = _model;
+    const { language, base, setupConfig, intl } = attributes;
+    const customLocalization = getCustomLocalization(setupConfig.localization, intl, language);
+    if (!isTranslationAvailable(language) || isLocalizationComplete(customLocalization)) {
+        return Promise.resolve();
+    }
+    return new Promise(resolve => {
+        return loadJsonTranslation(base, language)
+            .then(({ response }) => {
+                if (destroyed(_model) || !response) {
+                    return;
                 }
-                resolve(response);
-            }, () => {
-                // TODO: trigger warning
+                if (!response) {
+                    // TODO: throw a standardized player warning with a different code than catch-block to highlight empty response (JW8-2244)
+                    throw new Error();
+                }
+                attributes.localization = applyTranslation(response, customLocalization);
+                resolve();
+            })
+            .catch(() => {
+                // TODO: trigger warning (JW8-2244). Calling resolve(PlayerError(warning, warningCode,...)) might handle this.
                 resolve();
             });
-        });
-    }
-    return Promise.resolve();
+    });
 }
 
 export function loadModules(/* model, api */) {
