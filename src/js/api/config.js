@@ -61,31 +61,45 @@ function _adjustDefaultBwEstimate(estimate) {
     return Defaults.bandwidthEstimate;
 }
 
+function _mergeProperty(localizationObj, allOptionsObj, prop) {
+    if (prop) {
+        const propToCopy = localizationObj[prop] || allOptionsObj[prop];
+
+        if (propToCopy) {
+            localizationObj[prop] = propToCopy;
+        }
+    } else {
+        localizationObj = Object.assign({}, localizationObj, allOptionsObj);
+    }
+}
+
 function _copyToLocalization(allOptions) {
-    const { advertising, related, sharing } = allOptions;
+    const { advertising, related, sharing, abouttext } = allOptions;
     const localization = Object.assign({}, allOptions.localization);
 
     if (advertising) {
-        localization.advertising = Object.assign({}, localization.advertising, advertising);
+        _mergeProperty(localization.advertising, advertising);
     }
 
     if (related) {
-        localization.related = localization.related || {};
-        if (typeof related === 'object') {
-            localization.related.heading = localization.related.heading || related.heading;
-            localization.related.autoplaymessage = localization.related.autoplaymessage || related.autoplaymessage;
-        } else {
-            localization.related.heading = localization.related.heading || localization.related;
+        if (typeof localization.related === 'string') {
+            localization.related = {
+                heading: localization.related
+            };
+
+            _mergeProperty(localization.related, related, 'autoplaymessage');
         }
     }
 
     if (sharing) {
         localization.sharing = localization.sharing || {};
-        localization.sharing.heading = localization.sharing.heading || sharing.heading;
-        localization.sharing.copied = localization.sharing.copied || localization.copied;
+        _mergeProperty(localization.sharing, sharing, 'heading');
+        _mergeProperty(localization.sharing, sharing, 'copied');
     }
 
-    localization.abouttext = localization.abouttext || allOptions.abouttext;
+    if (abouttext) {
+        _mergeProperty(localization, allOptions, 'abouttext');
+    }
 
     allOptions.localization = localization;
 }
