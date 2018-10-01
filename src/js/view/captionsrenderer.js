@@ -340,10 +340,7 @@ const CaptionsRenderer = function (viewModel) {
         // don't load the polyfill or do unnecessary work if rendering natively
         if (!model.get('renderCaptionsNatively') && !_WebVTT) {
             loadWebVttPolyfill().catch(error => {
-                this.trigger(WARNING, {
-                    message: 'Captions renderer failed to load',
-                    reason: error
-                });
+                this.trigger(WARNING, error);
             });
             model.off('change:captionsList', _captionsListHandler, this);
         }
@@ -352,7 +349,7 @@ const CaptionsRenderer = function (viewModel) {
     function loadWebVttPolyfill() {
         return require.ensure(['polyfills/webvtt'], function (require) {
             _WebVTT = require('polyfills/webvtt').default;
-        }, chunkLoadWarningHandler(300121), 'polyfills.webvtt');
+        }, chunkLoadWarningHandler(301121), 'polyfills.webvtt');
     }
 
     _model.on('change:playlistItem', function () {

@@ -34,9 +34,8 @@ describe('CaptionsRenderer.getCurrentCues', function() {
     it('triggers a standardized warning if the WebVTT polyfill fails to load', function () {
         return new Promise((resolve, reject) => {
             captionsRenderer.on(WARNING, e => {
-                const { code } = e.reason;
-                if (code !== 300121) {
-                    reject(new Error(`Expected code 300121, got ${code}`));
+                if (e.code !== 301121) {
+                    reject(new Error(`Expected code 301121, got ${e.code}`));
                 }
                 resolve();
             });
