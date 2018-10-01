@@ -30,7 +30,7 @@ function lazyInitIntersectionObserver() {
 function matchIntersection(entry, group) {
     for (let i = group.length; i--;) {
         const view = group[i];
-        if (entry.target === view.getContainer()) {
+        if (entry.target === view.getContainer() || entry.target === view.getWrapper()) {
             view.setIntersection(entry);
             break;
         }
