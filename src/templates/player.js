@@ -1,4 +1,15 @@
-export default (id, ariaLabel = '') => {
+export default (id, ariaLabel = '', isFloatOnScroll = false) => {
+    if (isFloatOnScroll) {
+        return (
+            `<div id="${id}" class="jw-container jw-reset">` +
+                getInnerTemplate('', ariaLabel) +
+            `</div>`
+        );
+    }
+    return getInnerTemplate(id, ariaLabel);
+};
+
+function getInnerTemplate(id, ariaLabel) {
     return (
         `<div id="${id}" class="jwplayer jw-reset jw-state-setup" tabindex="0" aria-label="${ariaLabel}" role="application">` +
             `<div class="jw-aspect jw-reset"></div>` +
@@ -11,5 +22,4 @@ export default (id, ariaLabel = '') => {
             `<div class="jw-overlays jw-reset"></div>` +
         `</div>`
     );
-};
-
+}

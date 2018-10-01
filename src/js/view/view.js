@@ -10,7 +10,7 @@ import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
 import { ControlsLoader, loadControls } from 'controller/controls-loader';
 import {
-    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
+    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, FLOAT,
     RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, WARNING, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
@@ -34,6 +34,7 @@ import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
+import FloatingCloseButton from 'view/floating-close-button';
 
 require('css/jwplayer.less');
 
@@ -42,6 +43,8 @@ let ControlsModule;
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
 
+let floatingPlayer = null;
+
 function View(_api, _model) {
     const _this = Object.assign(this, Events, {
         isSetup: false,
@@ -49,8 +52,16 @@ function View(_api, _model) {
         model: _model
     });
 
-    const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
+    const floatOnScroll = _model.get('floatOnScroll');
+    const _containerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player, floatOnScroll));
+    const _playerElement = floatOnScroll ? _containerElement.querySelector('.jwplayer') : _containerElement;
     const _videoLayer = _playerElement.querySelector('.jw-media');
+    const _image = _model.get('image');
+
+    if (floatOnScroll && typeof _image === 'string') {
+        const backgroundImage = 'url("' + _image + '")';
+        style(_containerElement, { backgroundImage });
+    }
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -73,6 +84,11 @@ function View(_api, _model) {
 
     let _breakpoint = null;
     let _controls;
+
+    const defaultStyle = {
+        width: '100%',
+        height: '100%'
+    };
 
     function reasonInteraction() {
         return { reason: 'interaction' };
@@ -111,6 +127,9 @@ function View(_api, _model) {
 
         if (inDOM) {
             viewsManager.observe(_playerElement);
+            if (floatOnScroll) {
+                viewsManager.observe(_containerElement);
+            }
         }
     };
 
@@ -161,6 +180,15 @@ function View(_api, _model) {
         _this.updateBounds();
         _this.updateStyles();
         _this.checkResized();
+    }
+
+    function stopFloating() {
+        if (floatingPlayer === _containerElement) {
+            floatingPlayer = null;
+            removeClass(_playerElement, 'jw-flag-floating');
+            _this.trigger(FLOAT, { floating: false });
+            _this.resize(_model.get('width'), _model.get('height'));
+        }
     }
 
     function updateContainerStyles(width, height) {
@@ -260,11 +288,16 @@ function View(_api, _model) {
         }
 
         this.isSetup = true;
-        _model.trigger('viewSetup', _playerElement);
+        _model.trigger('viewSetup', _containerElement);
 
         const inDOM = document.body.contains(_playerElement);
         if (inDOM) {
             viewsManager.observe(_playerElement);
+            if (floatOnScroll) {
+                const floatCloseButton = new FloatingCloseButton(_playerElement);
+                floatCloseButton.setup(stopFloating);
+                viewsManager.observe(_containerElement);
+            }
         }
         _model.set('inDom', inDOM);
     };
@@ -521,7 +554,7 @@ function View(_api, _model) {
         }
     };
 
-    function _resizePlayer(playerWidth, playerHeight, resetAspectMode) {
+    function _resizePlayer(playerWidth, playerHeight, resetAspectMode, resizeOnFloat) {
         const widthSet = playerWidth !== undefined;
         const heightSet = playerHeight !== undefined;
         const playerStyle = {
@@ -542,12 +575,17 @@ function View(_api, _model) {
             playerStyle.height = height;
         }
 
-        if (widthSet && heightSet) {
+        if (widthSet && heightSet && !resizeOnFloat) {
             _model.set('width', playerWidth);
             _model.set('height', playerHeight);
         }
 
-        style(_playerElement, playerStyle);
+        if (floatOnScroll && !resizeOnFloat) {
+            style(_containerElement, playerStyle);
+            style(_playerElement, defaultStyle);
+        } else {
+            style(_playerElement, playerStyle);
+        }
     }
 
     function _resizeMedia(containerWidth, containerHeight) {
@@ -575,9 +613,9 @@ function View(_api, _model) {
         provider.resize(containerWidth, containerHeight, _model.get('stretching'));
     }
 
-    this.resize = function (playerWidth, playerHeight) {
+    this.resize = function (playerWidth, playerHeight, resizeFromFloat) {
         const resetAspectMode = true;
-        _resizePlayer(playerWidth, playerHeight, resetAspectMode);
+        _resizePlayer(playerWidth, playerHeight, resetAspectMode, resizeFromFloat);
         _responsiveUpdate();
     };
     this.resizeMedia = _resizeMedia;
@@ -777,6 +815,10 @@ function View(_api, _model) {
         return _playerElement;
     };
 
+    this.getFloatingContainer = function () {
+        return _containerElement;
+    };
+
     this.controlsContainer = function() {
         if (_controls) {
             return _controls.element();
@@ -807,12 +849,43 @@ function View(_api, _model) {
     };
 
     this.setIntersection = function (entry) {
-        _model.set('intersectionRatio', entry.intersectionRatio);
+        if (entry.target === _playerElement) {
+            _model.set('intersectionRatio', entry.intersectionRatio);
+        } else if (entry.target === _containerElement) {
+            _setFloatingIntersection(entry);
+        }
     };
+
+    function _setFloatingIntersection(entry) {
+        // Entirely invisible and no floating player already in the DOM
+        const isVisible = entry.intersectionRatio === 1;
+        if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
+            floatingPlayer = _containerElement;
+
+            const width = _containerElement.offsetWidth;
+            const height = _containerElement.offsetHeight;
+
+            const breakpoint = getBreakpoint(width);
+            toggleClass(_containerElement, 'jw-flag-small-player', breakpoint < 2);
+
+            addClass(_playerElement, 'jw-flag-floating');
+            _this.trigger(FLOAT, { floating: true });
+
+            _this.resize(320, 320 * height / width, true);
+        } else if (isVisible) {
+            stopFloating();
+        }
+    }
 
     this.destroy = function () {
         _model.destroy();
         viewsManager.unobserve(_playerElement);
+        if (floatOnScroll) {
+            viewsManager.unobserve(_containerElement);
+        }
+        if (floatingPlayer === _containerElement) {
+            floatingPlayer = null;
+        }
         viewsManager.remove(this);
         this.isSetup = false;
         this.off();

@@ -1,0 +1,57 @@
+.jw-container {
+    background-color: #000;
+    background-size: cover;
+
+    &.jw-flag-header {
+        margin-top: 2em;
+    }
+}
+
+.jw-float-close {
+    display: none;
+
+    position: absolute;
+    text-align: right;
+    top: -2em;
+    width: 100%;
+
+    .jw-icon {
+        cursor: pointer;
+        pointer-events: all;
+        opacity: 0.8;
+    }
+}
+
+.jw-flag-floating {
+    animation: jw-float 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
+
+    overflow: visible;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1;
+    margin-top: 2em;
+
+    &.jw-flag-outstream {
+        transition: none;
+    }
+
+    .jw-flag-small-player & {
+        right: 50%;
+        margin-right: -160px;
+    }
+
+    .jw-float-close {
+        display: block;
+    }
+}
+
+@keyframes jw-float {
+    from {
+        transform: translate(0, 100%);
+    }
+
+    to {
+        transform: translate(0, 0);
+    }
+}
