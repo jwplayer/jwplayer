@@ -4,7 +4,7 @@ import { ajax } from 'utils/ajax';
 import { localName } from 'parsers/parsers';
 import srt from 'parsers/captions/srt';
 import dfxp from 'parsers/captions/dfxp';
-import { composePlayerError, convertToPlayerError, ERROR_LOADING_CAPTIONS } from 'api/errors'
+import { composePlayerError, convertToPlayerError, ERROR_LOADING_CAPTIONS } from 'api/errors';
 
 export function loadFile(track, successHandler, errorHandler) {
     track.xhr = ajax(track.file, function(xhr) {
