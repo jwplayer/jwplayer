@@ -10,7 +10,7 @@ export function loadFile(track, successHandler, errorHandler) {
     track.xhr = ajax(track.file, function(xhr) {
         xhrSuccess(xhr, track, successHandler, errorHandler);
     }, (key, url, xhr, error) => {
-      errorHandler(composePlayerError(error, ERROR_LOADING_CAPTIONS));
+        errorHandler(composePlayerError(error, ERROR_LOADING_CAPTIONS));
     });
 }
 
