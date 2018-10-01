@@ -1,6 +1,6 @@
 export default function getVisibility(model, element) {
-    // Set visibility to 1 if we're in fullscreen
-    if (model.get('fullscreen')) {
+    // Set visibility to 1 if we're in fullscreen or floating
+    if (model.get('fullscreen') || model.get('floating')) {
         return 1;
     }
 

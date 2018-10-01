@@ -855,6 +855,7 @@ function View(_api, _model) {
 
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
+            _model.set('floating', true);
 
             _this.resize(320, 320 * height / width, true);
         } else if (isVisible) {
@@ -867,6 +868,7 @@ function View(_api, _model) {
             floatingPlayer = null;
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });
+            _model.set('floating', false);
             _this.resize(_model.get('width'), _model.get('height'));
         }
     }
