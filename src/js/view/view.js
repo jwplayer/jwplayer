@@ -126,10 +126,7 @@ function View(_api, _model) {
         _model.set('inDom', inDOM);
 
         if (inDOM) {
-            viewsManager.observe(_wrapperElement);
-            if (_floatOnScroll) {
-                viewsManager.observe(_playerElement);
-            }
+            viewsManager.observe(_playerElement);
         }
     };
 
@@ -283,18 +280,17 @@ function View(_api, _model) {
 
         const inDOM = document.body.contains(_playerElement);
         if (inDOM) {
-            viewsManager.observe(_wrapperElement);
+            viewsManager.observe(_playerElement);
             if (_floatOnScroll) {
                 const floatCloseButton = new FloatingCloseButton(_wrapperElement);
                 floatCloseButton.setup(_stopFloating);
-                viewsManager.observe(_playerElement);
             }
         }
         _model.set('inDom', inDOM);
     };
 
     function updateVisibility() {
-        _model.set('visibility', getVisibility(_model, _playerElement));
+        _model.set('visibility', getVisibility(_model, _wrapperElement));
     }
 
     this.init = function() {
@@ -837,12 +833,8 @@ function View(_api, _model) {
     };
 
     this.setIntersection = function (entry) {
-        if (entry.target === _wrapperElement) {
+        if (entry.target === _playerElement) {
             _model.set('intersectionRatio', entry.intersectionRatio);
-        } else if (entry.target === _playerElement) {
-            if (!hasClass(_playerElement, 'jw-flag-floating')) {
-                _model.set('intersectionRatio', entry.intersectionRatio);
-            }
             _setFloatingIntersection(entry);
         }
     };
@@ -880,7 +872,6 @@ function View(_api, _model) {
 
     this.destroy = function () {
         _model.destroy();
-        viewsManager.unobserve(_wrapperElement);
         viewsManager.unobserve(_playerElement);
         viewsManager.remove(this);
         this.isSetup = false;
