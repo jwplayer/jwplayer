@@ -62,14 +62,10 @@ function _adjustDefaultBwEstimate(estimate) {
 }
 
 function _mergeProperty(localizationObj, allOptionsObj, prop) {
-    if (prop) {
-        const propToCopy = localizationObj[prop] || allOptionsObj[prop];
+    const propToCopy = localizationObj[prop] || allOptionsObj[prop];
 
-        if (propToCopy) {
-            localizationObj[prop] = propToCopy;
-        }
-    } else {
-        localizationObj = Object.assign({}, localizationObj, allOptionsObj);
+    if (propToCopy) {
+        localizationObj[prop] = propToCopy;
     }
 }
 
@@ -78,7 +74,12 @@ function _copyToLocalization(allOptions) {
     const localization = Object.assign({}, allOptions.localization);
 
     if (advertising) {
-        _mergeProperty(localization.advertising, advertising);
+        _mergeProperty(localization.advertising, advertising, 'admessage');
+        _mergeProperty(localization.advertising, advertising, 'cuetext');
+        _mergeProperty(localization.advertising, advertising, 'loadingAd');
+        _mergeProperty(localization.advertising, advertising, 'podmessage');
+        _mergeProperty(localization.advertising, advertising, 'skipmessage');
+        _mergeProperty(localization.advertising, advertising, 'skiptext');
     }
 
     if (related) {
@@ -86,9 +87,10 @@ function _copyToLocalization(allOptions) {
             localization.related = {
                 heading: localization.related
             };
-
-            _mergeProperty(localization.related, related, 'autoplaymessage');
+        } else {
+            localization.related = {};
         }
+        _mergeProperty(localization.related, related, 'autoplaymessage');
     }
 
     if (sharing) {
