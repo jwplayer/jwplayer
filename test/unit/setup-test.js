@@ -37,7 +37,7 @@ describe('api.setup', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
-        console.error.restore();
+        sandbox.restore();
     });
 
     function expectReady(model) {

@@ -23,7 +23,7 @@ describe('Api.getConfig', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
-        console.error.restore();
+        sandbox.restore();
     });
 
     it('has expected model members', function() {

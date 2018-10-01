@@ -42,9 +42,7 @@ describe('Api', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
-        utils.log.restore();
-        console.log.restore();
-        console.error.restore();
+        sandbox.restore();
     });
 
     it('instances has a uniqueIds greater than 0', function() {
