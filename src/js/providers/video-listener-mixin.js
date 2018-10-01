@@ -3,7 +3,6 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING
     MEDIA_BUFFER, MEDIA_META, MEDIA_TIME, MEDIA_SEEKED, MEDIA_VOLUME, MEDIA_MUTE, MEDIA_COMPLETE
 } from 'events/events';
 import { between } from 'utils/math';
-import { PlayerError, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
 
 // This will trigger the events required by jwplayer model to
 //  properly follow the state of the video tag
@@ -11,24 +10,6 @@ import { PlayerError, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTI
 // Assumptions
 //  1. All functions are bound to the "this" of the provider
 //  2. The provider has an attribute "video" which is the video tag
-
-/**
- *
- @enum {ErrorCode} - The HTML5 media element encountered an error.
- */
-const HTML5_BASE_MEDIA_ERROR = 224000;
-
-/**
- *
- @enum {ErrorCode} - The HTML5 media element's src was emptied or set to the page's location.
- */
-const HTML5_SRC_RESET = 224005;
-
-/**
- *
- @enum {ErrorCode} - The HTML5 media element encountered a network error.
- */
-const HTML5_NETWORK_ERROR = 221000;
 
 const VideoListenerMixin = {
     canplay() {
@@ -181,33 +162,6 @@ const VideoListenerMixin = {
         if (this.renderNatively) {
             this.setTextTracks(this.video.textTracks);
         }
-    },
-
-    error() {
-        const { video } = this;
-        const errorCode = (video.error && video.error.code) || -1;
-        // Error code 2 from the video element is a network error
-        let code = HTML5_BASE_MEDIA_ERROR;
-        let key = MSG_CANT_PLAY_VIDEO;
-
-        if (errorCode === 1) {
-            code += errorCode;
-        } else if (errorCode === 2) {
-            key = MSG_BAD_CONNECTION;
-            code = HTML5_NETWORK_ERROR;
-        } else if (errorCode === 3 || errorCode === 4) {
-            code += errorCode - 1;
-            if (errorCode === 4 && video.src === location.href) {
-                code = HTML5_SRC_RESET;
-            }
-        } else {
-            key = MSG_TECHNICAL_ERROR;
-        }
-
-        this.trigger(
-            MEDIA_ERROR,
-            new PlayerError(key, code, this.video.error)
-        );
     }
 };
 

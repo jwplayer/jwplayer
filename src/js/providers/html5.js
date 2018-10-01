@@ -14,7 +14,20 @@ import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
 import { map } from 'utils/underscore';
-import { PlayerError, MSG_LIVE_STREAM_DOWN } from 'api/errors';
+import { PlayerError, MSG_LIVE_STREAM_DOWN, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
+
+/**
+ @enum {ErrorCode} - The HTML5 media element encountered an error.
+ */
+const HTML5_BASE_MEDIA_ERROR = 224000;
+/**
+ @enum {ErrorCode} - The HTML5 media element's src was emptied or set to the page's location.
+ */
+const HTML5_SRC_RESET = 224005;
+/**
+ @enum {ErrorCode} - The HTML5 media element encountered a network error.
+ */
+const HTML5_NETWORK_ERROR = 221000;
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
@@ -162,8 +175,31 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         error() {
+            const { video } = _this;
+            const errorCode = (video.error && video.error.code) || -1;
+            // Error code 2 from the video element is a network error
+            let code = HTML5_BASE_MEDIA_ERROR;
+            let key = MSG_CANT_PLAY_VIDEO;
+
+            if (errorCode === 1) {
+                code += errorCode;
+            } else if (errorCode === 2) {
+                key = MSG_BAD_CONNECTION;
+                code = HTML5_NETWORK_ERROR;
+            } else if (errorCode === 3 || errorCode === 4) {
+                code += errorCode - 1;
+                if (errorCode === 4 && video.src === location.href) {
+                    code = HTML5_SRC_RESET;
+                }
+            } else {
+                key = MSG_TECHNICAL_ERROR;
+            }
+
             _clearVideotagSource();
-            VideoEvents.error.call(_this);
+            _this.trigger(
+                MEDIA_ERROR,
+                new PlayerError(key, code, video.error)
+            );
         }
     };
     Object.keys(VideoEvents).forEach(eventName => {
