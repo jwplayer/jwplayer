@@ -8,7 +8,7 @@ import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
 export function ProviderListener(mediaController) {
     return function (type, data) {
         const { mediaModel } = mediaController;
-        let event = Object.assign({}, data, {
+        const event = Object.assign({}, data, {
             type: type
         });
 
