@@ -88,7 +88,7 @@ function _copyToLocalization(allOptions) {
                 heading: localization.related
             };
         } else {
-            localization.related = {};
+            localization.related = localization.related || {};
         }
         _mergeProperty(localization.related, related, 'autoplaymessage');
     }
@@ -103,12 +103,17 @@ function _copyToLocalization(allOptions) {
         _mergeProperty(localization, allOptions, 'abouttext');
     }
 
+    const localizationClose = localization.close || localization.nextUpClose;
+
+    if (localizationClose) {
+        localization.close = localizationClose;
+    }
+
     allOptions.localization = localization;
 }
 
 const Config = function(options, persisted) {
     let allOptions = Object.assign({}, (window.jwplayer || {}).defaults, persisted, options);
-
     _copyToLocalization(allOptions);
     _deserialize(allOptions);
 

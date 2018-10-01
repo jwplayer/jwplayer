@@ -1,7 +1,7 @@
 import Config from 'api/config';
 import en from 'assets/translations/en.js';
 
-describe.only('Localization Backwards Support', function () {
+describe('Localization Backwards Support', function () {
 
     describe('Defaults', function () {
 
