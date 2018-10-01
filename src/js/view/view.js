@@ -865,6 +865,9 @@ function View(_api, _model) {
             const width = _containerElement.offsetWidth;
             const height = _containerElement.offsetHeight;
 
+            const breakpoint = getBreakpoint(width);
+            toggleClass(_containerElement, 'jw-flag-small-player', breakpoint < 2);
+
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
 
