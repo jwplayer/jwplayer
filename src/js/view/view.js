@@ -843,6 +843,9 @@ function View(_api, _model) {
         if (entry.target === _wrapperElement) {
             _model.set('intersectionRatio', entry.intersectionRatio);
         } else if (entry.target === _playerElement) {
+            if (!hasClass(_playerElement, 'jw-flag-floating')) {
+                _model.set('intersectionRatio', entry.intersectionRatio);
+            }
             _setFloatingIntersection(entry);
         }
     };

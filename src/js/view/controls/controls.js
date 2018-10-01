@@ -54,6 +54,7 @@ export default class Controls {
         this.mute = null;
         this.nextUpToolTip = null;
         this.playerContainer = playerContainer;
+        this.wrapperElement = playerContainer.querySelector('.jw-wrapper');
         this.rightClickMenu = null;
         this.settingsMenu = null;
         this.showing = false;
@@ -356,8 +357,7 @@ export default class Controls {
 
     addControls() {
         // Put the controls element inside the wrapper
-        const element = this.playerContainer.querySelector('.jw-wrapper');
-        element.appendChild(this.div);
+        this.wrapperElement.appendChild(this.div);
     }
 
     disable(model) {
@@ -497,7 +497,7 @@ export default class Controls {
         // Put the backdrop element on top of overlays during instream mode
         // otherwise keep it behind captions and on top of preview poster
         const element = this.instreamState ? this.div : this.playerContainer.querySelector('.jw-captions');
-        element.parentNode.insertBefore(this.backdrop, element);
+        this.wrapperElement.insertBefore(this.backdrop, element);
     }
 
     removeBackdrop() {
