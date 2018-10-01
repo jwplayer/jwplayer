@@ -36,7 +36,7 @@ export default {
     off: 'Off',
     pause: 'Pause',
     play: 'Play',
-    playback: 'Start Playback',
+    playback: 'Play',
     playbackRates: 'Playback Rates',
     player: 'Video Player',
     playlist: 'Playlist',
