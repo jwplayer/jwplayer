@@ -1,5 +1,5 @@
 import { Browser, OS } from 'environment/environment';
-import { chunkLoadErrorHandler } from '../api/core-loader';
+import { chunkLoadWarningHandler } from '../api/core-loader';
 import Events from 'utils/backbone.events';
 import { WARNING } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
@@ -340,10 +340,7 @@ const CaptionsRenderer = function (viewModel) {
         // don't load the polyfill or do unnecessary work if rendering natively
         if (!model.get('renderCaptionsNatively') && !_WebVTT) {
             loadWebVttPolyfill().catch(error => {
-                this.trigger(WARNING, {
-                    message: 'Captions renderer failed to load',
-                    reason: error
-                });
+                this.trigger(WARNING, error);
             });
             model.off('change:captionsList', _captionsListHandler, this);
         }
@@ -352,7 +349,7 @@ const CaptionsRenderer = function (viewModel) {
     function loadWebVttPolyfill() {
         return require.ensure(['polyfills/webvtt'], function (require) {
             _WebVTT = require('polyfills/webvtt').default;
-        }, chunkLoadErrorHandler(300121), 'polyfills.webvtt');
+        }, chunkLoadWarningHandler(301121), 'polyfills.webvtt');
     }
 
     _model.on('change:playlistItem', function () {

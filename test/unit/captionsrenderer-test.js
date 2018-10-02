@@ -2,6 +2,7 @@ import MockModel from 'mock/mock-model';
 import ViewModel from 'view/view-model';
 import CaptionsRenderer from 'view/captionsrenderer';
 import VTTCue from 'parsers/captions/vttcue';
+import { WARNING } from 'events/events';
 
 describe('CaptionsRenderer.getCurrentCues', function() {
     let captionsRenderer;
