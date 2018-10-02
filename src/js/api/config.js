@@ -83,14 +83,15 @@ function _copyToLocalization(allOptions) {
         _mergeProperty(localization.advertising, advertising, 'skiptext');
     }
 
+    if (typeof localization.related === 'string') {
+        localization.related = {
+            heading: localization.related
+        };
+    } else {
+        localization.related = localization.related || {};
+    }
+
     if (related) {
-        if (typeof localization.related === 'string') {
-            localization.related = {
-                heading: localization.related
-            };
-        } else {
-            localization.related = localization.related || {};
-        }
         _mergeProperty(localization.related, related, 'autoplaymessage');
     }
 

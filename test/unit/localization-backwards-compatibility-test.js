@@ -125,6 +125,10 @@ describe('Localization Backwards Support', function () {
 
             const config = new Config(Object.assign({}, defaultConfig, advertisingConfig));
             expect(config.localization.advertising.cuetext).to.equal(advertisingConfig.localization.advertising.cuetext);
+            expect(config.localization.advertising.loadingad).to.equal(advertisingConfig.localization.advertising.loadingad);
+            expect(config.localization.advertising.podmessage).to.equal(advertisingConfig.localization.advertising.podmessage);
+            expect(config.localization.advertising.skipmessage).to.equal(advertisingConfig.localization.advertising.skipmessage);
+            expect(config.localization.advertising.skiptext).to.equal(advertisingConfig.localization.advertising.skiptext);
         });
     });
 
@@ -152,6 +156,39 @@ describe('Localization Backwards Support', function () {
             const config = new Config(Object.assign({}, defaultConfig, sharingConfig));
             expect(config.localization.sharing.copied).to.equal(config.sharing.copied);
             expect(config.localization.sharing.heading).to.equal(config.sharing.heading);
+        });
+
+        it('should always use properties in the localization block', function () {
+            const sharingConfig = {
+                sharing: {
+                    link: 'http://example.com/page/MEDIAID/',
+                    heading: 'Wrong Heading',
+                    copied: 'Wrong copied Text',
+                    sites: [
+                        'email',
+                        'twitter',
+                        'facebook',
+                        {
+                            icon: 'assets/smiley.png',
+                            src: 'http://www.google.com/sharer/sharer.php?u=',
+                            label: 'smileyshare'
+                        }
+                    ]
+                },
+                localization: {
+                    sharing: {
+                        heading: 'Right heading',
+                        link: 'http://example.com/page/CORRECTID/',
+                        copied: 'Right copied text'
+                    }
+                }
+            };
+
+            const config = new Config(Object.assign({}, defaultConfig, sharingConfig));
+            expect(config.localization.sharing.heading).to.equal(sharingConfig.localization.sharing.heading);
+            expect(config.localization.sharing.link).to.equal(sharingConfig.localization.sharing.link);
+            expect(config.localization.sharing.copied).to.equal(sharingConfig.localization.sharing.copied);
+
         });
     });
 });
