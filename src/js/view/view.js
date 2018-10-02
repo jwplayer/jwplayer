@@ -297,6 +297,7 @@ function View(_api, _model) {
         _model.on('change:fullscreen', _fullscreen);
         _model.on('change:activeTab', updateVisibility);
         _model.on('change:fullscreen', updateVisibility);
+        _model.on('change:floating', updateVisibility);
         _model.on('change:intersectionRatio', updateVisibility);
         _model.on('change:visibility', redraw);
         _model.on('instreamMode', (instreamMode) => {
