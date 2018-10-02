@@ -11,9 +11,7 @@ import { Browser, OS, Features } from 'environment/environment';
 import { ControlsLoader, loadControls } from 'controller/controls-loader';
 import {
     STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, FLOAT,
-    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS, WARNING
-} from 'events/events';
-
+    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS, WARNING } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
     addClass,
