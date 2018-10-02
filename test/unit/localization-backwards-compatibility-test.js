@@ -127,5 +127,32 @@ describe('Localization Backwards Support', function () {
             expect(config.localization.advertising.cuetext).to.equal(advertisingConfig.localization.advertising.cuetext);
         });
     });
+
+    describe('Sharing', function () {
+        it('should fallback to the appropriate properties when localization isnt set', function () {
+            const sharingConfig = {
+                sharing: {
+                    link: 'http://example.com/page/MEDIAID/',
+                    heading: 'Share Video',
+                    copied: 'Copied',
+                    sites: [
+                        'email',
+                        'twitter',
+                        'facebook',
+                        {
+                            icon: 'assets/smiley.png',
+                            src: 'http://www.google.com/sharer/sharer.php?u=',
+                            label: 'smileyshare'
+                        }
+                    ]
+                }
+            };
+
+
+            const config = new Config(Object.assign({}, defaultConfig, sharingConfig));
+            expect(config.localization.sharing.copied).to.equal(config.sharing.copied);
+            expect(config.localization.sharing.heading).to.equal(config.sharing.heading);
+        });
+    });
 });
 
