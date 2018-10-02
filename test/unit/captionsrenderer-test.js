@@ -31,21 +31,5 @@ describe('CaptionsRenderer.getCurrentCues', function() {
             expect(captionsRenderer.getCurrentCues(allCues, i).length, 'Invalid number of cues at position ' + i).to.equal(currentNumCues[i]);
         }
     });
-
-    it('triggers a standardized warning if the WebVTT polyfill fails to load', function () {
-        return new Promise((resolve, reject) => {
-            captionsRenderer.on(WARNING, e => {
-                if (e.code !== 301121) {
-                    reject(new Error(`Expected code 301121, got ${e.code}`));
-                }
-                resolve();
-            });
-
-            // The captionsRenderer will try to load the VTT polyfill in response to the captionsList change event; it
-            // will load with a 404 because unit tests don't chunk polyfills.webvtt.js
-            model.set('renderCaptionsNatively', false);
-            model.set('captionsList', [ {}, {} ]);
-        });
-    });
 });
 
