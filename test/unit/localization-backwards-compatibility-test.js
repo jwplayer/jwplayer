@@ -14,6 +14,14 @@ describe('Localization Backwards Support', function () {
 
             expect(config.localization).to.deep.equal(en);
         });
+
+        it('should not override defaults if plugin blocks dont have the appropriate properties', function() {
+            const config = new Config(Object.assign({}, defaultConfig, {
+                sharing: {}
+            }));
+
+            expect(config.localization).to.deep.equal(en);
+        });
     });
 
     describe('Related', function () {
