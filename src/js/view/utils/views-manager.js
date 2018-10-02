@@ -11,7 +11,7 @@ const isAndroidChrome = OS.android && Browser.chrome;
 let intersectionObserver;
 let responsiveRepaintRequestId = -1;
 
-function lazyInitIntersectionObserver(threshold) {
+function lazyInitIntersectionObserver() {
     const IntersectionObserver = window.IntersectionObserver;
     if (!intersectionObserver) {
         // Fire the callback every time 25% of the player comes in/out of view
@@ -23,14 +23,14 @@ function lazyInitIntersectionObserver(threshold) {
                     matchIntersection(entry, widgets);
                 }
             }
-        }, threshold || { threshold: [0, 0.25, 0.5, 0.75, 1] });
+        }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
     }
 }
 
 function matchIntersection(entry, group) {
     for (let i = group.length; i--;) {
         const view = group[i];
-        if (entry.target === view.getContainer() || entry.target === view.getWrapper()) {
+        if (entry.target === view.getContainer()) {
             view.setIntersection(entry);
             break;
         }
@@ -123,8 +123,8 @@ export default {
     size: function() {
         return views.length;
     },
-    observe(container, threshold) {
-        lazyInitIntersectionObserver(threshold);
+    observe(container) {
+        lazyInitIntersectionObserver();
 
         if (observed[container.id]) {
             return;
