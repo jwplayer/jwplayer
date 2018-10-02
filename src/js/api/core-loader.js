@@ -23,6 +23,12 @@ export function chunkLoadErrorHandler(code, error) {
     };
 }
 
+export function chunkLoadWarningHandler(code, error) {
+    return () => {
+        throw new PlayerError(null, code, error);
+    };
+}
+
 export function selectBundle(model) {
     const controls = model.get('controls');
     const polyfills = requiresPolyfills();

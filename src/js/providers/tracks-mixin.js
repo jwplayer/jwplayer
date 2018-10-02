@@ -4,7 +4,6 @@ import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
-import { PlayerError, ERROR_LOADING_CAPTIONS } from 'api/errors';
 
 // Used across all providers for loading tracks and handling browser track-related events
 const Tracks = {
@@ -460,8 +459,8 @@ function addTextTracks(tracksArray) {
                 (vttCues) => {
                     this.addVTTCuesToTrack(textTrackAny, vttCues);
                 },
-                (key, url, xhr, error) => {
-                    this.trigger(WARNING, new PlayerError(null, ERROR_LOADING_CAPTIONS + error.code, error));
+                error => {
+                    this.trigger(WARNING, error);
                 });
         }
     });
