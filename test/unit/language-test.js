@@ -1,5 +1,4 @@
 import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable, loadJsonTranslation, getCustomLocalization, isLocalizationComplete } from 'utils/language';
-import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import en from 'assets/translations/en';
 import sinon from 'sinon';
@@ -233,7 +232,6 @@ describe('languageUtils', function() {
         });
 
         it('should fallback to en when navigator.language is undefined', function() {
-            const systemLanguage = 'systemLanguage';
             stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
             expect(getLanguage()).to.equal('en');
@@ -241,7 +239,7 @@ describe('languageUtils', function() {
     });
 
     describe('JSON Translations', function() {
-        const context = require.context("../../src/assets/translations", true, /\.json$/);
+        const context = require.context('../../src/assets/translations', true, /\.json$/);
         const languageCodes = context.keys().map(key => key.substring(key.lastIndexOf('/') + 1, key.lastIndexOf('.')));
 
         it('should match the list of supported translations', function() {
