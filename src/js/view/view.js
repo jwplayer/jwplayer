@@ -76,6 +76,7 @@ function View(_api, _model) {
 
     let _resizeMediaTimeout = -1;
     let _resizeContainerRequestId = -1;
+    let _resizeOnFloat = false;
     let _stateClassRequestId = -1;
 
     let displayClickHandler;
@@ -85,19 +86,14 @@ function View(_api, _model) {
     let _breakpoint = null;
     let _controls;
 
-    const wrapperDefaultStyle = {
-        width: '100%',
-        height: '100%',
-    };
-
     function reasonInteraction() {
         return { reason: 'interaction' };
     }
 
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
-        const inDOM = document.body.contains(_playerElement);
-        const rect = bounds(_playerElement);
+        const inDOM = document.body.contains(_wrapperElement);
+        const rect = bounds(_wrapperElement);
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
 
@@ -538,7 +534,7 @@ function View(_api, _model) {
         }
     };
 
-    function _resizePlayer(playerWidth, playerHeight, resetAspectMode, resizeOnFloat) {
+    function _resizePlayer(playerWidth, playerHeight, resetAspectMode) {
         const widthSet = playerWidth !== undefined;
         const heightSet = playerHeight !== undefined;
         const playerStyle = {
@@ -546,7 +542,7 @@ function View(_api, _model) {
         };
 
         // when jwResize is called remove aspectMode and force layout
-        if (heightSet && resetAspectMode) {
+        if (heightSet && resetAspectMode && !_resizeOnFloat) {
             _model.set('aspectratio', null);
         }
         if (!_model.get('aspectratio')) {
@@ -559,16 +555,15 @@ function View(_api, _model) {
             playerStyle.height = height;
         }
 
-        if (widthSet && heightSet && !resizeOnFloat) {
+        if (widthSet && heightSet && !_resizeOnFloat) {
             _model.set('width', playerWidth);
             _model.set('height', playerHeight);
         }
 
-        if (_floatOnScroll && resizeOnFloat) {
+        if (_floatOnScroll && _resizeOnFloat) {
             style(_wrapperElement, playerStyle);
         } else {
             style(_playerElement, playerStyle);
-            style(_wrapperElement, wrapperDefaultStyle);
         }
     }
 
@@ -597,9 +592,9 @@ function View(_api, _model) {
         provider.resize(containerWidth, containerHeight, _model.get('stretching'));
     }
 
-    this.resize = function (playerWidth, playerHeight, resizeOnFloat) {
+    this.resize = function (playerWidth, playerHeight) {
         const resetAspectMode = true;
-        _resizePlayer(playerWidth, playerHeight, resetAspectMode, resizeOnFloat);
+        _resizePlayer(playerWidth, playerHeight, resetAspectMode);
         _responsiveUpdate();
     };
     this.resizeMedia = _resizeMedia;
@@ -845,17 +840,15 @@ function View(_api, _model) {
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
-            const width = _playerElement.offsetWidth;
-            const height = _playerElement.offsetHeight;
-            //
-            //const breakpoint = getBreakpoint(width);
-            //toggleClass(_containerElement, 'jw-flag-small-player', breakpoint < 2);
+            const rect = bounds(_playerElement);
 
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
             _model.set('floating', true);
 
-            _this.resize(320, 320 * height / width, true);
+            _resizeOnFloat = true;
+            _this.resize(320, 320 * rect.height / rect.width, true);
+            _resizeOnFloat = false;
         } else if (isVisible) {
             _stopFloating();
         }
@@ -864,10 +857,14 @@ function View(_api, _model) {
     function _stopFloating() {
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
+
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });
             _model.set('floating', false);
-            _this.resize(_model.get('width'), _model.get('height'));
+
+            // Wrapper should inherit from parent unless floating.
+            style(_wrapperElement, { width: null, height: null });
+            _this.resize(_model.get('width'), _model.get('aspectratio') ? undefined : _model.get('height'));
         }
     }
 
@@ -880,6 +877,9 @@ function View(_api, _model) {
         this.off();
         cancelAnimationFrame(_resizeContainerRequestId);
         clearTimeout(_resizeMediaTimeout);
+        if (floatingPlayer === _playerElement) {
+            floatingPlayer = null;
+        }
         if (focusHelper) {
             focusHelper.destroy();
             focusHelper = null;
