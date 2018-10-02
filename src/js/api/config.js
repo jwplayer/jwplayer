@@ -74,6 +74,7 @@ function _copyToLocalization(allOptions) {
     const localization = Object.assign({}, allOptions.localization);
 
     if (advertising) {
+        localization.advertising = localization.advertising || {};
         _mergeProperty(localization.advertising, advertising, 'admessage');
         _mergeProperty(localization.advertising, advertising, 'cuetext');
         _mergeProperty(localization.advertising, advertising, 'loadingAd');
