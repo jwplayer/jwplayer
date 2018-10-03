@@ -839,8 +839,10 @@ function View(_api, _model) {
 
             const rect = bounds(_playerElement);
 
-            const backgroundImage = _model.get('playlistItem').image || _model.get('image');
-            style(_playerElement, { backgroundImage });
+            // Copy background from preview element, fallback to image config.
+            style(_playerElement, {
+                backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
+            });
 
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
