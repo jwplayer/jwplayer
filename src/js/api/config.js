@@ -61,9 +61,62 @@ function _adjustDefaultBwEstimate(estimate) {
     return Defaults.bandwidthEstimate;
 }
 
+function _mergeProperty(localizationObj, allOptionsObj, prop) {
+    const propToCopy = localizationObj[prop] || allOptionsObj[prop];
+
+    if (propToCopy) {
+        localizationObj[prop] = propToCopy;
+    }
+}
+
+function _copyToLocalization(allOptions) {
+    const { advertising, related, sharing, abouttext } = allOptions;
+    const localization = Object.assign({}, allOptions.localization);
+
+    if (advertising) {
+        localization.advertising = localization.advertising || {};
+        _mergeProperty(localization.advertising, advertising, 'admessage');
+        _mergeProperty(localization.advertising, advertising, 'cuetext');
+        _mergeProperty(localization.advertising, advertising, 'loadingAd');
+        _mergeProperty(localization.advertising, advertising, 'podmessage');
+        _mergeProperty(localization.advertising, advertising, 'skipmessage');
+        _mergeProperty(localization.advertising, advertising, 'skiptext');
+    }
+
+    if (typeof localization.related === 'string') {
+        localization.related = {
+            heading: localization.related
+        };
+    } else {
+        localization.related = localization.related || {};
+    }
+
+    if (related) {
+        _mergeProperty(localization.related, related, 'autoplaymessage');
+    }
+
+    if (sharing) {
+        localization.sharing = localization.sharing || {};
+        _mergeProperty(localization.sharing, sharing, 'heading');
+        _mergeProperty(localization.sharing, sharing, 'copied');
+    }
+
+    if (abouttext) {
+        _mergeProperty(localization, allOptions, 'abouttext');
+    }
+
+    const localizationClose = localization.close || localization.nextUpClose;
+
+    if (localizationClose) {
+        localization.close = localizationClose;
+    }
+
+    allOptions.localization = localization;
+}
+
 const Config = function(options, persisted) {
     let allOptions = Object.assign({}, (window.jwplayer || {}).defaults, persisted, options);
-
+    _copyToLocalization(allOptions);
     _deserialize(allOptions);
 
     const language = getLanguage();
