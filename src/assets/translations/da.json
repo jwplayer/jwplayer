@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "Videoen kan ikke afspilles I denne browser.",
         "cantPlayVideo": "Denne videofil kan ikke afspilles.",
         "errorCode": "Fejlkode",
-        "liveStreamEnded": "Live-streamen er enten gået ned eller er afsluttet.",
+        "liveStreamDown": "Live-streamen er enten gået ned eller er afsluttet.",
         "protectedContent": "Der opstod et problem med at give adgang til beskyttet indhold.",
         "technicalError": "Denne video kan ikke afspilles på grund af en teknisk fejl."
     },

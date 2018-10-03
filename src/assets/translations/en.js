@@ -20,7 +20,7 @@ export default {
         cantPlayInBrowser: 'The video cannot be played in this browser.',
         cantPlayVideo: 'This video file cannot be played.',
         errorCode: 'Error Code',
-        liveStreamEnded: 'The live stream is either down or has ended.',
+        liveStreamDown: 'The live stream is either down or has ended.',
         protectedContent: 'There was a problem providing access to protected content.',
         technicalError: 'This video cannot be played because of a technical error.'
     },

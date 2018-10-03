@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "この動画は、お使いのブラウザでは再生できません。",
         "cantPlayVideo": "この動画は再生できません。",
         "errorCode": "エラーコード",
-        "liveStreamEnded": "このライブ配信は停止しているか、既に終了しています。",
+        "liveStreamDown": "このライブ配信は停止しているか、既に終了しています。",
         "protectedContent": "保護されたコンテンツへのアクセス提供に問題がありました。",
         "technicalError": "技術的なエラーにより、この動画は再生できません。"
     },

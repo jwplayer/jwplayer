@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "视频无法在该浏览器中播放。",
         "cantPlayVideo": "无法播放该视频文件。",
         "errorCode": "错误代码",
-        "liveStreamEnded": "直播故障或已结束。",
+        "liveStreamDown": "直播故障或已结束。",
         "protectedContent": "无法访问受保护内容。",
         "technicalError": "由于技术故障，无法播放该视频。"
     },

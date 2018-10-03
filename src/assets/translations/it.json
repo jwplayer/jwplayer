@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "Il video non può essere riprodotto in questo browser.",
         "cantPlayVideo": "Questo file video non può essere riprodotto.",
         "errorCode": "Errore di Codice",
-        "liveStreamEnded": "Lo stream live non è attivo o è terminato.",
+        "liveStreamDown": "Lo stream live non è attivo o è terminato.",
         "protectedContent": "Si è verificato un problema con l'accesso ai contenuti protetti.",
         "technicalError": "Questo video non può essere riprodotto a causa di un errore tecnico."
     },
