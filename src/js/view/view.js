@@ -56,12 +56,6 @@ function View(_api, _model) {
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
-    const _image = _model.get('image');
-
-    if (_floatOnScroll && typeof _image === 'string') {
-        const backgroundImage = 'url("' + _image + '")';
-        style(_playerElement, { backgroundImage });
-    }
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -92,8 +86,9 @@ function View(_api, _model) {
 
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
-        const inDOM = document.body.contains(_wrapperElement);
-        const rect = bounds(_wrapperElement);
+        const currentElement = _getCurrentElement();
+        const inDOM = document.body.contains(currentElement);
+        const rect = bounds(currentElement);
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
 
@@ -286,7 +281,8 @@ function View(_api, _model) {
     };
 
     function updateVisibility() {
-        _model.set('visibility', getVisibility(_model, _wrapperElement));
+        const currentElement = _getCurrentElement();
+        _model.set('visibility', getVisibility(_model, currentElement));
     }
 
     this.init = function() {
@@ -456,7 +452,7 @@ function View(_api, _model) {
 
     function onAspectRatioChange(model, aspectratio) {
         toggleClass(_playerElement, 'jw-flag-aspect-mode', !!aspectratio);
-        const aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
+        const aspectRatioContainer = _playerElement.querySelectorAll('.jw-aspect');
         style(aspectRatioContainer, {
             paddingTop: aspectratio || null
         });
@@ -835,6 +831,10 @@ function View(_api, _model) {
         }
     };
 
+    function _getCurrentElement() {
+        return _model.get('floating') ? _wrapperElement : _playerElement;
+    }
+
     function _setFloatingIntersection(entry) {
         // Entirely invisible and no floating player already in the DOM
         const isVisible = entry.intersectionRatio === 1;
@@ -842,6 +842,11 @@ function View(_api, _model) {
             floatingPlayer = _playerElement;
 
             const rect = bounds(_playerElement);
+
+            // Copy background from preview element, fallback to image config.
+            style(_playerElement, {
+                backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
+            });
 
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
@@ -864,6 +869,7 @@ function View(_api, _model) {
             _model.set('floating', false);
 
             // Wrapper should inherit from parent unless floating.
+            style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
             style(_wrapperElement, { width: null, height: null });
             _this.resize(_model.get('width'), _model.get('aspectratio') ? undefined : _model.get('height'));
         }
