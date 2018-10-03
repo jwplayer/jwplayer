@@ -875,7 +875,8 @@ function View(_api, _model) {
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
 
-            removeClass(_playerElement, 'jw-flag-floating jw-flag-small-player');
+            removeClass(_playerElement, 'jw-flag-floating');
+            removeClass(_wrapperElement, 'jw-flag-small-player');
             _this.trigger(FLOAT, { floating: false });
             _model.set('floating', false);
 
