@@ -847,8 +847,12 @@ function View(_api, _model) {
             style(_playerElement, {
                 backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
             });
+            const breakpoint = getBreakpoint(rect.width);
+            const smallPlayer = breakpoint < 2;
+            toggleClass(_wrapperElement, 'jw-flag-small-player', smallPlayer);
 
             addClass(_playerElement, 'jw-flag-floating');
+
             _this.trigger(FLOAT, { floating: true });
             _model.set('floating', true);
 
@@ -865,6 +869,7 @@ function View(_api, _model) {
             floatingPlayer = null;
 
             removeClass(_playerElement, 'jw-flag-floating');
+            removeClass(_wrapperElement, 'jw-flag-small-player');
             _this.trigger(FLOAT, { floating: false });
             _model.set('floating', false);
 
