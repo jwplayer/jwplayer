@@ -3,7 +3,7 @@
         "admessage": "Bu reklam xx saniye sonra bitecek",
         "cuetext": "Reklam",
         "loadingAd": "Reklam yükleniyor",
-        "podmessage": "xx reklamdan yy",
+        "podmessage": "__AD_POD_CURRENT__ reklamdan __AD_POD_LENGTH__",
     	"skipmessage": "xx saniye içerisinde reklamı geç",
         "skiptext": "Geç"
     },
