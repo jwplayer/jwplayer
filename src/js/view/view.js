@@ -92,8 +92,9 @@ function View(_api, _model) {
 
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
-        const inDOM = document.body.contains(_wrapperElement);
-        const rect = bounds(_wrapperElement);
+        const currentElement = _getCurrentElement();
+        const inDOM = document.body.contains(currentElement);
+        const rect = bounds(currentElement);
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
 
@@ -286,7 +287,8 @@ function View(_api, _model) {
     };
 
     function updateVisibility() {
-        _model.set('visibility', getVisibility(_model, _wrapperElement));
+        const currentElement = _getCurrentElement();
+        _model.set('visibility', getVisibility(_model, currentElement));
     }
 
     this.init = function() {
@@ -830,6 +832,10 @@ function View(_api, _model) {
             _setFloatingIntersection(entry);
         }
     };
+
+    function _getCurrentElement() {
+        return _model.get('floating') ? _wrapperElement : _playerElement;
+    }
 
     function _setFloatingIntersection(entry) {
         // Entirely invisible and no floating player already in the DOM
