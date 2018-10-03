@@ -795,6 +795,10 @@ function View(_api, _model) {
         return _playerElement;
     };
 
+    this.getWrapper = function () {
+        return _wrapperElement;
+    };
+
     this.controlsContainer = function() {
         if (_controls) {
             return _controls.element();
