@@ -277,9 +277,9 @@ export default class Controlbar {
         _model.change('dvrLive', (model, dvrLive) => {
             const { liveBroadcast, notLive } = localization;
             const liveElement = this.elements.live.element();
-
-            toggleClass(liveElement, 'jw-dvr-live', !dvrLive);
-            setAttribute(liveElement, 'aria-label', dvrLive ? liveBroadcast : notLive);
+            const dvrLiveFalse = dvrLive === false;
+            toggleClass(liveElement, 'jw-dvr-live', dvrLiveFalse);
+            setAttribute(liveElement, 'aria-label', !dvrLiveFalse ? liveBroadcast : notLive);
         }, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
