@@ -191,5 +191,18 @@ describe('Localization Backwards Support', function () {
 
         });
     });
+
+    describe('nextUpClose', function() {
+        it('should set localization.close if localization.nextUpClose is set', function () {
+            const localizationConfig = {
+                localization: {
+                    nextUpClose: 'Closing'
+                }
+            };
+
+            const config = new Config(Object.assign({}, defaultConfig, localizationConfig));
+            expect(config.localization.close).to.equal(localizationConfig.localization.nextUpClose);
+        });
+    });
 });
 
