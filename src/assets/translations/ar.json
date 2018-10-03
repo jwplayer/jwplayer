@@ -3,7 +3,7 @@
         "admessage": "سينتهي هذا الإعلان خلال xx",
         "cuetext": "إعلان",
         "loadingAd": "تحميل الإعلان",
-        "podmessage": "إعلان xx من yy",
+        "podmessage": "إعلان __AD_POD_CURRENT__ من __AD_POD_LENGTH__",
         "skipmessage": "تخطّي الإعلان خلال xx",
         "skiptext": "تخطّي"
     },
