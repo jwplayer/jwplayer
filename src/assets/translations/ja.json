@@ -3,7 +3,7 @@
         "admessage": "この広告はxx秒で終わります",
         "cuetext": "広告",
         "loadingAd": "広告を読み込み中",
-        "podmessage": "広告__AD_POD_CURRENT__分の__AD_POD_LENGTH__",
+        "podmessage": "広告__AD_POD_CURRENT__分の__AD_POD_LENGTH__第 __AD_POD_CURRENT__/__AD_POD_LENGTH__ 条广告。",
         "skipmessage": "xx秒後に広告をスキップできます",
         "skiptext": "スキップ"
     },
