@@ -22,10 +22,7 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
         const categoryButtonElement = categoryButton.element();
         categoryButtonElement.setAttribute('role', 'menuitemradio');
         categoryButtonElement.setAttribute('aria-checked', 'false');
-
-        if (name === QUALITIES_SUBMENU) {
-            categoryButtonElement.setAttribute('aria-label', tooltipText);
-        }
+        categoryButtonElement.setAttribute('aria-label', tooltipText);
 
         // Qualities submenu is the default submenu
         submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);
