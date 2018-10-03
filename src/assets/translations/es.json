@@ -3,7 +3,7 @@
         "admessage": "Este anuncio terminará en xx",
         "cuetext": "Anuncio",
         "loadingAd": "Cargando anuncio",
-        "podmessage": "Anuncio __AD_POD_CURRENT__ de __AD_POD_LENGTH__",
+        "podmessage": "Anuncio __AD_POD_CURRENT__ de __AD_POD_LENGTH__. ",
         "skipmessage": "Saltar anuncio en xx",
         "skiptext": "Saltar"
     },
