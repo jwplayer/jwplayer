@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "Deze video kan niet worden afgespeeld in je browser.",
         "cantPlayVideo": "Deze video kan niet worden afgespeeld.",
         "errorCode": "Foutmelding",
-        "liveStreamEnded": "Deze livestream is uit de lucht of beëindigd.",
+        "liveStreamDown": "Deze livestream is uit de lucht of beëindigd.",
         "protectedContent": "Deze beschermde video kan niet worden afgespeeld.",
         "technicalError": "Deze video kan niet worden afgespeeld door een technisch probleem."
     },

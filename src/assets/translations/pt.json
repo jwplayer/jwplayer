@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "O vídeo não pode ser reproduzido neste navegador.",
         "cantPlayVideo": "Este arquivo de vídeo não pode ser reproduzido.",
         "errorCode": "Código de erro",
-        "liveStreamEnded": "A transmissão ao vivo está inativa ou foi encerrada.",
+        "liveStreamDown": "A transmissão ao vivo está inativa ou foi encerrada.",
         "protectedContent": "Houve um problema ao fornecer acesso ao conteúdo protegido.",
         "technicalError": "Este vídeo não pode ser reproduzido devido a um problema técnico."
     },

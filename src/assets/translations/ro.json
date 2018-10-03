@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "Acest clip nu poate fi redat în acest browser.",
         "cantPlayVideo": "Acest video nu poate fi redat.",
         "errorCode": "Cod eroare",
-        "liveStreamEnded": "Transmisia în direct este întreruptă sau s-a încheiat.",
+        "liveStreamDown": "Transmisia în direct este întreruptă sau s-a încheiat.",
         "protectedContent": "A apărut o problemă la acordarea accesului la conținut protejat.",
         "technicalError": "Acest video nu poate fi redat din cauza unei erori tehnice."
     },
