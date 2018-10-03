@@ -847,9 +847,6 @@ function View(_api, _model) {
             style(_playerElement, {
                 backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
             });
-            const breakpoint = getBreakpoint(rect.width);
-            const smallPlayer = breakpoint < 2;
-            toggleClass(_wrapperElement, 'jw-flag-small-player', smallPlayer);
 
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
