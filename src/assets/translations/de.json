@@ -3,7 +3,7 @@
         "admessage": "Diese Werbung endet in xx",
         "cuetext": "Werbung",
         "loadingAd": "Werbung lädt",
-        "podmessage": "Werbung xx von yy",
+        "podmessage": "Werbung __AD_POD_CURRENT__ von __AD_POD_LENGTH__",
         "skipmessage": "Überspringe Werbung in xx",
         "skiptext": "Überspringe"
     },
