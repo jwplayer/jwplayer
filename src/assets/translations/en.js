@@ -3,7 +3,7 @@ export default {
         admessage: 'This ad will end in xx',
         cuetext: 'Advertisement',
         loadingAd: 'Loading ad',
-        podmessage: 'Ad xx of yy',
+        podmessage: 'Ad __AD_POD_CURRENT__ of __AD_POD_LENGTH__',
         skipmessage: 'Skip ad in xx',
         skiptext: 'Skip'
     },

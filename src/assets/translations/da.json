@@ -3,7 +3,7 @@
         "admessage": "Denne annonce vil slutte om xx",
         "cuetext": "Annonce",
         "loadingAd": "Indlæser annonce",
-        "podmessage": "Annonce xx af yy",
+        "podmessage": "Annonce __AD_POD_CURRENT__ af __AD_POD_LENGTH__",
         "skipmessage": "Spring annonce over om xx",
         "skiptext": "Spring over"
     },
