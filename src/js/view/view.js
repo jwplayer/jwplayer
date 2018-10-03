@@ -56,12 +56,6 @@ function View(_api, _model) {
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
-    const _image = _model.get('image');
-
-    if (_floatOnScroll && typeof _image === 'string') {
-        const backgroundImage = 'url("' + _image + '")';
-        style(_playerElement, { backgroundImage });
-    }
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -845,6 +839,9 @@ function View(_api, _model) {
 
             const rect = bounds(_playerElement);
 
+            const backgroundImage = _model.get('playlistItem').image || _model.get('image');
+            style(_playerElement, { backgroundImage });
+
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
             _model.set('floating', true);
@@ -866,6 +863,7 @@ function View(_api, _model) {
             _model.set('floating', false);
 
             // Wrapper should inherit from parent unless floating.
+            style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
             style(_wrapperElement, { width: null, height: null });
             _this.resize(_model.get('width'), _model.get('aspectratio') ? undefined : _model.get('height'));
         }
