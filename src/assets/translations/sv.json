@@ -3,7 +3,7 @@
         "admessage": "Denna annons slutar om xx",
         "cuetext": "Annons ",
         "loadingAd": "Laddar annons",
-        "podmessage": "Annons __AD_POD_CURRENT__ av __AD_POD_LENGTH__",
+        "podmessage": "Annons __AD_POD_CURRENT__ av __AD_POD_LENGTH__. ",
         "skipmessage": "Skippa annons om xx",
         "skiptext": "Skippa"
     },
