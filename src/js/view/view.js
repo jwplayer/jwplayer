@@ -456,7 +456,7 @@ function View(_api, _model) {
 
     function onAspectRatioChange(model, aspectratio) {
         toggleClass(_playerElement, 'jw-flag-aspect-mode', !!aspectratio);
-        const aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
+        const aspectRatioContainer = _playerElement.querySelectorAll('.jw-aspect');
         style(aspectRatioContainer, {
             paddingTop: aspectratio || null
         });
