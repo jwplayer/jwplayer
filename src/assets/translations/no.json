@@ -3,7 +3,7 @@
         "admessage": "Annonsen er ferdig om xx",
         "cuetext": "Reklame",
         "loadingAd": "Laster annonse",
-        "podmessage": "Annonse __AD_POD_CURRENT__ av __AD_POD_LENGTH__",
+        "podmessage": "Annonse __AD_POD_CURRENT__ av __AD_POD_LENGTH__. ",
         "skipmessage": "Hopp over annonse om xx",
         "skiptext": "Hopp over"
     },
