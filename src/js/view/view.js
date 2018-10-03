@@ -186,14 +186,6 @@ function View(_api, _model) {
             toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
             _model.set('audioMode', audioMode);
         }
-
-        // On floating, width and height are from the floating player. We need
-        // to watch and adjust based on the playerElement bounds as well.
-        if (_model.get('floating')) {
-            const rect = bounds(_playerElement);
-            const breakpoint = getBreakpoint(rect.width);
-            toggleClass(_wrapperElement, 'jw-flag-small-player', breakpoint < 2);
-        }
     }
 
     this.setup = function () {
@@ -876,7 +868,6 @@ function View(_api, _model) {
             floatingPlayer = null;
 
             removeClass(_playerElement, 'jw-flag-floating');
-            removeClass(_wrapperElement, 'jw-flag-small-player');
             _this.trigger(FLOAT, { floating: false });
             _model.set('floating', false);
 
