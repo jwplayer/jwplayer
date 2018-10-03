@@ -3,7 +3,7 @@
         "admessage": "Reclama se termină în xx",
         "cuetext": "Reclamă",
         "loadingAd": "Se încarcă reclamă",
-        "podmessage": "Reclama __AD_POD_CURRENT__ din __AD_POD_LENGTH__",
+        "podmessage": "Reclama __AD_POD_CURRENT__ din __AD_POD_LENGTH__. ",
         "skipmessage": "Sări peste reclamă în xx",
         "skiptext": "Sări peste"
     },

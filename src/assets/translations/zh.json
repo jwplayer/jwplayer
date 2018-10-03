@@ -3,7 +3,7 @@
         "admessage": "该广告将在 xx 后结束",
         "cuetext": "广告",
         "loadingAd": "正在加载广告",
-        "podmessage": "第 __AD_POD_CURRENT__/__AD_POD_LENGTH__ 条广告",
+        "podmessage": "第 __AD_POD_CURRENT__/__AD_POD_LENGTH__ 条广告。",
         "skipmessage": "xx 后跳过广告",
         "skiptext": "跳过"
     },

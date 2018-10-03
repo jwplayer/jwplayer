@@ -3,7 +3,7 @@
         "admessage": "Reclame klaar in xx",
         "cuetext": "Advertentie",
         "loadingAd": "Reclame laden",
-        "podmessage": "Reclame __AD_POD_CURRENT__ van __AD_POD_LENGTH__",
+        "podmessage": "Reclame __AD_POD_CURRENT__ van __AD_POD_LENGTH__. ",
         "skipmessage": "Reclame overslaan in xx",
         "skiptext": "Overslaan"
     },
