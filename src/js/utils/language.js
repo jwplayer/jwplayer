@@ -4,6 +4,8 @@ import { ajax } from 'utils/ajax';
 import { isDeepKeyCompliant } from 'utils/validator';
 import en from 'assets/translations/en.js';
 
+const translationPromises = {};
+
 /**
  * A map of 2-letter language codes (ISO 639-1) to language name in English
  */
@@ -20,8 +22,6 @@ const codeToLang = {
     es: 'Spanish',
     el: 'Greek',
 };
-
-const translationPromises = {};
 
 const langToCode = invert(codeToLang);
 
@@ -95,14 +95,14 @@ export function isLocalizationComplete(customLocalization) {
 }
 
 export function loadJsonTranslation(base, languageCode) {
-    const translationLoad = translationPromises[languageCode];
-    if (translationLoad) {
-        return translationLoad;
+    let translationLoad = translationPromises[languageCode];
+    if (!translationLoad) {
+        const url = `${base}translations/${normalizeLanguageCode(languageCode)}.json`;
+        translationPromises[languageCode] = translationLoad = new Promise((oncomplete, onerror) => {
+            ajax({ url, oncomplete, onerror, responseType: 'json' });
+        });
     }
-    const url = `${base}translations/${normalizeLanguageCode(languageCode)}.json`;
-    return translationPromises[languageCode] = new Promise((oncomplete, onerror) => {
-        ajax({ url, oncomplete, onerror, responseType: 'json' });
-    });
+    return translationLoad;
 }
 
 export function applyTranslation(baseLocalization, customization) {
