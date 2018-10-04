@@ -96,7 +96,7 @@ function View(_api, _model) {
         if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
             // Listen for player to be added to DOM
             if (!_lastWidth || !_lastHeight) {
-                _responsiveListener();
+                this.responsiveListener();
             }
             _model.set('inDom', inDOM);
             return;
@@ -105,7 +105,7 @@ function View(_api, _model) {
         if (!containerWidth || !containerHeight) {
             // If we haven't established player size, try again
             if (!_lastWidth || !_lastHeight) {
-                _responsiveListener();
+                this.responsiveListener();
             }
         }
 
@@ -156,10 +156,10 @@ function View(_api, _model) {
         }
     };
 
-    function _responsiveListener() {
+    this.responsiveListener = function() {
         cancelAnimationFrame(_resizeContainerRequestId);
         _resizeContainerRequestId = requestAnimationFrame(_responsiveUpdate);
-    }
+    };
 
     function _responsiveUpdate() {
         if (!_this.isSetup) {
@@ -618,7 +618,7 @@ function View(_api, _model) {
             _model.set('fullscreen', newState);
         }
 
-        _responsiveListener();
+        _this.responsiveListener();
         clearTimeout(_resizeMediaTimeout);
         _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
     }
@@ -633,7 +633,7 @@ function View(_api, _model) {
         }
 
         _resizeMedia();
-        _responsiveListener();
+        _this.responsiveListener();
     }
 
     function _setLiveMode(model, streamType) {
