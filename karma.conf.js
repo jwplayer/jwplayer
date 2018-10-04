@@ -52,9 +52,9 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
         ].concat(webpackConfig.module.rules || []).map(rule => {
             if (rule.options && rule.options.presets) {
                 rule.options.presets = rule.options.presets.map(preset => {
-                    if (Array.isArray(preset) && preset[0] === 'env' && preset[1]) {
+                    if (Array.isArray(preset) && preset[0] === '@babel/preset-env' && preset[1]) {
                         // karma-webpack fails if modules are not converted to commonjs by default
-                        delete preset[1].modules;
+                        preset[1].modules = 'commonjs';
                     }
                     return preset;
                 });
