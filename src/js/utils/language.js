@@ -21,6 +21,8 @@ const codeToLang = {
     el: 'Greek',
 };
 
+const translationPromises = {};
+
 const langToCode = invert(codeToLang);
 
 function normalizeLanguageCode(language) {
@@ -93,8 +95,12 @@ export function isLocalizationComplete(customLocalization) {
 }
 
 export function loadJsonTranslation(base, languageCode) {
+    const translationLoad = translationPromises[languageCode];
+    if (translationLoad) {
+        return translationLoad;
+    }
     const url = `${base}translations/${normalizeLanguageCode(languageCode)}.json`;
-    return new Promise((oncomplete, onerror) => {
+    return translationPromises[languageCode] = new Promise((oncomplete, onerror) => {
         ajax({ url, oncomplete, onerror, responseType: 'json' });
     });
 }

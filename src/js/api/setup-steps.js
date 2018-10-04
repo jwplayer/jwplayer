@@ -102,10 +102,11 @@ export function loadTranslations(_model) {
     if (!isTranslationAvailable(language) || isLocalizationComplete(customLocalization)) {
         return Promise.resolve();
     }
+
     return new Promise(resolve => {
         return loadJsonTranslation(base, language)
             .then(({ response }) => {
-                if (destroyed(_model) || !response) {
+                if (destroyed(_model)) {
                     return;
                 }
                 if (!response) {
