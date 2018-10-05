@@ -123,6 +123,16 @@ export const ERROR_LOADING_CAPTIONS = 306000;
 /**
  * @enum {ErrorKey}
  */
+export const ERROR_LOADING_TRANSLATIONS = 308000;
+
+/**
+ * @enum {ErrorKey}
+ */
+export const ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE = 308640;
+
+/**
+ * @enum {ErrorKey}
+ */
 export const MSG_CANT_PLAY_VIDEO = 'cantPlayVideo';
 
 /**

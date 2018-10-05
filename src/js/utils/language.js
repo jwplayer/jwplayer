@@ -98,8 +98,8 @@ export function loadJsonTranslation(base, languageCode) {
     let translationLoad = translationPromises[languageCode];
     if (!translationLoad) {
         const url = `${base}translations/${normalizeLanguageCode(languageCode)}.json`;
-        translationPromises[languageCode] = translationLoad = new Promise((oncomplete, onerror) => {
-            ajax({ url, oncomplete, onerror, responseType: 'json' });
+        translationPromises[languageCode] = translationLoad = new Promise((oncomplete, reject) => {
+            ajax({ url, oncomplete, onerror: (message, file, _url, error) => reject(error), responseType: 'json' });
         });
     }
     return translationLoad;
