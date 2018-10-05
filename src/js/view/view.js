@@ -160,6 +160,7 @@ function View(_api, _model) {
         cancelAnimationFrame(_resizeContainerRequestId);
         _resizeContainerRequestId = requestAnimationFrame(_responsiveUpdate);
     }
+    this.responsiveListener = _responsiveListener;
 
     function _responsiveUpdate() {
         if (!_this.isSetup) {
