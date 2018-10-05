@@ -7,8 +7,13 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const webpack = require('webpack');
 const webpackConfig = require('./webpack.config.js')({ release: true });
+const merge = require('webpack-merge');
 
-const webpackKarmaConfig = Object.assign({}, webpackConfig, {
+const webpackKarmaConfig = merge.smartStrategy({
+    'module.rules': 'prepend',
+    plugins: 'prepend',
+    'resolve.alias': 'append'
+})(webpackConfig, {
     entry: null,
     output: null,
     mode: 'development',
@@ -30,8 +35,8 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
         },
         sinon: 'sinon'
     },
-    resolve: Object.assign({}, webpackConfig.resolve, {
-        alias: Object.assign({}, webpackConfig.resolve.alias || {}, {
+    resolve: {
+        alias: {
             'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
             'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
             // Tests using jQuery: api-test, jwplayer-selectplayer-test, setup-test
@@ -39,33 +44,33 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
             sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
             data: path.resolve(__dirname + '/test/data'),
             mock: path.resolve(__dirname + '/test/mock')
-        })
-    }),
-    module: Object.assign({}, webpackConfig.module, {
+        }
+    },
+    module: {
         rules: [
+            {
+                test: /\.js$/,
+                exclude: /\/node_modules\//,
+                loader: 'babel-loader',
+                options: {
+                    presets: [ ['@babel/preset-env', { modules: 'commonjs' }] ]
+                }
+            },
             {
                 enforce: 'post',
                 test: /\.js$/,
                 include: /(src)\/(js)\//,
-                loader: 'istanbul-instrumenter-loader'
+                loader: 'istanbul-instrumenter-loader',
+                query: {
+                    esModules: true
+                }
             }
-        ].concat(webpackConfig.module.rules || []).map(rule => {
-            if (rule.options && rule.options.presets) {
-                rule.options.presets = rule.options.presets.map(preset => {
-                    if (Array.isArray(preset) && preset[0] === '@babel/preset-env' && preset[1]) {
-                        // karma-webpack fails if modules are not converted to commonjs by default
-                        preset[1].modules = 'commonjs';
-                    }
-                    return preset;
-                });
-            }
-            return rule;
-        }),
+        ],
         noParse: [
             /node_modules\/sinon\//,
             /node_modules\/jquery\//
-        ].concat(webpackConfig.module.noParse || [])
-    })
+        ]
+    }
 });
 
 module.exports = function(config) {

@@ -25,7 +25,7 @@ function getBuildVersion(packageInfo) {
         now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
         metadata = 'local.' + now.toISOString().replace(/[.-:T]/g, '-').replace(/Z|\.\d/g, '');
     }
-    return packageInfo.version +'+'+ metadata;
+    return packageInfo.version + '+' + metadata;
 }
 
 module.exports = function(grunt) {
@@ -77,7 +77,7 @@ module.exports = function(grunt) {
             }
         },
 
-        watch : {
+        watch: {
             options: {
                 interrupt: false,
                 spawn: false,
@@ -226,7 +226,7 @@ module.exports = function(grunt) {
             stdio: [0, 1, 2]
         });
     });
-    
+
     grunt.registerTask('notice', 'Create notice.txt file', function() {
         const notice = require('./jwplayer.license.notice.js');
         const output = './bin-release/notice.txt';
