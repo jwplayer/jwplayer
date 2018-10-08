@@ -277,7 +277,9 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
             if (_floatOnScroll) {
                 const floatCloseButton = new FloatingCloseButton(_wrapperElement);
-                floatCloseButton.setup(_stopFloating, _localization.close);
+                floatCloseButton.setup(() => {
+                    _stopFloating(true);
+                }, _localization.close);
             }
         }
         _model.set('inDom', inDOM);
@@ -868,10 +870,10 @@ function View(_api, _model) {
         }
     }
 
-    function _stopFloating() {
+    function _stopFloating(doNotFloatAgain) {
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
-            _canFloat = null;
+            _canFloat = doNotFloatAgain ? null : false;
 
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });
