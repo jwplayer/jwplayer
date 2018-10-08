@@ -838,9 +838,9 @@ function View(_api, _model) {
         return _model.get('floating') ? _wrapperElement : _playerElement;
     }
 
-    function _updateFloating() {
+    function _updateFloating(model, intersectionRatio) {
         // Entirely invisible and no floating player already in the DOM.
-        const isVisible = _model.get('intersectionRatio') === 1;
+        const isVisible = intersectionRatio === 1;
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
