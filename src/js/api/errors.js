@@ -16,21 +16,6 @@ export const SETUP_ERROR_TIMEOUT = 100001;
 export const SETUP_ERROR_PROMISE_API_CONFLICT = 100002;
 
 /**
- * @enum {ErrorCode} Setup failed because no license key was found.
- */
-export const SETUP_ERROR_LICENSE_MISSING = 100011;
-
-/**
- * @enum {ErrorCode} Setup failed because the license key was invalid.
- */
-export const SETUP_ERROR_LICENSE_INVALID = 100012;
-
-/**
- * @enum {ErrorCode} Setup failed because the license key expired.
- */
-export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
-
-/**
  * @enum {ErrorCode} Setup failed because a core module failed to load.
  */
 export const SETUP_ERROR_LOADING_CORE_JS = 101000;
