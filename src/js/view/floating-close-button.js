@@ -12,9 +12,8 @@ Object.assign(FloatingCloseButton.prototype, {
     setup: function(callback) {
         this.element = createElement(floatingCloseButton());
 
-        const icon = this.element.querySelector('.jw-reset');
-        icon.appendChild(cloneIcon('close'));
-        this.ui = new UI(icon).on('click tap enter', callback, this);
+        this.element.appendChild(cloneIcon('close'));
+        this.ui = new UI(this.element).on('click tap enter', callback, this);
 
         this.wrapperElement.appendChild(this.element);
     },
