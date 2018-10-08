@@ -292,7 +292,6 @@ function View(_api, _model) {
         _model.on('change:fullscreen', _fullscreen);
         _model.on('change:activeTab', updateVisibility);
         _model.on('change:fullscreen', updateVisibility);
-        _model.on('change:floating', updateVisibility);
         _model.on('change:intersectionRatio', updateVisibility);
         _model.on('change:visibility', redraw);
         _model.on('instreamMode', (instreamMode) => {
@@ -302,6 +301,10 @@ function View(_api, _model) {
                 destroyInstream();
             }
         });
+
+        if (_floatOnScroll) {
+            _model.on('change:intersectionRatio', _updateFloating);
+        }
 
         updateVisibility();
 
@@ -826,22 +829,18 @@ function View(_api, _model) {
     };
 
     this.setIntersection = function (entry) {
-        _model.set('intersectionRatio', entry.intersectionRatio);
-        if (_floatOnScroll) {
-            _setFloatingIntersection(entry);
-        }
+        // Round as the IntersectionObserver polyfill sometimes returns ±0.00XXX.
+        const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
+        _model.set('intersectionRatio', intersectionRatio);
     };
 
     function _getCurrentElement() {
         return _model.get('floating') ? _wrapperElement : _playerElement;
     }
 
-    function _setFloatingIntersection(entry) {
-        // Round as the IntersectionObserver polyfill sometimes returns ±0.00XXX.
-        const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
-
+    function _updateFloating() {
         // Entirely invisible and no floating player already in the DOM.
-        const isVisible = intersectionRatio === 1;
+        const isVisible = _model.get('intersectionRatio') === 1;
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
