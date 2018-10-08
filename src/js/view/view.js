@@ -862,14 +862,16 @@ function View(_api, _model) {
             _resizeOnFloat = false;
         } else if (isVisible) {
             _stopFloating();
-            _canFloat = true;
+            if (_canFloat !== null) {
+                _canFloat = true;
+            }
         }
     }
 
     function _stopFloating() {
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
-            _canFloat = false;
+            _canFloat = null;
 
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });
