@@ -9,8 +9,8 @@ const FloatingCloseButton = function(wrapperElement) {
 };
 
 Object.assign(FloatingCloseButton.prototype, {
-    setup: function(callback) {
-        this.element = createElement(floatingCloseButton());
+    setup: function(callback, ariaLabel) {
+        this.element = createElement(floatingCloseButton(ariaLabel));
 
         this.element.appendChild(cloneIcon('close'));
         this.ui = new UI(this.element).on('click tap enter', callback, this);

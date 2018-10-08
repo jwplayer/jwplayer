@@ -52,8 +52,9 @@ function View(_api, _model) {
         model: _model
     });
 
+    const _localization = _model.get('localization');
     const _floatOnScroll = _model.get('floatOnScroll');
-    const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
+    const _playerElement = createElement(playerTemplate(_model.get('id'), _localization.player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
 
@@ -275,7 +276,7 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
             if (_floatOnScroll) {
                 const floatCloseButton = new FloatingCloseButton(_wrapperElement);
-                floatCloseButton.setup(_stopFloating);
+                floatCloseButton.setup(_stopFloating, _localization.close);
             }
         }
         _model.set('inDom', inDOM);
