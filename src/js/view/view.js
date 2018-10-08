@@ -837,8 +837,11 @@ function View(_api, _model) {
     }
 
     function _setFloatingIntersection(entry) {
-        // Entirely invisible and no floating player already in the DOM
-        const isVisible = entry.intersectionRatio === 1;
+        // Round as the IntersectionObserver polyfill sometimes returns ±0.00XXX.
+        const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
+
+        // Entirely invisible and no floating player already in the DOM.
+        const isVisible = intersectionRatio === 1;
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
