@@ -52,7 +52,7 @@ function View(_api, _model) {
         model: _model
     });
 
-    const _floatOnScroll = _model.get('floatOnScroll');
+    const _floatOnScroll = _model.get('floatOnScroll') && !_isMobile;
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
