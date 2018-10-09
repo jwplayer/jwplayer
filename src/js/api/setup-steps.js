@@ -3,8 +3,9 @@ import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
-import { composePlayerError,
-    SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
+import { composePlayerError, PlayerError,
+    SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER,
+    ERROR_LOADING_TRANSLATIONS, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE } from 'api/errors';
 import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation } from 'utils/language';
 
 export function loadPlaylist(_model) {
@@ -109,15 +110,14 @@ export function loadTranslations(_model) {
                     return;
                 }
                 if (!response) {
-                    // TODO: throw a standardized player warning with a different code than catch-block to highlight empty response (JW8-2244)
-                    throw new Error();
+                    throw new PlayerError(null, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE);
                 }
                 attributes.localization = applyTranslation(response, customLocalization);
                 resolve();
             })
-            .catch(() => {
-                // TODO: trigger warning (JW8-2244). Calling resolve(PlayerError(warning, warningCode,...)) might handle this.
-                resolve();
+            .catch((error) => {
+                resolve(error.code === ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE ? error :
+                    composePlayerError(error, ERROR_LOADING_TRANSLATIONS));
             });
     });
 }
