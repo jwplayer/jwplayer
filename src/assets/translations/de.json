@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "Das Video kann in diesem Browser nicht abgespielt werden.",
         "cantPlayVideo": "Diese Videodatei kann nicht abgespielt werden.",
         "errorCode": "Fehlercode",
-        "liveStreamEnded": "Dieser Livestream ist entweder abgestürzt oder beendet.",
+        "liveStreamDown": "Dieser Livestream ist entweder abgestürzt oder beendet.",
         "protectedContent": "Es gab ein Problem Zugang zu dem geschützten Inhalt herzustellen.",
         "technicalError": "Das Video kann durch einen technischen Fehler nicht abgespielt werden."
     },

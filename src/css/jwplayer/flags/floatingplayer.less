@@ -1,6 +1,11 @@
 .jw-flag-floating {
     background-size: cover;
     overflow: visible;
+    background-color: #000;
+
+    &.jw-flag-aspect-mode .jw-aspect {
+        display: block;
+    }
 
     .jw-wrapper {
         overflow: visible;
@@ -10,6 +15,14 @@
         height: auto;
         margin-top: 2em;
         position: fixed;
+        z-index: 1;
+
+        @media screen and (max-width: 419px) and (orientation: portrait) {
+            left: 0;
+            right: 0;
+            margin-left: auto;
+            margin-right: auto;
+        }
     }
 
     .jw-float-close {

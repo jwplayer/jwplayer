@@ -105,7 +105,7 @@ export function loadTranslations(_model) {
     return new Promise(resolve => {
         return loadJsonTranslation(base, language)
             .then(({ response }) => {
-                if (destroyed(_model) || !response) {
+                if (destroyed(_model)) {
                     return;
                 }
                 if (!response) {

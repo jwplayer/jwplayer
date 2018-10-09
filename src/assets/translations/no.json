@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "Videoen kan ikke spilles i denne nettleseren.",
         "cantPlayVideo": "Denne videofilen kan ikke avspilles.",
         "errorCode": "Feilkode",
-        "liveStreamEnded": "Direktestrømmen er enten nede eller er avsluttet.",
+        "liveStreamDown": "Direktestrømmen er enten nede eller er avsluttet.",
         "protectedContent": "Det oppstod problemer med å gi tilgang til begrenset innhold.",
         "technicalError": "Denne videoen kan ikke spiller på grunn av tekniske problemer."
     },

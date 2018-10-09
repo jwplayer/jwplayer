@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "Ce navigateur n'est pas pris en charge.",
         "cantPlayVideo": "La vidéo ne peut être lue.",
         "errorCode": "Code d'erreur",
-        "liveStreamEnded": "Le streaming en live est en maintenance ou a pris fin.",
+        "liveStreamDown": "Le streaming en live est en maintenance ou a pris fin.",
         "protectedContent": "Nous n'avons pas réussi à accéder à ce contenu protégé.",
         "technicalError": "Une erreur technique empêche la lecture de la vidéo."
     },

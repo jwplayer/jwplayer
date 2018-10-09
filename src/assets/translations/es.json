@@ -20,7 +20,7 @@
         "cantPlayInBrowser": "El video no se puede reproducir en este navegador.",
         "cantPlayVideo": "Este archivo de video no se puede reproducir.",
         "errorCode": "Código de error",
-        "liveStreamEnded": "La emisión en directo no funciona o terminó.",
+        "liveStreamDown": "La emisión en directo no funciona o terminó.",
         "protectedContent": "Hubo un problema al dar acceso a contenido protegido.",
         "technicalError": "Este video no se puede reproducir por un error técnico."
     },

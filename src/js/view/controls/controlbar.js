@@ -277,9 +277,12 @@ export default class Controlbar {
         _model.change('dvrLive', (model, dvrLive) => {
             const { liveBroadcast, notLive } = localization;
             const liveElement = this.elements.live.element();
-
-            toggleClass(liveElement, 'jw-dvr-live', !dvrLive);
-            setAttribute(liveElement, 'aria-label', dvrLive ? liveBroadcast : notLive);
+            const dvrNotLive = dvrLive === false;
+            const liveButtonText = dvrNotLive ? notLive : liveBroadcast;
+            // jw-dvr-live: Player is in DVR mode but not at the live edge.
+            toggleClass(liveElement, 'jw-dvr-live', dvrNotLive);
+            setAttribute(liveElement, 'aria-label', liveButtonText);
+            liveElement.textContent = liveButtonText;
         }, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
