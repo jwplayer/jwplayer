@@ -528,7 +528,9 @@ function View(_api, _model) {
         } else {
             // Request media element fullscreen (iOS)
             const provider = model.getVideo();
-            provider.setFullscreen(state);
+            if (provider) {
+                provider.setFullscreen(state);
+            }
         }
     };
 
