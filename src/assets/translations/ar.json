@@ -5,7 +5,8 @@
         "loadingAd": "تحميل الإعلان",
         "podmessage": "إعلان __AD_POD_CURRENT__ من __AD_POD_LENGTH__. ",
         "skipmessage": "تخطّي الإعلان خلال xx",
-        "skiptext": "تخطّي"
+        "skiptext": "تخطّي",
+        "displayHeading": "إعلان"
     },
     "airplay": "البثّ الحي",
     "audioTracks": "القنوات الصوتية",

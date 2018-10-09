@@ -5,7 +5,8 @@
         "loadingAd": "Carregando anúncio",
         "podmessage": "Anúncio __AD_POD_CURRENT__ de __AD_POD_LENGTH__. ",
         "skipmessage": "Pular anúncio em xx",
-        "skiptext": "Pular"
+        "skiptext": "Pular",
+        "displayHeading": "Publicidade"
     },
     "airplay": "AirPlay",
     "audioTracks": "Faixas de Áudio",

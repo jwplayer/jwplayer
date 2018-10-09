@@ -5,7 +5,8 @@
         "loadingAd": "Reklam yükleniyor",
         "podmessage": "__AD_POD_CURRENT__ reklamdan __AD_POD_LENGTH__. ",
     	"skipmessage": "xx saniye içerisinde reklamı geç",
-        "skiptext": "Geç"
+        "skiptext": "Geç",
+        "displayHeading": "Reklam"
     },
     "airplay": "AirPlay",
     "audioTracks": "Parçalar",

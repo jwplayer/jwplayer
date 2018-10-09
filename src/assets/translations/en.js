@@ -5,7 +5,8 @@ export default {
         loadingAd: 'Loading ad',
         podmessage: 'Ad __AD_POD_CURRENT__ of __AD_POD_LENGTH__. ',
         skipmessage: 'Skip ad in xx',
-        skiptext: 'Skip'
+        skiptext: 'Skip',
+        displayHeading: 'Advertisement'
     },
     airplay: 'AirPlay',
     audioTracks: 'Audio Tracks',

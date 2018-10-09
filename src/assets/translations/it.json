@@ -5,7 +5,8 @@
         "loadingAd": "Pubblicità in Caricamento",
         "podmessage": "Ad __AD_POD_CURRENT__ of __AD_POD_LENGTH__. ",
         "skipmessage": "Salta l'annuncio xx",
-        "skiptext": "Salta"
+        "skiptext": "Salta",
+        "displayHeading": "Pubblicità"
     },
     "airplay": "AirPlay",
     "audioTracks": "Tracce Audio",
