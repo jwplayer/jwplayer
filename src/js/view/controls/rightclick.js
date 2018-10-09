@@ -26,18 +26,29 @@ export default class RightClick {
 
         const menu = {
             items: [{
-                title: 'Powered by <span class="jw-reset">JW Player ' + majorMinorPatchPre + '</span>',
+                type: 'info'
+            },
+            {
+                title: `${this.model.get('localization').poweredBy} <span class="jw-reset">JW Player ${majorMinorPatchPre}</span>`,
+                type: 'link',
                 featured: true,
                 showLogo: true,
                 link: 'https://jwplayer.com/learn-more'
             }]
         };
 
+        if (this.shareHandler) {
+            menu.items.unshift({
+                type: 'share'
+            });
+        }
+
         const provider = this.model.get('provider');
         if (provider && provider.name.indexOf('flash') >= 0) {
             const text = 'Flash Version ' + flashVersion();
             menu.items.push({
                 title: text,
+                type: 'link',
                 link: 'http://www.adobe.com/software/flash/about/'
             });
         }
@@ -133,11 +144,19 @@ export default class RightClick {
         };
     }
 
-    setup(_model, _playerElement, layer) {
+    setup(_model, _playerElement, layer, openShareMenu) {
         this.playerElement = _playerElement;
         this.model = _model;
         this.mouseOverContext = false;
         this.layer = layer;
+
+        if (openShareMenu) {
+            this.shareHandler = () => {
+                this.mouseOverContext = false;
+                this.hideMenu();
+                openShareMenu();
+            };
+        }
 
         this.ui = new UI(_playerElement).on('longPress', this.rightClick, this);
     }
@@ -156,6 +175,10 @@ export default class RightClick {
             this.el.addEventListener('mouseout', this.outHandler);
         }
         this.el.querySelector('.jw-info-overlay-item').addEventListener('click', this.infoOverlayHandler);
+        const shareItemElement = this.el.querySelector('.jw-share-item');
+        if (shareItemElement) {
+            shareItemElement.addEventListener('click', this.shareHandler);
+        }
     }
 
     removeHideMenuHandlers() {
@@ -166,6 +189,11 @@ export default class RightClick {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
             this.el.removeEventListener('mouseover', this.overHandler);
             this.el.removeEventListener('mouseout', this.outHandler);
+            
+            const shareItemElement = this.el.querySelector('.jw-share-item');
+            if (shareItemElement) {
+                shareItemElement.addEventListener('click', this.shareHandler);
+            }
         }
         document.removeEventListener('click', this.hideMenuHandler);
         document.removeEventListener('touchstart', this.hideMenuHandler);

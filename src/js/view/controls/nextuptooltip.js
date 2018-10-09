@@ -13,8 +13,7 @@ export default class NextUpTooltip {
         this._model = _model;
         this._api = _api;
         this._playerElement = playerElement;
-        this.nextUpText = _model.get('localization').nextUp;
-        this.nextUpClose = _model.get('localization').nextUpClose;
+        this.localization = _model.get('localization');
         this.state = 'tooltip';
         this.enabled = false;
         this.shown = false;
@@ -30,7 +29,7 @@ export default class NextUpTooltip {
         this.addContent(element);
 
         this.closeButton = this.content.querySelector('.jw-nextup-close');
-        this.closeButton.setAttribute('aria-label', this.nextUpClose);
+        this.closeButton.setAttribute('aria-label', this.localization.close);
         this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
 
         const viewModel = this._model;
@@ -120,7 +119,7 @@ export default class NextUpTooltip {
 
             // Set header
             this.header = this.content.querySelector('.jw-nextup-header');
-            this.header.innerText = this.nextUpText;
+            this.header.innerText = this.localization.nextUp;
 
             // Set title
             this.title = this.content.querySelector('.jw-nextup-title');

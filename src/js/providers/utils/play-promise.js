@@ -1,9 +1,7 @@
-import Promise from 'polyfills/promise';
-
 export default function createPlayPromise(video) {
     return new Promise(function(resolve, reject) {
         if (video.paused) {
-            return reject(new Error('Play refused.'));
+            return reject(playPromiseError('NotAllowedError', 0, 'play() failed.'));
         }
         const removeEventListeners = function() {
             video.removeEventListener('play', playListener);
@@ -23,9 +21,21 @@ export default function createPlayPromise(video) {
             if (e.type === 'playing') {
                 resolve();
             } else {
-                reject(new Error('The play() request was interrupted by a "' + e.type + '" event.'));
+                const message = `The play() request was interrupted by a "${e.type}" event.`;
+                if (e.type === 'error') {
+                    reject(playPromiseError('NotSupportedError', 9, message));
+                } else {
+                    reject(playPromiseError('AbortError', 20, message));
+                }
             }
         };
         video.addEventListener('play', playListener);
     });
+}
+
+function playPromiseError(name, code, message) {
+    const error = new Error(message);
+    error.name = name;
+    error.code = code;
+    return error;
 }

@@ -1,14 +1,17 @@
 import VTTCue from 'parsers/captions/vttcue';
-import { chunkLoadErrorHandler } from '../api/core-loader';
+import { chunkLoadWarningHandler } from '../api/core-loader';
 import { ajax } from 'utils/ajax';
 import { localName } from 'parsers/parsers';
 import srt from 'parsers/captions/srt';
 import dfxp from 'parsers/captions/dfxp';
+import { composePlayerError, convertToPlayerError, ERROR_LOADING_CAPTIONS } from 'api/errors';
 
 export function loadFile(track, successHandler, errorHandler) {
     track.xhr = ajax(track.file, function(xhr) {
         xhrSuccess(xhr, track, successHandler, errorHandler);
-    }, errorHandler);
+    }, (key, url, xhr, error) => {
+        errorHandler(composePlayerError(error, ERROR_LOADING_CAPTIONS));
+    });
 }
 
 export function cancelXhr(tracks) {
@@ -77,7 +80,7 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
                     parser.parse(responseText);
                 }).catch(error => {
                     delete track.xhr;
-                    errorHandler(error);
+                    errorHandler(convertToPlayerError(null, ERROR_LOADING_CAPTIONS, error));
                 });
             } else {
                 // make VTTCues from SRT track
@@ -89,12 +92,12 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
         }
     } catch (error) {
         delete track.xhr;
-        errorHandler(error);
+        errorHandler(convertToPlayerError(null, ERROR_LOADING_CAPTIONS, error));
     }
 }
 
 function loadVttParser() {
     return require.ensure(['parsers/captions/vttparser'], function (require) {
         return require('parsers/captions/vttparser').default;
-    }, chunkLoadErrorHandler(131), 'vttparser');
+    }, chunkLoadWarningHandler(301131), 'vttparser');
 }

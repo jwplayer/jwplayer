@@ -57,3 +57,26 @@ export function typeOf(value) {
     }
     return typeofString;
 }
+
+/**
+ * Indicates whether or not the customObj has *at least* the same keys as the defaultObj; the customObj could have more keys.
+ * @param {object} defaultObj - The object that determines the desired set of keys.
+ * @param {object} customObj - The object we want to verify has, at least, the same keys as defaultObj.
+ * @param {function} predicate - The function evaluating whether the property has a valid value and can be considered compliant. Inputs are the object and its key.
+ * @returns {boolean} Does the customObj have at least the same keys as defaultObj, and do their properties also share the same keys ?
+ */
+export function isDeepKeyCompliant(defaultObj, customObj, predicate) {
+    const defaultKeys = Object.keys(defaultObj);
+    return Object.keys(customObj).length >= defaultKeys.length &&
+        defaultKeys.every(key => {
+            const defaultValue = defaultObj[key];
+            const customValue = customObj[key];
+            if (defaultValue && typeof defaultValue === 'object') {
+                if (customValue && typeof customValue === 'object') {
+                    return isDeepKeyCompliant(defaultValue, customValue, predicate);
+                }
+                return false;
+            }
+            return predicate(key, defaultObj);
+        });
+}

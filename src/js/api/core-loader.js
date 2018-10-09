@@ -3,7 +3,6 @@ import { fixSources } from 'playlist/playlist';
 import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import { ControlsLoader } from 'controller/controls-loader';
-import { resolved } from 'polyfills/promise';
 import { PlayerError, SETUP_ERROR_LOADING_CORE_JS, MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
 let bundlePromise = null;
@@ -21,6 +20,12 @@ export function chunkLoadErrorHandler(code, error) {
     // Webpack require.ensure error: "Loading chunk 3 failed"
     return () => {
         throw new PlayerError(MSG_CANT_LOAD_PLAYER, code, error);
+    };
+}
+
+export function chunkLoadWarningHandler(code, error) {
+    return () => {
+        throw new PlayerError(null, code, error);
     };
 }
 
@@ -144,5 +149,5 @@ function loadIntersectionObserverIfNeeded() {
             return require('intersection-observer');
         }, chunkLoadErrorHandler(SETUP_ERROR_LOADING_CORE_JS + 120), 'polyfills.intersection-observer');
     }
-    return resolved;
+    return Promise.resolve();
 }

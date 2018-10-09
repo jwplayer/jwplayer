@@ -1,8 +1,8 @@
 import cancelable from 'utils/cancelable';
 import Eventable from 'utils/eventable';
 import ApiQueueDecorator from 'api/api-queue';
+import { PlayerError, getPlayAttemptFailedErrorCode } from 'api/errors';
 import { ProviderListener } from 'program/program-listeners';
-import { resolved } from 'polyfills/promise';
 import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
 import {
@@ -35,17 +35,21 @@ export default class MediaController extends Eventable {
         }
 
         model.set('playRejected', false);
-        let playPromise = resolved;
+
+        // If play has already been called, then only return provider.play
         if (mediaModel.get('setup')) {
-            playPromise = provider.play() || resolved;
-        } else {
-            mediaModel.set('setup', true);
-            playPromise = this._loadAndPlay(item, provider);
-            if (!mediaModel.get('started')) {
-                this._playAttempt(playPromise, playReason);
-            }
+            return provider.play() || Promise.resolve();
         }
-        return playPromise;
+        mediaModel.set('setup', true);
+
+        // If this is the first call to play, load the media and play
+        const playPromise = this._loadAndPlay(item, provider);
+
+        // Trigger "playAttempt" if playback has not yet started
+        if (mediaModel.get('started')) {
+            return playPromise;
+        }
+        return this._playAttempt(playPromise, playReason);
     }
 
     stop() {
@@ -107,20 +111,21 @@ export default class MediaController extends Eventable {
         this.attached = false;
     }
 
-    // Executes the playPromise
+    // Extends the playPromise
     _playAttempt(playPromise, playReason) {
         const { item, mediaModel, model, provider } = this;
+        const video = provider ? provider.video : null;
 
         this.trigger(MEDIA_PLAY_ATTEMPT, {
             item,
             playReason
         });
         // Immediately set player state to buffering if these conditions are met
-        if (provider && provider.video && !provider.video.paused) {
+        if (video && !video.paused) {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         }
 
-        playPromise.then(() => {
+        return playPromise.then(() => {
             if (!mediaModel.get('setup')) {
                 // Exit if model state was reset
                 return;
@@ -140,15 +145,25 @@ export default class MediaController extends Eventable {
         }).catch(error => {
             if (this.item && mediaModel === model.mediaModel) {
                 model.set('playRejected', true);
-                const videoTagPaused = provider && provider.video && provider.video.paused;
+                const videoTagPaused = video && video.paused;
                 if (videoTagPaused) {
+                    // Check if the video.src was set to empty, resolving to location.href and loaded.
+                    // This can be caused by 3rd party ads libraries after an ad break.
+                    if (video.src === location.href) {
+                        // Attempt to reload the video once within the play promise chain.
+                        return this._loadAndPlay(item, provider);
+                    }
                     mediaModel.set('mediaState', STATE_PAUSED);
                 }
-                this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+
+                const playerError = Object.assign(new PlayerError(null, getPlayAttemptFailedErrorCode(error), error), {
                     error,
                     item,
                     playReason
                 });
+                delete playerError.key;
+                this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, playerError);
+                throw error;
             }
         });
     }
@@ -169,12 +184,12 @@ export default class MediaController extends Eventable {
         const providerSetupPromise = provider.load(item);
         if (providerSetupPromise) {
             const thenPlayPromise = cancelable(() => {
-                return provider.play() || resolved;
+                return provider.play() || Promise.resolve();
             });
             this.thenPlayPromise = thenPlayPromise;
             return providerSetupPromise.then(thenPlayPromise.async);
         }
-        return provider.play() || resolved;
+        return provider.play() || Promise.resolve();
     }
 
     get audioTrack() {

@@ -1,7 +1,7 @@
 import { Browser, OS } from 'environment/environment';
-import { chunkLoadErrorHandler } from '../api/core-loader';
+import { chunkLoadWarningHandler } from '../api/core-loader';
 import Events from 'utils/backbone.events';
-import { ERROR } from 'events/events';
+import { WARNING } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
 import { addClass, removeClass, empty } from 'utils/dom';
 import { identity, isNumber, isFinite, filter } from 'utils/underscore';
@@ -197,15 +197,21 @@ const CaptionsRenderer = function (viewModel) {
             return;
         }
 
-        const containerFontSize = height * _fontScale;
-        // round to 1dp to match browser precision
-        const fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
+        let fontSize;
+        if (_model.get('fullscreen') && OS.iOS) {
+            fontSize = 'inherit';
+        } else {
+            // round to 1dp to match browser precision
+            const containerFontSize = height * _fontScale;
+            fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
+        }
 
         if (_model.get('renderCaptionsNatively')) {
             _setShadowDOMFontSize(_model.get('id'), fontSize);
         } else {
+            // 'px' will automatically be appended if fontSize is a number
             style(_display, {
-                fontSize: fontSize + 'px'
+                fontSize
             });
         }
     }
@@ -227,14 +233,7 @@ const CaptionsRenderer = function (viewModel) {
                 if (screen.orientation) {
                     containerHeight = screen.availHeight;
                     containerWidth = screen.availWidth;
-                } else {
-                    // availHeight and availWidth don't change in iOS when the orientation changes
-                    // iOS device is in portrait mode when window.orientation = 0 || 180
-                    const portraitMode = !(window.orientation % 180);
-                    containerHeight = portraitMode ? screen.availHeight : screen.availWidth;
-                    containerWidth = portraitMode ? screen.availWidth : screen.availHeight;
                 }
-
             }
 
             if (containerWidth && containerHeight && videoWidth && videoHeight) {
@@ -340,11 +339,8 @@ const CaptionsRenderer = function (viewModel) {
 
         // don't load the polyfill or do unnecessary work if rendering natively
         if (!model.get('renderCaptionsNatively') && !_WebVTT) {
-            loadWebVttPolyfill().catch((error) => {
-                this.trigger(ERROR, {
-                    message: 'Captions renderer failed to load',
-                    reason: error
-                });
+            loadWebVttPolyfill().catch(error => {
+                this.trigger(WARNING, error);
             });
             model.off('change:captionsList', _captionsListHandler, this);
         }
@@ -353,7 +349,7 @@ const CaptionsRenderer = function (viewModel) {
     function loadWebVttPolyfill() {
         return require.ensure(['polyfills/webvtt'], function (require) {
             _WebVTT = require('polyfills/webvtt').default;
-        }, chunkLoadErrorHandler(121), 'polyfills.webvtt');
+        }, chunkLoadWarningHandler(301121), 'polyfills.webvtt');
     }
 
     _model.on('change:playlistItem', function () {

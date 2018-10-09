@@ -6,9 +6,8 @@ import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
-import { SETUP_ERROR, STATE_ERROR } from 'events/events';
+import { SETUP_ERROR, STATE_ERROR, WARNING } from 'events/events';
 import Events from 'utils/backbone.events';
-import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
@@ -108,15 +107,22 @@ Object.assign(CoreShim.prototype, {
 
         model.on('change:errorEvent', logError);
 
-        return this.setup.start(api).then(allPromises => {
-            if (!allPromises) {
+        return this.setup.start(api).then(setupResult => {
+            const CoreMixin = setupResult.core;
+            if (!CoreMixin) {
                 throw composePlayerError(null, SETUP_ERROR_PROMISE_API_CONFLICT);
             }
-            const CoreMixin = allPromises[0];
+
             if (!this.setup) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
             }
+
+            this.on(WARNING, logWarning);
+            setupResult.warnings.forEach(w => {
+                this.trigger(WARNING, w);
+            });
+
             const config = this.modelShim.clone();
             // Exit if embed config encountered an error
             if (config.error) {
@@ -150,7 +156,7 @@ Object.assign(CoreShim.prototype, {
             if (!this.setup) {
                 return;
             }
-            setupError(this, error);
+            setupError(this, api, error);
         });
     },
     playerDestroy() {
@@ -255,8 +261,8 @@ Object.assign(CoreShim.prototype, {
     }
 });
 
-function setupError(core, error) {
-    resolved.then(() => {
+function setupError(core, api, error) {
+    Promise.resolve().then(() => {
         const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         const model = core._model || core.modelShim;
 
@@ -264,16 +270,25 @@ function setupError(core, error) {
         playerError.message = playerError.message || model.get('localization').errors[playerError.key];
         delete playerError.key;
 
-        const errorContainer = ErrorContainer(core, playerError);
-        if (ErrorContainer.cloneIcon) {
-            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+        const contextual = model.get('contextual');
+        // Remove (and hide) the player if it failed to set up in contextual mode; otherwise, show the error view
+        if (!contextual) {
+            const errorContainer = ErrorContainer(core, playerError);
+            if (ErrorContainer.cloneIcon) {
+                errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+            }
+            showView(core, errorContainer);
         }
-        showView(core, errorContainer);
 
         model.set('errorEvent', playerError);
         model.set('state', STATE_ERROR);
 
         core.trigger(SETUP_ERROR, playerError);
+
+        // Trigger remove after SETUP_ERROR so that any event listeners receive the event before being detached
+        if (contextual) {
+            api.remove();
+        }
     });
 }
 
@@ -285,6 +300,13 @@ function logError(model, error) {
         console.error(error.sourceError);
     }
     console.error(PlayerError.logMessage(error.code));
+}
+
+function logWarning(warning) {
+    if (!warning || !warning.code) {
+        return;
+    }
+    console.warn(PlayerError.logMessage(warning.code));
 }
 
 export function showView(core, viewElement) {

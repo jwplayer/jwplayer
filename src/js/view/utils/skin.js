@@ -134,7 +134,7 @@ export function handleColorOverrides(playerId, skin) {
 
             // Chromecast overrides
             // Can't use addStyle since it will camel case the style name
-            css(`#${playerId} .jw-icon-cast button.jw-off`, `{--disconnected-color: ${config.icons}}`, playerId);
+            css(`#${playerId} .jw-icon-cast google-cast-launcher.jw-off`, `{--disconnected-color: ${config.icons}}`, playerId);
         }
         if (config.iconsActive) {
             addStyle([
@@ -157,14 +157,14 @@ export function handleColorOverrides(playerId, skin) {
 
             // Chromecast overrides
             // Can't use addStyle since it will camel case the style name
-            css(`#${playerId} .jw-icon-cast:hover button.jw-off`, `{--disconnected-color: ${config.iconsActive}}`, playerId);
-            css(`#${playerId} .jw-icon-cast:focus button.jw-off`, `{--disconnected-color: ${config.iconsActive}}`, playerId);
-            css(`#${playerId} .jw-icon-cast button.jw-off:focus`, `{--disconnected-color: ${config.iconsActive}}`, playerId);
+            css(`#${playerId} .jw-icon-cast:hover google-cast-launcher.jw-off`, `{--disconnected-color: ${config.iconsActive}}`, playerId);
+            css(`#${playerId} .jw-icon-cast:focus google-cast-launcher.jw-off`, `{--disconnected-color: ${config.iconsActive}}`, playerId);
+            css(`#${playerId} .jw-icon-cast google-cast-launcher.jw-off:focus`, `{--disconnected-color: ${config.iconsActive}}`, playerId);
 
-            css(`#${playerId} .jw-icon-cast button`, `{--connected-color: ${config.iconsActive}}`, playerId);
-            css(`#${playerId} .jw-icon-cast button:focus`, `{--connected-color: ${config.iconsActive}}`, playerId);
-            css(`#${playerId} .jw-icon-cast:hover button`, `{--connected-color: ${config.iconsActive}}`, playerId);
-            css(`#${playerId} .jw-icon-cast:focus button`, `{--connected-color: ${config.iconsActive}}`, playerId);
+            css(`#${playerId} .jw-icon-cast google-cast-launcher`, `{--connected-color: ${config.iconsActive}}`, playerId);
+            css(`#${playerId} .jw-icon-cast google-cast-launcher:focus`, `{--connected-color: ${config.iconsActive}}`, playerId);
+            css(`#${playerId} .jw-icon-cast:hover google-cast-launcher`, `{--connected-color: ${config.iconsActive}}`, playerId);
+            css(`#${playerId} .jw-icon-cast:focus google-cast-launcher`, `{--connected-color: ${config.iconsActive}}`, playerId);
         }
 
         // A space is purposefully left before '.jw-settings-topbar' since extendParent is set to true in order to append ':not(.jw-state-idle)'
@@ -212,9 +212,7 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-option.jw-active-option',
             '.jw-option:not(.jw-active-option):hover',
             '.jw-option:not(.jw-active-option):focus',
-            '.jw-settings-item-active',
             '.jw-settings-content-item:hover',
-            '.jw-settings-content-item:focus',
             '.jw-nextup-tooltip:hover',
             '.jw-nextup-tooltip:focus',
             '.jw-nextup-close:hover'

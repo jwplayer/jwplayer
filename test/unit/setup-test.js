@@ -11,6 +11,8 @@ describe('api.setup', function() {
 
     this.timeout(6000);
 
+    const sandbox = sinon.sandbox.create();
+
     const errorMessage = 'This video file cannot be played.';
 
     beforeEach(function () {
@@ -22,7 +24,7 @@ describe('api.setup', function() {
         container.id = 'player';
         fixture.appendChild(container);
         document.body.appendChild(fixture);
-        console.error = sinon.stub();
+        sandbox.spy(console, 'error');
     });
 
     afterEach(function() {
@@ -35,7 +37,7 @@ describe('api.setup', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
-        console.error.reset();
+        sandbox.restore();
     });
 
     function expectReady(model) {
@@ -211,6 +213,21 @@ describe('api.setup', function() {
         }).then(() => {
             expect(removeSpy1, 'second setup: first listener').to.have.callCount(1);
             expect(removeSpy2, 'second setup: second listener').to.have.callCount(0);
+        });
+    });
+
+    describe('contextual setup error', function () {
+        it('removes and hides when encountering a setupError in contextual mode', function () {
+            const removeSpy = sinon.spy();
+            return expectSetupError({
+                playlist: [],
+                contextual: true,
+                events: {
+                    remove: removeSpy
+                }
+            }).then(() => {
+                expect(removeSpy).to.have.callCount(1);
+            });
         });
     });
 });

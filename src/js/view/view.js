@@ -10,8 +10,8 @@ import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
 import { ControlsLoader, loadControls } from 'controller/controls-loader';
 import {
-    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
-    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS } from 'events/events';
+    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, FLOAT,
+    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS, WARNING } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
     addClass,
@@ -34,6 +34,7 @@ import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
+import FloatingCloseButton from 'view/floating-close-button';
 
 require('css/jwplayer.less');
 
@@ -42,6 +43,8 @@ let ControlsModule;
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
 
+let floatingPlayer = null;
+
 function View(_api, _model) {
     const _this = Object.assign(this, Events, {
         isSetup: false,
@@ -49,7 +52,9 @@ function View(_api, _model) {
         model: _model
     });
 
+    const _floatOnScroll = _model.get('floatOnScroll');
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
+    const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
 
     const _preview = new Preview(_model);
@@ -65,6 +70,7 @@ function View(_api, _model) {
 
     let _resizeMediaTimeout = -1;
     let _resizeContainerRequestId = -1;
+    let _resizeOnFloat = false;
     let _stateClassRequestId = -1;
 
     let displayClickHandler;
@@ -80,8 +86,9 @@ function View(_api, _model) {
 
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
-        const inDOM = document.body.contains(_playerElement);
-        const rect = bounds(_playerElement);
+        const currentElement = _getCurrentElement();
+        const inDOM = document.body.contains(currentElement);
+        const rect = bounds(currentElement);
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
 
@@ -153,6 +160,7 @@ function View(_api, _model) {
         cancelAnimationFrame(_resizeContainerRequestId);
         _resizeContainerRequestId = requestAnimationFrame(_responsiveUpdate);
     }
+    this.responsiveListener = _responsiveListener;
 
     function _responsiveUpdate() {
         if (!_this.isSetup) {
@@ -194,7 +202,7 @@ function View(_api, _model) {
         _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
         // captions should be placed behind controls, and not hidden when controls are hidden
-        _playerElement.insertBefore(_captionsRenderer.element(), _title.element());
+        _title.element().parentNode.insertBefore(_captionsRenderer.element(), _title.element());
 
         // Display Click and Double Click Handling
         displayClickHandler = clickHandlerHelper(_api, _model, _videoLayer);
@@ -265,12 +273,17 @@ function View(_api, _model) {
         const inDOM = document.body.contains(_playerElement);
         if (inDOM) {
             viewsManager.observe(_playerElement);
+            if (_floatOnScroll) {
+                const floatCloseButton = new FloatingCloseButton(_wrapperElement);
+                floatCloseButton.setup(_stopFloating);
+            }
         }
         _model.set('inDom', inDOM);
     };
 
     function updateVisibility() {
-        _model.set('visibility', getVisibility(_model, _playerElement));
+        const currentElement = _getCurrentElement();
+        _model.set('visibility', getVisibility(_model, currentElement));
     }
 
     this.init = function() {
@@ -279,6 +292,7 @@ function View(_api, _model) {
         _model.on('change:fullscreen', _fullscreen);
         _model.on('change:activeTab', updateVisibility);
         _model.on('change:fullscreen', updateVisibility);
+        _model.on('change:floating', updateVisibility);
         _model.on('change:intersectionRatio', updateVisibility);
         _model.on('change:visibility', redraw);
         _model.on('instreamMode', (instreamMode) => {
@@ -324,11 +338,8 @@ function View(_api, _model) {
                     }
                     return enabledState;
                 });
-                controlsEvent.loadPromise.catch(function (reason) {
-                    _this.trigger(ERROR, {
-                        message: 'Controls failed to load',
-                        reason: reason
-                    });
+                controlsEvent.loadPromise.catch(function (error) {
+                    _this.trigger(WARNING, error);
                 });
             } else {
                 addControls();
@@ -442,7 +453,7 @@ function View(_api, _model) {
 
     function onAspectRatioChange(model, aspectratio) {
         toggleClass(_playerElement, 'jw-flag-aspect-mode', !!aspectratio);
-        const aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
+        const aspectRatioContainer = _playerElement.querySelectorAll('.jw-aspect');
         style(aspectRatioContainer, {
             paddingTop: aspectratio || null
         });
@@ -529,7 +540,7 @@ function View(_api, _model) {
         };
 
         // when jwResize is called remove aspectMode and force layout
-        if (heightSet && resetAspectMode) {
+        if (heightSet && resetAspectMode && !_resizeOnFloat) {
             _model.set('aspectratio', null);
         }
         if (!_model.get('aspectratio')) {
@@ -542,12 +553,16 @@ function View(_api, _model) {
             playerStyle.height = height;
         }
 
-        if (widthSet && heightSet) {
+        if (widthSet && heightSet && !_resizeOnFloat) {
             _model.set('width', playerWidth);
             _model.set('height', playerHeight);
         }
 
-        style(_playerElement, playerStyle);
+        if (_floatOnScroll && _resizeOnFloat) {
+            style(_wrapperElement, playerStyle);
+        } else {
+            style(_playerElement, playerStyle);
+        }
     }
 
     function _resizeMedia(containerWidth, containerHeight) {
@@ -637,7 +652,7 @@ function View(_api, _model) {
         const element = (isAudioFile && !isFlash) ? _videoLayer : _videoLayer.nextSibling;
         // Put the preview element before the media element in order to display browser captions
         // otherwise keep it on top of the media element to display captions with the captions renderer
-        _playerElement.insertBefore(_preview.el, element);
+        _preview.el.parentNode.insertBefore(_preview.el, element);
     }
 
     function _errorHandler(model, errorEvent) {
@@ -777,6 +792,10 @@ function View(_api, _model) {
         return _playerElement;
     };
 
+    this.getWrapper = function () {
+        return _wrapperElement;
+    };
+
     this.controlsContainer = function() {
         if (_controls) {
             return _controls.element();
@@ -808,7 +827,55 @@ function View(_api, _model) {
 
     this.setIntersection = function (entry) {
         _model.set('intersectionRatio', entry.intersectionRatio);
+        if (_floatOnScroll) {
+            _setFloatingIntersection(entry);
+        }
     };
+
+    function _getCurrentElement() {
+        return _model.get('floating') ? _wrapperElement : _playerElement;
+    }
+
+    function _setFloatingIntersection(entry) {
+        // Entirely invisible and no floating player already in the DOM
+        const isVisible = entry.intersectionRatio === 1;
+        if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
+            floatingPlayer = _playerElement;
+
+            const rect = bounds(_playerElement);
+
+            // Copy background from preview element, fallback to image config.
+            style(_playerElement, {
+                backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
+            });
+
+            addClass(_playerElement, 'jw-flag-floating');
+            _this.trigger(FLOAT, { floating: true });
+            _model.set('floating', true);
+
+            _resizeOnFloat = true;
+            _this.resize(320, 320 * rect.height / rect.width, true);
+            _resizeOnFloat = false;
+        } else if (isVisible) {
+            _stopFloating();
+        }
+    }
+
+    function _stopFloating() {
+        if (floatingPlayer === _playerElement) {
+            floatingPlayer = null;
+
+            removeClass(_playerElement, 'jw-flag-floating');
+            _this.trigger(FLOAT, { floating: false });
+            _model.set('floating', false);
+
+            // Wrapper should inherit from parent unless floating.
+            style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
+            style(_wrapperElement, { width: null, height: null });
+            _this.resize(_model.get('width'), _model.get('aspectratio') ? undefined : _model.get('height'));
+        }
+    }
+
 
     this.destroy = function () {
         _model.destroy();
@@ -818,6 +885,9 @@ function View(_api, _model) {
         this.off();
         cancelAnimationFrame(_resizeContainerRequestId);
         clearTimeout(_resizeMediaTimeout);
+        if (floatingPlayer === _playerElement) {
+            floatingPlayer = null;
+        }
         if (focusHelper) {
             focusHelper.destroy();
             focusHelper = null;

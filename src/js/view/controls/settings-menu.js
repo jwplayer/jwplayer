@@ -10,7 +10,7 @@ import {
     removePlaybackRatesSubmenu
 } from 'view/utils/submenu-factory';
 
-export function createSettingsMenu(controlbar, onVisibility) {
+export function createSettingsMenu(controlbar, onVisibility, localization) {
     const settingsButton = controlbar.elements.settingsButton;
     const onSubmenuAdded = () => {
         settingsButton.show();
@@ -19,7 +19,7 @@ export function createSettingsMenu(controlbar, onVisibility) {
         settingsButton.hide();
     };
 
-    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty);
+    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localization);
 
     controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
@@ -85,12 +85,15 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             return;
         }
 
+        const { hd, auto } = model.get('localization');
+
         addQualitiesSubmenu(
             settingsMenu,
             levels,
             (index) => api.setCurrentQuality(index),
             model.get('currentLevel'),
-            model.get('localization').hd
+            hd,
+            auto
         );
     };
 
@@ -102,11 +105,14 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             return;
         }
 
+        const { cc, off } = model.get('localization');
+
         addCaptionsSubmenu(settingsMenu,
             captionsList,
             (index) => api.setCurrentCaptions(index),
             model.get('captionsIndex'),
-            model.get('localization').cc
+            cc,
+            off
         );
         controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
         controlbarButton.show();
@@ -163,6 +169,12 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     }, settingsMenu);
 
     // Captions
+    model.on('change:playlistItem', () => {
+        // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
+        // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
+        removeCaptionsSubmenu(settingsMenu);
+        controlbar.elements.captionsButton.hide();
+    });
     model.change('captionsList', onCaptionsChanged, settingsMenu);
     model.change('captionsIndex', (changedModel, index) => {
         const captionsSubmenu = settingsMenu.getSubmenu('captions');

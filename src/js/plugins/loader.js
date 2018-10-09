@@ -1,11 +1,11 @@
-import Promise, { resolved } from 'polyfills/promise';
-import { configurePlugin } from 'plugins/plugin';
+import { PlayerError } from 'api/errors';
+import { configurePlugin, mapPluginToCode } from 'plugins/utils';
 
 const PluginLoader = function () {
     this.load = function (api, pluginsModel, pluginsConfig, model) {
         // Must be a hash map
         if (!pluginsConfig || typeof pluginsConfig !== 'object') {
-            return resolved;
+            return Promise.resolve();
         }
 
         return Promise.all(Object.keys(pluginsConfig).filter(pluginUrl => pluginUrl)
@@ -18,8 +18,8 @@ const PluginLoader = function () {
                     return configurePlugin(plugin, pluginConfig, api);
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
-                    if (!(error instanceof Error)) {
-                        return new Error(`Error in ${pluginUrl} "${error}"`);
+                    if (!error.code) {
+                        return new PlayerError(null, mapPluginToCode(pluginUrl), error);
                     }
                     return error;
                 });

@@ -3,7 +3,7 @@ import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_RATE_CHANGE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
     MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META, MEDIA_SEEK, MEDIA_SEEKED,
-    NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, BANDWIDTH_ESTIMATE } from 'events/events';
+    NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, BANDWIDTH_ESTIMATE, WARNING } from 'events/events';
 
 export function ProviderListener(mediaController) {
     return function (type, data) {
@@ -47,8 +47,16 @@ export function ProviderListener(mediaController) {
                 }
                 return;
             case MEDIA_ERROR:
-                mediaController.thenPlayPromise.cancel();
-                mediaModel.srcReset();
+                if (mediaModel.get('setup')) {
+                    mediaController.thenPlayPromise.cancel();
+                    mediaModel.srcReset();
+                } else {
+                    // A MEDIA_ERROR received before setup is a preload error
+                    // We stop propagation here allow the player to try loading once more when playback is initiated
+                    // MEDIA_ERROR codes are in the 200,000 range; adding 100,000 puts it in the 300,000 warning range.
+                    type = WARNING;
+                    event.code += 100000;
+                }
                 break;
             case MEDIA_META: {
                 const duration = data.duration;

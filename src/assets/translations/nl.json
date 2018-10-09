@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Reclame klaar in xx",
+        "cuetext": "Advertentie",
+        "loadingAd": "Reclame laden",
+        "podmessage": "Reclame __AD_POD_CURRENT__ van __AD_POD_LENGTH__. ",
+        "skipmessage": "Reclame overslaan in xx",
+        "skiptext": "Overslaan"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Audiosporen",
+    "auto": "Auto",
+    "buffer": "Laden",
+    "cast": "Chromecast",
+    "cc": "Ondertiteling",
+    "close": "Sluiten",
+    "errors": {
+        "badConnection": "Deze video kan niet worden afgespeeld door een probleem met je internetverbinding.",
+        "cantLoadPlayer": "Sorry, de player kon niet laden.",
+        "cantPlayInBrowser": "Deze video kan niet worden afgespeeld in je browser.",
+        "cantPlayVideo": "Deze video kan niet worden afgespeeld.",
+        "errorCode": "Foutmelding",
+        "liveStreamDown": "Deze livestream is uit de lucht of beëindigd.",
+        "protectedContent": "Deze beschermde video kan niet worden afgespeeld.",
+        "technicalError": "Deze video kan niet worden afgespeeld door een technisch probleem."
+    },
+    "fullscreen": "Fullscreen",
+    "hd": "Kwaliteit",
+    "liveBroadcast": "Live",
+    "logo": "Logo",
+    "next": "Volgende",
+    "nextUp": "Volgende Video",
+    "notLive": "Niet live",
+    "off": "Uit",
+    "pause": "Pause",
+    "play": "Start",
+    "playback": "Start",
+    "playbackRates": "Snelheid",
+    "player": "Video Speler",
+    "playlist": "Afspeellijst",
+    "poweredBy": "Ondersteund door",
+    "prev": "Vorige",
+    "related": {
+        "autoplaymessage": "Volgende Video in xx",
+        "heading": "Meer Video's"
+    },
+    "replay": "Opnieuw",
+    "rewind": "10 Seconden Terug",
+    "settings": "Opties",
+    "sharing": {
+        "copied": "Gekopiëerd",
+        "email": "Email",
+        "embed": "Embed",
+        "heading": "Delen",
+        "link": "Link"
+    },
+    "slider": "Zoeken",
+    "stop": "Stop",
+    "videoInfo": "Over Deze Video",
+    "volume": "Volume",
+    "volumeSlider": "Volume Niveau"
+}

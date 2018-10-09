@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Annonsen er ferdig om xx",
+        "cuetext": "Reklame",
+        "loadingAd": "Laster annonse",
+        "podmessage": "Annonse __AD_POD_CURRENT__ av __AD_POD_LENGTH__. ",
+        "skipmessage": "Hopp over annonse om xx",
+        "skiptext": "Hopp over"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Lydfiler",
+    "auto": "Automatisk",
+    "buffer": "Laser",
+    "cast": "Chromecast",
+    "cc": "Undertekst",
+    "close": "Lukk",
+    "errors": {
+        "badConnection": "Denne videoen kan ikke spilles på grunn av problemer med internettilkoblingen din.",
+        "cantLoadPlayer": "Beklager, videoen ble ikke lastet.",
+        "cantPlayInBrowser": "Videoen kan ikke spilles i denne nettleseren.",
+        "cantPlayVideo": "Denne videofilen kan ikke avspilles.",
+        "errorCode": "Feilkode",
+        "liveStreamDown": "Direktestrømmen er enten nede eller er avsluttet.",
+        "protectedContent": "Det oppstod problemer med å gi tilgang til begrenset innhold.",
+        "technicalError": "Denne videoen kan ikke spiller på grunn av tekniske problemer."
+    },
+    "fullscreen": "Full skjerm",
+    "hd": "Kvalitet",
+    "liveBroadcast": "Direkte",
+    "logo": "Logo",
+    "next": "Neste",
+    "nextUp": "Neste",
+    "notLive": "Ikke Direkte",
+    "off": "Av",
+    "pause": "Pause",
+    "play": "Spill av",
+    "playback": "Spill av",
+    "playbackRates": "Avspillingstempo",
+    "player": "Videospiller",
+    "playlist": "Spilleliste",
+    "poweredBy": "Driftes av",
+    "prev": "Forrige",
+    "related": {
+        "autoplaymessage": "Neste om xx",
+		"heading": "Flere Videoer"
+    },
+    "replay": "Spill igjen",
+    "rewind": "Spol tilbake 10 sekunder",
+    "settings": "Innstillinger",
+    "sharing": {
+        "copied": "Kopiert",
+        "email": "Epost",
+        "embed": "Legg til",
+        "heading": "Del",
+        "link": "Lenke"
+    },
+    "slider": "Søkelinje",
+    "stop": "Stopp",
+    "videoInfo": "Om Denne Videoen",
+    "volume": "Volum",
+    "volumeSlider": "Volumkontroll"
+}

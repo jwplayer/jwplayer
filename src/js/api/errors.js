@@ -16,21 +16,6 @@ export const SETUP_ERROR_TIMEOUT = 100001;
 export const SETUP_ERROR_PROMISE_API_CONFLICT = 100002;
 
 /**
- * @enum {ErrorCode} Setup failed because no license key was found.
- */
-export const SETUP_ERROR_LICENSE_MISSING = 100011;
-
-/**
- * @enum {ErrorCode} Setup failed because the license key was invalid.
- */
-export const SETUP_ERROR_LICENSE_INVALID = 100012;
-
-/**
- * @enum {ErrorCode} Setup failed because the license key expired.
- */
-export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
-
-/**
  * @enum {ErrorCode} Setup failed because a core module failed to load.
  */
 export const SETUP_ERROR_LOADING_CORE_JS = 101000;
@@ -86,6 +71,41 @@ export const FLASH_ERROR = 210000;
 export const FLASH_MEDIA_ERROR = 214000;
 
 /**
+ * @enum {ErrorCode} The play attempt failed for unknown reasons.
+ */
+const PLAY_ATTEMPT_FAILED_MISC = 303200;
+
+/**
+ * @enum {ErrorCode} The play attempt was interrupted for unknown reasons.
+ */
+const PLAY_ATTEMPT_FAILED_ABORT = 303210;
+
+/**
+ * @enum {ErrorCode} The play attempt was interrupted by a new load request.
+ */
+const PLAY_ATTEMPT_FAILED_ABORT_LOAD = 303212;
+
+/**
+ * @enum {ErrorCode} The play attempt was interrupted by a call to pause().
+ */
+const PLAY_ATTEMPT_FAILED_ABORT_PAUSE = 303213;
+
+/**
+ * @enum {ErrorCode} The play attempt failed because the user didn't interact with the document first.
+ */
+const PLAY_ATTEMPT_FAILED_NOT_ALLOWED = 303220;
+
+/**
+ * @enum {ErrorCode} The play attempt failed because no supported source was found.
+ */
+const PLAY_ATTEMPT_FAILED_NOT_SUPPORTED = 303230;
+
+/**
+ * @enum {ErrorKey}
+ */
+export const ERROR_LOADING_CAPTIONS = 306000;
+
+/**
  * @enum {ErrorKey}
  */
 export const MSG_CANT_PLAY_VIDEO = 'cantPlayVideo';
@@ -130,8 +150,10 @@ export const MSG_TECHNICAL_ERROR = 'technicalError';
 export class PlayerError {
     constructor(key, code, sourceError = null) {
         this.code = isValidNumber(code) ? code : 0;
-        this.key = key;
         this.sourceError = sourceError;
+        if (key) {
+            this.key = key;
+        }
     }
 
     static logMessage(code) {
@@ -142,7 +164,10 @@ export class PlayerError {
         if (suffix >= 400 && suffix < 600) {
             codeStr = `${prefix}400-${prefix}599`;
         }
-        return `JW Player Error ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
+
+        // Warnings are in the 3xx,xxx range
+        const isWarning = code > 299999 && code < 400000;
+        return `JW Player ${isWarning ? 'Warning' : 'Error'} ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
     }
 }
 
@@ -158,4 +183,23 @@ export function composePlayerError(error, superCode) {
     const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, superCode, error);
     playerError.code = (error && error.code || 0) + superCode;
     return playerError;
+}
+
+export function getPlayAttemptFailedErrorCode(error) {
+    const { name, message } = error;
+    switch (name) {
+        case 'AbortError':
+            if (/pause/.test(message)) {
+                return PLAY_ATTEMPT_FAILED_ABORT_PAUSE;
+            } else if (/load/.test(message)) {
+                return PLAY_ATTEMPT_FAILED_ABORT_LOAD;
+            }
+            return PLAY_ATTEMPT_FAILED_ABORT;
+        case 'NotAllowedError':
+            return PLAY_ATTEMPT_FAILED_NOT_ALLOWED;
+        case 'NotSupportedError':
+            return PLAY_ATTEMPT_FAILED_NOT_SUPPORTED;
+        default:
+            return PLAY_ATTEMPT_FAILED_MISC;
+    }
 }

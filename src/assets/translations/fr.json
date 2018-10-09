@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "La publicité prendra fin dans xx",
+        "cuetext": "Publicité",
+        "loadingAd": "Chargement de la publicité",
+        "podmessage": "Publicité __AD_POD_CURRENT__ sur __AD_POD_LENGTH__. ",
+        "skipmessage": "Sauter la publicité dans xx",
+        "skiptext": "Sauter"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Pistes Audio",
+    "auto": "Automatique",
+    "buffer": "Chargement",
+    "cast": "Chromecast",
+    "cc": "Sous-titres",
+    "close": "Fermer",
+    "errors": {
+        "badConnection": "À la suite d'un problème de connexion Internet, la vidéo ne peut être lue.",
+        "cantLoadPlayer": "Désolé, la vidéo n'a pas pu se charger.",
+        "cantPlayInBrowser": "Ce navigateur n'est pas pris en charge.",
+        "cantPlayVideo": "La vidéo ne peut être lue.",
+        "errorCode": "Code d'erreur",
+        "liveStreamDown": "Le streaming en live est en maintenance ou a pris fin.",
+        "protectedContent": "Nous n'avons pas réussi à accéder à ce contenu protégé.",
+        "technicalError": "Une erreur technique empêche la lecture de la vidéo."
+    },
+    "fullscreen": "Plein Écran",
+    "hd": "Qualité",
+    "liveBroadcast": "Live",
+    "logo": "Logo",
+    "next": "Suite",
+    "nextUp": "Prochaine Vidéo",
+    "notLive": "Hors Live",
+    "off": "Désactiver",
+    "pause": "Pause",
+    "play": "Play",
+    "playback": "Play",
+    "playbackRates": "Vitesse de Lecture",
+    "player": "Video Player",
+    "playlist": "Playlist",
+    "poweredBy": "Fourni par",
+    "prev": "Précédent",
+    "related": {
+        "autoplaymessage": "Prochaine vidéo dans xx",
+        "heading": "Plus de Vidéos"
+    },
+    "replay": "Replay",
+    "rewind": "10 Secondes en Arrière",
+    "settings": "Paramètres",
+    "sharing": {
+        "copied": "Copié",
+        "email": "Courriel",
+        "embed": "Intégrer",
+        "heading": "Paratager",
+        "link": "Lien"
+    },
+    "slider": "Barre de Lecture",
+    "stop": "Stop",
+    "videoInfo": "À Propos de Cette Vidéo",
+    "volume": "Volume",
+    "volumeSlider": "Barre de Volume"
+}

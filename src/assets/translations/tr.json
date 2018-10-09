@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Bu reklam xx saniye sonra bitecek",
+        "cuetext": "Reklam",
+        "loadingAd": "Reklam yükleniyor",
+        "podmessage": "__AD_POD_CURRENT__ reklamdan __AD_POD_LENGTH__. ",
+    	"skipmessage": "xx saniye içerisinde reklamı geç",
+        "skiptext": "Geç"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Parçalar",
+    "auto": "Otomatik",
+    "buffer": "Yükleniyor",
+    "cast": "Chromecast",
+    "cc": "İşitme Engelliler İçin Alt Yazılar (Closed Captions)",
+    "close": "Kapat",
+    "errors": {
+        "badConnection": "İnternet bağlantınızdaki bir sorundan dolayı bu video oynatılamıyor.",
+        "cantLoadPlayer": "Üzgünüz, video oynatıcı yüklemede başarısız oldu.",
+        "cantPlayInBrowser": "Video bu tarayıcıda oynatılamıyor.",
+        "cantPlayVideo": "Bu video dosyası oynatılamıyor.",
+        "errorCode": "Hata kodu",
+        "liveStreamDown": "Canlı yayın ya kesildi ya da sona erdi.",
+        "protectedContent": "Korunan içeriğe erişimde bir sorun var.",
+        "technicalError": "Bir teknik hatadan dolayı bu video oynatılamıyor."
+    },
+    "fullscreen": "Tam Ekran",
+    "hd": "Kalite",
+    "liveBroadcast": "Canlı",
+    "logo": "Logo",
+    "next": "Devam",
+    "nextUp": "Sonraki",
+    "notLive": "Canlı Değil",
+    "off": "Kapat",
+    "pause": "Duraklat",
+    "play": "Oynat",
+    "playback": "Oynat",
+    "playbackRates": "Yeniden Oynatma Hızları",
+    "player": "Video Oynatıcı",
+    "playlist": "Parça listesi",
+    "poweredBy": "Powered by",
+    "prev": "Önceki",
+    "related": {
+        "autoplaymessage": "Sonraki xx saniye içerisinde",
+        "heading": "Daha Fazla Video"
+    },
+    "replay": "Tekrar Oynat",
+    "rewind": "10 Saniye Geri Sar",
+    "settings": "Ayarlar",
+    "sharing": {
+        "copied": "Kopyalandı",
+        "email": "E-posta",
+        "embed": "Yerleştir",
+        "heading": "Paylaş",
+        "link": "Bağlantı"
+    },
+    "slider": "Oynatma Çubuğu",
+    "stop": "Durdur",
+    "videoInfo": "Bu Video Hakkında",
+    "volume": "Ses",
+    "volumeSlider": "Ses Çubuğu"
+}

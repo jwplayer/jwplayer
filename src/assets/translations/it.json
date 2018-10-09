@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Questa pubblicità terminerà tra xx",
+        "cuetext": "Pubblicità",
+        "loadingAd": "Pubblicità in Caricamento",
+        "podmessage": "Ad __AD_POD_CURRENT__ of __AD_POD_LENGTH__. ",
+        "skipmessage": "Salta l'annuncio xx",
+        "skiptext": "Salta"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Tracce Audio",
+    "auto": "Auto",
+    "buffer": "Caricamento",
+    "cast": "Chromecast",
+    "cc": "Sottotitoli",
+    "close": "Chiudi",
+    "errors": {
+        "badConnection": "Questo video non può essere riprodotto per un problema alla tua connessione.",
+        "cantLoadPlayer": "Siamo spiacenti, il video non è stato caricato.",
+        "cantPlayInBrowser": "Il video non può essere riprodotto in questo browser.",
+        "cantPlayVideo": "Questo file video non può essere riprodotto.",
+        "errorCode": "Errore di Codice",
+        "liveStreamDown": "Lo stream live non è attivo o è terminato.",
+        "protectedContent": "Si è verificato un problema con l'accesso ai contenuti protetti.",
+        "technicalError": "Questo video non può essere riprodotto a causa di un errore tecnico."
+    },
+    "fullscreen": "Schermo Intero",
+    "hd": "Qualità",
+    "liveBroadcast": "Live",
+    "logo": "Logo",
+    "next": "Successivo",
+    "nextUp": "Riproduci il Successivo",
+    "notLive": "Non Live",
+    "off": "Off",
+    "pause": "Pausa",
+    "play": "Play",
+    "playback": "Play",
+    "playbackRates": "Velocità di Riproduzione",
+    "player": "Video Player",
+    "playlist": "Playlist",
+    "poweredBy": "Powered by",
+    "prev": "Precedente",
+    "related": {
+        "autoplaymessage": "Video Successivo tra xx",
+        "heading": "Altri Video"
+    },
+    "replay": "Replay",
+    "rewind": "Indietro di 10 Secondi",
+    "settings": "Impostazioni",
+    "sharing": {
+        "copied": "Copiato",
+        "email": "Email",
+        "embed": "Inserisci",
+        "heading": "Condividi",
+        "link": "Link"
+    },
+    "slider": "Cursore di Ricerca",
+    "stop": "Stop",
+    "videoInfo": "Info Su Questo Video",
+    "volume": "Volume",
+    "volumeSlider": "Cursore del Volume"
+}

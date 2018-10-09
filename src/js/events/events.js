@@ -107,6 +107,11 @@ export const OUT = 'out';
 */
 export const ERROR = STATE_ERROR;
 
+/**
+ * Event triggered when a non-fatal error is encountered
+ */
+export const WARNING = 'warning';
+
 // Ad events
 
 /**
@@ -418,3 +423,8 @@ export const NATIVE_FULLSCREEN = 'fullscreenchange';
  * Triggered when a new bandwidth estimate is available
  */
 export const BANDWIDTH_ESTIMATE = 'bandwidthEstimate';
+
+/**
+ * Triggered when the player starts/stops floating
+ */
+export const FLOAT = 'float';

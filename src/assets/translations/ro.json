@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Reclama se termină în xx",
+        "cuetext": "Reclamă",
+        "loadingAd": "Se încarcă reclamă",
+        "podmessage": "Reclama __AD_POD_CURRENT__ din __AD_POD_LENGTH__. ",
+        "skipmessage": "Sări peste reclamă în xx",
+        "skiptext": "Sări peste"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Piste audio",
+    "auto": "Auto",
+    "buffer": "Încarcă",
+    "cast": "Chromecast",
+    "cc": "Subtitrări",
+    "close": "Închide",
+    "errors": {
+        "badConnection": "Acest video nu poate fi redat din cauza unei probleme cu conexiunea la internet.",
+        "cantLoadPlayer": "Ne pare rău, playerul video nu s-a încărcat.",
+        "cantPlayInBrowser": "Acest clip nu poate fi redat în acest browser.",
+        "cantPlayVideo": "Acest video nu poate fi redat.",
+        "errorCode": "Cod eroare",
+        "liveStreamDown": "Transmisia în direct este întreruptă sau s-a încheiat.",
+        "protectedContent": "A apărut o problemă la acordarea accesului la conținut protejat.",
+        "technicalError": "Acest video nu poate fi redat din cauza unei erori tehnice."
+    },
+    "fullscreen": "Ecran complet",
+    "hd": "Calitate",
+    "liveBroadcast": "În Direct",
+    "logo": "Logo",
+    "next": "Următor",
+    "nextUp": "Următorul",
+    "notLive": "Înregistrare",
+    "off": "Oprit",
+    "pause": "Pauză",
+    "play": "Redare",
+    "playback": "Redare",
+    "playbackRates": "Viteze redare",
+    "player": "Video Player",
+    "playlist": "Playlist",
+    "poweredBy": "Susținut de",
+    "prev": "Anterior",
+    "related": {
+        "autoplaymessage": "Următorul în xx",
+        "heading": "Mai Multe Clipuri"
+    },
+    "replay": "Redă din nou",
+    "rewind": "Derulare înapoi 10 secunde",
+    "settings": "Setări",
+    "sharing": {
+        "copied": "Copiat",
+        "email": "Email",
+        "embed": "Embed",
+        "heading": "Share",
+        "link": "Link"
+    },
+    "slider": "Bară căutare",
+    "stop": "Stop",
+    "videoInfo": "Despre Acest Fișier",
+    "volume": "Bară volum",
+    "volumeSlider": "Bară volum"
+}

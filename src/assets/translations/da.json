@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Denne annonce vil slutte om xx",
+        "cuetext": "Annonce",
+        "loadingAd": "Indlæser annonce",
+        "podmessage": "Annonce __AD_POD_CURRENT__ af __AD_POD_LENGTH__. ",
+        "skipmessage": "Spring annonce over om xx",
+        "skiptext": "Spring over"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Lydspor",
+    "auto": "Auto",
+    "buffer": "Indlæser",
+    "cast": "Chromecast",
+    "cc": "Lukkede billedtekster",
+    "close": "Luk ned",
+    "errors": {
+        "badConnection": "Denne video kan ikke afspilles på grund af et problem med din internetforbindelse.",
+        "cantLoadPlayer": "Beklager, videoafspilleren kunne ikke indlæses.",
+        "cantPlayInBrowser": "Videoen kan ikke afspilles I denne browser.",
+        "cantPlayVideo": "Denne videofil kan ikke afspilles.",
+        "errorCode": "Fejlkode",
+        "liveStreamDown": "Live-streamen er enten gået ned eller er afsluttet.",
+        "protectedContent": "Der opstod et problem med at give adgang til beskyttet indhold.",
+        "technicalError": "Denne video kan ikke afspilles på grund af en teknisk fejl."
+    },
+    "fullscreen": "Fuld skærm",
+    "hd": "Kvalitet",
+    "liveBroadcast": "Live",
+    "logo": "Logo",
+    "next": "Næste",
+    "nextUp": "Se næste",
+    "notLive": "Ikke live",
+    "off": "Fra",
+    "pause": "Pause",
+    "play": "Afspil",
+    "playback": "Afspil",
+    "playbackRates": "Afspilningshastighed",
+    "player": "Videoafspiller",
+    "playlist": "Afspilningsliste",
+    "poweredBy": "Bragt til dig af",
+    "prev": "Tidligere",
+    "related": {
+        "autoplaymessage": "Se næste om xx",
+        "heading": "Flere Videoer"
+    },
+    "replay": "Gentag",
+    "rewind": "Spol 10 sekunder tilbage",
+    "settings": "Indstillinger",
+    "sharing": {
+        "copied": "Kopieret",
+        "email": "E-mail",
+        "embed": "Integrer",
+        "heading": "Del",
+        "link": "Link"
+    },
+    "slider": "Positionsskyder",
+    "stop": "Stop",
+    "videoInfo": "Om denne video",
+    "volume": "Lydstyrke",
+    "volumeSlider": "Juster lydstyrke"
+}

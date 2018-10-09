@@ -15,12 +15,12 @@ function focusSettingsElement(direction) {
     }
 }
 
-export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
+export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localzation) {
     const documentClickHandler = (e) => {
         // Close if anything other than the settings menu has been clicked
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
         // Don't close if the user has dismissed the nextup tooltip via it's close button (the tooltip overlays the menu)
-        if (!/jw-(settings|video|nextup-close|sharing-link)/.test(e.target.className)) {
+        if (!/jw-(settings|video|nextup-close|sharing-link|share-item)/.test(e.target.className)) {
             instance.close();
         }
     };
@@ -72,7 +72,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const closeButton = button('jw-settings-close', () => {
         instance.close();
-    }, 'Close Settings', [cloneIcon('close')]);
+    }, localzation.close, [cloneIcon('close')]);
 
     const closeOnButton = function(evt) {
         const key = evt.key.replace(/(Arrow|ape)/, '');

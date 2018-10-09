@@ -1,14 +1,18 @@
-import Model from 'controller/model';
+import MockModel from 'mock/mock-model';
 import ViewModel from 'view/view-model';
 import CaptionsRenderer from 'view/captionsrenderer';
 import VTTCue from 'parsers/captions/vttcue';
-
-const model = new Model({});
-const viewModel = new ViewModel(model);
-const captionsRenderer = new CaptionsRenderer(viewModel, model);
-captionsRenderer.setup('player', {});
+import { WARNING } from 'events/events';
 
 describe('CaptionsRenderer.getCurrentCues', function() {
+    let captionsRenderer;
+    let model;
+    beforeEach(function () {
+        model = new MockModel();
+        model.setup({});
+        captionsRenderer = new CaptionsRenderer(new ViewModel(model));
+        captionsRenderer.setup('player', {});
+    });
 
     it('should show the correct number of cues at any given position in time', function() {
         const allCues = [

@@ -54,6 +54,7 @@ export default class Controls {
         this.mute = null;
         this.nextUpToolTip = null;
         this.playerContainer = playerContainer;
+        this.wrapperElement = playerContainer.querySelector('.jw-wrapper');
         this.rightClickMenu = null;
         this.settingsMenu = null;
         this.showing = false;
@@ -105,15 +106,24 @@ export default class Controls {
             toggleClass(this.div, 'jw-info-open', visible);
         });
         this.rightClickMenu = new RightClick(this.infoOverlay);
+
+        const sharing = model.get('sharing');
+        let openShareMenu;
+        if (sharing && sharing.shareOnRightClick) {
+            openShareMenu = () => {
+                api.getPlugin('sharing').open();
+            };
+        }
+
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
-            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
+            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer, openShareMenu);
         } else {
             model.change('flashBlocked', (modelChanged, isBlocked) => {
                 if (isBlocked) {
                     this.rightClickMenu.destroy();
                 } else {
-                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
+                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer, openShareMenu);
                 }
             }, this);
         }
@@ -166,7 +176,11 @@ export default class Controls {
                 settingsButton.element().focus();
             }
         };
-        const settingsMenu = this.settingsMenu = createSettingsMenu(controlbar, visibilityChangeHandler);
+        const settingsMenu = this.settingsMenu = createSettingsMenu(
+            controlbar, 
+            visibilityChangeHandler, 
+            model.get('localization')
+        );
         setupSubmenuListeners(settingsMenu, controlbar, model, api);
 
         if (OS.mobile) {
@@ -335,11 +349,15 @@ export default class Controls {
         // Show controls when enabled
         this.userActive();
 
-        this.playerContainer.appendChild(this.div);
-
+        this.addControls();
         this.addBackdrop();
 
         model.set('controlsEnabled', true);
+    }
+
+    addControls() {
+        // Put the controls element inside the wrapper
+        this.wrapperElement.appendChild(this.div);
     }
 
     disable(model) {
@@ -357,7 +375,7 @@ export default class Controls {
 
         if (this.div.parentNode) {
             removeClass(this.playerContainer, 'jw-flag-touch');
-            this.playerContainer.removeChild(this.div);
+            this.div.parentNode.removeChild(this.div);
         }
         if (this.rightClickMenu) {
             this.rightClickMenu.destroy();
@@ -479,7 +497,7 @@ export default class Controls {
         // Put the backdrop element on top of overlays during instream mode
         // otherwise keep it behind captions and on top of preview poster
         const element = this.instreamState ? this.div : this.playerContainer.querySelector('.jw-captions');
-        this.playerContainer.insertBefore(this.backdrop, element);
+        this.wrapperElement.insertBefore(this.backdrop, element);
     }
 
     removeBackdrop() {

@@ -8,6 +8,12 @@ export default function getVisibility(model, element) {
     if (!model.get('activeTab')) {
         return 0;
     }
+
+    // Set visibility to 1 if we're floating in the active tab
+    if (model.get('floating')) {
+        return 1;
+    }
+
     // Otherwise, set it to the intersection ratio reported from the intersection observer
     let intersectionRatio = model.get('intersectionRatio');
 

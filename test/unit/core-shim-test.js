@@ -4,15 +4,17 @@ import { PlayerError } from 'api/errors';
 import { SETUP_ERROR, READY } from 'events/events';
 
 describe('CoreShim', function() {
+    const sandbox = sinon.sandbox.create();
+
     let core;
-    let sandbox = sinon.sandbox.create();
+
     beforeEach(function() {
         core = new CoreShim(document.createElement('div'));
-        console.error = sinon.stub();
+        sandbox.spy(console, 'error');
     });
 
     afterEach(function() {
-        console.error.reset();
+        sandbox.restore();
     });
 
     function expectError(expectedCode) {

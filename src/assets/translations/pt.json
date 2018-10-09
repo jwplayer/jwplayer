@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Este anúncio terminará em xx",
+        "cuetext": "Publicidade",
+        "loadingAd": "Carregando anúncio",
+        "podmessage": "Anúncio __AD_POD_CURRENT__ de __AD_POD_LENGTH__. ",
+        "skipmessage": "Pular anúncio em xx",
+        "skiptext": "Pular"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Faixas de Áudio",
+    "auto": "Automático",
+    "buffer": "Carregando",
+    "cast": "Chromecast",
+    "cc": "Legendas Ocultas",
+    "close": "Fechar",
+    "errors": {
+        "badConnection": "Este vídeo não pode ser reproduzido devido a um problema com sua conexão com a Internet.",
+        "cantLoadPlayer": "Desculpe, o reprodutor de vídeo não foi carregado.",
+        "cantPlayInBrowser": "O vídeo não pode ser reproduzido neste navegador.",
+        "cantPlayVideo": "Este arquivo de vídeo não pode ser reproduzido.",
+        "errorCode": "Código de erro",
+        "liveStreamDown": "A transmissão ao vivo está inativa ou foi encerrada.",
+        "protectedContent": "Houve um problema ao fornecer acesso ao conteúdo protegido.",
+        "technicalError": "Este vídeo não pode ser reproduzido devido a um problema técnico."
+    },
+    "fullscreen": "Tela Cheia",
+    "hd": "Qualidade",
+    "liveBroadcast": "Ao Vivo",
+    "logo": "Logo",
+    "next": "Próximo",
+    "nextUp": "A Seguir",
+    "notLive": "Gravado",
+    "off": "Desligar",
+    "pause": "Pausar",
+    "play": "Reproduzir",
+    "playback": "Reproduzir",
+    "playbackRates": "Taxas de Reprodução",
+    "player": "Reprodutor de Vídeo",
+    "playlist": "Lista de Reprodução",
+    "poweredBy": "Produzido por",
+    "prev": "Anterior",
+    "related": {
+        "autoplaymessage": "A Seguir em xx",
+        "heading": "Mais Vídeos"
+    },
+    "replay": "Repetir",
+    "rewind": "Voltar 10 Segundos",
+    "settings": "Configurações",
+    "sharing": {
+        "copied": "Copiado",
+        "email": "E-Mail",
+        "embed": "Embutir",
+        "heading": "Compartilhar",
+        "link": "Link"
+    },
+    "slider": "Controle de Posicionamento",
+    "stop": "Parar",
+    "videoInfo": "Sobre Este Vídeo",
+    "volume": "Volume",
+    "volumeSlider": "Controle de Volume"
+}

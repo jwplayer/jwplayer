@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "この広告はxx秒で終わります",
+        "cuetext": "広告",
+        "loadingAd": "広告を読み込み中",
+        "podmessage": "広告__AD_POD_CURRENT__分の__AD_POD_LENGTH__。",
+        "skipmessage": "xx秒後に広告をスキップできます",
+        "skiptext": "スキップ"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "オーディオトラック",
+    "auto": "自動",
+    "buffer": "読み込み中",
+    "cast": "Chromecast",
+    "cc": "字幕",
+    "close": "閉じる",
+    "errors": {
+        "badConnection": "インターネット接続の問題により、この動画は再生できません。",
+        "cantLoadPlayer": "申し訳ありません、ビデオプレイヤーが読み込みに失敗しました。",
+        "cantPlayInBrowser": "この動画は、お使いのブラウザでは再生できません。",
+        "cantPlayVideo": "この動画は再生できません。",
+        "errorCode": "エラーコード",
+        "liveStreamDown": "このライブ配信は停止しているか、既に終了しています。",
+        "protectedContent": "保護されたコンテンツへのアクセス提供に問題がありました。",
+        "technicalError": "技術的なエラーにより、この動画は再生できません。"
+    },
+    "fullscreen": "全画面",
+    "hd": "画質",
+    "liveBroadcast": "ライブ配信",
+    "logo": "ロゴ",
+    "next": "次へ",
+    "nextUp": "次の動画",
+    "notLive": "非ライブ配信",
+    "off": "オフ",
+    "pause": "一時停止",
+    "play": "再生",
+    "playback": "再生",
+    "playbackRates": "再生速度",
+    "player": "ビデオプレイヤ―",
+    "playlist": "プレイリスト",
+    "poweredBy": "パワードバイ",
+    "prev": "前へ",
+    "related": {
+        "autoplaymessage": "次の動画がxx秒で始まります",
+        "heading": "他の動画"
+    },
+    "replay": "リプレイ",
+    "rewind": "10秒巻き戻す",
+    "settings": "設定",
+    "sharing": {
+        "copied": "コピーされました",
+        "email": "Eメール",
+        "embed": "埋め込み",
+        "heading": "共有",
+        "link": "リンク"
+    },
+    "slider": "シークスライダー",
+    "stop": "停止",
+    "videoInfo": "この動画について",
+    "volume": "音量",
+    "volumeSlider": "音量スライダー"
+}
