@@ -5,7 +5,8 @@
         "loadingAd": "Laddar annons",
         "podmessage": "Annons __AD_POD_CURRENT__ av __AD_POD_LENGTH__. ",
         "skipmessage": "Skippa annons om xx",
-        "skiptext": "Skippa"
+        "skiptext": "Skippa",
+        "displayHeading": "Annons"
     },
     "airplay": "AirPlay",
     "audioTracks": "Ljudspår",

@@ -5,7 +5,8 @@
         "loadingAd": "Se încarcă reclamă",
         "podmessage": "Reclama __AD_POD_CURRENT__ din __AD_POD_LENGTH__. ",
         "skipmessage": "Sări peste reclamă în xx",
-        "skiptext": "Sări peste"
+        "skiptext": "Sări peste",
+        "displayHeading": "Reclamă"
     },
     "airplay": "AirPlay",
     "audioTracks": "Piste audio",

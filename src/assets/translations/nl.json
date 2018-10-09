@@ -5,7 +5,8 @@
         "loadingAd": "Reclame laden",
         "podmessage": "Reclame __AD_POD_CURRENT__ van __AD_POD_LENGTH__. ",
         "skipmessage": "Reclame overslaan in xx",
-        "skiptext": "Overslaan"
+        "skiptext": "Overslaan",
+        "displayHeading": "Advertentie"
     },
     "airplay": "AirPlay",
     "audioTracks": "Audiosporen",
