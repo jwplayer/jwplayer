@@ -5,7 +5,8 @@
         "loadingAd": "広告を読み込み中",
         "podmessage": "広告__AD_POD_CURRENT__分の__AD_POD_LENGTH__。",
         "skipmessage": "xx秒後に広告をスキップできます",
-        "skiptext": "スキップ"
+        "skiptext": "スキップ",
+        "displayHeading": "広告"
     },
     "airplay": "AirPlay",
     "audioTracks": "オーディオトラック",

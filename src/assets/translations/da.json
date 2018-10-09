@@ -5,7 +5,8 @@
         "loadingAd": "Indlæser annonce",
         "podmessage": "Annonce __AD_POD_CURRENT__ af __AD_POD_LENGTH__. ",
         "skipmessage": "Spring annonce over om xx",
-        "skiptext": "Spring over"
+        "skiptext": "Spring over",
+        "displayHeading": "Annonce"
     },
     "airplay": "AirPlay",
     "audioTracks": "Lydspor",

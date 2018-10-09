@@ -5,7 +5,8 @@
         "loadingAd": "Laster annonse",
         "podmessage": "Annonse __AD_POD_CURRENT__ av __AD_POD_LENGTH__. ",
         "skipmessage": "Hopp over annonse om xx",
-        "skiptext": "Hopp over"
+        "skiptext": "Hopp over",
+        "displayHeading": "Reklame"
     },
     "airplay": "AirPlay",
     "audioTracks": "Lydfiler",
