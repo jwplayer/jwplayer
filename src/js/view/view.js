@@ -53,7 +53,6 @@ function View(_api, _model) {
     });
 
     const _localization = _model.get('localization');
-    const _floatOnScroll = _model.get('floatOnScroll');
     const _playerElement = createElement(playerTemplate(_model.get('id'), _localization.player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
@@ -73,6 +72,8 @@ function View(_api, _model) {
     let _resizeContainerRequestId = -1;
     let _resizeOnFloat = false;
     let _stateClassRequestId = -1;
+
+    let _floatOnScroll = _model.get('floatOnScroll');
     let _canFloat = false;
 
     let displayClickHandler;
@@ -277,9 +278,7 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
             if (_floatOnScroll) {
                 const floatCloseButton = new FloatingCloseButton(_wrapperElement);
-                floatCloseButton.setup(() => {
-                    _stopFloating(true);
-                }, _localization.close);
+                floatCloseButton.setup(() => _stopFloating(true), _localization.close);
             }
         }
         _model.set('inDom', inDOM);
@@ -834,7 +833,11 @@ function View(_api, _model) {
         _model.set('intersectionRatio', intersectionRatio);
 
         if (_floatOnScroll) {
-            _updateFloating(intersectionRatio);
+            // Only start floating if player has been entirely visible at least once.
+            _canFloat = _canFloat || intersectionRatio === 1;
+            if (_canFloat) {
+                _updateFloating(intersectionRatio);
+            }
         }
     };
 
@@ -845,7 +848,7 @@ function View(_api, _model) {
     function _updateFloating(intersectionRatio) {
         // Entirely invisible and no floating player already in the DOM.
         const isVisible = intersectionRatio === 1;
-        if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null && _canFloat) {
+        if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
             const rect = bounds(_playerElement);
@@ -864,16 +867,16 @@ function View(_api, _model) {
             _resizeOnFloat = false;
         } else if (isVisible) {
             _stopFloating();
-            if (_canFloat !== null) {
-                _canFloat = true;
-            }
         }
     }
 
-    function _stopFloating(doNotFloatAgain) {
+    function _stopFloating(forever) {
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
-            _canFloat = doNotFloatAgain ? null : false;
+
+            if (forever) {
+                _floatOnScroll = false;
+            }
 
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });
