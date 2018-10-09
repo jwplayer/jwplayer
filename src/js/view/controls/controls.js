@@ -168,8 +168,8 @@ export default class Controls {
             }
         };
         const settingsMenu = this.settingsMenu = createSettingsMenu(
-            controlbar, 
-            visibilityChangeHandler, 
+            controlbar,
+            visibilityChangeHandler,
             model.get('localization')
         );
         setupSubmenuListeners(settingsMenu, controlbar, model, api);
@@ -487,7 +487,7 @@ export default class Controls {
     addBackdrop() {
         // Put the backdrop element on top of overlays during instream mode
         // otherwise keep it behind captions and on top of preview poster
-        const element = this.instreamState ? this.div : this.playerContainer.querySelector('.jw-captions');
+        const element = this.instreamState ? this.div : this.wrapperElement.querySelector('.jw-captions');
         this.wrapperElement.insertBefore(this.backdrop, element);
     }
 
