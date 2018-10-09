@@ -302,10 +302,6 @@ function View(_api, _model) {
             }
         });
 
-        if (_floatOnScroll) {
-            _model.on('change:intersectionRatio', _updateFloating);
-        }
-
         updateVisibility();
 
         // Always draw first player for icons to load
@@ -832,13 +828,17 @@ function View(_api, _model) {
         // Round as the IntersectionObserver polyfill sometimes returns ±0.00XXX.
         const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
         _model.set('intersectionRatio', intersectionRatio);
+
+        if (_floatOnScroll) {
+            _updateFloating(intersectionRatio);
+        }
     };
 
     function _getCurrentElement() {
         return _model.get('floating') ? _wrapperElement : _playerElement;
     }
 
-    function _updateFloating(model, intersectionRatio) {
+    function _updateFloating(intersectionRatio) {
         // Entirely invisible and no floating player already in the DOM.
         const isVisible = intersectionRatio === 1;
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
