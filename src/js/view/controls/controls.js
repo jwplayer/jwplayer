@@ -106,24 +106,15 @@ export default class Controls {
             toggleClass(this.div, 'jw-info-open', visible);
         });
         this.rightClickMenu = new RightClick(this.infoOverlay);
-
-        const sharing = model.get('sharing');
-        let openShareMenu;
-        if (sharing && sharing.shareOnRightClick) {
-            openShareMenu = () => {
-                api.getPlugin('sharing').open();
-            };
-        }
-
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
-            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer, openShareMenu);
+            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
         } else {
             model.change('flashBlocked', (modelChanged, isBlocked) => {
                 if (isBlocked) {
                     this.rightClickMenu.destroy();
                 } else {
-                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer, openShareMenu);
+                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
                 }
             }, this);
         }
