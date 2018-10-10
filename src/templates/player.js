@@ -3,6 +3,7 @@ export default (id, ariaLabel = '') => {
         `<div id="${id}" class="jwplayer jw-reset jw-state-setup" tabindex="0" aria-label="${ariaLabel}" role="application">` +
             `<div class="jw-aspect jw-reset"></div>` +
             `<div class="jw-wrapper jw-reset">` +
+                `<div class="jw-header jw-reset"></div>` +
                 `<div class="jw-aspect jw-reset"></div>` +
                 `<div class="jw-media jw-reset"></div>` +
                 `<div class="jw-preview jw-reset"></div>` +
