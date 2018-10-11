@@ -6,6 +6,7 @@ import Events from 'utils/backbone.events';
 import { cloneIcon } from 'view/controls/icons';
 import { seconds } from 'utils/strings';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
+import { timeFormat } from 'utils/parser';
 
 export default class NextUpTooltip {
     constructor(_model, _api, playerElement) {
@@ -127,12 +128,11 @@ export default class NextUpTooltip {
             this.title.innerText = title ? createElement(title).textContent : '';
 
             // Set duration
-            if (nextUpItem.duration) {
+            const duration = nextUpItem.duration;
+            if (duration) {
                 this.duration = this.content.querySelector('.jw-nextup-duration');
-                const duration = nextUpItem.duration;
-                this.duration.innerText = duration ? createElement(duration).textContent : '';
+                this.duration.innerText = createElement(typeof duration === 'number' ? timeFormat(duration) : duration).textContent;
             }
-
         }, 500);
     }
 
