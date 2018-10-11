@@ -125,13 +125,13 @@ export default class NextUpTooltip {
             // Set title
             this.title = this.content.querySelector('.jw-nextup-title');
             const title = nextUpItem.title;
-            this.title.innerText = title ? createElement(title).textContent : '';
+            this.title.innerText = title || '';
 
             // Set duration
             const duration = nextUpItem.duration;
             if (duration) {
                 this.duration = this.content.querySelector('.jw-nextup-duration');
-                this.duration.innerText = createElement(typeof duration === 'number' ? timeFormat(duration) : duration).textContent;
+                this.duration.innerText = typeof duration === 'number' ? timeFormat(duration) : duration;
             }
         }, 500);
     }
