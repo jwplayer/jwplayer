@@ -125,7 +125,8 @@ export default class NextUpTooltip {
             // Set title
             this.title = this.content.querySelector('.jw-nextup-title');
             const title = nextUpItem.title;
-            this.title.innerText = title || '';
+            // createElement is used to leverage 'textContent', to protect against developers passing a title with html styling.
+            this.title.innerText = title ? createElement(title).textContent : '';
 
             // Set duration
             const duration = nextUpItem.duration;
