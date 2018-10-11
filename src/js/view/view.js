@@ -533,7 +533,7 @@ function View(_api, _model) {
             const instream = model.get('instream');
             const instreamProvider = instream ? instream.provider : null;
             const provider = model.getVideo() || instreamProvider;
-            if (provider && typeof provider.setFullscreen === 'function') {
+            if (provider && provider.setFullscreen) {
                 provider.setFullscreen(state);
             }
         }
