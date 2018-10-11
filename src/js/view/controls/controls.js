@@ -106,24 +106,15 @@ export default class Controls {
             toggleClass(this.div, 'jw-info-open', visible);
         });
         this.rightClickMenu = new RightClick(this.infoOverlay);
-
-        const sharing = model.get('sharing');
-        let openShareMenu;
-        if (sharing && sharing.shareOnRightClick) {
-            openShareMenu = () => {
-                api.getPlugin('sharing').open();
-            };
-        }
-
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
-            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer, openShareMenu);
+            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
         } else {
             model.change('flashBlocked', (modelChanged, isBlocked) => {
                 if (isBlocked) {
                     this.rightClickMenu.destroy();
                 } else {
-                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer, openShareMenu);
+                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
                 }
             }, this);
         }
@@ -177,8 +168,8 @@ export default class Controls {
             }
         };
         const settingsMenu = this.settingsMenu = createSettingsMenu(
-            controlbar, 
-            visibilityChangeHandler, 
+            controlbar,
+            visibilityChangeHandler,
             model.get('localization')
         );
         setupSubmenuListeners(settingsMenu, controlbar, model, api);
@@ -496,7 +487,7 @@ export default class Controls {
     addBackdrop() {
         // Put the backdrop element on top of overlays during instream mode
         // otherwise keep it behind captions and on top of preview poster
-        const element = this.instreamState ? this.div : this.playerContainer.querySelector('.jw-captions');
+        const element = this.instreamState ? this.div : this.wrapperElement.querySelector('.jw-captions');
         this.wrapperElement.insertBefore(this.backdrop, element);
     }
 

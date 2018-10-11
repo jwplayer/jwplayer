@@ -24,7 +24,7 @@
         /* stylelint-disable-next-line declaration-no-important */
         height: auto !important;
 
-        & .jw-wrapper .jw-aspect {
+        .jw-aspect {
             display: block;
         }
     }
@@ -90,7 +90,10 @@
 }
 
 .jw-wrapper {
-    &:extend(.jwplayer);
     background-color: #000;
-    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }

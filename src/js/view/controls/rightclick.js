@@ -37,12 +37,6 @@ export default class RightClick {
             }]
         };
 
-        if (this.shareHandler) {
-            menu.items.unshift({
-                type: 'share'
-            });
-        }
-
         const provider = this.model.get('provider');
         if (provider && provider.name.indexOf('flash') >= 0) {
             const text = 'Flash Version ' + flashVersion();
@@ -144,20 +138,11 @@ export default class RightClick {
         };
     }
 
-    setup(_model, _playerElement, layer, openShareMenu) {
+    setup(_model, _playerElement, layer) {
         this.playerElement = _playerElement;
         this.model = _model;
         this.mouseOverContext = false;
         this.layer = layer;
-
-        if (openShareMenu) {
-            this.shareHandler = () => {
-                this.mouseOverContext = false;
-                this.hideMenu();
-                openShareMenu();
-            };
-        }
-
         this.ui = new UI(_playerElement).on('longPress', this.rightClick, this);
     }
 
@@ -175,10 +160,6 @@ export default class RightClick {
             this.el.addEventListener('mouseout', this.outHandler);
         }
         this.el.querySelector('.jw-info-overlay-item').addEventListener('click', this.infoOverlayHandler);
-        const shareItemElement = this.el.querySelector('.jw-share-item');
-        if (shareItemElement) {
-            shareItemElement.addEventListener('click', this.shareHandler);
-        }
     }
 
     removeHideMenuHandlers() {
@@ -189,11 +170,6 @@ export default class RightClick {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
             this.el.removeEventListener('mouseover', this.overHandler);
             this.el.removeEventListener('mouseout', this.outHandler);
-            
-            const shareItemElement = this.el.querySelector('.jw-share-item');
-            if (shareItemElement) {
-                shareItemElement.addEventListener('click', this.shareHandler);
-            }
         }
         document.removeEventListener('click', this.hideMenuHandler);
         document.removeEventListener('touchstart', this.hideMenuHandler);

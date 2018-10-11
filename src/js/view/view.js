@@ -52,8 +52,8 @@ function View(_api, _model) {
         model: _model
     });
 
-    const _floatOnScroll = _model.get('floatOnScroll');
-    const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
+    const _localization = _model.get('localization');
+    const _playerElement = createElement(playerTemplate(_model.get('id'), _localization.player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
 
@@ -72,6 +72,9 @@ function View(_api, _model) {
     let _resizeContainerRequestId = -1;
     let _resizeOnFloat = false;
     let _stateClassRequestId = -1;
+
+    let _floatOnScroll = _model.get('floatOnScroll');
+    let _canFloat = false;
 
     let displayClickHandler;
     let fullscreenHelpers;
@@ -210,6 +213,11 @@ function View(_api, _model) {
         focusHelper = flagNoFocus(_playerElement);
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
+        if (_floatOnScroll) {
+            const floatCloseButton = new FloatingCloseButton(_wrapperElement.querySelector('.jw-header'));
+            floatCloseButton.setup(() => _stopFloating(true), _localization.close);
+        }
+
         _model.on('change:hideAdsControls', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
         });
@@ -273,10 +281,6 @@ function View(_api, _model) {
         const inDOM = document.body.contains(_playerElement);
         if (inDOM) {
             viewsManager.observe(_playerElement);
-            if (_floatOnScroll) {
-                const floatCloseButton = new FloatingCloseButton(_wrapperElement);
-                floatCloseButton.setup(_stopFloating);
-            }
         }
         _model.set('inDom', inDOM);
     };
@@ -292,7 +296,6 @@ function View(_api, _model) {
         _model.on('change:fullscreen', _fullscreen);
         _model.on('change:activeTab', updateVisibility);
         _model.on('change:fullscreen', updateVisibility);
-        _model.on('change:floating', updateVisibility);
         _model.on('change:intersectionRatio', updateVisibility);
         _model.on('change:visibility', redraw);
         _model.on('instreamMode', (instreamMode) => {
@@ -830,9 +833,16 @@ function View(_api, _model) {
     };
 
     this.setIntersection = function (entry) {
-        _model.set('intersectionRatio', entry.intersectionRatio);
+        // Round as the IntersectionObserver polyfill sometimes returns ±0.00XXX.
+        const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
+        _model.set('intersectionRatio', intersectionRatio);
+
         if (_floatOnScroll) {
-            _setFloatingIntersection(entry);
+            // Only start floating if player has been entirely visible at least once.
+            _canFloat = _canFloat || intersectionRatio === 1;
+            if (_canFloat) {
+                _updateFloating(intersectionRatio);
+            }
         }
     };
 
@@ -840,9 +850,9 @@ function View(_api, _model) {
         return _model.get('floating') ? _wrapperElement : _playerElement;
     }
 
-    function _setFloatingIntersection(entry) {
-        // Entirely invisible and no floating player already in the DOM
-        const isVisible = entry.intersectionRatio === 1;
+    function _updateFloating(intersectionRatio) {
+        // Entirely invisible and no floating player already in the DOM.
+        const isVisible = intersectionRatio === 1;
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
@@ -865,9 +875,13 @@ function View(_api, _model) {
         }
     }
 
-    function _stopFloating() {
+    function _stopFloating(forever) {
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
+
+            if (forever) {
+                _floatOnScroll = false;
+            }
 
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });

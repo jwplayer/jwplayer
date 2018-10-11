@@ -1,7 +1,6 @@
-export default () => {
+export default (ariaLabel) => {
     return (
-        `<div class="jw-float-close jw-reset">` +
-        `<span class="jw-icon jw-reset" aria-label="Unfloat" tabindex="0"></span>` +
+        `<div class="jw-float-icon jw-icon jw-reset" aria-label=${ariaLabel} tabindex="0">` +
         `</div>`
     );
 };
