@@ -530,8 +530,12 @@ function View(_api, _model) {
             _toggleDOMFullscreen(_playerElement, state);
         } else {
             // Request media element fullscreen (iOS)
-            const provider = model.getVideo();
-            provider.setFullscreen(state);
+            const instream = model.get('instream');
+            const instreamProvider = instream ? instream.provider : null;
+            const provider = model.getVideo() || instreamProvider;
+            if (provider && provider.setFullscreen) {
+                provider.setFullscreen(state);
+            }
         }
     };
 
