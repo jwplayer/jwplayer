@@ -1,4 +1,4 @@
-import * as Language from 'utils/language';
+import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable, loadJsonTranslation, getCustomLocalization, isLocalizationComplete } from 'utils/language';
 import * as Browser from 'utils/browser';
 import Config from 'api/config';
 import en from 'assets/translations/en';
@@ -6,16 +6,6 @@ import sinon from 'sinon';
 
 describe('languageUtils', function() {
     const sandbox = sinon.sandbox.create();
-    const {
-        getLabel,
-        getCode,
-        getLanguage,
-        translatedLanguageCodes,
-        isTranslationAvailable,
-        loadJsonTranslation,
-        getCustomLocalization,
-        isLocalizationComplete
-    } = Language;
 
     describe('getLabel from unsupported codes', function() {
 
@@ -353,18 +343,23 @@ describe('languageUtils', function() {
         });
 
         it('should only use custom localization block if "forceLocalizationDefaults" is true', function() {
-            sandbox.stub(Language, 'getLanguage').returns('fr');
             const config = new Config({
                 forceLocalizationDefaults: true,
                 localization,
                 intl
             });
             const configLocalization = config.localization;
-            expect(Language.getLanguage()).to.equal('fr');
             expect(config.language).to.equal('en');
             expect(configLocalization.play).to.equal(localizationPlay);
             expect(configLocalization.pause).to.equal(localizationPause);
             expect(configLocalization.stop).to.equal(localizationStop);
+
+            Object.keys(en).forEach(key => {
+                if (key === 'play' || key === 'pause' || key === 'stop') {
+                    return;
+                }
+                expect(configLocalization[key]).to.deep.equal(en[key]);
+            });
         });
     });
 
