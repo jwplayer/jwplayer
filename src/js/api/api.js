@@ -13,11 +13,11 @@ import _ from 'utils/underscore';
 let instancesCreated = 0;
 
 /**
- * @private
  * Factory method which creates controllers before calling `jwplayer().setup()`.
  * @param {Api} api - The Player API instance to bind core to
  * @param {HTMLElement} element - The element that will be replaced by the player's div container
  * @returns {Core} The core controller instance
+ * @private
  */
 function coreFactory(api, element) {
     const core = new Core(element);
@@ -35,11 +35,11 @@ function coreFactory(api, element) {
 }
 
 /**
- * @private
  * Detaches Api event listeners and destroys the controller.
  * @param {Api} api - The Player API to remove listeners from
  * @param {Core} core - The core controller to destroy
  * @returns {void}
+ * @private
  */
 function resetPlayer(api, core) {
     const plugins = api.plugins;
@@ -55,11 +55,11 @@ function resetPlayer(api, core) {
 }
 
 /**
- * @private
  * Removes the Api instance from the list of active players.
  * The instance will no longer be queryable via `jwplayer()`
  * @param {Api} api - The Player API to remove
  * @returns {void}
+ * @private
  */
 function removePlayer(api) {
     for (let i = instances.length; i--;) {

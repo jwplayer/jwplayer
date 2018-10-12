@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: BackgroundMedia</title>
+    <title>JSDoc: Class: CaptionsRenderer</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: BackgroundMedia</h1>
+    <h1 class="page-title">Class: CaptionsRenderer</h1>
 
     
 
@@ -28,7 +28,10 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>BackgroundMedia<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>CaptionsRenderer<span class="signature">()</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>CaptionsRenderer
+param {ViewModel} viewModel - The player's ViewModel instance.</p></div>
         
     
 </header>
@@ -39,121 +42,29 @@
         
 
     
-
-    
-    <h4 class="name" id="BackgroundMedia"><span class="type-signature"></span>new BackgroundMedia<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h2>Constructor</h2>
     
 
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
+    <h4 class="name" id="CaptionsRenderer"><span class="type-signature"></span>new CaptionsRenderer<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>currentMedia</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">MediaController</span>
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The mediaController which has been placed into the background during playback.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>nextItem</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Item</span>
+<div class="description">
+    <p>Component that renders the actual captions on screen.</p>
+</div>
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The playlist item loading in the background.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>nextMedia</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Promise</span>
 
 
-            
-            </td>
 
-            
 
-            
 
-            <td class="description last"><p>A promise representing the media loading in the background. Resolves with the mediaController.</p></td>
-        </tr>
 
-    
-    </tbody>
-</table>
+
 
 
 
@@ -227,6 +138,181 @@
 
     
 
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setup"><span class="type-signature"></span>setup<span class="signature">(playerElementId, options)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Initialize the captions renderer</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>playerElementId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The player container's DOM id</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The captions styling configuration</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     

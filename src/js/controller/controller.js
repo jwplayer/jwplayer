@@ -767,7 +767,7 @@ Object.assign(Controller.prototype, {
 
         this.preload = preload;
 
-        /** Controller API / public methods **/
+        /* Controller API / public methods */
         this.load = _load;
         this.play = (meta) => _play(meta).catch(noop);
         this.pause = _pause;

@@ -1,3 +1,4 @@
+/** @module */
 
 /**
  * @param {any} item - The variable to test.

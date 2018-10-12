@@ -1,16 +1,19 @@
 import { isValidNumber } from 'utils/underscore';
+
+/** @module */
+
 /**
- * @type {ErrorCode} Base code for a setup failure.
+ * @enum {ErrorCode} Base code for a setup failure.
  **/
 export const SETUP_ERROR_UNKNOWN = 100000;
 
 /**
- * @type {ErrorCode} Setup failed because it took longer than 30 seconds.
+ * @enum {ErrorCode} Setup failed because it took longer than 30 seconds.
  */
 export const SETUP_ERROR_TIMEOUT = 100001;
 
 /**
- * @type {ErrorCode} Setup failed because the setup promise result was undefined.
+ * @enum {ErrorCode} Setup failed because the setup promise result was undefined.
  * This could be caused by 3rd party JavaScript interfering with native promises or an incomplete promise polyfill.
  */
 export const SETUP_ERROR_PROMISE_API_CONFLICT = 100002;
