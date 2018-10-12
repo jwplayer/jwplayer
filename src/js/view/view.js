@@ -716,8 +716,15 @@ function View(_api, _model) {
             default:
                 if (_captionsRenderer) {
                     _captionsRenderer.show();
-                    if (state === STATE_PAUSED && _controls && !_controls.showing) {
-                        _captionsRenderer.renderCues(true);
+                    if (state === STATE_PLAYING) {
+                        if (_model.get('streamType') === 'LIVE') {
+                            _captionsRenderer.clear();
+                        }
+                    }
+                    if (state === STATE_PAUSED) {
+                        if (_controls && !_controls.showing) {
+                            _captionsRenderer.renderCues(true);
+                        }
                     }
                 }
                 break;
