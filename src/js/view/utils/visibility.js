@@ -25,7 +25,6 @@ export default function getVisibility(model, element) {
 
     return intersectionRatio;
 }
-
  
 function computeVisibility(target) {
     const html = document.documentElement;
