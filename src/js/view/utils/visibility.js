@@ -26,6 +26,9 @@ export default function getVisibility(model, element) {
 }
 
 function computeVisibility(target) {
+    if (window.top !== window.self) {
+        return 0;
+    }
     const html = document.documentElement;
     const body = document.body;
     const rootRect = {
