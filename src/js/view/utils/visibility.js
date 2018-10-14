@@ -17,7 +17,8 @@ export default function getVisibility(model, element) {
     // Otherwise, set it to the intersection ratio reported from the intersection observer
     let intersectionRatio = model.get('intersectionRatio');
 
-    if (intersectionRatio === undefined) {
+    // Compute visibility does not return accurate value for iFrame player
+    if (intersectionRatio === undefined && !(window.top !== window.self)) {
         // Get intersectionRatio through brute force
         intersectionRatio = computeVisibility(element);
     }
@@ -25,10 +26,8 @@ export default function getVisibility(model, element) {
     return intersectionRatio;
 }
 
+ 
 function computeVisibility(target) {
-    if (window.top !== window.self) {
-        return 0;
-    }
     const html = document.documentElement;
     const body = document.body;
     const rootRect = {
