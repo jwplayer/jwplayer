@@ -201,7 +201,7 @@ function View(_api, _model) {
 
         _logo = new Logo(_model);
         _logo.setup();
-        _logo.setContainer(_playerElement.getElementsByClassName('jw-wrapper')[0]);
+        _logo.setContainer(_wrapperElement);
         _logo.on(LOGO_CLICK, _logoClickHandler);
 
         // captions rendering
