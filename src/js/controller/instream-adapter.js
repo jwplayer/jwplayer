@@ -51,7 +51,9 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // toggle playback after click event
         if (_adProgram.model.get('state') === STATE_PAUSED) {
             if (evt.hasControls) {
-                _adProgram.playVideo();
+                _adProgram.playVideo().catch(() => {
+                    _controller.play();
+                });
             }
         } else {
             _adProgram.pause();
