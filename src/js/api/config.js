@@ -119,7 +119,7 @@ const Config = function(options, persisted) {
     _copyToLocalization(allOptions);
     _deserialize(allOptions);
 
-    const language = getLanguage();
+    const language = allOptions.forceLocalizationDefaults ? Defaults.language : getLanguage();
     const { localization, intl } = allOptions;
     allOptions.localization = applyTranslation(en, getCustomLocalization(localization, intl || {}, language));
 
