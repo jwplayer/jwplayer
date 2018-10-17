@@ -25,7 +25,6 @@ export default function getVisibility(model, element) {
             return 0;
         }
     }
-
     return intersectionRatio;
 }
  
