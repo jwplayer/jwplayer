@@ -859,9 +859,6 @@ function View(_api, _model) {
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
-            const width = _this.api.getWidth();
-            const height = _this.api.getHeight();
-
             // Copy background from preview element, fallback to image config.
             style(_playerElement, {
                 backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
@@ -874,6 +871,7 @@ function View(_api, _model) {
             _resizeOnFloat = true;
 
             // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
+            const { width, height } = _this.getSafeRegion(false);
             const ratio = Math.min(1, MAX_FLOATING_WIDTH / width, MAX_FLOATING_HEIGHT / height);
             _this.resize(width * ratio, height * ratio, true);
 
