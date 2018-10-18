@@ -406,7 +406,8 @@ export default class Controlbar {
 
     onFullscreen(model, val) {
         toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
-        this.elements.play.element().focus();
+        this.elements.fullscreen.element().focus();
+        console.log('active element', document.activeElement);
     }
 
     onAudioMode(model, val) {
