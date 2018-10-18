@@ -502,7 +502,8 @@ Object.assign(Controller.prototype, {
                 }
 
                 // Enable autoPause behavior.
-                if (_model.get('autoPause') && _model.get('autoPause').viewability) {
+                const autoPause = _model.get('autoPause');
+                if (autoPause && autoPause.viewability) {
                     _model.set('playOnViewable', true);
                 }
 
