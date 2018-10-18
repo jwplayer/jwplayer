@@ -283,7 +283,7 @@ Object.assign(Controller.prototype, {
             }
 
             // Autostart immediately if we're not waiting for the player to become viewable first.
-            if (_model.get('autostart') === true) {
+            if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
                 _autoStart();
             }
             apiQueue.flush();
@@ -499,6 +499,12 @@ Object.assign(Controller.prototype, {
                         model.off('change:viewable', _checkPlayOnViewable);
                         _this.trigger(MEDIA_MUTE, { mute: _model.getMute() });
                     });
+                }
+
+                // Enable autoPause behavior.
+                const autoPause = _model.get('autoPause');
+                if (autoPause && autoPause.viewability) {
+                    _model.set('playOnViewable', true);
                 }
 
                 return _play({ reason: 'autostart' }).catch(() => {
