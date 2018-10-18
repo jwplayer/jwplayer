@@ -501,6 +501,11 @@ Object.assign(Controller.prototype, {
                     });
                 }
 
+                // Enable autoPause behavior.
+                if (_model.get('autoPause') && _model.get('autoPause').viewability) {
+                    _model.set('playOnViewable', true);
+                }
+
                 return _play({ reason: 'autostart' }).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
