@@ -709,25 +709,27 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
     const cue = styleBox.cue;
     let linePos = computeLinePos(cue);
     let axis = [];
-    const positiveY = '+y';
-    const negativeY = '-y';
-    const positiveX = '+x';
-    const negativeX = '-x';
+    // We use variables instead of strings because Safari 12 introduced a bug where the reverse order of an array
+    // is cached after array.prototype.reverse is called on the array (https://bugs.webkit.org/show_bug.cgi?id=188794).
+    const posY = '+y';
+    const negY = '-y';
+    const posX = '+x';
+    const negX = '-x';
 
     // If we have a line number to align the cue to.
     if (cue.snapToLines) {
         let size;
         switch (cue.vertical) {
             case '':
-                axis = [positiveY, negativeY];
+                axis = [posY, negY];
                 size = 'height';
                 break;
             case 'rl':
-                axis = [positiveX, negativeX];
+                axis = [posX, negX];
                 size = 'width';
                 break;
             case 'lr':
-                axis = [negativeX, positiveX];
+                axis = [negX, posX];
                 size = 'width';
                 break;
             default:
@@ -809,7 +811,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
                 break;
         }
 
-        axis = [positiveY, negativeX, positiveX, negativeY];
+        axis = [posY, negX, posX, negY];
 
         // Get the box position again after we've applied the specified positioning
         // to it.
