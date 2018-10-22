@@ -176,7 +176,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
         error() {
             const { video } = _this;
-            const errorCode = (video.error && video.error.code) || -1;
+            const error = video.error;
+            const errorCode = (error && error.code) || -1;
             // Error code 2 from the video element is a network error
             let code = HTML5_BASE_MEDIA_ERROR;
             let key = MSG_CANT_PLAY_VIDEO;
@@ -198,7 +199,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             _clearVideotagSource();
             _this.trigger(
                 MEDIA_ERROR,
-                new PlayerError(key, code, video.error)
+                new PlayerError(key, code, error)
             );
         }
     };
