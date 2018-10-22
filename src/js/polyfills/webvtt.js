@@ -709,13 +709,15 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
     const cue = styleBox.cue;
     let linePos = computeLinePos(cue);
     let axis = [];
+    const positiveY = '+y';
+    const negativeY = '-y';
 
     // If we have a line number to align the cue to.
     if (cue.snapToLines) {
         let size;
         switch (cue.vertical) {
             case '':
-                axis = ['+y', '-y'];
+                axis = [positiveY, negativeY];
                 size = 'height';
                 break;
             case 'rl':
