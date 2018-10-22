@@ -711,6 +711,8 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
     let axis = [];
     const positiveY = '+y';
     const negativeY = '-y';
+    const positiveX = '+x';
+    const negativeX = '-x';
 
     // If we have a line number to align the cue to.
     if (cue.snapToLines) {
@@ -721,11 +723,11 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
                 size = 'height';
                 break;
             case 'rl':
-                axis = ['+x', '-x'];
+                axis = [positiveX, negativeX];
                 size = 'width';
                 break;
             case 'lr':
-                axis = ['-x', '+x'];
+                axis = [negativeX, positiveX];
                 size = 'width';
                 break;
             default:
@@ -807,7 +809,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
                 break;
         }
 
-        axis = ['+y', '-x', '+x', '-y'];
+        axis = [positiveY, negativeX, positiveX, negativeY];
 
         // Get the box position again after we've applied the specified positioning
         // to it.
