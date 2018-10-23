@@ -760,10 +760,11 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
             // Account for lines of text when determining position based on a negative line value
             const textHeight = numLinesOfText * step;
             position -= textHeight;
-            // We call reverse on a copy of the 'axis' array, instead of calling it on the original array because
+            // Modified on 10/23/2018 by Karim Mourra: karim@jwplayer.com
+            // We call reverse on a copy of the 'axis' array, instead of calling it directly on the original var because
             // Safari 12 introduced a bug where the reverse order of an array is cached after calling
             // array.prototype.reverse (https://bugs.webkit.org/show_bug.cgi?id=188794).
-            axis = array1.slice(0).reverse();
+            axis = axis.slice(0).reverse();
         }
 
         // Shift the position of the captions up to prevent minor overlaps as the text is laid out in IE11
