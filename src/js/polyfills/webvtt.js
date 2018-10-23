@@ -764,7 +764,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
             // We call reverse on a copy of the 'axis' array, instead of calling it directly on the original var because
             // Safari 12 introduced a bug where the reverse order of an array is cached after calling
             // array.prototype.reverse (https://bugs.webkit.org/show_bug.cgi?id=188794).
-            axis = axis.slice(0).reverse();
+            axis = axis.slice().reverse();
         }
 
         // Shift the position of the captions up to prevent minor overlaps as the text is laid out in IE11
