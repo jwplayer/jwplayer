@@ -42,7 +42,7 @@ class ProgramController extends Eventable {
      * @memberOf ProgramController
      */
     setActiveItem(index) {
-        const { background, mediaController, model } = this;
+        const { model } = this;
         const item = model.get('playlist')[index];
 
         model.attributes.itemReady = false;
@@ -51,6 +51,8 @@ class ProgramController extends Eventable {
         if (!source) {
             return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE));
         }
+
+        const { background, mediaController } = this;
 
         // Activate the background media if it's loading the item we want to play
         if (background.isNext(item)) {
