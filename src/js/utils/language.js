@@ -6,7 +6,7 @@ import en from 'assets/translations/en.js';
 
 const translationPromises = {};
 
-/**
+/*
  * A map of 2-letter language codes (ISO 639-1) to language name in English
  */
 const codeToLang = {

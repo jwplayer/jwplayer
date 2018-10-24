@@ -2,7 +2,7 @@ import { localName, textContent, numChildren } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
 import { seconds } from 'utils/strings';
 
-/**
+/*
  * Parse a MRSS group into a playlistitem (used in RSS and ATOM)
  * The 'content' and 'group' elements can nest other MediaRSS elements
  */

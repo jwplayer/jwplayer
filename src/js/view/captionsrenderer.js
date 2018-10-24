@@ -22,6 +22,7 @@ const _defaults = {
 
 /**
  * Component that renders the actual captions on screen.
+ * @class CaptionsRenderer
  * param {ViewModel} viewModel - The player's ViewModel instance.
  */
 

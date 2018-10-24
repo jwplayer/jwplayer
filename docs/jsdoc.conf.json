@@ -4,15 +4,11 @@
       "./src/js/"
     ],
     "exclude": [
-      "./src/js/cast/",
-      "./src/js/events/",
-      "./src/js/parsers/",
-      "./src/js/plugins/",
-      "./src/js/polyfills/",
-      "./src/js/utils/",
-      "./src/js/view/"
+      "./src/js/parsers/captions/vttcue.js",
+      "./src/js/polyfills/"
     ]
   },
+  "sourceType": "module",
   "opts": {
     "debug": true,
     "destination": "docs/api",
@@ -23,7 +19,7 @@
     "default": {
       "outputSourceFiles": false,
       "includeDate": false,
-      "useLongnameInNav": true
+      "useLongnameInNav": false
     }
   },
   "plugins": ["./plugins/markdown"],

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: BackgroundMedia</title>
+    <title>JSDoc: Module: api/Setup</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: BackgroundMedia</h1>
+    <h1 class="page-title">Module: api/Setup</h1>
 
     
 
@@ -28,7 +28,6 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>BackgroundMedia<span class="signature">()</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -38,10 +37,41 @@
     
         
 
+        
+    
+    </div>
+
     
 
     
-    <h4 class="name" id="BackgroundMedia"><span class="type-signature"></span>new BackgroundMedia<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="module-api_Setup-Setup.html">Setup</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".setupResult"><span class="type-signature">(static) </span>setupResult<span class="signature">(allPromises)</span><span class="type-signature"> &rarr; {SetupResult}</span></h4>
     
 
     
@@ -56,15 +86,10 @@
 
 
 
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
+    <h5>Parameters:</h5>
     
 
-<table class="props">
+<table class="params">
     <thead>
     <tr>
         
@@ -86,13 +111,13 @@
 
         <tr>
             
-                <td class="name"><code>currentMedia</code></td>
+                <td class="name"><code>allPromises</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">MediaController</span>
+<span class="param-type">Array.&lt;Promise></span>
 
 
             
@@ -102,58 +127,14 @@
 
             
 
-            <td class="description last"><p>The mediaController which has been placed into the background during playback.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>nextItem</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Item</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The playlist item loading in the background.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>nextMedia</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Promise</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A promise representing the media loading in the background. Resolves with the mediaController.</p></td>
+            <td class="description last"><p>An array of promise resolutions or rejections</p></td>
         </tr>
 
     
     </tbody>
 </table>
+
+
 
 
 
@@ -205,13 +186,138 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>setupResult</p>
+</div>
 
 
 
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">SetupResult</span>
 
+
+    </dd>
+</dl>
 
     
-    </div>
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id="~SetupResult">SetupResult</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>core</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>warnings</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;PlayerError></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
 
     
 
@@ -229,6 +335,29 @@
 
     
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
     
 
     

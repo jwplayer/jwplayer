@@ -2,7 +2,7 @@ import { localName, textContent } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
 import { serialize } from 'utils/parser';
 
-/**
+/*
 * Parse a feed item for JWPlayer content.
 */
 

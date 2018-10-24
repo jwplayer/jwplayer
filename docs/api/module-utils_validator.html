@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Timer</title>
+    <title>JSDoc: Module: utils/validator</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Timer</h1>
+    <h1 class="page-title">Module: utils/validator</h1>
 
     
 
@@ -28,7 +28,6 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Timer<span class="signature">()</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -38,84 +37,7 @@
     
         
 
-    
-
-    
-    <h4 class="name" id="Timer"><span class="type-signature"></span>new Timer<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    <p>The Timer used to measure player and playlist item QoE</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
     
     </div>
 
@@ -142,16 +64,12 @@
     
 
     
-    <h4 class="name" id="between"><span class="type-signature"></span>between<span class="signature">(left, right)</span><span class="type-signature"> &rarr; {number|null}</span></h4>
+    <h4 class="name" id=".exists"><span class="type-signature">(static) </span>exists<span class="signature">(item)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
     
 
 
-
-<div class="description">
-    <p>Get the difference between two events.</p>
-</div>
 
 
 
@@ -186,13 +104,13 @@
 
         <tr>
             
-                <td class="name"><code>left</code></td>
+                <td class="name"><code>item</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">any</span>
 
 
             
@@ -202,30 +120,7 @@
 
             
 
-            <td class="description last"><p>The first event name.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>right</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The second event name.</p></td>
+            <td class="description last"><p>The variable to test.</p></td>
         </tr>
 
     
@@ -288,7 +183,7 @@
 
         
 <div class="param-desc">
-    <p>The time between events, or null if not found.</p>
+    <p>Is the value of <code>item</code> null, undefined or an empty string?</p>
 </div>
 
 
@@ -299,10 +194,7 @@
     </dt>
     <dd>
         
-<span class="param-type">number</span>
-|
-
-<span class="param-type">null</span>
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -320,7 +212,7 @@
     
 
     
-    <h4 class="name" id="clear"><span class="type-signature"></span>clear<span class="signature">(event)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".isDeepKeyCompliant"><span class="type-signature">(static) </span>isDeepKeyCompliant<span class="signature">(defaultObj, customObj, predicate)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
     
@@ -328,7 +220,7 @@
 
 
 <div class="description">
-    <p>Remove an event timestamp. The timestamp &quot;tick&quot; is removed from TimerMetrics#events events.</p>
+    <p>Indicates whether or not the customObj has <em>at least</em> the same keys as the defaultObj; the customObj could have more keys.</p>
 </div>
 
 
@@ -364,13 +256,13 @@
 
         <tr>
             
-                <td class="name"><code>event</code></td>
+                <td class="name"><code>defaultObj</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">object</span>
 
 
             
@@ -380,7 +272,53 @@
 
             
 
-            <td class="description last"><p>The event name.</p></td>
+            <td class="description last"><p>The object that determines the desired set of keys.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>customObj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The object we want to verify has, at least, the same keys as defaultObj.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>predicate</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The function evaluating whether the property has a valid value and can be considered compliant. Inputs are the object and its key.</p></td>
         </tr>
 
     
@@ -442,6 +380,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>Does the customObj have at least the same keys as defaultObj, and do their properties also share the same keys ?</p>
+</div>
+
 
 
 <dl>
@@ -450,7 +392,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -468,16 +410,12 @@
     
 
     
-    <h4 class="name" id="dump"><span class="type-signature"></span>dump<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#TimerMetrics">TimerMetrics</a>}</span></h4>
+    <h4 class="name" id=".isHTTPS"><span class="type-signature">(static) </span>isHTTPS<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
     
 
 
-
-<div class="description">
-    <p>Output the timer metrics.</p>
-</div>
 
 
 
@@ -542,7 +480,7 @@
 
         
 <div class="param-desc">
-    <p>The timing and count of all &quot;tick&quot; events tracked thus far.</p>
+    <p>Is the current page hosted over HTTPS?</p>
 </div>
 
 
@@ -553,7 +491,7 @@
     </dt>
     <dd>
         
-<span class="param-type"><a href="global.html#TimerMetrics">TimerMetrics</a></span>
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -571,16 +509,12 @@
     
 
     
-    <h4 class="name" id="end"><span class="type-signature"></span>end<span class="signature">(methodName)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".isRtmp"><span class="type-signature">(static) </span>isRtmp<span class="signature">(file, type)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
     
 
 
-
-<div class="description">
-    <p>Finish timing a method. The time since <code>start</code> is added to TimerMetrics#sums sums.</p>
-</div>
 
 
 
@@ -615,7 +549,7 @@
 
         <tr>
             
-                <td class="name"><code>methodName</code></td>
+                <td class="name"><code>file</code></td>
             
 
             <td class="type">
@@ -631,7 +565,30 @@
 
             
 
-            <td class="description last"><p>The method or player state name.</p></td>
+            <td class="description last"><p>The path or url to a media file</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The type of the media parsed from a feed or the file extension.</p></td>
         </tr>
 
     
@@ -693,6 +650,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>Is <code>file</code> an RTMP link or does <code>type</code> equal 'rtmp'?</p>
+</div>
+
 
 
 <dl>
@@ -701,7 +662,7 @@
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -719,17 +680,12 @@
     
 
     
-    <h4 class="name" id="start"><span class="type-signature"></span>start<span class="signature">(methodName)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".isYouTube"><span class="type-signature">(static) </span>isYouTube<span class="signature">(path, type)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
     
 
 
-
-<div class="description">
-    <p>Start timing a method. Increment <a href="global.html#TimerMetrics">TimerMetrics</a> count.
-If the method was already started, but not finished, it's start will be reset.</p>
-</div>
 
 
 
@@ -764,7 +720,7 @@ If the method was already started, but not finished, it's start will be reset.</
 
         <tr>
             
-                <td class="name"><code>methodName</code></td>
+                <td class="name"><code>path</code></td>
             
 
             <td class="type">
@@ -780,7 +736,30 @@ If the method was already started, but not finished, it's start will be reset.</
 
             
 
-            <td class="description last"><p>The method or player state name.</p></td>
+            <td class="description last"><p>The path or url to a media file</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The type of the media parsed from a feed or the media url.</p></td>
         </tr>
 
     
@@ -842,6 +821,10 @@ If the method was already started, but not finished, it's start will be reset.</
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>Is <code>path</code> a YouTube link or does <code>type</code> equal 'youtube'?</p>
+</div>
+
 
 
 <dl>
@@ -850,7 +833,7 @@ If the method was already started, but not finished, it's start will be reset.</
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -868,16 +851,12 @@ If the method was already started, but not finished, it's start will be reset.</
     
 
     
-    <h4 class="name" id="tick"><span class="type-signature"></span>tick<span class="signature">(event)</span><span class="type-signature"> &rarr; {void}</span></h4>
+    <h4 class="name" id=".typeOf"><span class="type-signature">(static) </span>typeOf<span class="signature">(value)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
     
 
 
-
-<div class="description">
-    <p>Add or update an event timestamp. The timestamp &quot;tick&quot; is added to TimerMetrics#events events.</p>
-</div>
 
 
 
@@ -912,7 +891,7 @@ If the method was already started, but not finished, it's start will be reset.</
 
         <tr>
             
-                <td class="name"><code>event</code></td>
+                <td class="name"><code>value</code></td>
             
 
             <td class="type">
@@ -928,7 +907,7 @@ If the method was already started, but not finished, it's start will be reset.</
 
             
 
-            <td class="description last"><p>The event name.</p></td>
+            <td class="description last"><p>The variable to test.</p></td>
         </tr>
 
     
@@ -990,6 +969,10 @@ If the method was already started, but not finished, it's start will be reset.</
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>The typeof object, 'array' or 'null'.</p>
+</div>
+
 
 
 <dl>
@@ -998,7 +981,7 @@ If the method was already started, but not finished, it's start will be reset.</
     </dt>
     <dd>
         
-<span class="param-type">void</span>
+<span class="param-type">string</span>
 
 
     </dd>

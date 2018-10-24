@@ -7,8 +7,6 @@ import BackgroundMedia from 'program/background-media';
 import { PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
 
-/** @private Do not include in JSDocs */
-
 class ProgramController extends Eventable {
     /**
      * ProgramController constructor

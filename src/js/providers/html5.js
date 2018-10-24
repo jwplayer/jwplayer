@@ -16,6 +16,8 @@ import createPlayPromise from 'providers/utils/play-promise';
 import { map } from 'utils/underscore';
 import { PlayerError, MSG_LIVE_STREAM_DOWN, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
 
+/** @module */
+
 /**
  @enum {ErrorCode} - The HTML5 media element encountered an error.
  */
