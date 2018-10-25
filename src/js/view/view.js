@@ -217,7 +217,7 @@ function View(_api, _model) {
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
         if (_floatOnScroll) {
-            const floatCloseButton = new FloatingCloseButton(_wrapperElement.querySelector('.jw-header'));
+            const floatCloseButton = new FloatingCloseButton(_wrapperElement.querySelector('.jw-top'));
             floatCloseButton.setup(() => _stopFloating(true), _localization.close);
         }
 
