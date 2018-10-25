@@ -11,8 +11,8 @@
         }
     }
 
-    .jw-controls {
-        background: @controlbar-background;
+    .jw-controls-backdrop {
+        background-color: @controlbar-background;
     }
 
     &.jw-flag-cast-available:not(.jw-flag-audio-player),
@@ -85,10 +85,7 @@
 }
 
 // paused
-.jwplayer.jw-state-paused,
-.jwplayer.jw-state-idle,
-.jwplayer.jw-state-error,
-.jwplayer.jw-state-complete {
+.jwplayer:not(.jw-state-playing):not(.jw-state-buffering) {
     .jw-svg-icon-pause {
         display: none;
     }
@@ -134,8 +131,11 @@
         }
     }
 
+    .jw-controls-backdrop {
+        background-color: @controlbar-background;
+    }
+
     .jw-controls {
-        background: @controlbar-background;
         height: 100%;
     }
 }
@@ -232,8 +232,6 @@ body .jwplayer.jw-state-error,
     }
 }
 
-/* Indentation sometimes complains about multiple selections when :not()s are included */
-/* stylelint-disable indentation */
 // Hide display
 .jwplayer.jw-state-playing.jw-flag-user-inactive .jw-display {
     visibility: hidden;
@@ -247,7 +245,7 @@ body .jwplayer.jw-state-error,
         display: none;
     }
 }
-/* stylelint-enable indentation */
+
 .jwplayer.jw-state-paused.jw-flag-play-rejected:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
     .jw-display-icon-rewind,
     .jw-display-icon-next {

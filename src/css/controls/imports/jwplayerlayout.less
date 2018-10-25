@@ -9,10 +9,23 @@
 
 .jw-controls-backdrop {
     &:extend(._stretch, ._topleft);
+    background-color: transparent;
+    background-position: left 0 bottom 60px, 0 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 180px, 100% 60px;
+    background-image+: ~"linear-gradient(to bottom, rgba(0, 0, 0, 0), ease-in-out, rgba(0, 0, 0, 0.54))";
+    background-image+: linear-gradient(to bottom, fade(@black, 54%), fade(@black, 54%));
     display: block;
-    background: linear-gradient(to bottom, transparent, fade(@black, 40%) 77%, fade(@black, 40%) 100%) 100% 100% / 100% 240px no-repeat transparent;
-    transition: opacity 250ms @default-timing-function, background-size 250ms @default-timing-function;
     pointer-events: none;
+    transition: opacity 250ms @default-timing-function;
+
+    .jw-breakpoint-2 & {
+        background-size: 100% 170px, 100% 60px;
+    }
+
+    .jw-flag-small-player & {
+        background: fade(@black, 54%);
+    }
 }
 
 .jw-overlays {
