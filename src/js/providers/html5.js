@@ -247,6 +247,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
         isLive() {
             return _videotag.duration === Infinity;
+        },
+        isDVR() {
+            return _this.isLive() && (_getSeekableEnd() - _getSeekableStart()) >= MIN_DVR_DURATION;
         }
     });
 
@@ -392,8 +395,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _play() {
-        const resumeLive = _videotag.duration === Infinity && _videotag.paused && _videotag.played && _videotag.played.length;
-        if (resumeLive) {
+        const resumingPlayback = _videotag.paused && _videotag.played && _videotag.played.length;
+        if (resumingPlayback && _this.isLive() && !_this.isDVR()) {
             _videotag.load();
         }
         return _videotag.play() || createPlayPromise(_videotag);
