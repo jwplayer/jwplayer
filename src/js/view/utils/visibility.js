@@ -20,8 +20,11 @@ export default function getVisibility(model, element) {
     if (intersectionRatio === undefined) {
         // Get intersectionRatio through brute force
         intersectionRatio = computeVisibility(element);
+        // Disregard intersectionRatio if it returns that the player is viewable in iFrame
+        if ((window.top !== window.self) && intersectionRatio) {
+            return 0;
+        }
     }
-
     return intersectionRatio;
 }
 
