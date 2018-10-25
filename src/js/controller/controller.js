@@ -536,6 +536,10 @@ Object.assign(Controller.prototype, {
 
             const adState = _getAdState();
             if (adState) {
+                const instream = _this._instreamAdapter;
+                if (instream) {
+                    instream.noResume = true;
+                }
                 return;
             }
 

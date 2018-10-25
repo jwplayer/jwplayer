@@ -50,6 +50,7 @@ class ProgramController extends Eventable {
             return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE));
         }
 
+        // setActiveItem above might change this.mediaController, so retrieve here.
         const { background, mediaController } = this;
 
         // Activate the background media if it's loading the item we want to play
