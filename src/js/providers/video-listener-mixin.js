@@ -38,6 +38,7 @@ const VideoListenerMixin = {
     },
 
     timeupdate() {
+        const currentTime = this.video.currentTime;
         const position = this.getCurrentTime();
         const duration = this.getDuration();
         if (isNaN(duration)) {
@@ -54,10 +55,10 @@ const VideoListenerMixin = {
         const timeEventObject = {
             position,
             duration,
-            currentTime: this.video.currentTime,
+            currentTime: currentTime,
             seekRange: this.getSeekRange(),
             metadata: {
-                currentTime: this.video.currentTime
+                currentTime: currentTime
             }
         };
         if (this.getPtsOffset) {
