@@ -47,7 +47,7 @@ const VideoListenerMixin = {
 
         if (!this.seeking && !this.video.paused &&
             (this.state === STATE_STALLED || this.state === STATE_LOADING) &&
-            this.stallTime !== this.getCurrentTime()) {
+            this.stallTime !== currentTime) {
             this.stallTime = -1;
             this.setState(STATE_PLAYING);
         }

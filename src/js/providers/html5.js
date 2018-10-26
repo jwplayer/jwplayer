@@ -164,7 +164,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 if (_this.atEdgeOfLiveStream()) {
                     _this.setPlaybackRate(1);
                 }
-                _this.stallTime = _this.getCurrentTime();
+                _this.stallTime = _this.video.currentTime;
                 _this.setState(STATE_STALLED);
             }
         },
