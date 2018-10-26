@@ -6,6 +6,7 @@ import { STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META, MEDIA_ERROR, MEDI
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
+import { isDvr } from 'providers/utils/stream-type';
 import { style } from 'utils/css';
 import { emptyElement } from 'utils/dom';
 import DefaultProvider from 'providers/default';
@@ -32,7 +33,6 @@ const HTML5_SRC_RESET = 224005;
 const HTML5_NETWORK_ERROR = 221000;
 
 const clearTimeout = window.clearTimeout;
-const MIN_DVR_DURATION = 120;
 const _name = 'html5';
 const noop = function () {};
 
@@ -70,6 +70,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     const _this = this;
+
+    let minDvrWindow = _playerConfig.minDvrWindow;
 
     const MediaEvents = {
         progress() {
@@ -247,9 +249,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
         isLive() {
             return _videotag.duration === Infinity;
-        },
-        isDVR() {
-            return _this.isLive() && (_getSeekableEnd() - _getSeekableStart()) >= MIN_DVR_DURATION;
         }
     });
 
@@ -324,7 +323,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         const end = _getSeekableEnd();
         if (_this.isLive() && end) {
             const seekableDuration = end - _getSeekableStart();
-            if (seekableDuration !== Infinity && seekableDuration > MIN_DVR_DURATION) {
+            if (isDvr(seekableDuration, minDvrWindow)) {
                 // Player interprets negative duration as DVR
                 duration = -seekableDuration;
             }
@@ -367,9 +366,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return publicLevels;
     }
 
-    function _setLevels(levels) {
-        _levels = levels;
-        _currentQuality = _pickInitialQuality(levels);
+    function setPlaylistItem(item) {
+        minDvrWindow = item.minDvrWindow;
+        _levels = item.sources;
+        _currentQuality = _pickInitialQuality(_levels);
     }
 
     function _pickInitialQuality(levels) {
@@ -396,7 +396,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     function _play() {
         const resumingPlayback = _videotag.paused && _videotag.played && _videotag.played.length;
-        if (resumingPlayback && _this.isLive() && !_this.isDVR()) {
+        if (resumingPlayback && _this.isLive() && !isDvr(_getSeekableEnd() - _getSeekableStart(), minDvrWindow)) {
+            _this.clearTracks();
             _videotag.load();
         }
         return _videotag.play() || createPlayPromise(_videotag);
@@ -516,7 +517,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.init = function(item) {
-        _setLevels(item.sources);
+        setPlaylistItem(item);
         const source = _levels[_currentQuality];
         _androidHls = isAndroidHls(source);
         if (_androidHls) {
@@ -534,7 +535,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.preload = function(item) {
-        _setLevels(item.sources);
+        setPlaylistItem(item);
         const source = _levels[_currentQuality];
         const preload = source.preload || 'metadata';
         if (preload !== 'none') {
@@ -544,7 +545,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.load = function(item) {
-        _setLevels(item.sources);
+        setPlaylistItem(item);
         _completeLoad(item.starttime);
         this.setupSideloadedTracks(item.tracks);
     };
@@ -561,7 +562,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             if (unpausing && _this.isLive()) {
                 const end = _getSeekableEnd();
                 const seekableDuration = end - _getSeekableStart();
-                const isLiveNotDvr = seekableDuration < MIN_DVR_DURATION;
+                const isLiveNotDvr = !isDvr(seekableDuration, minDvrWindow);
                 const behindLiveEdge = end - _videotag.currentTime;
                 if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
                     // resume playback at edge of live stream
