@@ -15,6 +15,7 @@ import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
 import { map } from 'utils/underscore';
+import { now } from 'utils/date';
 import { PlayerError, MSG_LIVE_STREAM_DOWN, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
 
 /** @module */
@@ -274,6 +275,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     let _stale = false;
     let _lastEndOfBuffer = null;
     let _androidHls = false;
+    let dvrEnd = null;
+    let dvrPosition = null;
+    let dvrUpdatedTime = 0;
 
     this.isSDK = !!_playerConfig.sdkplatform;
     this.video = _videotag;
@@ -308,10 +312,22 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     function _convertTime(position) {
-        if (_this.getDuration() < 0) {
-            position -= _getSeekableEnd();
+        const seekRange = _this.getSeekRange();
+        if (isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
+            position -= seekRange.end;
+            const rangeUpdated = Math.abs(dvrEnd - seekRange.end) > 1;
+            if (!dvrPosition || rangeUpdated) {
+                updateDvrPosition(seekRange);
+            }
+            return dvrPosition;
         }
         return position;
+    }
+
+    function updateDvrPosition(seekRange) {
+        dvrEnd = seekRange.end;
+        dvrPosition = _videotag.currentTime - dvrEnd;
+        dvrUpdatedTime = now();
     }
 
     _this.getDuration = function() {
@@ -583,18 +599,25 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.seek = function(seekPos) {
+        const seekRange = _this.getSeekRange();
         if (seekPos < 0) {
-            seekPos += _getSeekableStart() + _getSeekableEnd();
+            seekPos += seekRange.start + seekRange.end;
         }
         if (!_canSeek) {
-            _canSeek = !!_getSeekableEnd();
+            _canSeek = !!seekRange.end;
         }
         if (_canSeek) {
             _delayedSeek = 0;
             // setting currentTime can throw an invalid DOM state exception if the video is not ready
             try {
                 _this.seeking = true;
-                _seekOffset = seekPos;
+                if (isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
+                    const timeSinceUpdate = Math.min(12, (now() - dvrUpdatedTime) / 1000);
+                    dvrPosition = seekPos - dvrEnd;
+                    _seekOffset += timeSinceUpdate;
+                } else {
+                    _seekOffset = seekPos;
+                }
                 _setPositionBeforeSeek(_videotag.currentTime);
                 _videotag.currentTime = seekPos;
             } catch (e) {
