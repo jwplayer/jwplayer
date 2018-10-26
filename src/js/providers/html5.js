@@ -334,14 +334,14 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     _this.getSeekRange = function() {
         const seekRange = {
             start: 0,
-            end: _this.getDuration()
+            end: _videotag.duration
         };
 
-        const seekable = this.video.seekable;
+        const seekable = _videotag.seekable;
 
         if (seekable.length) {
-            seekRange.end = Math.max(seekable.end(0), seekable.end(seekable.length - 1));
-            seekRange.start = Math.min(seekable.start(0), seekable.start(seekable.length - 1));
+            seekRange.end = _getSeekableEnd();
+            seekRange.start = _getSeekableStart();
         }
 
         return seekRange;
@@ -477,22 +477,28 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _getSeekableStart() {
-        let index = _videotag.seekable ? _videotag.seekable.length : 0;
         let start = Infinity;
+        ['buffered', 'seekable'].forEach(range => {
+            const timeRange = _videotag[range];
+            let index = timeRange ? timeRange.length : 0;
 
-        while (index--) {
-            start = Math.min(start, _videotag.seekable.start(index));
-        }
+            while (index--) {
+                start = Math.min(start, timeRange.start(index));
+            }
+        });
         return start;
     }
 
     function _getSeekableEnd() {
-        let index = _videotag.seekable ? _videotag.seekable.length : 0;
         let end = 0;
+        ['buffered', 'seekable'].forEach(range => {
+            const timeRange = _videotag[range];
+            let index = timeRange ? timeRange.length : 0;
 
-        while (index--) {
-            end = Math.max(end, _videotag.seekable.end(index));
-        }
+            while (index--) {
+                end = Math.max(end, timeRange.end(index));
+            }
+        });
         return end;
     }
 
