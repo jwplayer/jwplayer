@@ -313,7 +313,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     function _convertTime(position) {
         const seekRange = _this.getSeekRange();
-        if (isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
+        if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
             position -= seekRange.end;
             const rangeUpdated = Math.abs(dvrEnd - seekRange.end) > 1;
             if (!dvrPosition || rangeUpdated) {
@@ -611,7 +611,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             // setting currentTime can throw an invalid DOM state exception if the video is not ready
             try {
                 _this.seeking = true;
-                if (isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
+                if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
                     const timeSinceUpdate = Math.min(12, (now() - dvrUpdatedTime) / 1000);
                     dvrPosition = seekPos - dvrEnd;
                     _seekOffset += timeSinceUpdate;
