@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: api/Setup</title>
+    <title>JSDoc: Module: providers/utils/stream-type</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: api/Setup</h1>
+    <h1 class="page-title">Module: providers/utils/stream-type</h1>
 
     
 
@@ -46,13 +46,6 @@
     
 
     
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="module-api_Setup-Setup.html">Setup</a></dt>
-            <dd></dd>
-        </dl>
-    
 
     
 
@@ -71,12 +64,16 @@
     
 
     
-    <h4 class="name" id=".setupResult"><span class="type-signature">(static) </span>setupResult<span class="signature">(allPromises)</span><span class="type-signature"> &rarr; {SetupResult}</span></h4>
+    <h4 class="name" id=".isDvr"><span class="type-signature">(static) </span>isDvr<span class="signature">(duration, minDvrWindow)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
     
 
 
+
+<div class="description">
+    <p>It's DVR if the duration is not Infinity and above the minDvrWindow, Live otherwise.</p>
+</div>
 
 
 
@@ -111,13 +108,13 @@
 
         <tr>
             
-                <td class="name"><code>allPromises</code></td>
+                <td class="name"><code>duration</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;Promise></span>
+<span class="param-type">Number</span>
 
 
             
@@ -127,7 +124,30 @@
 
             
 
-            <td class="description last"><p>An array of promise resolutions or rejections</p></td>
+            <td class="description last"><p>The duration or seekable range of a stream in seconds.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minDvrWindow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The duration threshold beyond which a stream should be treated as DVR instead of Live.</p></td>
         </tr>
 
     
@@ -190,7 +210,7 @@
 
         
 <div class="param-desc">
-    <p>setupResult</p>
+    <p>DVR or not.</p>
 </div>
 
 
@@ -201,7 +221,7 @@
     </dt>
     <dd>
         
-<span class="param-type">SetupResult</span>
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -214,39 +234,34 @@
 
 
         
-    
-
-    
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-<h4 class="name" id="~SetupResult">SetupResult</h4>
-
-
-
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
             
-<span class="param-type">object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
 
     
 
-<table class="props">
+    
+    <h4 class="name" id=".streamType"><span class="type-signature">(static) </span>streamType<span class="signature">(duration, minDvrWindow)</span><span class="type-signature"> &rarr; {'VOD'|'LIVE'|'DVR'}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Determine the adaptive type.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
     <thead>
     <tr>
         
@@ -268,13 +283,13 @@
 
         <tr>
             
-                <td class="name"><code>core</code></td>
+                <td class="name"><code>duration</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Number</span>
 
 
             
@@ -284,20 +299,21 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>The duration or seekable range of a stream in seconds. Can be positive or negative.
+Positive or non-infinite values will result in a return value of 'VOD'. Infinite values always return 'LIVE'.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>warnings</code></td>
+                <td class="name"><code>minDvrWindow</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;PlayerError></span>
+<span class="param-type">Number</span>
 
 
             
@@ -307,12 +323,15 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>The duration threshold beyond which a stream should be treated as DVR instead of Live.
+minDvrWindow should always be positive.</p></td>
         </tr>
 
     
     </tbody>
 </table>
+
+
 
 
 
@@ -357,7 +376,49 @@
 
 
 
-            
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The stream typeR.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">'VOD'</span>
+|
+
+<span class="param-type">'LIVE'</span>
+|
+
+<span class="param-type">'DVR'</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
     
 
     
