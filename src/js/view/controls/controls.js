@@ -58,6 +58,7 @@ export default class Controls {
         this.rightClickMenu = null;
         this.settingsMenu = null;
         this.showing = false;
+        this.muteChangeCallback = null;
         this.unmuteCallback = null;
         this.logo = null;
         this.div = null;
@@ -184,6 +185,11 @@ export default class Controls {
         const setupUnmuteAutoplay = (_model) => {
             if (_model.get('autostartMuted')) {
                 const unmuteCallback = () => this.unmuteAutoplay(api, _model);
+                const muteChangeCallback = (muteModel, val) => {
+                    if (!val) {
+                        unmuteCallback();
+                    }
+                };
 
                 // Show unmute botton only on mobile.
                 if (OS.mobile) {
@@ -198,7 +204,9 @@ export default class Controls {
                 // Hide the controlbar until the autostart flag is removed
                 addClass(this.playerContainer, 'jw-flag-autostart');
 
-                _model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback, this);
+                _model.on('change:autostartFailed', unmuteCallback, this);
+                _model.on('change:autostartMuted change:mute', muteChangeCallback, this);
+                this.muteChangeCallback = muteChangeCallback;
                 this.unmuteCallback = unmuteCallback;
             }
         };
@@ -427,8 +435,12 @@ export default class Controls {
             // Don't try to play again when viewable since it will keep failing
             model.set('playOnViewable', false);
         }
+        if (this.muteChangeCallback) {
+            model.off('change:autostartMuted change:mute', this.muteChangeCallback);
+            this.muteChangeCallback = null;
+        }
         if (this.unmuteCallback) {
-            model.off('change:autostartFailed change:autostartMuted change:mute', this.unmuteCallback);
+            model.off('change:autostartFailed', this.unmuteCallback);
             this.unmuteCallback = null;
         }
         model.set('autostartFailed', undefined);
