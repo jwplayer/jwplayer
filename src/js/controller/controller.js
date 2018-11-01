@@ -838,7 +838,7 @@ Object.assign(Controller.prototype, {
         this.backgroundActiveMedia = () => _programController.backgroundActiveMedia();
         this.restoreBackgroundMedia = () => _programController.restoreBackgroundMedia();
         this.preloadNextItem = () => {
-            if (_programController.backgroundMedia) {
+            if (_programController.background.currentMedia) {
                 // Instruct the background media to preload if it's already been loaded
                 _programController.preloadVideo();
             }
