@@ -49,8 +49,6 @@ The example below will render a video player into the div with the `player` id, 
 </html>
 ````
 
-Check out an interactive example in this [JSFiddle](https://jsfiddle.net/Lgs0ou8s/683/).
-
 ## Contributing
 
 We appreciate all contributions towards the player! Before submitting an issue or PR, please see our contributing docs [here](CONTRIBUTING.md).
