@@ -167,11 +167,16 @@ Object.assign(CoreShim.prototype, {
         if (this.setup) {
             this.setup.destroy();
         }
+
+        // Removes the ErrorContainer if it has been shown
+        if (this.currentContainer !== this.originalContainer) {
+            showView(this, this.originalContainer);
+        }
+
         this.off();
         this._events =
             this._model =
             this.modelShim =
-            this.originalContainer =
             this.apiQueue =
             this.setup = null;
     },
