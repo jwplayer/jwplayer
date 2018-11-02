@@ -10,6 +10,9 @@ export function css(selector, styles, playerId, important) {
         const el = document.createElement('div');
         style(el, styles);
         let styleCSSText = el.style.cssText;
+        if (Object.prototype.hasOwnProperty.call(styles, 'content') && styleCSSText) {
+            styleCSSText = `${styleCSSText} content: "${styles.content}";`;
+        }
         if (important && styleCSSText) {
             styleCSSText = styleCSSText.replace(/;/g, ' !important;');
         }
