@@ -24,11 +24,11 @@ export default class ResizeListener {
             height: '200%'
         }, topLeft));
 
-        const hiddenHtml = '<div class="jw-resize-trigger" style="opacity:0;visibility:hidden;overflow:hidden;">' +
-            '<div class="jw-expand-trigger">' +
-            '<div style="height:1px;">' +
+        const hiddenHtml = '<div style="opacity:0;visibility:hidden;overflow:hidden;">' + // resizeElement
+            '<div>' + // expandElement
+            '<div style="height:1px;">' + // expandChild
             '</div></div>' +
-            '<div class="jw-contract-trigger">' +
+            '<div class="jw-contract-trigger">' + // contractElement
             '</div></div>';
         const resizeElement = createElement(hiddenHtml);
         const expandElement = resizeElement.firstChild;
