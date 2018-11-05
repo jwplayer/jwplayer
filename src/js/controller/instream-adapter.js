@@ -195,7 +195,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     /**
      * Update instream player state. If `event.newstate` is 'playing' trigger an 'adPlay' event.
      * If `event.newstate` is 'paused' trigger and 'adPause' event.
-     * @param {AdPlayEvent|AdPauseEvent} event - An ad event object containing relavant ad data.
+     * @param {AdPlayEvent|AdPauseEvent} event - An ad event object containing relevant ad data.
      * @return {void}
      */
     this.setState = function(event) {
@@ -209,6 +209,15 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (newstate === STATE_PLAYING) {
             _controller.trigger(AD_PLAY, event);
         } else if (newstate === STATE_PAUSED) {
+            const pauseReason = event.pauseReason;
+            _model.set('pauseReason', pauseReason);
+
+            // Stop autoplay behavior if the ad was paused by the user or an api call.
+            if (pauseReason === 'interaction' || pauseReason === 'external' ||
+                 pauseReason === 'clickthrough' || pauseReason === 'vpaid') {
+                _model.set('playOnViewable', false);
+            }
+
             _controller.trigger(AD_PAUSE, event);
         }
     };
