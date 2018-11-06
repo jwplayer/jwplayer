@@ -207,17 +207,14 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         adModel.set('state', newstate);
 
         if (newstate === STATE_PLAYING) {
+            if (event.playReason) {
+                _model.set('playReason', event.playReason);
+            }
             _controller.trigger(AD_PLAY, event);
         } else if (newstate === STATE_PAUSED) {
-            const pauseReason = event.pauseReason;
-            _model.set('pauseReason', pauseReason);
-
-            // Stop autoplay behavior if the ad was paused by the user or an api call.
-            if (pauseReason === 'interaction' || pauseReason === 'external' ||
-                 pauseReason === 'clickthrough' || pauseReason === 'vpaid') {
-                _model.set('playOnViewable', false);
+            if (event.pauseReason) {
+                _model.set('pauseReason', event.pauseReason);
             }
-
             _controller.trigger(AD_PAUSE, event);
         }
     };

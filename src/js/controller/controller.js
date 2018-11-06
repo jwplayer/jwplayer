@@ -127,6 +127,17 @@ Object.assign(Controller.prototype, {
             });
         });
 
+        const changeReason = function(model, reason) {
+            // Stop autoplay behavior if the video is started by the user or an api call
+            if (reason === 'clickthrough' || reason === 'interaction' || reason === 'external') {
+                _model.set('playOnViewable', false);
+                _model.off('change:pauseReason', changeReason);
+                _model.off('change:playReason', changeReason);
+            }
+        };
+        _model.on('change:pauseReason', changeReason);
+        _model.on('change:playReason', changeReason);
+
         _model.on('change:scrubbing', function(model, state) {
             if (state) {
                 _pause();
@@ -415,10 +426,6 @@ Object.assign(Controller.prototype, {
 
             const playReason = _getReason(meta);
             _model.set('playReason', playReason);
-            // Stop autoplay behavior if the video is started by the user or an api call
-            if (playReason === 'interaction' || playReason === 'external') {
-                _model.set('playOnViewable', false);
-            }
 
             const adState = _getAdState();
             if (adState) {
@@ -563,12 +570,7 @@ Object.assign(Controller.prototype, {
             _actionOnAttach = null;
             checkAutoStartCancelable.cancel();
 
-            const pauseReason = _getReason(meta);
-            _model.set('pauseReason', pauseReason);
-            // Stop autoplay behavior if the video is paused by the user or an api call
-            if (pauseReason === 'interaction' || pauseReason === 'external') {
-                _model.set('playOnViewable', false);
-            }
+            _model.set('pauseReason', _getReason(meta));
 
             const adState = _getAdState();
             if (adState) {
