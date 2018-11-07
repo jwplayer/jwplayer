@@ -304,9 +304,11 @@ export default class MediaController extends Eventable {
 
     set position(pos) {
         const { provider } = this;
-        const { fastSeek } = provider;
-        const seek = this.model.get('scrubbing') && fastSeek ? fastSeek : provider.seek;
-        seek(pos);
+        if (this.model.get('scrubbing') && provider.fastSeek) {
+            provider.fastSeek(pos);
+        } else {
+            provider.seek(pos);
+        }
     }
 
     set quality(index) {
