@@ -1,6 +1,6 @@
-export default (id, ariaLabel = '') => {
+export default (id, ariaLabel) => {
     return (
-        `<div id="${id}" class="jwplayer jw-reset jw-state-setup" tabindex="0" aria-label="${ariaLabel}" role="application">` +
+        `<div id="${id}" class="jwplayer jw-reset jw-state-setup" tabindex="0" aria-label="${(ariaLabel || '')}" role="application">` +
             `<div class="jw-aspect jw-reset"></div>` +
             `<div class="jw-wrapper jw-reset">` +
                 `<div class="jw-top jw-reset"></div>` +

@@ -216,6 +216,7 @@ export default class Controlbar {
         }, () => {
             feedShownId = '';
         });
+        setAttribute(nextUpTip, 'dir', 'auto');
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
         SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);

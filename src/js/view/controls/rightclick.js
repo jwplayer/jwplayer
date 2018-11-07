@@ -29,7 +29,7 @@ export default class RightClick {
                 type: 'info'
             },
             {
-                title: `${this.model.get('localization').poweredBy} <span class="jw-reset">JW Player ${majorMinorPatchPre}</span>`,
+                title: `${this.model.get('localization').poweredBy} <span class="jw-reset" dir="auto">JW Player ${majorMinorPatchPre}</span>`,
                 type: 'link',
                 featured: true,
                 showLogo: true,

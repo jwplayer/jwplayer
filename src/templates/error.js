@@ -10,7 +10,7 @@ export default (id, message, errorCode, code) => {
                 `</style>` +
                 `<div class="jw-icon jw-reset"></div>` +
                 `<div class="jw-info-container jw-reset">` +
-                    `<div class="jw-error-text jw-reset-text" dir="auto">${(message || '')}<span class="jw-break jw-reset"></span>${detail}</div>` +
+                    `<div class="jw-error-text jw-reset-text" dir="auto">${(message || '')}<span class="jw-break jw-reset" dir="auto"></span>${detail}</div>` +
                 `</div>` +
             `</div>` +
         `</div>`
