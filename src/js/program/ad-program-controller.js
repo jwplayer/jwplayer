@@ -11,7 +11,6 @@ export default class AdProgramController extends ProgramController {
         this.playerModel = model;
         this.provider = null;
         this.backgroundLoading = model.get('backgroundLoading');
-        this.isSDK = model.get('sdkplatform');
 
         adModel.mediaModel.attributes.mediaType = 'video';
 
@@ -146,7 +145,7 @@ export default class AdProgramController extends ProgramController {
 
         // We only use one media element from ads; getPrimedElement will return it
         const mediaElement = mediaPool.getPrimedElement();
-        if (!this.backgroundLoading && !this.isSDK) {
+        if (!this.backgroundLoading) {
             if (mediaElement) {
                 mediaElement.removeEventListener('emptied', this.srcResetListener);
                 // Reset the player media model if the src was changed externally
