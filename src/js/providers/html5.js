@@ -14,7 +14,7 @@ import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
-import { map } from 'utils/underscore';
+import { map, isFinite } from 'utils/underscore';
 import { now } from 'utils/date';
 import { PlayerError, MSG_LIVE_STREAM_DOWN, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
 
@@ -499,7 +499,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             let index = timeRange ? timeRange.length : 0;
 
             while (index--) {
-                start = Math.min(start, timeRange.start(index));
+                const rangeStart = Math.min(start, timeRange.start(index));
+                if (isFinite(rangeStart)) {
+                    start = rangeStart;
+                }
             }
         });
         return start;
@@ -512,7 +515,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             let index = timeRange ? timeRange.length : 0;
 
             while (index--) {
-                end = Math.max(end, timeRange.end(index));
+                const rangeEnd = Math.max(end, timeRange.end(index));
+                if (isFinite(rangeEnd)) {
+                    end = rangeEnd;
+                }
             }
         });
         return end;
@@ -589,6 +595,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
                     // resume playback at edge of live stream
                     _seekOffset = Math.max(end - 10, end - seekableDuration);
+                    if (!isFinite(_seekOffset)) {
+                        return;
+                    }
                     _setPositionBeforeSeek(_videotag.currentTime);
                     _videotag.currentTime = _seekOffset;
                 }
