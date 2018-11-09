@@ -3,7 +3,7 @@ import { serialize } from 'utils/parser';
 import { isValidNumber, isNumber, pick, isBoolean } from 'utils/underscore';
 import { Features } from 'environment/environment';
 import en from 'assets/translations/en.js';
-import { getLanguage, getCustomLocalization, applyTranslation } from 'utils/language';
+import { getLanguage, isRtl, getCustomLocalization, applyTranslation, normalizeIntl, isInIntl } from 'utils/language';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -22,6 +22,7 @@ const Defaults = {
     height: 360,
     intl: {},
     language: 'en',
+    languageDir: 'ltr',
     liveTimeout: null,
     localization: en,
     mute: false,
@@ -120,7 +121,9 @@ const Config = function(options, persisted) {
     _deserialize(allOptions);
 
     const language = allOptions.forceLocalizationDefaults ? Defaults.language : getLanguage();
-    const { localization, intl } = allOptions;
+    const { localization } = allOptions;
+    const intl = normalizeIntl(allOptions.intl);
+
     allOptions.localization = applyTranslation(en, getCustomLocalization(localization, intl || {}, language));
 
     let config = Object.assign({}, Defaults, allOptions);
@@ -135,6 +138,10 @@ const Config = function(options, persisted) {
     config.volume = isValidNumber(config.volume) ? Math.min(Math.max(0, config.volume), 100) : Defaults.volume;
     config.mute = !!config.mute;
     config.language = language;
+    config.intl = intl;
+    if (isInIntl(intl, language) && isRtl(language)) {
+        config.languageDir= 'rtl';
+    }
 
     let rateControls = config.playbackRateControls;
 
