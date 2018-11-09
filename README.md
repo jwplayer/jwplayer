@@ -116,6 +116,16 @@ This will add a `pre-push` script to the project's .git/hooks folder that will l
 grunt hooks
 ```` 
 
+## Framework Integration
+
+While the JW team does not maintain any framework integrations of our own, there are developers in our community who do. We recommend the following libraries:
+
+| Framework | Link |
+| --------- | ---- |
+| React |  https://github.com/micnews/react-jw-player |
+
+If you have a library which you believe is good enough to meet the needs of other developers using a certain framework, please open a pull request modifying the above table.
+
 ## Software License
 
 The use of this library is governed by a [Creative Commons license](http://creativecommons.org/licenses/by-nc-sa/3.0/). You can use, modify, copy, and distribute this edition as long as it’s for non-commercial use, you provide attribution, and share under a similar license.
