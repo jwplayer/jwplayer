@@ -124,7 +124,7 @@ const Config = function(options, persisted) {
     const { localization } = allOptions;
     const intl = normalizeIntl(allOptions.intl);
 
-    allOptions.localization = applyTranslation(en, getCustomLocalization(localization, intl || {}, language));
+    allOptions.localization = applyTranslation(en, getCustomLocalization(localization, intl, language));
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {

@@ -14,6 +14,7 @@ describe('languageUtils', function() {
         isTranslationAvailable,
         loadJsonTranslation,
         getCustomLocalization,
+        normalizeIntl,
         isLocalizationComplete
     } = Language;
 
@@ -307,7 +308,7 @@ describe('languageUtils', function() {
                 pause: localizationPause,
                 stop: localizationStop
             };
-            intl = {
+            intl = normalizeIntl({
                 fr: {
                     play: frPlay,
                     pause: frPause
@@ -316,7 +317,7 @@ describe('languageUtils', function() {
                 fr_HT: {
                     play: frHtPlay
                 }
-            };
+            });
         });
 
         after(function () {

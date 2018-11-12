@@ -202,7 +202,8 @@ export default class Controlbar {
             captionsTip.setText(newText);
         };
 
-        const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp, () => {
+        const nextElement = elements.next.element();
+        const nextUpTip = SimpleTooltip(nextElement, 'next', localization.nextUp, () => {
             const nextUp = _model.get('nextUp');
             feedShownId = genId(FEED_SHOWN_ID_LENGTH);
             this.trigger('nextShown', {
@@ -216,7 +217,7 @@ export default class Controlbar {
         }, () => {
             feedShownId = '';
         });
-        setAttribute(nextUpTip, 'dir', 'auto');
+        setAttribute(nextElement, 'dir', 'auto');
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
         SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);

@@ -52,6 +52,9 @@ function normalizeLanguageAndCountryCode(language) {
 
 export function normalizeIntl(intl) {
     // Country codes are generally seen in upper case, but we have yet to find documentation confirming that this is the standard.
+    if (!intl) {
+        return {};
+    }
     return Object.keys(intl).reduce((obj, key) => {
         obj[normalizeLanguageAndCountryCode(key)] = intl[key];
         return obj;
