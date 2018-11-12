@@ -411,5 +411,18 @@ describe('languageUtils', function() {
             expect(isLocalizationComplete(customLocalization)).to.be.false;
         });
     });
+
+    describe('Language direction', function() {
+        afterEach(function() {
+            sandbox.restore();
+        });
+
+        it('should be RTL when language is RTL and is defined in intl block', function() {
+            sandbox.stub(Language, 'isInIntl').returns(true);
+            sandbox.stub(Language, 'isRtl').returns(true);
+            const config = new Config({});
+            expect(config.languageDir).to.equal('rtl');
+        });
+    });
 });
 

@@ -43,4 +43,12 @@ describe('Load Translations', function () {
         sandbox.stub(Language, 'loadJsonTranslation').rejects({ code: ERROR_AJAX });
         testLoadTranslations(ERROR_LOADING_TRANSLATIONS + ERROR_AJAX);
     });
+
+    it('updates the Language direction to rtl when rtl translation loads successfully', function () {
+        sandbox.stub(Language, 'isRtl').returns(true);
+        sandbox.stub(Language, 'loadJsonTranslation').resolves({ response: {} });
+        loadTranslations(model).then(() => {
+            expect(model.attributes.languageDir).to.equal('rtl');
+        });
+    });
 });
