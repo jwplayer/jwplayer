@@ -5,7 +5,7 @@ export default (header = '', title = '', duration = '', closeAriaLabel = '') => 
                 `<div class="jw-nextup-thumbnail jw-reset"></div>` +
                 `<div class="jw-nextup-body jw-reset">` +
                     `<div class="jw-nextup-header jw-reset">${header}</div>` +
-                    `<div class="jw-nextup-title jw-reset">${title}</div>` +
+                    `<div class="jw-nextup-title jw-reset-text" dir="auto">${title}</div>` +
                     `<div class="jw-nextup-duration jw-reset">${duration}</div>` +
                 `</div>` +
             `</div>` +

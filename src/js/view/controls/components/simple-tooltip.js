@@ -2,10 +2,12 @@ import { addClass, removeClass } from 'utils/dom';
 
 export function SimpleTooltip(attachToElement, name, text, openCallback, closeCallback) {
     const tooltipElement = document.createElement('div');
-    tooltipElement.className = `jw-reset jw-tooltip jw-tooltip-${name}`;
+    tooltipElement.className = `jw-reset-text jw-tooltip jw-tooltip-${name}`;
+    tooltipElement.setAttribute('dir', 'auto');
 
     const textElement = document.createElement('div');
     textElement.className = 'jw-text';
+
     textElement.textContent = text;
 
     tooltipElement.appendChild(textElement);

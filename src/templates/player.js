@@ -7,9 +7,9 @@ export default (id, ariaLabel = '') => {
                 `<div class="jw-aspect jw-reset"></div>` +
                 `<div class="jw-media jw-reset"></div>` +
                 `<div class="jw-preview jw-reset"></div>` +
-                `<div class="jw-title jw-reset">` +
-                    `<div class="jw-title-primary jw-reset"></div>` +
-                    `<div class="jw-title-secondary jw-reset"></div>` +
+                `<div class="jw-title jw-reset-text" dir="auto">` +
+                    `<div class="jw-title-primary jw-reset-text"></div>` +
+                    `<div class="jw-title-secondary jw-reset-text"></div>` +
                 `</div>` +
                 `<div class="jw-overlays jw-reset"></div>` +
             `</div>` +
