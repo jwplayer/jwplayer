@@ -613,7 +613,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             seekPos += seekRange.start + seekRange.end;
         }
         if (!_canSeek) {
-            _canSeek = !!seekRange.end;
+            _canSeek = !!_getSeekableEnd();
         }
         if (_canSeek) {
             _delayedSeek = 0;
