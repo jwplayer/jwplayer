@@ -7,7 +7,6 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
 
     const textElement = document.createElement('div');
     textElement.className = 'jw-text';
-
     textElement.textContent = text;
 
     tooltipElement.appendChild(textElement);
