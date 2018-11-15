@@ -21,6 +21,7 @@ import { isUndefined, isBoolean } from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, AUTOSTART_NOT_ALLOWED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
+    AD_PLAY, AD_PAUSE,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
 import ProgramController from 'program/program-controller';
@@ -131,12 +132,14 @@ Object.assign(Controller.prototype, {
             // Stop autoplay behavior if the video is started by the user or an api call
             if (reason === 'clickthrough' || reason === 'interaction' || reason === 'external') {
                 _model.set('playOnViewable', false);
-                _model.off('change:pauseReason', changeReason);
-                _model.off('change:playReason', changeReason);
+                _model.off('change:playReason change:pauseReason', changeReason);
             }
         };
-        _model.on('change:pauseReason', changeReason);
-        _model.on('change:playReason', changeReason);
+        _model.on('change:playReason change:pauseReason', changeReason);
+
+        // Listen for play and pause reasons from instream.
+        _this.on(AD_PLAY, event => changeReason(null, event.playReason));
+        _this.on(AD_PAUSE, event => changeReason(null, event.pauseReason));
 
         _model.on('change:scrubbing', function(model, state) {
             if (state) {
