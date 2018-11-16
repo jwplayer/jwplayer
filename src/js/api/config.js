@@ -140,7 +140,7 @@ const Config = function(options, persisted) {
     config.language = language;
     config.intl = intl;
     if (isInIntl(intl, language) && isRtl(language)) {
-        config.languageDir= 'rtl';
+        config.languageDir = 'rtl';
     }
 
     let rateControls = config.playbackRateControls;
