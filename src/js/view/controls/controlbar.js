@@ -101,6 +101,15 @@ function buttonsInFirstNotInSecond(buttonsA, buttonsB) {
         !buttonsB.some(b => (b.id + b.btnClass === a.id + a.btnClass) && a.callback === b.callback));
 }
 
+function changeFullscreenTooltip(model, fullscreenTip) {
+    const localization = model.get('localization');
+    if (!model.get('fullscreen')) {
+        fullscreenTip.setText(localization.fullscreen);
+    } else {
+        fullscreenTip.setText(localization.exitFullscreen);
+    }
+}
+
 const appendChildren = (container, elements) => {
     elements.forEach(e => {
         if (e.element) {
@@ -184,6 +193,7 @@ export default class Controlbar {
             }, localization),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
+                changeFullscreenTooltip(_model, fullScreenTip);
             }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
@@ -218,7 +228,8 @@ export default class Controlbar {
         });
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
-        SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
+
+        const fullScreenTip = SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
 
         // Filter out undefined elements
         const buttonLayout = [
