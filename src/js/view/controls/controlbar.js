@@ -101,12 +101,14 @@ function buttonsInFirstNotInSecond(buttonsA, buttonsB) {
         !buttonsB.some(b => (b.id + b.btnClass === a.id + a.btnClass) && a.callback === b.callback));
 }
 
-function changeFullscreenTooltip(model, fullscreenTip) {
+function changeFullscreenTooltip(fullscreenButton, model, fullscreenTip) {
     const localization = model.get('localization');
     if (!model.get('fullscreen')) {
         fullscreenTip.setText(localization.fullscreen);
+        setAttribute(fullscreenButton.element(), 'aria-label', localization.fullscreen);
     } else {
         fullscreenTip.setText(localization.exitFullscreen);
+        setAttribute(fullscreenButton.element(), 'aria-label', localization.exitFullscreen);
     }
 }
 
@@ -172,6 +174,11 @@ export default class Controlbar {
         }, localization.liveBroadcast);
         liveButton.element().textContent = localization.liveBroadcast;
 
+        const fullscreenButton = button('jw-icon-fullscreen', () => {
+            _api.setFullscreen();
+            changeFullscreenTooltip(this.elements.fullscreen, _model, fullScreenTip);
+        }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on'));
+
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
@@ -191,10 +198,7 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
-            fullscreen: button('jw-icon-fullscreen', () => {
-                _api.setFullscreen();
-                changeFullscreenTooltip(_model, fullScreenTip);
-            }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
+            fullscreen: fullscreenButton,
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
