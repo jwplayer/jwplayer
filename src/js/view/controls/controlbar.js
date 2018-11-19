@@ -103,13 +103,9 @@ function buttonsInFirstNotInSecond(buttonsA, buttonsB) {
 
 function changeFullscreenTooltip(fullscreenButton, model, fullscreenTip) {
     const localization = model.get('localization');
-    if (!model.get('fullscreen')) {
-        fullscreenTip.setText(localization.fullscreen);
-        setAttribute(fullscreenButton.element(), 'aria-label', localization.fullscreen);
-    } else {
-        fullscreenTip.setText(localization.exitFullscreen);
-        setAttribute(fullscreenButton.element(), 'aria-label', localization.exitFullscreen);
-    }
+    const fullscreenText = model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
+    fullscreenTip.setText(fullscreenText);
+    setAttribute(fullscreenButton.element(), 'aria-label', fullscreenText);
 }
 
 const appendChildren = (container, elements) => {
