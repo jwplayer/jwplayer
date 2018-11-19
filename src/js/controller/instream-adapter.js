@@ -1,4 +1,5 @@
 import { STATE_BUFFERING, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
+    PLAYER_STATE,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK,
@@ -30,6 +31,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _array;
     let _arrayOptions;
     let _arrayIndex = 0;
+    let _data = {};
     let _options = {};
     let _skipAd = _instreamItemNext;
     let _backgroundLoadTriggered = false;
@@ -90,6 +92,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
         _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
         _adProgram.on(MEDIA_META, _instreamMeta, this);
+        _adProgram.on(PLAYER_STATE, _this.setState, this);
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
@@ -192,6 +195,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     }
 
+    this.setEventData = function(data) {
+        _data = data;
+    };
+
     /**
      * Update instream player state. If `event.newstate` is 'playing' trigger an 'adPlay' event.
      * If `event.newstate` is 'paused' trigger and 'adPause' event.
@@ -201,15 +208,14 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     this.setState = function(event) {
         const { newstate } = event;
         const adModel = _adProgram.model;
-
-        event.oldstate = adModel.get('state');
+        const evt = Object.assign({ oldstate: adModel.get('state') }, _data, event);
 
         adModel.set('state', newstate);
 
         if (newstate === STATE_PLAYING) {
-            _controller.trigger(AD_PLAY, event);
+            _controller.trigger(AD_PLAY, evt);
         } else if (newstate === STATE_PAUSED) {
-            _controller.trigger(AD_PAUSE, event);
+            _controller.trigger(AD_PAUSE, evt);
         }
     };
 
