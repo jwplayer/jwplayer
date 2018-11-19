@@ -122,7 +122,7 @@ export default class Controlbar {
         let muteButton;
         let feedShownId = '';
 
-        const vol = localization.volume;
+        const vol = _model.get('mute') ? localization.mute : localization.unmute;
 
         // Do not show the volume toggle in the mobile SDKs or <iOS10
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
@@ -141,6 +141,7 @@ export default class Controlbar {
             const volumeTooltipEl = volumeTooltip.element();
             setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
             setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
+            setAttribute(volumeTooltipEl, 'aria-orientation', 'vertical');
             setAttribute(volumeTooltipEl, 'role', 'slider');
         }
 
