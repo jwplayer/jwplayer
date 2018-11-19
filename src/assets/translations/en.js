@@ -57,10 +57,10 @@ export default {
         "heading": "Share",
         "link": "Link"
     },
-    "slider": "Seek",
-    "stop": "Stop",
-    "unmute": "Unmute",
-    "videoInfo": "About This Video",
-    "volume": "Volume",
-    "volumeSlider": "Volume"
+    slider: 'Seek Slider',
+    stop: 'Stop',
+    unmute: 'Unmute',
+    videoInfo: 'About This Video',
+    volume: 'Volume',
+    volumeSlider: 'Volume Slider'
 };
