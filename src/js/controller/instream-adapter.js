@@ -92,7 +92,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
         _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
         _adProgram.on(MEDIA_META, _instreamMeta, this);
-        _adProgram.on(PLAYER_STATE, _this.setState, this);
+        _adProgram.on(PLAYER_STATE, _triggerAdPlayPause, this);
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
@@ -195,6 +195,19 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     }
 
+    function _triggerAdPlayPause(event) {
+        const { newstate } = event;
+        const adEvent = Object.assign({
+            oldstate: _adProgram.model.get('state')
+        }, _data, event);
+
+        if (newstate === STATE_PLAYING) {
+            _controller.trigger(AD_PLAY, adEvent);
+        } else if (newstate === STATE_PAUSED) {
+            _controller.trigger(AD_PAUSE, adEvent);
+        }
+    }
+
     this.setEventData = function(data) {
         _data = data;
     };
@@ -208,15 +221,12 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     this.setState = function(event) {
         const { newstate } = event;
         const adModel = _adProgram.model;
-        const evt = Object.assign({ oldstate: adModel.get('state') }, _data, event);
+
+        event.oldstate = adModel.get('state');
 
         adModel.set('state', newstate);
 
-        if (newstate === STATE_PLAYING) {
-            _controller.trigger(AD_PLAY, evt);
-        } else if (newstate === STATE_PAUSED) {
-            _controller.trigger(AD_PAUSE, evt);
-        }
+        _triggerAdPlayPause(event);
     };
 
     /**
