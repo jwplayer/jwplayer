@@ -52,29 +52,17 @@ export function addClass(element, classes) {
     setClassName(element, originalClasses.join(' '));
 }
 
-function addNoFocusClass(element, focusElements) {
-    addClass(element, 'jw-no-focus');
-    focusElements.forEach((el) => {
-        addClass(el, 'jw-no-focus');
-    });
-}
-
-
-export function addFocusHandler(element, focusElements) {
-    focusElements = focusElements || [];
+export function addFocusHandler(element) {
     element.addEventListener('mousedown', () => {
-        addNoFocusClass(element, focusElements);
+        addClass(element, 'jw-no-focus');
     });
 
     element.addEventListener('touchstart', () => {
-        addNoFocusClass(element, focusElements);
+        addClass(element, 'jw-no-focus');
     });
 
     element.addEventListener('blur', () => {
         removeClass(element, 'jw-no-focus');
-        focusElements.forEach((el) => {
-            removeClass(el, 'jw-no-focus');
-        });
     });
 }
 
