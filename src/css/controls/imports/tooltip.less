@@ -1,6 +1,6 @@
 @import "../../shared-imports/vars.less";
 
-.jw-icon-tooltip.jw-open .jw-overlay {
+.jw-icon-tooltip.jw-open:not(.jw-no-focus) .jw-overlay {
     opacity: 1;
     transition-delay: 0s;
     visibility: visible;
@@ -102,7 +102,7 @@
         width: auto;
         z-index: 1;
 
-        &.jw-open {
+        &.jw-open:not(.jw-no-focus) {
             opacity: 1;
             transform: translate(-50%, (-@tooltip-font-size));
             transition-duration: 150ms;

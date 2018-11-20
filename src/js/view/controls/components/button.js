@@ -20,8 +20,7 @@ export default function (icon, apiAction, ariaText, svgIcons) {
         });
     }
 
-    // Prevent button from being focused on mousedown so that the tooltips don't remain visible until
-    // the user interacts with another element on the page
+    // prevent button from having a border when focused through click
     addFocusHandler(element);
 
     if (svgIcons) {
