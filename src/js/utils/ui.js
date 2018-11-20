@@ -2,6 +2,7 @@ import { OS, Features } from 'environment/environment';
 import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Eventable from 'utils/eventable';
 import { now } from 'utils/date';
+import { addFocusHandler } from 'utils/dom';
 
 const TOUCH_SUPPORT = ('ontouchstart' in window);
 const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
@@ -37,6 +38,8 @@ export default class UI extends Eventable {
         this.pointerId = null;
         this.startX = 0;
         this.startY = 0;
+
+        addFocusHandler(element, options.focusElements);
     }
 
     on(name, callback, context) {
