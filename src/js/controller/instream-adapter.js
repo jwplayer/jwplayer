@@ -203,8 +203,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         if (newstate === STATE_PLAYING) {
             _controller.trigger(AD_PLAY, adEvent);
+            _data = { }; // Reset.
         } else if (newstate === STATE_PAUSED) {
             _controller.trigger(AD_PAUSE, adEvent);
+            _data = { }; // Reset.
         }
     }
 
