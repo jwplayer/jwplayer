@@ -201,6 +201,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             oldstate: _adProgram.model.get('state')
         }, _data, event);
 
+        if (adEvent.oldstate === newstate) {
+            return;
+        }
+
         if (newstate === STATE_PLAYING) {
             _controller.trigger(AD_PLAY, adEvent);
             _data = { }; // Reset.
