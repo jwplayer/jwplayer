@@ -83,6 +83,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             return;
         }
         _inited = true;
+        _data = { };
 
         // Keep track of the original player state
         _adProgram.setup();
@@ -197,20 +198,17 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     function _triggerAdPlayPause(event) {
         const { newstate } = event;
-        const adEvent = Object.assign({
-            oldstate: _adProgram.model.get('state')
-        }, _data, event);
+        const oldstate = event.oldstate || _adProgram.model.get('state');
 
-        if (adEvent.oldstate === newstate) {
+        if (oldstate === newstate) {
             return;
         }
 
+        const adEvent = Object.assign({ oldstate }, _data, event);
         if (newstate === STATE_PLAYING) {
             _controller.trigger(AD_PLAY, adEvent);
-            _data = { }; // Reset.
         } else if (newstate === STATE_PAUSED) {
             _controller.trigger(AD_PAUSE, adEvent);
-            _data = { }; // Reset.
         }
     }
 
@@ -273,6 +271,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     }
 
     function _instreamItemNext(e) {
+        _data = { };
         if (_array && _arrayIndex + 1 < _array.length) {
             _loadNextItem();
         } else {
@@ -294,6 +293,8 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_destroyed || !_inited) {
             return Promise.reject(new Error('Instream not setup'));
         }
+        _data = { };
+
         // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
         let playlist = item;
         if (Array.isArray(item)) {
@@ -371,6 +372,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * @return {void}
      */
     this.play = function() {
+        _data = { };
         _adProgram.playVideo();
     };
 
@@ -379,6 +381,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * @return {void}
      */
     this.pause = function() {
+        _data = { };
         _adProgram.pause();
     };
 
@@ -454,6 +457,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _model.set('instream', null);
 
         _adProgram = null;
+        _data = { };
 
         if (!_inited || _model.attributes._destroyed) {
             return;
