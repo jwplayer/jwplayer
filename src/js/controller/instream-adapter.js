@@ -1,4 +1,5 @@
 import { STATE_BUFFERING, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
+    PLAYER_STATE,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK,
@@ -30,6 +31,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _array;
     let _arrayOptions;
     let _arrayIndex = 0;
+    let _data = {};
     let _options = {};
     let _skipAd = _instreamItemNext;
     let _backgroundLoadTriggered = false;
@@ -81,6 +83,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             return;
         }
         _inited = true;
+        _data = { };
 
         // Keep track of the original player state
         _adProgram.setup();
@@ -90,6 +93,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
         _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
         _adProgram.on(MEDIA_META, _instreamMeta, this);
+        _adProgram.on(PLAYER_STATE, _triggerAdPlayPause, this);
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
@@ -192,10 +196,30 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     }
 
+    function _triggerAdPlayPause(event) {
+        const { newstate } = event;
+        const oldstate = event.oldstate || _adProgram.model.get('state');
+
+        if (oldstate === newstate) {
+            return;
+        }
+
+        const adEvent = Object.assign({ oldstate }, _data, event);
+        if (newstate === STATE_PLAYING) {
+            _controller.trigger(AD_PLAY, adEvent);
+        } else if (newstate === STATE_PAUSED) {
+            _controller.trigger(AD_PAUSE, adEvent);
+        }
+    }
+
+    this.setEventData = function(data) {
+        _data = data;
+    };
+
     /**
      * Update instream player state. If `event.newstate` is 'playing' trigger an 'adPlay' event.
      * If `event.newstate` is 'paused' trigger and 'adPause' event.
-     * @param {AdPlayEvent|AdPauseEvent} event - An ad event object containing relavant ad data.
+     * @param {AdPlayEvent|AdPauseEvent} event - An ad event object containing relevant ad data.
      * @return {void}
      */
     this.setState = function(event) {
@@ -206,11 +230,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         adModel.set('state', newstate);
 
-        if (newstate === STATE_PLAYING) {
-            _controller.trigger(AD_PLAY, event);
-        } else if (newstate === STATE_PAUSED) {
-            _controller.trigger(AD_PAUSE, event);
-        }
+        _triggerAdPlayPause(event);
     };
 
     /**
@@ -251,6 +271,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     }
 
     function _instreamItemNext(e) {
+        _data = { };
         if (_array && _arrayIndex + 1 < _array.length) {
             _loadNextItem();
         } else {
@@ -272,6 +293,8 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_destroyed || !_inited) {
             return Promise.reject(new Error('Instream not setup'));
         }
+        _data = { };
+
         // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
         let playlist = item;
         if (Array.isArray(item)) {
@@ -349,6 +372,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * @return {void}
      */
     this.play = function() {
+        _data = { };
         _adProgram.playVideo();
     };
 
@@ -357,6 +381,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * @return {void}
      */
     this.pause = function() {
+        _data = { };
         _adProgram.pause();
     };
 
@@ -432,6 +457,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _model.set('instream', null);
 
         _adProgram = null;
+        _data = { };
 
         if (!_inited || _model.attributes._destroyed) {
             return;
