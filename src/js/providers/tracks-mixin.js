@@ -34,7 +34,6 @@ const Tracks = {
     addCaptionsCue,
     addVTTCue,
     addVTTCuesToTrack,
-    findCuesInRange,
     triggerActiveCues,
     renderNatively: false
 };
@@ -608,17 +607,6 @@ function _clearSideloadedTextTracks() {
 
 function _cueChangeHandler(e) {
     this.triggerActiveCues(e.currentTarget.activeCues);
-}
-
-function findCuesInRange(start, end) {
-    const tracksById = this._tracksById;
-    if (tracksById) {
-        const track = tracksById.nativemetadata;
-        if (track) {
-            return Array.prototype.filter.call(track.cues, cue => (end >= cue.startTime && start <= cue.endTime));
-        }
-    }
-    return null;
 }
 
 function triggerActiveCues(activeCues) {
