@@ -75,12 +75,15 @@
     "webpack-cli": "2.0.13"
   },
   "scripts": {
+    "build": "grunt",
     "docs": "jsdoc -c docs/jsdoc.conf.json",
+    "hooks": "\\cp .github/hooks/pre-push .git/hooks/pre-push",
     "lint": "yarn lint:js && yarn lint:tests && yarn lint:styles",
     "lint:js": "eslint './src/js'",
     "lint:styles": "stylelint './src/css/**/*.less'",
     "lint:tests": "eslint './test/*.js'",
     "preversion": "grunt && grunt clean:docs && npm run docs && git add docs",
+    "squash": "node parse-squashed-files.js",
     "test": "karma start",
     "karma:hook": "karma start --browsers=ChromeHeadless --reporters=mocha"
   },
