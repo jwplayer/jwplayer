@@ -2,6 +2,7 @@ import { loadTranslations } from 'api/setup-steps';
 import * as Language from 'utils/language';
 import { ERROR_LOADING_TRANSLATIONS, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE } from 'api/errors';
 import sinon from 'sinon';
+import * as Utils from 'utils/ajax';
 
 describe('Load Translations', function () {
     const sandbox = sinon.sandbox.create();
@@ -44,11 +45,15 @@ describe('Load Translations', function () {
         testLoadTranslations(ERROR_LOADING_TRANSLATIONS + ERROR_AJAX);
     });
 
-    it('updates the Language direction to rtl when rtl translation loads successfully', function () {
-        sandbox.stub(Language, 'isRtl').returns(true);
-        sandbox.stub(Language, 'loadJsonTranslation').resolves({ response: {} });
-        loadTranslations(model).then(() => {
-            expect(model.attributes.languageDir).to.equal('rtl');
+    it('should be RTL when RTL translation loads successfully', function () {
+        const rtlLang = 'ar';
+        const rtlModel = Object.assign({ language: rtlLang, intl: {} }, model);
+        rtlModel.attributes.language = rtlLang;
+        sandbox.stub(Utils, 'ajax').callsFake(({ oncomplete }) => {
+            oncomplete({ response: {} });
+        });
+        loadTranslations(rtlModel).then(() => {
+            expect(Language.isRtl(rtlModel)).to.be.true;
         });
     });
 });

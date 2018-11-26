@@ -37,6 +37,7 @@ import {
 import { ajax } from 'utils/ajax';
 import { between } from 'utils/math';
 import { log } from 'utils/log';
+import { isRtl } from 'utils/language';
 
 // TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url))
 function crossdomain(uri) {
@@ -98,6 +99,7 @@ const helpers = Object.assign({}, parser, validator, playerutils, {
     prefix,
     suffix,
     noop,
+    isRtl
 });
 
 export default helpers;

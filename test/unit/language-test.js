@@ -418,10 +418,8 @@ describe('languageUtils', function() {
         });
 
         it('should be RTL when language is RTL and is defined in intl block', function() {
-            sandbox.stub(Language, 'isInIntl').returns(true);
-            sandbox.stub(Language, 'isRtl').returns(true);
-            const config = new Config({});
-            expect(config.languageDir).to.equal('rtl');
+            const model = { language: 'ar', intl: { 'ar': { 'play': 'rtl_play' } } };
+            expect(Language.isRtl(model)).to.be.true;
         });
     });
 });

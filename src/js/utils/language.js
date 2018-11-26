@@ -96,8 +96,11 @@ export function getLanguage() {
 
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'no', 'pt', 'ro', 'sv', 'tr', 'zh'];
 
-export function isRtl(lang) {
-    return rtlLangs.indexOf(normalizeLanguageCode(lang)) > -1;
+export function isRtl(model) {
+    const { language, intl } = model;
+    const normalizedLanguage = normalizeLanguageCode(language);
+    return rtlLangs.indexOf(normalizedLanguage) >= 0 && !!(translationPromises[normalizedLanguage] ||
+        intl[normalizedLanguage] || intl[normalizeLanguageAndCountryCode(language)]);
 }
 
 export function isTranslationAvailable(language) {
@@ -106,10 +109,6 @@ export function isTranslationAvailable(language) {
 
 export function getCustomLocalization(localization, intl, languageAndCountryCode) {
     return Object.assign({}, localization, intl[normalizeLanguageCode(languageAndCountryCode)], intl[normalizeLanguageAndCountryCode(languageAndCountryCode)]);
-}
-
-export function isInIntl(intl, language) {
-    return intl[normalizeLanguageCode(language)] || intl[normalizeLanguageAndCountryCode(language)];
 }
 
 export function isLocalizationComplete(customLocalization) {

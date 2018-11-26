@@ -103,7 +103,6 @@ export default {
     itemMeta: {},
     intl: {},
     language: 'en',
-    languageDir: 'ltr',
     castAvailable: false,
     qualityLabels: undefined,
     itemReady: false,

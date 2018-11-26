@@ -6,7 +6,7 @@ import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError, PlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER,
     ERROR_LOADING_TRANSLATIONS, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE } from 'api/errors';
-import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation, isRtl } from 'utils/language';
+import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation } from 'utils/language';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -111,9 +111,6 @@ export function loadTranslations(_model) {
                 }
                 if (!response) {
                     throw new PlayerError(null, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE);
-                }
-                if (isRtl(language)) {
-                    attributes.languageDir = 'rtl';
                 }
                 attributes.localization = applyTranslation(response, customLocalization);
                 resolve();

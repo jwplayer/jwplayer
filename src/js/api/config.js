@@ -3,7 +3,7 @@ import { serialize } from 'utils/parser';
 import { isValidNumber, isNumber, pick, isBoolean } from 'utils/underscore';
 import { Features } from 'environment/environment';
 import en from 'assets/translations/en.js';
-import { getLanguage, isRtl, getCustomLocalization, applyTranslation, normalizeIntl, isInIntl } from 'utils/language';
+import { getLanguage, getCustomLocalization, applyTranslation, normalizeIntl } from 'utils/language';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -22,7 +22,6 @@ const Defaults = {
     height: 360,
     intl: {},
     language: 'en',
-    languageDir: 'ltr',
     liveTimeout: null,
     localization: en,
     mute: false,
@@ -139,9 +138,6 @@ const Config = function(options, persisted) {
     config.mute = !!config.mute;
     config.language = language;
     config.intl = intl;
-    if (isInIntl(intl, language) && isRtl(language)) {
-        config.languageDir = 'rtl';
-    }
 
     let rateControls = config.playbackRateControls;
 
