@@ -308,6 +308,11 @@ export const MEDIA_MUTE = 'mute';
 
 /**
  * Fired when metadata embedded in the media file is obtained.
+ */
+export const MEDIA_META_CUE_PARSED = 'metadataCueParsed';
+
+/**
+ * Fired when metadata embedded in the media file is obtained.
 */
 export const MEDIA_META = 'meta';
 

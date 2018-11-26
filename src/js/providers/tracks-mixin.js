@@ -2,7 +2,7 @@ import { loadFile, cancelXhr, convertToVTTCues } from 'controller/tracks-loader'
 import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
-import { WARNING } from 'events/events';
+import { MEDIA_META, WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
 
 // Used across all providers for loading tracks and handling browser track-related events
@@ -16,24 +16,26 @@ const Tracks = {
     _currentTextTrackIndex: -1,
     _unknownCount: 0,
     _activeCuePosition: null,
-    _initTextTracks: _initTextTracks,
-    addTracksListener: addTracksListener,
-    clearTracks: clearTracks,
-    clearCueData: clearCueData,
-    disableTextTrack: disableTextTrack,
-    enableTextTrack: enableTextTrack,
-    getSubtitlesTrack: getSubtitlesTrack,
-    removeTracksListener: removeTracksListener,
-    addTextTracks: addTextTracks,
-    setTextTracks: setTextTracks,
-    setupSideloadedTracks: setupSideloadedTracks,
-    setSubtitlesTrack: setSubtitlesTrack,
+    _initTextTracks,
+    addTracksListener,
+    clearTracks,
+    clearCueData,
+    disableTextTrack,
+    enableTextTrack,
+    getSubtitlesTrack,
+    removeTracksListener,
+    addTextTracks,
+    setTextTracks,
+    setupSideloadedTracks,
+    setSubtitlesTrack,
     textTrackChangeHandler: null,
     addTrackHandler: null,
-    addCuesToTrack: addCuesToTrack,
-    addCaptionsCue: addCaptionsCue,
-    addVTTCue: addVTTCue,
-    addVTTCuesToTrack: addVTTCuesToTrack,
+    addCuesToTrack,
+    addCaptionsCue,
+    addVTTCue,
+    addVTTCuesToTrack,
+    findCuesInRange,
+    triggerActiveCues,
     renderNatively: false
 };
 
@@ -255,7 +257,7 @@ function addCaptionsCue(cueData) {
     }
 }
 
-function addVTTCue(cueData) {
+function addVTTCue(cueData, cacheKey) {
     if (!this._tracksById) {
         this._initTextTracks();
     }
@@ -281,13 +283,15 @@ function addVTTCue(cueData) {
             addTextTracks.call(this, [track]);
         }
     }
-    if (_cacheVTTCue.call(this, track, vttCue)) {
+    if (_cacheVTTCue.call(this, track, vttCue, cacheKey)) {
         if (this.renderNatively || track.kind === 'metadata') {
             _addCueToTrack(this.renderNatively, track, vttCue);
         } else {
             track.data.push(vttCue);
         }
+        return vttCue;
     }
+    return null;
 }
 
 function addCuesToTrack(cueData) {
@@ -603,45 +607,63 @@ function _clearSideloadedTextTracks() {
 }
 
 function _cueChangeHandler(e) {
-    const activeCues = e.currentTarget.activeCues;
+    this.triggerActiveCues(e.currentTarget.activeCues);
+}
+
+function findCuesInRange(start, end) {
+    const tracksById = this._tracksById;
+    if (tracksById) {
+        const track = tracksById.nativemetadata;
+        if (track) {
+            return Array.prototype.filter.call(track.cues, cue => (end >= cue.startTime && start <= cue.endTime));
+        }
+    }
+    return null;
+}
+
+function triggerActiveCues(activeCues) {
     if (!activeCues || !activeCues.length) {
         return;
     }
-
     // Get the most recent start time. Cues are sorted by start time in ascending order by the browser
-    const startTime = activeCues[activeCues.length - 1].startTime;
+    const metadataTime = activeCues[activeCues.length - 1].startTime;
     // Prevent duplicate meta events for the same list of cues since the cue change handler fires once
     // for each activeCue in Safari
-    if (this._activeCuePosition === startTime) {
+    if (this._activeCuePosition === metadataTime) {
         return;
     }
-    const dataCues = [];
-
-    each(activeCues, function(cue) {
-        if (cue.startTime < startTime) {
-            return;
+    const dataCues = Array.prototype.filter.call(activeCues, cue => {
+        if (cue.startTime < metadataTime) {
+            return false;
         }
         if (cue.data || cue.value) {
-            dataCues.push(cue);
-        } else if (cue.text) {
-            this.trigger('meta', {
-                metadataTime: startTime,
-                metadata: JSON.parse(cue.text)
-            });
+            return true;
         }
-    }, this);
+        if (cue.text) {
+            const metadata = JSON.parse(cue.text);
+            const event = {
+                metadataTime,
+                metadata
+            };
+            if (metadata.programDateTime) {
+                event.programDateTime = metadata.programDateTime;
+            }
+            this.trigger(MEDIA_META, event);
+        }
+        return false;
+    });
 
     if (dataCues.length) {
-        const id3Data = parseID3(dataCues);
-        this.trigger('meta', {
-            metadataTime: startTime,
-            metadata: id3Data
+        const metadata = parseID3(dataCues);
+        this.trigger(MEDIA_META, {
+            metadataTime,
+            metadata
         });
     }
-    this._activeCuePosition = startTime;
+    this._activeCuePosition = metadataTime;
 }
 
-function _cacheVTTCue(track, vttCue) {
+function _cacheVTTCue(track, vttCue, cacheKey) {
     const trackKind = track.kind;
     if (!this._cachedVTTCues[track._id]) {
         this._cachedVTTCues[track._id] = {};
@@ -656,7 +678,7 @@ function _cacheVTTCue(track, vttCue) {
             // active cues. This is safer than ensuring text is unique, which may be violated on seek.
             // Captions within .05s of each other are treated as unique to account for
             // quality switches where start/end times are slightly different.
-            cacheKeyTime = Math.floor(vttCue.startTime * 20);
+            cacheKeyTime = cacheKey || Math.floor(vttCue.startTime * 20);
             const cacheLine = '_' + vttCue.line;
             const cacheValue = Math.floor(vttCue.endTime * 20);
             const cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
@@ -670,7 +692,7 @@ function _cacheVTTCue(track, vttCue) {
         }
         case 'metadata': {
             const text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
-            cacheKeyTime = vttCue.startTime + text;
+            cacheKeyTime = cacheKey || vttCue.startTime + text;
             if (cachedCues[cacheKeyTime]) {
                 return false;
             }
