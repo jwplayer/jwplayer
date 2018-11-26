@@ -167,7 +167,7 @@ export default class Controlbar {
             _api.setFullscreen();
             const fullscreenText = _model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
             fullscreenTip.setText(fullscreenText);
-            setAttribute(fullscreenButton.element(), 'aria-label', fullscreenText);
+            setAttribute(elements.fullscreen.element(), 'aria-label', fullscreenText);
         }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on'));
 
         const elements = this.elements = {
