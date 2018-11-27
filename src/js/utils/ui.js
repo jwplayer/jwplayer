@@ -107,6 +107,10 @@ function initInteractionListeners(ui) {
         ui.focusElements.forEach((element) => {
             addClass(element, 'jw-no-focus');
         });
+        if (!ui.handlers.blur || !ui.handlers.blur.blur) {
+            eventRegisters.blur(ui);
+        }
+
         if (type === 'pointerdown' && e.isPrimary) {
             if (!passive) {
                 const { pointerId } = e;

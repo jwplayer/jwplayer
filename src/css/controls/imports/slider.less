@@ -116,6 +116,11 @@
     background: transparent none;
     padding: 0 12px;
     z-index: 1;
+    outline: none;
+
+    &:focus .jw-slider-container .jw-rail {
+        outline: auto 5px -webkit-focus-ring-color;
+    }
 
     .jw-rail,
     .jw-buffer,
