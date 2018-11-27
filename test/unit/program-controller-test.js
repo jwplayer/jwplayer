@@ -37,7 +37,8 @@ const providerEvents = [
         type: 'levels'
     },
     {
-        type: 'meta'
+        type: 'meta',
+        metadataType: 'unknown'
     },
     {
         type: 'subtitlesTracks'
