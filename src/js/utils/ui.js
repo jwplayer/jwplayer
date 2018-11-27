@@ -38,7 +38,6 @@ export default class UI extends Eventable {
         this.pointerId = null;
         this.startX = 0;
         this.startY = 0;
-        this.focusElements = options.focusElements || [];
     }
 
     on(name, callback, context) {
@@ -104,9 +103,6 @@ function initInteractionListeners(ui) {
 
         removeHandlers(ui, WINDOW_GROUP);
         addClass(ui.el, 'jw-no-focus');
-        ui.focusElements.forEach((element) => {
-            addClass(element, 'jw-no-focus');
-        });
         if (!ui.handlers.blur || !ui.handlers.blur.blur) {
             eventRegisters.blur(ui);
         }
@@ -265,9 +261,6 @@ const eventRegisters = {
         addEventListener(ui, blur, blur, (e) => {
             triggerSimpleEvent(ui, blur, e);
             removeClass(ui.el, 'jw-no-focus');
-            ui.focusElements.forEach((el) => {
-                removeClass(el, 'jw-no-focus');
-            });
         });
     },
     over(ui) {

@@ -107,7 +107,10 @@
 
     &:focus {
         font-weight: bold;
-        outline: none;
+
+        &&:not(.jw-no-focus) {
+            outline: @ui-focus;
+        }
     }
 
     .jw-flag-small-player & {

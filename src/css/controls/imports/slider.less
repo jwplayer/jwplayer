@@ -118,8 +118,8 @@
     z-index: 1;
     outline: none;
 
-    &:focus .jw-slider-container .jw-rail {
-        outline: auto 5px -webkit-focus-ring-color;
+    &&:not(.jw-no-focus)&:focus .jw-slider-container .jw-rail {
+        outline: @ui-focus;
     }
 
     .jw-rail,
