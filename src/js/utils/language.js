@@ -96,8 +96,7 @@ export function getLanguage() {
 
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'no', 'pt', 'ro', 'sv', 'tr', 'zh'];
 
-export function isRtl(model) {
-    const { language, intl } = model;
+export function isRtl(language, intl) {
     const normalizedLanguage = normalizeLanguageCode(language);
     return rtlLangs.indexOf(normalizedLanguage) >= 0 && !!(translationPromises[normalizedLanguage] ||
         intl[normalizedLanguage] || intl[normalizeLanguageAndCountryCode(language)]);

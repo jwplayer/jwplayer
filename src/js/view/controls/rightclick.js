@@ -5,6 +5,7 @@ import { flashVersion } from 'utils/browser';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { OS } from 'environment/environment';
 import UI from 'utils/ui';
+import { isRtl } from 'utils/language';
 
 function createDomElement(html) {
     const element = createElement(html);
@@ -32,7 +33,7 @@ export default class RightClick {
                 type: 'info'
             },
             {
-                title: model.get('languageDir') === 'rtl' ? `${versionSpan} ${poweredBy}` : `${poweredBy} ${versionSpan}`,
+                title: isRtl(model.get('language'), model.get('intl')) ? `${versionSpan} ${poweredBy}` : `${poweredBy} ${versionSpan}`,
                 type: 'link',
                 featured: true,
                 showLogo: true,

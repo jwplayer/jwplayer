@@ -418,8 +418,12 @@ describe('languageUtils', function() {
         });
 
         it('should be RTL when language is RTL and is defined in intl block', function() {
-            const model = { language: 'ar', intl: { 'ar': { 'play': 'rtl_play' } } };
-            expect(Language.isRtl(model)).to.be.true;
+            const intl = {
+                'ar': {
+                    'play': 'rtl_play'
+                }
+            };
+            expect(Language.isRtl('ar', intl)).to.be.true;
         });
     });
 });

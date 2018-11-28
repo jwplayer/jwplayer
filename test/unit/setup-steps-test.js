@@ -53,7 +53,7 @@ describe('Load Translations', function () {
             oncomplete({ response: {} });
         });
         loadTranslations(rtlModel).then(() => {
-            expect(Language.isRtl(rtlModel)).to.be.true;
+            expect(Language.isRtl(rtlModel.language, rtlModel.intl)).to.be.true;
         });
     });
 });
