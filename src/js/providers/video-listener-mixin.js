@@ -25,6 +25,7 @@ const VideoListenerMixin = {
 
     loadedmetadata() {
         const metadata = {
+            metadataType: 'media',
             duration: this.getDuration(),
             height: this.video.videoHeight,
             width: this.video.videoWidth,

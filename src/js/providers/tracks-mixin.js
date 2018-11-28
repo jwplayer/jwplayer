@@ -634,6 +634,10 @@ function triggerActiveCues(activeCues) {
             if (metadata.programDateTime) {
                 event.programDateTime = metadata.programDateTime;
             }
+            if (metadata.metadataType) {
+                event.metadataType = metadata.metadataType;
+                delete metadata.metadataType;
+            }
             this.trigger(MEDIA_META, event);
         }
         return false;
@@ -643,6 +647,7 @@ function triggerActiveCues(activeCues) {
         const metadata = parseID3(dataCues);
         const metadataTime = dataCues[0].startTime;
         this.trigger(MEDIA_META, {
+            metadataType: 'id3',
             metadataTime,
             metadata
         });

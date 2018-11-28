@@ -105,9 +105,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 duration = 0;
             }
             const metadata = {
+                metadataType: 'media',
                 duration: duration,
                 height: _videotag.videoHeight,
-                width: _videotag.videoWidth
+                width: _videotag.videoWidth,
+                seekRange: _this.getSeekRange()
             };
             _this.trigger(MEDIA_META, metadata);
             checkVisualQuality();

@@ -59,6 +59,9 @@ export function ProviderListener(mediaController) {
                 }
                 break;
             case MEDIA_META: {
+                if (!data.metadataType) {
+                    data.metadataType = 'unknown';
+                }
                 const duration = data.duration;
                 if (isValidNumber(duration)) {
                     mediaModel.set('seekRange', data.seekRange);
