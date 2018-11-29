@@ -163,13 +163,6 @@ export default class Controlbar {
         }, localization.liveBroadcast);
         liveButton.element().textContent = localization.liveBroadcast;
 
-        const fullscreenButton = button('jw-icon-fullscreen', () => {
-            _api.setFullscreen();
-            const fullscreenText = _model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
-            fullscreenTip.setText(fullscreenText);
-            setAttribute(elements.fullscreen.element(), 'aria-label', fullscreenText);
-        }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on'));
-
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
@@ -189,7 +182,9 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
-            fullscreen: fullscreenButton,
+            fullscreen: button('jw-icon-fullscreen', () => {
+                _api.setFullscreen();
+            }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
@@ -277,7 +272,13 @@ export default class Controlbar {
         _model.change('state', this.onState, this);
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
-        _model.change('fullscreen', this.onFullscreen, this);
+        _model.change('fullscreen', (model, val) => {
+            toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
+
+            const fullscreenText = model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
+            fullscreenTip.setText(fullscreenText);
+            setAttribute(this.elements.fullscreen.element(), 'aria-label', fullscreenText);
+        }, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
             const { liveBroadcast, notLive } = localization;
@@ -406,10 +407,6 @@ export default class Controlbar {
 
     onDuration(model, val) {
         this.elements.duration.textContent = timeFormat(Math.abs(val));
-    }
-
-    onFullscreen(model, val) {
-        toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
     }
 
     onAudioMode(model, val) {
