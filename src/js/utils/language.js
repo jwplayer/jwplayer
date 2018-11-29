@@ -76,7 +76,7 @@ export function getLanguage() {
     return language || navigator.language || 'en';
 }
 
-export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'it', 'ja', 'nl', 'no', 'pt', 'ro', 'sv', 'tr', 'zh'];
+export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'no', 'pt', 'ro', 'sv', 'tr', 'zh'];
 
 export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(normalizeLanguageCode(language)) >= 0;
