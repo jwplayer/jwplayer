@@ -442,34 +442,53 @@ Object.assign(Controller.prototype, {
                 _this.setItemIndex(0);
             }
 
-            if (!_beforePlay) {
+            const position = _model.mediaModel.get('currentTime');
+
+            if (!_beforePlay && !position) {
+                const callback = _model.get('testFunc');
+                if (callback) {
+                    _model.set('state', STATE_BUFFERING);
+                    return callback().then(() => {
+                        return initiatePlayback(playReason, meta, true);
+                    }).catch(() => {
+                        throw new Error("uh oh didnt work");
+                    });
+                }
+            }
+
+            return initiatePlayback(playReason, meta, false);
+        }
+
+        function initiatePlayback(playReason, meta, isBeforePlay) {
+            if (isBeforePlay) {
                 _beforePlay = true;
                 _this.trigger(MEDIA_BEFOREPLAY, {
                     playReason,
                     startTime: meta && meta.startTime ? meta.startTime : _model.get('playlistItem').starttime
                 });
                 _beforePlay = false;
-
-                if (_inInteraction(window.event) && !mediaPool.primed()) {
-                    mediaPool.prime();
-                }
-
-                if (_interruptPlay) {
-                    // Force tags to prime if we're about to play an ad
-                    // Resetting the source in order to prime is OK since we'll be switching it anyway
-                    if (_inInteraction(window.event) && !_backgroundLoading) {
-                        _model.get('mediaElement').load();
-                    }
-                    _interruptPlay = false;
-                    _actionOnAttach = null;
-                    return Promise.resolve();
-                }
             }
 
+            if (_inInteraction(window.event) && !mediaPool.primed()) {
+                mediaPool.prime();
+            }
+
+            if (_interruptPlay) {
+                // Force tags to prime if we're about to play an ad
+                // Resetting the source in order to prime is OK since we'll be switching it anyway
+                if (_inInteraction(window.event) && !_backgroundLoading) {
+                    _model.get('mediaElement').load();
+                }
+                _interruptPlay = false;
+                _actionOnAttach = null;
+                return Promise.resolve();
+            }
+
+
             return _programController.playVideo(playReason)
-                // If playback succeeded that means we captured a gesture (and used it to prime the pool)
-                // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
-                .then(mediaPool.played);
+            // If playback succeeded that means we captured a gesture (and used it to prime the pool)
+            // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
+            .then(mediaPool.played);
         }
 
         function _getReason(meta) {
