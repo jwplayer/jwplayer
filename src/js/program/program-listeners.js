@@ -59,8 +59,8 @@ export function ProviderListener(mediaController) {
                 }
                 break;
             case MEDIA_META: {
-                if (!data.metadataType) {
-                    data.metadataType = 'unknown';
+                if (!event.metadataType) {
+                    event.metadataType = 'unknown';
                 }
                 const duration = data.duration;
                 if (isValidNumber(duration)) {
