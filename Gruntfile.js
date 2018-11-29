@@ -10,6 +10,13 @@ const webpackCompilers = {};
 const env = process.env;
 const execSync = require('child_process').execSync;
 
+function runCommand(command, dir) {
+    execSync(command, {
+        cwd: dir,
+        stdio: [0, 1, 2]
+    });
+}
+
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
     let metadata = '';
@@ -220,11 +227,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('hooks', 'Install Pre Push Hook', function() {
-        const command = '\\cp .github/hooks/pre-push .git/hooks/pre-push';
-        execSync(command, {
-            cwd: '.',
-            stdio: [0, 1, 2]
-        });
+        runCommand('yarn run hooks', '.');
     });
     
     grunt.registerTask('notice', 'Create notice.txt file', function() {
@@ -239,25 +242,18 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('lint', 'ESLints JavaScript & Stylelints LESS', function(target) {
-        let command = 'npm run lint';
+        let command = 'yarn run lint';
         if (target === 'js') {
             command = command + ':js';
         }
         if (target === 'test') {
             command = command + ':tests';
         }
-        execSync(command, {
-            cwd: '.',
-            stdio: [0, 1, 2]
-        });
+        runCommand(command, '.');
     });
 
     grunt.registerTask('docs', 'Generate API documentation', function() {
-        const command = 'npm run docs';
-        execSync(command, {
-            cwd: '.',
-            stdio: [0, 1, 2]
-        });
+        runCommand('yarn run docs', '.');
     });
 
     grunt.registerTask('karma:local', [
