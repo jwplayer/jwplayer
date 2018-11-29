@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "Questa pubblicità terminerà tra xx",
         "cuetext": "Pubblicità",
+        "displayHeading": "Pubblicità",
         "loadingAd": "Pubblicità in Caricamento",
-        "podmessage": "Ad __AD_POD_CURRENT__ of __AD_POD_LENGTH__. ",
+        "podmessage": "Ad __AD_POD_CURRENT__ of __AD_POD_LENGTH__.",
         "skipmessage": "Salta l'annuncio xx",
-        "skiptext": "Salta",
-        "displayHeading": "Pubblicità"
+        "skiptext": "Salta"
     },
     "airplay": "AirPlay",
     "audioTracks": "Tracce Audio",
@@ -25,10 +25,12 @@
         "protectedContent": "Si è verificato un problema con l'accesso ai contenuti protetti.",
         "technicalError": "Questo video non può essere riprodotto a causa di un errore tecnico."
     },
+    "exitFullscreen": "Esci da Modalità Schermo Intero",
     "fullscreen": "Schermo Intero",
     "hd": "Qualità",
     "liveBroadcast": "Live",
     "logo": "Logo",
+    "mute": "Disattiva Audio",
     "next": "Successivo",
     "nextUp": "Riproduci il Successivo",
     "notLive": "Non Live",
@@ -57,6 +59,7 @@
     },
     "slider": "Cursore di Ricerca",
     "stop": "Stop",
+    "unmute": "Riattiva Audio",
     "videoInfo": "Info Su Questo Video",
     "volume": "Volume",
     "volumeSlider": "Cursore del Volume"

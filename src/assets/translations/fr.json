@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "La publicité prendra fin dans xx",
         "cuetext": "Publicité",
+        "displayHeading": "Publicité",
         "loadingAd": "Chargement de la publicité",
-        "podmessage": "Publicité __AD_POD_CURRENT__ sur __AD_POD_LENGTH__. ",
+        "podmessage": "Publicité __AD_POD_CURRENT__ sur __AD_POD_LENGTH__.",
         "skipmessage": "Sauter la publicité dans xx",
-        "skiptext": "Sauter",
-        "displayHeading": "Publicité"
+        "skiptext": "Sauter"
     },
     "airplay": "AirPlay",
     "audioTracks": "Pistes Audio",
@@ -25,10 +25,12 @@
         "protectedContent": "Nous n'avons pas réussi à accéder à ce contenu protégé.",
         "technicalError": "Une erreur technique empêche la lecture de la vidéo."
     },
+    "exitFullscreen": "Sortir du Mode Plein Écran",
     "fullscreen": "Plein Écran",
     "hd": "Qualité",
     "liveBroadcast": "Live",
     "logo": "Logo",
+    "mute": "Désactiver le Son",
     "next": "Suite",
     "nextUp": "Prochaine Vidéo",
     "notLive": "Hors Live",
@@ -57,6 +59,7 @@
     },
     "slider": "Barre de Lecture",
     "stop": "Stop",
+    "unmute": "Activer le Son",
     "videoInfo": "À Propos de Cette Vidéo",
     "volume": "Volume",
     "volumeSlider": "Barre de Volume"

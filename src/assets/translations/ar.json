@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "سينتهي هذا الإعلان خلال xx",
         "cuetext": "إعلان",
+        "displayHeading": "إعلان",
         "loadingAd": "تحميل الإعلان",
-        "podmessage": "إعلان __AD_POD_CURRENT__ من __AD_POD_LENGTH__. ",
+        "podmessage": "إعلان __AD_POD_CURRENT__ من __AD_POD_LENGTH__.",
         "skipmessage": "تخطّي الإعلان خلال xx",
-        "skiptext": "تخطّي",
-        "displayHeading": "إعلان"
+        "skiptext": "تخطّي"
     },
     "airplay": "البثّ الحي",
     "audioTracks": "القنوات الصوتية",
@@ -25,10 +25,12 @@
         "protectedContent": "هناك مشكلة في منح الدخول للمحتوى المحمي.",
         "technicalError": "لقد تعذّر تشغيل هذا الفيديو بسبب خلل تقني."
     },
+    "exitFullscreen": "الخروج من وضعية ملء الشاشة",
     "fullscreen": "شاشة كاملة",
     "hd": "جودة الفيديو",
     "liveBroadcast": "مباشر",
     "logo": "الشعار",
+    "mute": "كتم الصوت",
     "next": "التالي",
     "nextUp": "الفيديو التالي",
     "notLive": "غير مباشر",
@@ -57,6 +59,7 @@
     },
     "slider": "شريط تمرير البحث",
     "stop": "إيقاف",
+    "unmute": "إلغاء كتم الصوت",
     "videoInfo": "عن هذا الفيديو",
     "volume": "الصوت",
     "volumeSlider": "شريط تمرير مستوى الصوت"
