@@ -10,11 +10,14 @@ export default class VolumeTooltip extends Tooltip {
         this._model = _model;
         this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', 'vertical');
         this.volumeSlider.setup();
-        this.volumeSlider.element().classList.remove('jw-background-color');
 
-        setAttribute(this.volumeSlider.element(), 'aria-label', this._model.get('localization').volumeSlider);
+        const volumeSliderElement = this.volumeSlider.element();
+        volumeSliderElement.classList.remove('jw-background-color');
 
-        this.addContent(this.volumeSlider.element());
+        setAttribute(volumeSliderElement, 'aria-label', this._model.get('localization').volumeSlider);
+        setAttribute(volumeSliderElement, 'tabindex', '0');
+
+        this.addContent(volumeSliderElement);
 
         this.volumeSlider.on('update', function (evt) {
             this.trigger('update', evt);
