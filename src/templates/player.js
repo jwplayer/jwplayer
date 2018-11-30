@@ -12,6 +12,7 @@ export default (id, ariaLabel = '') => {
                     `<div class="jw-title-secondary jw-reset-text"></div>` +
                 `</div>` +
                 `<div class="jw-overlays jw-reset"></div>` +
+                `<div class="jw-hidden-accessibility"></div>` +
             `</div>` +
         `</div>`
     );

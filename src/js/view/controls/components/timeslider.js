@@ -75,6 +75,8 @@ class TimeSlider extends Slider {
         this._model = _model;
         this._api = _api;
 
+        this.accessibilityContainer = _api.getContainer().querySelector('.jw-hidden-accessibility');
+
         this.timeTip = new TimeTip('jw-tooltip-time', null, true);
         this.timeTip.setup();
 
@@ -110,6 +112,11 @@ class TimeSlider extends Slider {
         setAttribute(this.el, 'aria-label', this._model.get('localization').slider);
         this.el.removeAttribute('aria-hidden');
         this.elementRail.appendChild(this.timeTip.element());
+
+        this.timeUpdateKeeper = document.createElement('p');
+        setAttribute(this.timeUpdateKeeper, 'aria-live', 'assertive');
+
+        this.accessibilityContainer.appendChild(this.timeUpdateKeeper);
 
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
         this.ui = (this.ui || new UI(this.el))
@@ -298,6 +305,7 @@ class TimeSlider extends Slider {
         } else {
             ariaText = `${timeFormat(position)} of ${timeFormat(duration)}`;
         }
+        this.timeUpdateKeeper.innerHTML = ariaText;
         setAttribute(this.el, 'aria-valuetext', ariaText);
     }
 
