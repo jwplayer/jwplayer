@@ -23,21 +23,6 @@ const codeToLang = {
     el: 'Greek',
 };
 
-const rtlLangs = [
-    'ar',
-    'arc',
-    'dv',
-    'fa',
-    'ha',
-    'he',
-    'khw',
-    'ks',
-    'ku',
-    'ps',
-    'ur',
-    'yi',
-];
-
 const langToCode = invert(codeToLang);
 
 function normalizeLanguageCode(language) {
@@ -97,7 +82,11 @@ export function getLanguage() {
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'no', 'pt', 'ro', 'sv', 'tr', 'zh'];
 
 export function isRtl(message) {
-    // TODO: RTL regex can be improved with ranges from http://www.unicode.org/Public/UNIDATA/extracted/DerivedBidiClass.txt
+    // RTL regex can be improved with ranges from:
+    // http://www.unicode.org/Public/UNIDATA/extracted/DerivedBidiClass.txt
+    // http://jrgraphix.net/research/unicode.php
+    // Recognized RTL Langs: 'ar', 'arc', 'dv', 'fa', 'ha', 'he', 'khw', 'ks', 'ku', 'ps', 'ur', 'yi'.
+
     const rtlRegex = /^[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
     return message.charCodeAt(0) === 8207 || rtlRegex.test(message);
 }
