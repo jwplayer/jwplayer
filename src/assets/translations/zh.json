@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "该广告将在 xx 后结束",
         "cuetext": "广告",
+        "displayHeading": "广告",
         "loadingAd": "正在加载广告",
         "podmessage": "第 __AD_POD_CURRENT__/__AD_POD_LENGTH__ 条广告。",
         "skipmessage": "xx 后跳过广告",
-        "skiptext": "跳过",
-        "displayHeading": "广告"
+        "skiptext": "跳过"
     },
     "airplay": "隔空播放",
     "audioTracks": "音轨",
@@ -25,10 +25,12 @@
         "protectedContent": "无法访问受保护内容。",
         "technicalError": "由于技术故障，无法播放该视频。"
     },
+    "exitFullscreen": "離開全螢幕",
     "fullscreen": "全屏",
     "hd": "视频质量",
     "liveBroadcast": "直播",
     "logo": "标识",
+    "mute": "静音",
     "next": "下一个",
     "nextUp": "接下来播放",
     "notLive": "非直播",
@@ -57,6 +59,7 @@
     },
     "slider": "滑动查找",
     "stop": "停止",
+    "unmute": "取消静音",
     "videoInfo": "关于该视频",
     "volume": "音量",
     "volumeSlider": "音量滑块"

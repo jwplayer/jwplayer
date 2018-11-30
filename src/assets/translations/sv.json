@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "Denna annons slutar om xx",
         "cuetext": "Annons",
+        "displayHeading": "Annons",
         "loadingAd": "Laddar annons",
-        "podmessage": "Annons __AD_POD_CURRENT__ av __AD_POD_LENGTH__. ",
+        "podmessage": "Annons __AD_POD_CURRENT__ av __AD_POD_LENGTH__.",
         "skipmessage": "Skippa annons om xx",
-        "skiptext": "Skippa",
-        "displayHeading": "Annons"
+        "skiptext": "Skippa"
     },
     "airplay": "AirPlay",
     "audioTracks": "Ljudspår",
@@ -18,17 +18,19 @@
     "errors": {
         "badConnection": "Videon kan inte spelas på grund av ett fel med din internetanslutning.",
         "cantLoadPlayer": "Tyvärr, videospelaren misslyckades med att ladda.",
-    	"cantPlayInBrowser": "Videon kan inte spelas i denna webbläsare.",
+        "cantPlayInBrowser": "Videon kan inte spelas i denna webbläsare.",
         "cantPlayVideo": "Denna videofil kan inte spelas.",
         "errorCode": "Felkod",
         "liveStreamDown": "Livestreamen är nere eller har avslutats.",
         "protectedContent": "Det var problem med att ge tillgång till skyddat innehåll.",
         "technicalError": "Videon kan inte spelas på grund av ett tekniskt problem."
     },
+    "exitFullscreen": "Stäng Helskärm",
     "fullscreen": "Fullskärm",
     "hd": "Kvalitet",
     "liveBroadcast": "Live",
     "logo": "Logotyp",
+    "mute": "Ljud Av",
     "next": "Nästa",
     "nextUp": "Nästa Video",
     "notLive": "Inte Live",
@@ -57,6 +59,7 @@
     },
     "slider": "Sökreglage",
     "stop": "Stoppa",
+    "unmute": "Ljud På",
     "videoInfo": "Om Denna Video",
     "volume": "Volym",
     "volumeSlider": "Ljudvolym"

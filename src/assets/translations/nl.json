@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "Reclame klaar in xx",
         "cuetext": "Advertentie",
+        "displayHeading": "Advertentie",
         "loadingAd": "Reclame laden",
-        "podmessage": "Reclame __AD_POD_CURRENT__ van __AD_POD_LENGTH__. ",
+        "podmessage": "Reclame __AD_POD_CURRENT__ van __AD_POD_LENGTH__.",
         "skipmessage": "Reclame overslaan in xx",
-        "skiptext": "Overslaan",
-        "displayHeading": "Advertentie"
+        "skiptext": "Overslaan"
     },
     "airplay": "AirPlay",
     "audioTracks": "Audiosporen",
@@ -25,10 +25,12 @@
         "protectedContent": "Deze beschermde video kan niet worden afgespeeld.",
         "technicalError": "Deze video kan niet worden afgespeeld door een technisch probleem."
     },
+    "exitFullscreen": "Volledig Scherm Verlaten",
     "fullscreen": "Fullscreen",
     "hd": "Kwaliteit",
     "liveBroadcast": "Live",
     "logo": "Logo",
+    "mute": "Geluid Dempen",
     "next": "Volgende",
     "nextUp": "Volgende Video",
     "notLive": "Niet live",
@@ -57,6 +59,7 @@
     },
     "slider": "Zoeken",
     "stop": "Stop",
+    "unmute": "Geluid Terug Aanzetten",
     "videoInfo": "Over Deze Video",
     "volume": "Volume",
     "volumeSlider": "Volume Niveau"

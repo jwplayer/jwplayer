@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "Diese Werbung endet in xx",
         "cuetext": "Werbung",
+        "displayHeading": "Werbung",
         "loadingAd": "Werbung lädt",
-        "podmessage": "Werbung __AD_POD_CURRENT__ von __AD_POD_LENGTH__. ",
+        "podmessage": "Werbung __AD_POD_CURRENT__ von __AD_POD_LENGTH__.",
         "skipmessage": "Überspringe Werbung in xx",
-        "skiptext": "Überspringe",
-        "displayHeading": "Werbung"
+        "skiptext": "Überspringe"
     },
     "airplay": "AirPlay",
     "audioTracks": "Audiospur",
@@ -25,10 +25,12 @@
         "protectedContent": "Es gab ein Problem Zugang zu dem geschützten Inhalt herzustellen.",
         "technicalError": "Das Video kann durch einen technischen Fehler nicht abgespielt werden."
     },
+    "exitFullscreen": "Vollbild Beenden",
     "fullscreen": "Vollbild",
     "hd": "Qualität",
     "liveBroadcast": "Live",
     "logo": "Logo",
+    "mute": "Summ Schalten",
     "next": "Weiter",
     "nextUp": "Als Nächstes",
     "notLive": "Nicht Live",
@@ -57,6 +59,7 @@
     },
     "slider": "Positionsanzeige",
     "stop": "Stopp",
+    "unmute": "Stummschaltung Deaktivieren",
     "videoInfo": "Über Dieses Video",
     "volume": "Lautstärke",
     "volumeSlider": "Lautstärkeregler"

@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "Annonsen er ferdig om xx",
         "cuetext": "Reklame",
+        "displayHeading": "Reklame",
         "loadingAd": "Laster annonse",
-        "podmessage": "Annonse __AD_POD_CURRENT__ av __AD_POD_LENGTH__. ",
+        "podmessage": "Annonse __AD_POD_CURRENT__ av __AD_POD_LENGTH__.",
         "skipmessage": "Hopp over annonse om xx",
-        "skiptext": "Hopp over",
-        "displayHeading": "Reklame"
+        "skiptext": "Hopp over"
     },
     "airplay": "AirPlay",
     "audioTracks": "Lydfiler",
@@ -25,10 +25,12 @@
         "protectedContent": "Det oppstod problemer med å gi tilgang til begrenset innhold.",
         "technicalError": "Denne videoen kan ikke spiller på grunn av tekniske problemer."
     },
+    "exitFullscreen": "Avslutt fullskjerm",
     "fullscreen": "Full skjerm",
     "hd": "Kvalitet",
     "liveBroadcast": "Direkte",
     "logo": "Logo",
+    "mute": "Skru av Lyd",
     "next": "Neste",
     "nextUp": "Neste",
     "notLive": "Ikke Direkte",
@@ -43,7 +45,7 @@
     "prev": "Forrige",
     "related": {
         "autoplaymessage": "Neste om xx",
-		"heading": "Flere Videoer"
+        "heading": "Flere Videoer"
     },
     "replay": "Spill igjen",
     "rewind": "Spol tilbake 10 sekunder",
@@ -57,6 +59,7 @@
     },
     "slider": "Søkelinje",
     "stop": "Stopp",
+    "unmute": "Skru På Lyd",
     "videoInfo": "Om Denne Videoen",
     "volume": "Volum",
     "volumeSlider": "Volumkontroll"

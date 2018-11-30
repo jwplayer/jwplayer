@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "Denne annonce vil slutte om xx",
         "cuetext": "Annonce",
+        "displayHeading": "Annonce",
         "loadingAd": "Indlæser annonce",
-        "podmessage": "Annonce __AD_POD_CURRENT__ af __AD_POD_LENGTH__. ",
+        "podmessage": "Annonce __AD_POD_CURRENT__ af __AD_POD_LENGTH__.",
         "skipmessage": "Spring annonce over om xx",
-        "skiptext": "Spring over",
-        "displayHeading": "Annonce"
+        "skiptext": "Spring over"
     },
     "airplay": "AirPlay",
     "audioTracks": "Lydspor",
@@ -25,10 +25,12 @@
         "protectedContent": "Der opstod et problem med at give adgang til beskyttet indhold.",
         "technicalError": "Denne video kan ikke afspilles på grund af en teknisk fejl."
     },
+    "exitFullscreen": "Luk fuld skærm",
     "fullscreen": "Fuld skærm",
     "hd": "Kvalitet",
     "liveBroadcast": "Live",
     "logo": "Logo",
+    "mute": "Lyd fra",
     "next": "Næste",
     "nextUp": "Se næste",
     "notLive": "Ikke live",
@@ -57,6 +59,7 @@
     },
     "slider": "Positionsskyder",
     "stop": "Stop",
+    "unmute": "Lyd På",
     "videoInfo": "Om denne video",
     "volume": "Lydstyrke",
     "volumeSlider": "Juster lydstyrke"

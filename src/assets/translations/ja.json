@@ -2,11 +2,11 @@
     "advertising": {
         "admessage": "この広告はxx秒で終わります",
         "cuetext": "広告",
+        "displayHeading": "広告",
         "loadingAd": "広告を読み込み中",
         "podmessage": "広告__AD_POD_CURRENT__分の__AD_POD_LENGTH__。",
         "skipmessage": "xx秒後に広告をスキップできます",
-        "skiptext": "スキップ",
-        "displayHeading": "広告"
+        "skiptext": "スキップ"
     },
     "airplay": "AirPlay",
     "audioTracks": "オーディオトラック",
@@ -25,10 +25,12 @@
         "protectedContent": "保護されたコンテンツへのアクセス提供に問題がありました。",
         "technicalError": "技術的なエラーにより、この動画は再生できません。"
     },
+    "exitFullscreen": "全画面を閉じる",
     "fullscreen": "全画面",
     "hd": "画質",
     "liveBroadcast": "ライブ配信",
     "logo": "ロゴ",
+    "mute": "ミュート",
     "next": "次へ",
     "nextUp": "次の動画",
     "notLive": "非ライブ配信",
@@ -57,6 +59,7 @@
     },
     "slider": "シークスライダー",
     "stop": "停止",
+    "unmute": "ミュート解除",
     "videoInfo": "この動画について",
     "volume": "音量",
     "volumeSlider": "音量スライダー"
