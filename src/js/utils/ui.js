@@ -2,6 +2,7 @@ import { OS, Features } from 'environment/environment';
 import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Eventable from 'utils/eventable';
 import { now } from 'utils/date';
+import { addClass, removeClass } from 'utils/dom';
 
 const TOUCH_SUPPORT = ('ontouchstart' in window);
 const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
@@ -101,6 +102,11 @@ function initInteractionListeners(ui) {
         ui.startY = pageY;
 
         removeHandlers(ui, WINDOW_GROUP);
+        addClass(ui.el, 'jw-no-focus');
+        if (!ui.handlers.blur || !ui.handlers.blur.blur) {
+            eventRegisters.blur(ui);
+        }
+
         if (type === 'pointerdown' && e.isPrimary) {
             if (!passive) {
                 const { pointerId } = e;
@@ -254,6 +260,7 @@ const eventRegisters = {
         const blur = 'blur';
         addEventListener(ui, blur, blur, (e) => {
             triggerSimpleEvent(ui, blur, e);
+            removeClass(ui.el, 'jw-no-focus');
         });
     },
     over(ui) {

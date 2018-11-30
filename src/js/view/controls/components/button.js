@@ -1,5 +1,6 @@
 import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
+import { addFocusHandler } from 'utils/dom';
 
 export default function (icon, apiAction, ariaText, svgIcons) {
     const element = document.createElement('div');
@@ -19,11 +20,8 @@ export default function (icon, apiAction, ariaText, svgIcons) {
         });
     }
 
-    // Prevent button from being focused on mousedown so that the tooltips don't remain visible until
-    // the user interacts with another element on the page
-    element.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-    });
+    // prevent button from having a border when focused through click
+    addFocusHandler(element);
 
     if (svgIcons) {
         Array.prototype.forEach.call(svgIcons, svgIcon => {

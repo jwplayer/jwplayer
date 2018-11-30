@@ -190,7 +190,7 @@
                 --disconnected-color: @inactive-color;
 
                 &:focus {
-                    outline: none;
+                    outline: @ui-focus;
                 }
 
                 &.jw-off {
@@ -201,6 +201,7 @@
             &:focus google-cast-launcher {
                 --connected-color: @active-color;
                 --disconnected-color: @hover-color;
+                outline: @ui-focus;
             }
 
             &:hover google-cast-launcher {

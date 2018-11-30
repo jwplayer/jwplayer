@@ -52,6 +52,20 @@ export function addClass(element, classes) {
     setClassName(element, originalClasses.join(' '));
 }
 
+export function addFocusHandler(element) {
+    element.addEventListener('mousedown', () => {
+        addClass(element, 'jw-no-focus');
+    });
+
+    element.addEventListener('touchstart', () => {
+        addClass(element, 'jw-no-focus');
+    });
+
+    element.addEventListener('blur', () => {
+        removeClass(element, 'jw-no-focus');
+    });
+}
+
 export function removeClass(element, c) {
     const originalClasses = classNameArray(element);
     const removeClasses = Array.isArray(c) ? c : c.split(' ');
