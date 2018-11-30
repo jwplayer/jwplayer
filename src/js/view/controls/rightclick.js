@@ -33,7 +33,7 @@ export default class RightClick {
                 type: 'info'
             },
             {
-                title: isRtl(model.get('language'), model.get('intl')) ? `${versionSpan} ${poweredBy}` : `${poweredBy} ${versionSpan}`,
+                title: isRtl(poweredBy) ? `${versionSpan} ${poweredBy}` : `${poweredBy} ${versionSpan}`,
                 type: 'link',
                 featured: true,
                 showLogo: true,
