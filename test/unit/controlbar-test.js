@@ -15,6 +15,7 @@ model.mediaController.on.returnsThis();
 
 describe('Control Bar', function() {
 
+    let playerContainer;
     let controlBar;
     let container;
     let children;
@@ -24,11 +25,16 @@ describe('Control Bar', function() {
         spacer.className += 'jw-spacer';
         const settingsButton = document.createElement('div');
 
+        const accessible = document.createElement('div');
+        accessible.className = 'jw-hidden-accessibility';
+        playerContainer = document.createElement('div');
+        playerContainer.appendChild(accessible);
+
         container = document.createElement('div');
         container.appendChild(settingsButton);
         container.appendChild(spacer);
 
-        controlBar = new ControlBar({}, model);
+        controlBar = new ControlBar({}, model, playerContainer);
         controlBar.elements.spacer = spacer;
         controlBar.elements.settingsButton = settingsButton;
         controlBar.elements.buttonContainer = container;
