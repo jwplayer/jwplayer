@@ -7,6 +7,8 @@ export default class VolumeTooltip extends Tooltip {
     constructor(_model, name, ariaText, svgIcons) {
         super(name, ariaText, true, svgIcons);
 
+        const localization = _model.get('localization');
+
         this._model = _model;
         this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', 'vertical');
         this.volumeSlider.setup();
@@ -14,8 +16,8 @@ export default class VolumeTooltip extends Tooltip {
         const volumeSliderElement = this.volumeSlider.element();
         volumeSliderElement.classList.remove('jw-background-color');
 
-        setAttribute(volumeSliderElement, 'aria-label', this._model.get('localization').volumeSlider);
-        setAttribute(volumeSliderElement, 'tabindex', '0');
+        setAttribute(volumeSliderElement, 'aria-label', localization.volumeSlider);
+        setAttribute(this.container, 'tabindex', '0');
 
         this.addContent(volumeSliderElement);
 
@@ -27,8 +29,14 @@ export default class VolumeTooltip extends Tooltip {
         this.ui = new UI(this.el, { directSelect: true })
             .on('click enter', this.toggleValue, this)
             .on('tap', this.toggleOpenState, this)
-            .on('over focus', this.openTooltip, this)
-            .on('out blur', this.closeTooltip, this);
+            .on('over', this.openTooltip, this)
+            .on('out', this.closeTooltip, this);
+
+        this.el.addEventListener('keydown', (evt) => {
+            if (evt.keyCode === 9) {
+                this.openTooltip();
+            }
+        });
 
         this._model.on('change:volume', this.onVolume, this);
     }

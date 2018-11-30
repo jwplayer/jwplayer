@@ -112,6 +112,23 @@
     display: none;
 }
 
+.jw-icon-volume {
+    &:not(.jw-open) {
+        div {
+            height: 0;
+        }
+
+        > .jw-overlay {
+            visibility: visible;
+            min-height: 0;
+        }
+    }
+
+    > .jw-overlay:focus {
+        outline: 0;
+    }
+}
+
 .jwplayer .jw-text-countdown {
     display: none;
 }
