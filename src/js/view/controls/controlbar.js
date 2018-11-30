@@ -273,11 +273,12 @@ export default class Controlbar {
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', (model, val) => {
-            toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
+            const fullscreenElement = this.elements.fullscreen.element();
+            toggleClass(fullscreenElement, 'jw-off', val);
 
             const fullscreenText = model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
             fullscreenTip.setText(fullscreenText);
-            setAttribute(this.elements.fullscreen.element(), 'aria-label', fullscreenText);
+            setAttribute(fullscreenElement, 'aria-label', fullscreenText);
         }, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
