@@ -107,15 +107,15 @@
 
     &:focus {
         font-weight: bold;
-
-        &&:not(.jw-no-focus) {
-            outline: @ui-focus;
-        }
     }
 
     .jw-flag-small-player & {
         line-height: 1.75;
     }
+}
+
+.jw-settings-content-item:focus:not(.jw-no-focus) {
+    outline: @ui-focus;
 }
 
 .jw-settings-item-active {

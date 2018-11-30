@@ -110,6 +110,10 @@
     }
 }
 
+.jw-slider-time:focus:not(.jw-no-focus) .jw-slider-container .jw-rail {
+    outline: @ui-focus;
+}
+
 .jw-slider-time {
     .rect(100%, 17px);
     align-items: center;
@@ -117,10 +121,6 @@
     padding: 0 12px;
     z-index: 1;
     outline: none;
-
-    &&:not(.jw-no-focus)&:focus .jw-slider-container .jw-rail {
-        outline: @ui-focus;
-    }
 
     .jw-rail,
     .jw-buffer,
