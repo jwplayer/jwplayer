@@ -222,6 +222,7 @@ export default class Controlbar {
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
         const fullscreenTip = SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
+        const muteTip = SimpleTooltip(elements.volumetooltip.element(), 'volumetooltip', localization.mute);
 
         // Filter out undefined elements
         const buttonLayout = [

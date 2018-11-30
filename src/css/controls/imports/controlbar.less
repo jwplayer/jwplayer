@@ -114,8 +114,12 @@
 
 .jw-icon-volume {
     &:not(.jw-open) {
-        div {
+        div&:not(.jw-tooltip) {
             height: 0;
+        }
+
+        .jw-tooltip {
+            bottom: (@mobile-touch-target / 2);
         }
 
         > .jw-overlay {
