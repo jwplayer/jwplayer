@@ -26,10 +26,8 @@ export default class VolumeTooltip extends Tooltip {
             this.el.focus();
         }, this);
 
-        this.volumeSlider.el.parentElement.addEventListener('keydown', (evt) => {
-            if (evt.keyCode === 9 || evt.shiftKey && evt.keyCode === 9) {
-                this.closeTooltip();
-            }
+        this.volumeSlider.el.parentElement.addEventListener('blur', () => {
+            this.closeTooltip();
         });
 
         this.volumeSlider.el.parentElement.addEventListener('focus', () => {
