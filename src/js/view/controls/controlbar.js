@@ -111,13 +111,13 @@ const appendChildren = (container, elements) => {
 };
 
 export default class Controlbar {
-    constructor(_api, _model) {
+    constructor(_api, _model, _playerContainer) {
         Object.assign(this, Events);
         this._api = _api;
         this._model = _model;
         this._isMobile = OS.mobile;
         const localization = _model.get('localization');
-        const timeSlider = new TimeSlider(_model, _api);
+        const timeSlider = new TimeSlider(_model, _api, _playerContainer);
         let volumeTooltip;
         let muteButton;
         let feedShownId = '';

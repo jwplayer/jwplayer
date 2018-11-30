@@ -69,13 +69,13 @@ function reasonInteraction() {
 }
 
 class TimeSlider extends Slider {
-    constructor(_model, _api) {
+    constructor(_model, _api, _playerContainer) {
         super('jw-slider-time', 'horizontal');
 
         this._model = _model;
         this._api = _api;
 
-        this.accessibilityContainer = _api.getContainer().querySelector('.jw-hidden-accessibility');
+        this.accessibilityContainer = _playerContainer.querySelector('.jw-hidden-accessibility');
 
         this.timeTip = new TimeTip('jw-tooltip-time', null, true);
         this.timeTip.setup();
