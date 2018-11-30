@@ -26,17 +26,21 @@ export default class VolumeTooltip extends Tooltip {
             this.el.focus();
         }, this);
 
+        this.volumeSlider.el.parentElement.addEventListener('keydown', (evt) => {
+            if (evt.keyCode === 9 || evt.shiftKey && evt.keyCode === 9) {
+                this.closeTooltip();
+            }
+        });
+
+        this.volumeSlider.el.parentElement.addEventListener('focus', () => {
+            this.openTooltip();
+        });
+
         this.ui = new UI(this.el, { directSelect: true })
             .on('click enter', this.toggleValue, this)
             .on('tap', this.toggleOpenState, this)
             .on('over', this.openTooltip, this)
             .on('out', this.closeTooltip, this);
-
-        this.el.addEventListener('keydown', (evt) => {
-            if (evt.keyCode === 9) {
-                this.openTooltip();
-            }
-        });
 
         this._model.on('change:volume', this.onVolume, this);
     }
