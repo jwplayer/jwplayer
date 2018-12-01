@@ -3,7 +3,7 @@ import { serialize } from 'utils/parser';
 import { isValidNumber, isNumber, pick, isBoolean } from 'utils/underscore';
 import { Features } from 'environment/environment';
 import en from 'assets/translations/en.js';
-import { getLanguage, getCustomLocalization, applyTranslation } from 'utils/language';
+import { getLanguage, getCustomLocalization, applyTranslation, normalizeIntl } from 'utils/language';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -120,8 +120,10 @@ const Config = function(options, persisted) {
     _deserialize(allOptions);
 
     const language = allOptions.forceLocalizationDefaults ? Defaults.language : getLanguage();
-    const { localization, intl } = allOptions;
-    allOptions.localization = applyTranslation(en, getCustomLocalization(localization, intl || {}, language));
+    const { localization } = allOptions;
+    const intl = normalizeIntl(allOptions.intl);
+
+    allOptions.localization = applyTranslation(en, getCustomLocalization(localization, intl, language));
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {
@@ -135,6 +137,7 @@ const Config = function(options, persisted) {
     config.volume = isValidNumber(config.volume) ? Math.min(Math.max(0, config.volume), 100) : Defaults.volume;
     config.mute = !!config.mute;
     config.language = language;
+    config.intl = intl;
 
     let rateControls = config.playbackRateControls;
 

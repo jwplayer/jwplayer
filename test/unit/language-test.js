@@ -14,6 +14,7 @@ describe('languageUtils', function() {
         isTranslationAvailable,
         loadJsonTranslation,
         getCustomLocalization,
+        normalizeIntl,
         isLocalizationComplete
     } = Language;
 
@@ -307,7 +308,7 @@ describe('languageUtils', function() {
                 pause: localizationPause,
                 stop: localizationStop
             };
-            intl = {
+            intl = normalizeIntl({
                 fr: {
                     play: frPlay,
                     pause: frPause
@@ -316,7 +317,7 @@ describe('languageUtils', function() {
                 fr_HT: {
                     play: frHtPlay
                 }
-            };
+            });
         });
 
         after(function () {
@@ -408,6 +409,35 @@ describe('languageUtils', function() {
             customLocalization.sharing.copied = undefined;
             customLocalization.sharing.newKey = 'new key';
             expect(isLocalizationComplete(customLocalization)).to.be.false;
+        });
+    });
+
+    describe('isRTL', function() {
+        afterEach(function() {
+            sandbox.restore();
+        });
+
+        it('should be true when argument is RTL string', function() {
+            expect(Language.isRtl('بإنشاء')).to.be.true; //ar
+            expect(Language.isRtl('מסמכים')).to.be.true; //he
+            expect(Language.isRtl('עידותא')).to.be.true; //arc
+            expect(Language.isRtl('פּאַראַגראַפס')).to.be.true; //yi
+            expect(Language.isRtl('ما عربی متن کے حصے کے')).to.be.true; //ur
+            expect(Language.isRtl('است که با یک کاراکت')).to.be.true; //fa
+            expect(Language.isRtl('عربي متن برخه ګڼي')).to.be.true; //ps
+            expect(Language.isRtl('دێ‎ كورد شین‎‎')).to.be.true; //ku
+            expect(Language.isRtl('ތާނަ')).to.be.true; //dv
+            expect(Language.isRtl('هَرْشَن')).to.be.true; //ha
+            expect(Language.isRtl('کهووا')).to.be.true; //khw
+            expect(Language.isRtl('می ہاؤس')).to.be.true; //ks
+
+            expect(Language.isRtl('አቅጣጫዎች')).to.be.false; // am (amharic) is left to right
+            expect(Language.isRtl('hello')).to.be.false;
+        });
+
+        it('should be true when argument contains RTL mark', function() {
+            expect(Language.isRtl('\u200fReplay')).to.be.true;
+            expect(Language.isRtl('\u200fإرجاع بـ10 ثواني')).to.be.true;
         });
     });
 });

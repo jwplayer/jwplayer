@@ -97,7 +97,7 @@ const helpers = Object.assign({}, parser, validator, playerutils, {
     seconds,
     prefix,
     suffix,
-    noop,
+    noop
 });
 
 export default helpers;

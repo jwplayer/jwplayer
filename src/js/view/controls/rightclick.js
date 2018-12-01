@@ -5,6 +5,7 @@ import { flashVersion } from 'utils/browser';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { OS } from 'environment/environment';
 import UI from 'utils/ui';
+import { isRtl } from 'utils/language';
 
 function createDomElement(html) {
     const element = createElement(html);
@@ -23,13 +24,16 @@ export default class RightClick {
     buildArray() {
         const semverParts = version.split('+');
         const majorMinorPatchPre = semverParts[0];
+        const model = this.model;
+        const poweredBy = model.get('localization').poweredBy;
+        const versionSpan = `<span class="jw-reset">JW Player ${majorMinorPatchPre}</span>`;
 
         const menu = {
             items: [{
                 type: 'info'
             },
             {
-                title: `${this.model.get('localization').poweredBy} <span class="jw-reset">JW Player ${majorMinorPatchPre}</span>`,
+                title: isRtl(poweredBy) ? `${versionSpan} ${poweredBy}` : `${poweredBy} ${versionSpan}`,
                 type: 'link',
                 featured: true,
                 showLogo: true,
@@ -37,7 +41,7 @@ export default class RightClick {
             }]
         };
 
-        const provider = this.model.get('provider');
+        const provider = model.get('provider');
         if (provider && provider.name.indexOf('flash') >= 0) {
             const text = 'Flash Version ' + flashVersion();
             menu.items.push({

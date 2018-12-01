@@ -35,8 +35,11 @@ function normalizeLanguageAndCountryCode(language) {
     return language.toLowerCase().replace('-', '_');
 }
 
-function normalizeIntl(intl) {
+export function normalizeIntl(intl) {
     // Country codes are generally seen in upper case, but we have yet to find documentation confirming that this is the standard.
+    if (!intl) {
+        return {};
+    }
     return Object.keys(intl).reduce((obj, key) => {
         obj[normalizeLanguageAndCountryCode(key)] = intl[key];
         return obj;
@@ -78,12 +81,22 @@ export function getLanguage() {
 
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'no', 'pt', 'ro', 'sv', 'tr', 'zh'];
 
+export function isRtl(message) {
+    // RTL regex can be improved with ranges from:
+    // http://www.unicode.org/Public/UNIDATA/extracted/DerivedBidiClass.txt
+    // http://jrgraphix.net/research/unicode.php
+    // Recognized RTL Langs: 'ar', 'arc', 'dv', 'fa', 'ha', 'he', 'khw', 'ks', 'ku', 'ps', 'ur', 'yi'.
+
+    const rtlRegex = /^[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
+    // Char code 8207 is the RTL mark (\u200f)
+    return message.charCodeAt(0) === 8207 || rtlRegex.test(message);
+}
+
 export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(normalizeLanguageCode(language)) >= 0;
 }
 
 export function getCustomLocalization(localization, intl, languageAndCountryCode) {
-    intl = normalizeIntl(intl);
     return Object.assign({}, localization, intl[normalizeLanguageCode(languageAndCountryCode)], intl[normalizeLanguageAndCountryCode(languageAndCountryCode)]);
 }
 
