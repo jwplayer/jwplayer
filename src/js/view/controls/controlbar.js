@@ -272,7 +272,12 @@ export default class Controlbar {
 
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
-        _model.change('mute', this.onMute, this);
+        _model.change('mute', (model, muted) => {
+            this.renderVolume(muted, model.get('volume'));
+            const muteText = model.get('mute') ? localization.unmute : localization.mute;
+            muteTip.setText(muteText);
+            setAttribute(this.elements.volumetooltip.element(), 'aria-label', muteText);
+        }, this);
         _model.change('state', this.onState, this);
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
@@ -356,10 +361,6 @@ export default class Controlbar {
 
     onVolume(model, pct) {
         this.renderVolume(model.get('mute'), pct);
-    }
-
-    onMute(model, muted) {
-        this.renderVolume(muted, model.get('volume'));
     }
 
     renderVolume(muted, vol) {
