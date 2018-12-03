@@ -1,6 +1,6 @@
 import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
-import { addFocusHandler } from 'utils/dom';
+import flagNoFocus from 'view/utils/flag-no-focus';
 
 export default function (icon, apiAction, ariaText, svgIcons) {
     const element = document.createElement('div');
@@ -21,7 +21,7 @@ export default function (icon, apiAction, ariaText, svgIcons) {
     }
 
     // prevent button from having a border when focused through click
-    addFocusHandler(element);
+    flagNoFocus(element);
 
     if (svgIcons) {
         Array.prototype.forEach.call(svgIcons, svgIcon => {

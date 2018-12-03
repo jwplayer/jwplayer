@@ -1,8 +1,8 @@
 import { OS, Features } from 'environment/environment';
 import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Eventable from 'utils/eventable';
+import flagNoFocus from 'view/utils/flag-no-focus';
 import { now } from 'utils/date';
-import { addClass, removeClass } from 'utils/dom';
 
 const TOUCH_SUPPORT = ('ontouchstart' in window);
 const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
@@ -38,6 +38,7 @@ export default class UI extends Eventable {
         this.pointerId = null;
         this.startX = 0;
         this.startY = 0;
+        this.noFocusHelper = flagNoFocus(element);
     }
 
     on(name, callback, context) {
@@ -65,6 +66,10 @@ export default class UI extends Eventable {
         this.off();
         if (USE_POINTER_EVENTS) {
             releasePointerCapture(this);
+        }
+        if (this.noFocusHelper) {
+            this.noFocusHelper.destroy();
+            this.noFocusHelper = null;
         }
         this.el = null;
     }
@@ -102,7 +107,6 @@ function initInteractionListeners(ui) {
         ui.startY = pageY;
 
         removeHandlers(ui, WINDOW_GROUP);
-        addClass(ui.el, 'jw-no-focus');
         if (!ui.handlers.blur || !ui.handlers.blur.blur) {
             eventRegisters.blur(ui);
         }
@@ -260,7 +264,6 @@ const eventRegisters = {
         const blur = 'blur';
         addEventListener(ui, blur, blur, (e) => {
             triggerSimpleEvent(ui, blur, e);
-            removeClass(ui.el, 'jw-no-focus');
         });
     },
     over(ui) {
