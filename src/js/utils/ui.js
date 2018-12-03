@@ -58,6 +58,10 @@ export default class UI extends Eventable {
             Object.keys(handlers).forEach(triggerName => {
                 removeHandlers(this, triggerName);
             });
+            if (this.noFocusHelper) {
+                this.noFocusHelper.destroy();
+                this.noFocusHelper = null;
+            }
         }
         return super.off(name, callback, context);
     }
@@ -66,10 +70,6 @@ export default class UI extends Eventable {
         this.off();
         if (USE_POINTER_EVENTS) {
             releasePointerCapture(this);
-        }
-        if (this.noFocusHelper) {
-            this.noFocusHelper.destroy();
-            this.noFocusHelper = null;
         }
         this.el = null;
     }

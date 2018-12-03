@@ -1,7 +1,7 @@
 import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
-import { createElement, emptyElement, prependChild, nextSibling, previousSibling } from 'utils/dom';
+import { addClass, createElement, emptyElement, prependChild, nextSibling, previousSibling } from 'utils/dom';
 
 function focusSettingsElement(direction) {
     const settingsIcon = document.getElementsByClassName('jw-icon-settings')[0];
@@ -104,8 +104,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
                 active.categoryButtonElement.focus();
                 return;
             }
-
-            active.element().firstChild.focus();
+            const child = active.element().firstChild;
+            child.focus();
+            addClass(child, 'jw-no-focus');
         },
         close(event) {
             visible = false;
