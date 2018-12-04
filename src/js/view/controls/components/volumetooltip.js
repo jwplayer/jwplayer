@@ -49,6 +49,6 @@ export default class VolumeTooltip extends Tooltip {
         setAttribute(volumeTooltipEl, 'aria-valuenow', volume);
         const ariaText = `Volume ${volume}%`;
         setAttribute(volumeTooltipEl, 'aria-valuetext', ariaText);
-        this.volumeAnnouncer.textContent = ariaText;
+        this.volumeAnnouncer.innerHTML = ariaText;
     }
 }
