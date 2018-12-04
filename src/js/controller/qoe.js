@@ -1,4 +1,11 @@
-import { PLAYLIST_ITEM, MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME, MEDIA_FIRST_FRAME } from 'events/events';
+import {
+    PLAYLIST_ITEM,
+    MEDIA_PLAY_ATTEMPT,
+    PROVIDER_FIRST_FRAME,
+    MEDIA_TIME,
+    MEDIA_FIRST_FRAME,
+    MEDIA_VISUAL_QUALITY
+} from 'events/events';
 import Timer from 'api/timer';
 
 const TAB_HIDDEN = 'tabHidden';
@@ -43,6 +50,18 @@ function trackFirstFrame(model, programController) {
 
         const time = qoeItem.getFirstFrame();
         programController.trigger(MEDIA_FIRST_FRAME, { loadTime: time });
+
+        // Start firing visualQuality once playback has started
+        if (programController.mediaController) {
+            const mediaModel = programController.mediaController.mediaModel;
+            mediaModel.off(`change:${MEDIA_VISUAL_QUALITY}`, null, mediaModel);
+            mediaModel.change(MEDIA_VISUAL_QUALITY, (changedMediaModel, eventData) => {
+                if (eventData) {
+                    programController.trigger(MEDIA_VISUAL_QUALITY, eventData);
+                }
+            }, mediaModel);
+        }
+
         unbindFirstFrameEvents(model, programController);
     };
 
