@@ -1,7 +1,7 @@
 import Tooltip from 'view/controls/components/tooltip';
 import Slider from 'view/controls/components/slider';
 import UI from 'utils/ui';
-import { setAttribute } from 'utils/dom';
+import { setAttribute, toggleClass } from 'utils/dom';
 
 export default class VolumeTooltip extends Tooltip {
     constructor(_model, name, ariaText, svgIcons) {
@@ -28,9 +28,27 @@ export default class VolumeTooltip extends Tooltip {
             .on('out blur', this.closeTooltip, this);
 
         this._model.on('change:volume', this.onVolume, this);
+
+        const volumeAnnouncer = document.createElement('div');
+        volumeAnnouncer.className = 'jw-hidden-accessibility jw-volume-announcer';
+        setAttribute(volumeAnnouncer, 'aria-live', 'assertive');
+        this.container.appendChild(volumeAnnouncer);
+        this.volumeAnnouncer = volumeAnnouncer;
     }
 
     toggleValue() {
         this.trigger('toggleValue');
+    }
+
+    updateVolume(vol, muted) {
+        const volume = muted ? 0 : vol;
+        const volumeTooltipEl = this.el;
+        this.volumeSlider.render(volume);
+        toggleClass(volumeTooltipEl, 'jw-off', muted);
+        toggleClass(volumeTooltipEl, 'jw-full', vol >= 75 && !muted);
+        setAttribute(volumeTooltipEl, 'aria-valuenow', volume);
+        const ariaText = `Volume ${volume}%`;
+        setAttribute(volumeTooltipEl, 'aria-valuetext', ariaText);
+        this.volumeAnnouncer.textContent = ariaText;
     }
 }

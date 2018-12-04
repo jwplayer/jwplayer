@@ -138,6 +138,7 @@ export default class Controlbar {
             volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
                 cloneIcons('volume-0,volume-50,volume-100'));
 
+
             const volumeTooltipEl = volumeTooltip.element();
             setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
             setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
@@ -369,13 +370,7 @@ export default class Controlbar {
             toggleClass(mute.element(), 'jw-full', !muted);
         }
         if (volumeTooltip) {
-            const volume = muted ? 0 : vol;
-            const volumeTooltipEl = volumeTooltip.element();
-            volumeTooltip.volumeSlider.render(volume);
-            toggleClass(volumeTooltipEl, 'jw-off', muted);
-            toggleClass(volumeTooltipEl, 'jw-full', vol >= 75 && !muted);
-            setAttribute(volumeTooltipEl, 'aria-valuenow', volume);
-            setAttribute(volumeTooltipEl, 'aria-valuetext', `Volume ${volume}%`);
+            volumeTooltip.updateVolume(vol, muted);
         }
     }
 
