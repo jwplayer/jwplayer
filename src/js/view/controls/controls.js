@@ -360,7 +360,7 @@ export default class Controls {
     }
 
     disable(model) {
-        const { nextUpToolTip, settingsMenu, infoOverlay } = this;
+        const { nextUpToolTip, settingsMenu, infoOverlay, volumeTooltip } = this;
         this.off();
 
         if (model) {
@@ -403,6 +403,10 @@ export default class Controls {
 
         if (infoOverlay) {
             infoOverlay.destroy();
+        }
+
+        if (volumeTooltip) {
+            volumeTooltip.destroy();
         }
 
         this.removeBackdrop();

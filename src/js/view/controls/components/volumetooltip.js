@@ -46,4 +46,9 @@ export default class VolumeTooltip extends Tooltip {
     toggleValue() {
         this.trigger('toggleValue');
     }
+
+    destroy() {
+        this.off();
+        this._model.off(null, null, this);
+    }
 }
