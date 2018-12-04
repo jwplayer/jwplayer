@@ -51,6 +51,7 @@ const VideoListenerMixin = {
             this.stallTime !== currentTime) {
             this.stallTime = -1;
             this.setState(STATE_PLAYING);
+            this.trigger(PROVIDER_FIRST_FRAME);
         }
 
         const timeEventObject = {
