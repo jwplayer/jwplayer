@@ -277,7 +277,7 @@ export default class Controlbar {
         _model.change('volume', this.onVolume, this);
         _model.change('mute', (model, muted) => {
             this.renderVolume(muted, model.get('volume'));
-            const muteText = model.get('mute') ? localization.unmute : localization.mute;
+            const muteText = muted ? localization.unmute : localization.mute;
             muteTip.setText(muteText);
             setAttribute(this.elements.volumetooltip.element(), 'aria-label', muteText);
         }, this);
