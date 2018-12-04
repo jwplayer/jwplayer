@@ -52,6 +52,10 @@ display icons
     padding: (@mobile-touch-target * 0.125);
     margin: 0 (@mobile-touch-target * 0.5);
 
+    &.jw-no-focus .jw-icon svg {
+        outline: none;
+    }
+
     .jw-icon {
         .square(75px);
         cursor: pointer;
@@ -67,10 +71,6 @@ display icons
 
         .jw-svg-icon-rewind {
             padding: 0.2em 0.05em;
-        }
-
-        &&.jw-no-focus svg {
-            outline: none;
         }
     }
 }
