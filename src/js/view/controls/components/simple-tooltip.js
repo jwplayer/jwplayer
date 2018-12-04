@@ -42,7 +42,7 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
         }
     };
 
-    attachToElement.addEventListener('mouseover', name !== 'volumetooltip' ? instance.open : null);
+    attachToElement.addEventListener('mouseover', instance.open);
     attachToElement.addEventListener('focus', instance.open);
     attachToElement.addEventListener('blur', instance.close);
     attachToElement.addEventListener('mouseout', instance.close);

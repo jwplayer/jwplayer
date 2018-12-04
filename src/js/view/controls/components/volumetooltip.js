@@ -26,11 +26,11 @@ export default class VolumeTooltip extends Tooltip {
             this.el.focus();
         }, this);
 
-        this.volumeSlider.el.parentElement.addEventListener('blur', () => {
+        this.container.addEventListener('blur', () => {
             this.closeTooltip();
         });
 
-        this.volumeSlider.el.parentElement.addEventListener('focus', () => {
+        this.container.addEventListener('focus', () => {
             this.openTooltip();
         });
 
