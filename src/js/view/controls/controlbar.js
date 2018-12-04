@@ -224,7 +224,7 @@ export default class Controlbar {
         const fullscreenTip = SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
 
         const volumeTooltipEl = elements.volumetooltip.element();
-        const muteTip = SimpleTooltip(volumeTooltipEl, 'volumetooltip', localization.mute);
+        const muteTip = SimpleTooltip(volumeTooltipEl, 'mutetooltip', localization.mute);
         volumeTooltipEl.removeEventListener('mouseover', muteTip.open);
 
         // Filter out undefined elements
