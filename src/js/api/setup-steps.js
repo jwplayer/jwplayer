@@ -69,7 +69,7 @@ export function loadProvider(_model) {
         }
         return providersManager.load(name)
             .catch(e => {
-                throw composePlayerError(e, SETUP_ERROR_LOADING_PROVIDER);
+                throw composePlayerError(e, SETUP_ERROR_LOADING_PROVIDER, 100);
             });
     });
 }

@@ -192,9 +192,9 @@ export function convertToPlayerError(key, code, error) {
     return error;
 }
 
-export function composePlayerError(error, superCode) {
+export function composePlayerError(error, superCode, defaultCode) {
     const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, superCode, error);
-    playerError.code = (error && error.code || 0) + superCode;
+    playerError.code = (error && error.code || (defaultCode || 0)) + superCode;
     return playerError;
 }
 
