@@ -48,7 +48,11 @@ export default class VolumeTooltip extends Tooltip {
     }
 
     destroy() {
-        this.off();
-        this._model.off(null, null, this);
+        this.container.removeEventListener('blur', () => {
+            this.closeTooltip();
+        });
+        this.container.removeEventListener('focus', () => {
+            this.openTooltip();
+        });
     }
 }
