@@ -360,7 +360,8 @@ export default class Controls {
     }
 
     disable(model) {
-        const { nextUpToolTip, settingsMenu, infoOverlay, volumeTooltip } = this;
+        const { nextUpToolTip, settingsMenu, infoOverlay } = this;
+        const volumeTooltip = this.controlbar.elements.volumeTooltip;
         this.off();
 
         if (model) {
