@@ -1,5 +1,5 @@
-import { STATE_BUFFERING, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
-    PLAYER_STATE,
+import { STATE_BUFFERING, STATE_COMPLETE, STATE_LOADING, STATE_PLAYING,
+    STATE_PAUSED, PLAYER_STATE,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK,
@@ -137,7 +137,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             }
         });
         _model.set('instream', _adProgram);
-        _adProgram.model.set('state', STATE_PLAYING);
+        _adProgram.model.set('state', STATE_LOADING);
         _addClickHandler(clickThroughUrl);
         return this;
     };
