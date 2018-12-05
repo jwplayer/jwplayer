@@ -225,6 +225,7 @@ export default class Controlbar {
 
         const volumeTooltipEl = elements.volumetooltip.element();
         const muteTip = SimpleTooltip(volumeTooltipEl, 'mutetooltip', localization.mute);
+        // We want the tooltip to show when tabbed over, but not when moused over; when moused over, the volume slider shows
         volumeTooltipEl.removeEventListener('mouseover', muteTip.open);
 
         // Filter out undefined elements

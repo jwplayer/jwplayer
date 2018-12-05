@@ -26,16 +26,10 @@ export default class VolumeTooltip extends Tooltip {
             this.el.focus();
         }, this);
 
-        const closeTooltipHelper = () => {
-            this.closeTooltip();
-        };
-
-        const openTooltipHelper = () => {
-            this.openTooltip();
-        };
-
-        this.container.addEventListener('blur', closeTooltipHelper);
-        this.container.addEventListener('focus', openTooltipHelper);
+        this.closeTooltipHandler = this.closeTooltip.bind(this);
+        this.openTooltipHandler = this.openTooltip.bind(this);
+        this.container.addEventListener('blur', this.closeTooltipHandler);
+        this.container.addEventListener('focus', this.openTooltipHandler);
 
         this.ui = new UI(this.el, { directSelect: true })
             .on('click enter', this.toggleValue, this)
@@ -51,7 +45,7 @@ export default class VolumeTooltip extends Tooltip {
     }
 
     destroy() {
-        this.container.removeEventListener('blur', this.closeTooltipHelper);
-        this.container.removeEventListener('focus', this.openTooltipHelper);
+        this.container.removeEventListener('blur', this.closeTooltipHandler);
+        this.container.removeEventListener('focus', this.openTooltipHandler);
     }
 }
