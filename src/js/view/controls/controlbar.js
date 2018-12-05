@@ -117,7 +117,7 @@ export default class Controlbar {
         this._model = _model;
         this._isMobile = OS.mobile;
         const localization = _model.get('localization');
-        const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer);
+        const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
         let volumeTooltip;
         let muteButton;
         let feedShownId = '';
