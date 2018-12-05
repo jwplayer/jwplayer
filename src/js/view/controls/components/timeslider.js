@@ -75,7 +75,6 @@ class TimeSlider extends Slider {
         this._model = _model;
         this._api = _api;
 
-        this.accessibilityContainer = _accessibilityContainer;
         this.timeUpdateKeeper = _accessibilityContainer.querySelector('.jw-time-update');
 
         this.timeTip = new TimeTip('jw-tooltip-time', null, true);
