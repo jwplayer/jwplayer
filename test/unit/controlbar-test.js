@@ -15,7 +15,7 @@ model.mediaController.on.returnsThis();
 
 describe('Control Bar', function() {
 
-    let playerContainer;
+    let accessibilityContainer;
     let controlBar;
     let container;
     let children;
@@ -27,14 +27,14 @@ describe('Control Bar', function() {
 
         const accessible = document.createElement('div');
         accessible.className = 'jw-hidden-accessibility';
-        playerContainer = document.createElement('div');
-        playerContainer.appendChild(accessible);
+        accessibilityContainer = document.createElement('div');
+        accessibilityContainer.appendChild(accessible);
 
         container = document.createElement('div');
         container.appendChild(settingsButton);
         container.appendChild(spacer);
 
-        controlBar = new ControlBar({}, model, playerContainer);
+        controlBar = new ControlBar({}, model, accessibilityContainer);
         controlBar.elements.spacer = spacer;
         controlBar.elements.settingsButton = settingsButton;
         controlBar.elements.buttonContainer = container;

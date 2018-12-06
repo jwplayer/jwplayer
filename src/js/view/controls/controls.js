@@ -55,7 +55,6 @@ export default class Controls {
         this.nextUpToolTip = null;
         this.playerContainer = playerContainer;
         this.wrapperElement = playerContainer.querySelector('.jw-wrapper');
-        this.accessibilityContainer = playerContainer.querySelector('.jw-hidden-accessibility');
         this.rightClickMenu = null;
         this.settingsMenu = null;
         this.showing = false;
@@ -122,7 +121,8 @@ export default class Controls {
         }
 
         // Controlbar
-        const controlbar = this.controlbar = new Controlbar(api, model, this.accessibilityContainer);
+        const controlbar = this.controlbar = new Controlbar(api, model,
+            this.playerContainer.querySelector('.jw-hidden-accessibility'));
         controlbar.on(USER_ACTION, () => this.userActive());
         controlbar.on('nextShown', function (data) {
             this.trigger('nextShown', data);
