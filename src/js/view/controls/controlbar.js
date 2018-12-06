@@ -141,6 +141,7 @@ export default class Controlbar {
             const volumeTooltipEl = volumeTooltip.element();
             setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
             setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
+            setAttribute(volumeTooltipEl, 'aria-orientation', 'vertical');
             setAttribute(volumeTooltipEl, 'role', 'slider');
         }
 
@@ -222,6 +223,11 @@ export default class Controlbar {
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
         const fullscreenTip = SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
 
+        const volumeTooltipEl = elements.volumetooltip.element();
+        const muteTip = SimpleTooltip(volumeTooltipEl, 'mutetooltip', localization.mute);
+        // We want the tooltip to show when tabbed over, but not when moused over; when moused over, the volume slider shows
+        volumeTooltipEl.removeEventListener('mouseover', muteTip.open);
+
         // Filter out undefined elements
         const buttonLayout = [
             elements.play,
@@ -270,7 +276,12 @@ export default class Controlbar {
 
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
-        _model.change('mute', this.onMute, this);
+        _model.change('mute', (model, muted) => {
+            this.renderVolume(muted, model.get('volume'));
+            const muteText = muted ? localization.unmute : localization.mute;
+            muteTip.setText(muteText);
+            setAttribute(volumeTooltipEl, 'aria-label', muteText);
+        }, this);
         _model.change('state', this.onState, this);
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
@@ -354,10 +365,6 @@ export default class Controlbar {
 
     onVolume(model, pct) {
         this.renderVolume(model.get('mute'), pct);
-    }
-
-    onMute(model, muted) {
-        this.renderVolume(muted, model.get('volume'));
     }
 
     renderVolume(muted, vol) {

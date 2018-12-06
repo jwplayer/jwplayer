@@ -405,6 +405,11 @@ export default class Controls {
             infoOverlay.destroy();
         }
 
+        const volumeTooltip = this.controlbar.elements.volumetooltip;
+        if (volumeTooltip) {
+            volumeTooltip.destroy();
+        }
+
         this.removeBackdrop();
     }
 
