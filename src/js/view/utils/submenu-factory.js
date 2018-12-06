@@ -3,6 +3,7 @@ import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
+import { addClass } from 'utils/dom';
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
@@ -15,9 +16,12 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
     if (submenu) {
         submenu.replaceContent(contentItems);
     } else {
-        const categoryButton = button(`jw-settings-${name}`, () => {
+        const categoryButton = button(`jw-settings-${name}`, (event) => {
             settingsMenu.activateSubmenu(name);
             submenu.element().children[0].focus();
+            if (event && event.type !== 'enter') {
+                addClass(submenu.element().children[0], 'jw-no-focus');
+            }
         }, name, [icon]);
         const categoryButtonElement = categoryButton.element();
         categoryButtonElement.setAttribute('role', 'menuitemradio');

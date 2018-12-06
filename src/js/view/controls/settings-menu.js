@@ -36,15 +36,15 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
                 settingsMenu.close();
             } else {
                 // Tab to the newly activated submenu
-                settingsMenu.activateSubmenu(submenuName);
+                settingsMenu.activateSubmenu(submenuName, null, event);
             }
         } else {
             if (submenu) {
                 // Activate the selected submenu
-                settingsMenu.activateSubmenu(submenuName);
+                settingsMenu.activateSubmenu(submenuName, null, event);
             } else {
                 // Activate the first submenu if clicking the default button
-                settingsMenu.activateFirstSubmenu();
+                settingsMenu.activateFirstSubmenu(event);
             }
             settingsMenu.open(isDefault, event);
         }
