@@ -69,11 +69,13 @@ function reasonInteraction() {
 }
 
 class TimeSlider extends Slider {
-    constructor(_model, _api) {
+    constructor(_model, _api, _timeUpdateKeeper) {
         super('jw-slider-time', 'horizontal');
 
         this._model = _model;
         this._api = _api;
+
+        this.timeUpdateKeeper = _timeUpdateKeeper;
 
         this.timeTip = new TimeTip('jw-tooltip-time', null, true);
         this.timeTip.setup();
@@ -298,6 +300,7 @@ class TimeSlider extends Slider {
         } else {
             ariaText = `${timeFormat(position)} of ${timeFormat(duration)}`;
         }
+        this.timeUpdateKeeper.textContent = ariaText;
         setAttribute(this.el, 'aria-valuetext', ariaText);
     }
 
