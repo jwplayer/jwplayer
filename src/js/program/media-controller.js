@@ -7,7 +7,7 @@ import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
 import {
     MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_COMPLETE,
-    PLAYER_STATE, STATE_PAUSED, STATE_PLAYING, STATE_BUFFERING, STATE_COMPLETE
+    PLAYER_STATE, STATE_PAUSED, STATE_PLAYING, STATE_LOADING, STATE_COMPLETE
 } from 'events/events';
 
 export default class MediaController extends Eventable {
@@ -119,9 +119,9 @@ export default class MediaController extends Eventable {
             item,
             playReason
         });
-        // Immediately set player state to buffering if these conditions are met
+        // Set the media model state to loading which propigates to a player model state of buffering
         if (video ? !video.paused : model.get(PLAYER_STATE) === STATE_PLAYING) {
-            model.set(PLAYER_STATE, STATE_BUFFERING);
+            mediaModel.set('mediaState', STATE_LOADING);
         }
 
         return playPromise.then(() => {
