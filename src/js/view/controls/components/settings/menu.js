@@ -171,7 +171,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
                 onMenuEmpty();
             }
         },
-        activateSubmenu(name, focusOnLast, event) {
+        activateSubmenu(name, focusOnLast, addNoFocus) {
             const submenu = submenus[name];
             if (submenu) {
                 if (!submenu.active) {
@@ -182,14 +182,14 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
 
                 const activeElement = focusOnLast ? submenu.element().lastChild : submenu.element().firstChild;
                 activeElement.focus();
-                if (event && event.type !== 'enter') {
+                if (addNoFocus) {
                     addClass(activeElement, 'jw-no-focus');
                 }
             }
         },
-        activateFirstSubmenu(event) {
+        activateFirstSubmenu(addNoFocus) {
             const firstSubmenuName = Object.keys(submenus)[0];
-            this.activateSubmenu(firstSubmenuName, null, event);
+            this.activateSubmenu(firstSubmenuName, null, addNoFocus);
         },
         element() {
             return settingsMenuElement;
