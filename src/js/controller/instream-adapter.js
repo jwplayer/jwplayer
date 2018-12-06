@@ -1,5 +1,5 @@
-import { STATE_BUFFERING, STATE_COMPLETE, STATE_LOADING, STATE_PLAYING,
-    STATE_PAUSED, PLAYER_STATE,
+import { STATE_BUFFERING, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
+    PLAYER_STATE,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK,
@@ -93,7 +93,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
         _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
         _adProgram.on(MEDIA_META, _instreamMeta, this);
-        _adProgram.on(PLAYER_STATE, _triggerAdPlayPause, this);
+        _adProgram.on(PLAYER_STATE, _handleStateChange, this);
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
@@ -137,7 +137,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             }
         });
         _model.set('instream', _adProgram);
-        _adProgram.model.set('state', STATE_LOADING);
+        _adProgram.model.set('state', STATE_PLAYING);
         _addClickHandler(clickThroughUrl);
         return this;
     };
@@ -196,19 +196,21 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     }
 
-    function _triggerAdPlayPause(event) {
+    function _handleStateChange(event) {
         const { newstate } = event;
         const oldstate = event.oldstate || _adProgram.model.get('state');
 
-        if (oldstate === newstate) {
-            return;
+        if (oldstate !== newstate) {
+            _triggerAdPlayPause(Object.assign({ oldstate }, _data, event));
         }
+    }
 
-        const adEvent = Object.assign({ oldstate }, _data, event);
+    function _triggerAdPlayPause(event) {
+        const { newstate } = event;
         if (newstate === STATE_PLAYING) {
-            _controller.trigger(AD_PLAY, adEvent);
+            _controller.trigger(AD_PLAY, event);
         } else if (newstate === STATE_PAUSED) {
-            _controller.trigger(AD_PAUSE, adEvent);
+            _controller.trigger(AD_PAUSE, event);
         }
     }
 
