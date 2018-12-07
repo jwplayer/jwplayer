@@ -17,7 +17,7 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
         submenu.replaceContent(contentItems);
     } else {
         const categoryButton = button(`jw-settings-${name}`, (event) => {
-            settingsMenu.activateSubmenu(name);
+            settingsMenu.activateSubmenu(name, false, event && event.type === 'enter');
             submenu.element().children[0].focus();
             if (event && event.type !== 'enter') {
                 addClass(submenu.element().children[0], 'jw-no-focus');
