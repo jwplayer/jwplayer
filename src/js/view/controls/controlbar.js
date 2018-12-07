@@ -597,7 +597,8 @@ export default class Controlbar {
 
     destroy() {
         Object.keys(this.elements).forEach((elementName) => {
-            if (typeof this.elements[elementName].destroy === 'function') {
+            const el = this.elements[elementName];
+            if (el && typeof el.destroy === 'function') {
                 this.elements[elementName].destroy();
             }
         });
