@@ -3,6 +3,7 @@ import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
+import { isRtl } from 'utils/language';
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
@@ -98,7 +99,7 @@ export function removeQualitiesSubmenu(settingsMenu) {
 
 export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialSelectionIndex, tooltipText) {
     const rateItems = rateList.map((playbackRate) => {
-        return SettingsContentItem(playbackRate, playbackRate + 'x', (evt) => {
+        return SettingsContentItem(playbackRate, isRtl(tooltipText) ? 'x' + playbackRate : playbackRate + 'x', (evt) => {
             action(playbackRate);
             settingsMenu.close(evt);
         });
