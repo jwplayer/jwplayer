@@ -111,13 +111,14 @@ const appendChildren = (container, elements) => {
 };
 
 export default class Controlbar {
-    constructor(_api, _model) {
+    constructor(_api, _model, _accessibilityContainer) {
         Object.assign(this, Events);
         this._api = _api;
         this._model = _model;
         this._isMobile = OS.mobile;
+        this._volumeAnnouncer = _accessibilityContainer.querySelector('.jw-volume-update');
         const localization = _model.get('localization');
-        const timeSlider = new TimeSlider(_model, _api);
+        const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
         let volumeTooltip;
         let muteButton;
         let feedShownId = '';
@@ -382,7 +383,9 @@ export default class Controlbar {
             toggleClass(volumeTooltipEl, 'jw-off', muted);
             toggleClass(volumeTooltipEl, 'jw-full', vol >= 75 && !muted);
             setAttribute(volumeTooltipEl, 'aria-valuenow', volume);
-            setAttribute(volumeTooltipEl, 'aria-valuetext', `Volume ${volume}%`);
+            const ariaText = `Volume ${volume}%`;
+            setAttribute(volumeTooltipEl, 'aria-valuetext', ariaText);
+            this._volumeAnnouncer.textContent = ariaText;
         }
     }
 

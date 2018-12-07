@@ -12,6 +12,10 @@ export default (id, ariaLabel) => {
                     `<div class="jw-title-secondary jw-reset-text"></div>` +
                 `</div>` +
                 `<div class="jw-overlays jw-reset"></div>` +
+                `<div class="jw-hidden-accessibility">` +
+                    `<p class="jw-time-update" aria-live="assertive"></p>` +
+                    `<p class="jw-volume-update" aria-live="assertive"></p>` +
+                `</div>` +
             `</div>` +
         `</div>`
     );

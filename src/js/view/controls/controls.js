@@ -121,7 +121,8 @@ export default class Controls {
         }
 
         // Controlbar
-        const controlbar = this.controlbar = new Controlbar(api, model);
+        const controlbar = this.controlbar = new Controlbar(api, model,
+            this.playerContainer.querySelector('.jw-hidden-accessibility'));
         controlbar.on(USER_ACTION, () => this.userActive());
         controlbar.on('nextShown', function (data) {
             this.trigger('nextShown', data);
