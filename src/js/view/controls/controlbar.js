@@ -120,6 +120,8 @@ export default class Controlbar {
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
         let volumeTooltip;
+        let volumeTooltipEl;
+        let muteTip;
         let muteButton;
         let feedShownId = '';
 
@@ -139,11 +141,18 @@ export default class Controlbar {
             volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
                 cloneIcons('volume-0,volume-50,volume-100'));
 
-            const volumeTooltipEl = volumeTooltip.element();
+            volumeTooltipEl = volumeTooltip.element();
             setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
             setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
             setAttribute(volumeTooltipEl, 'aria-orientation', 'vertical');
             setAttribute(volumeTooltipEl, 'role', 'slider');
+            muteTip = SimpleTooltip(volumeTooltipEl, 'mutetooltip', localization.mute);
+            volumeTooltipEl.removeEventListener('mouseover', muteTip.open);
+            _model.change('mute', (model, muted) => {
+                const muteText = muted ? localization.unmute : localization.mute;
+                muteTip.setText(muteText);
+                setAttribute(volumeTooltipEl, 'aria-label', muteText);
+            }, this);
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -224,11 +233,6 @@ export default class Controlbar {
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
         const fullscreenTip = SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
 
-        const volumeTooltipEl = elements.volumetooltip.element();
-        const muteTip = SimpleTooltip(volumeTooltipEl, 'mutetooltip', localization.mute);
-        // We want the tooltip to show when tabbed over, but not when moused over; when moused over, the volume slider shows
-        volumeTooltipEl.removeEventListener('mouseover', muteTip.open);
-
         // Filter out undefined elements
         const buttonLayout = [
             elements.play,
@@ -279,9 +283,6 @@ export default class Controlbar {
         _model.change('volume', this.onVolume, this);
         _model.change('mute', (model, muted) => {
             this.renderVolume(muted, model.get('volume'));
-            const muteText = muted ? localization.unmute : localization.mute;
-            muteTip.setText(muteText);
-            setAttribute(volumeTooltipEl, 'aria-label', muteText);
         }, this);
         _model.change('state', this.onState, this);
         _model.change('duration', this.onDuration, this);

@@ -362,6 +362,13 @@ export default class Controls {
 
     disable(model) {
         const { nextUpToolTip, settingsMenu, infoOverlay } = this;
+        const volumeTooltip = this.controlbar.elements.volumetooltip;
+
+        
+        if (volumeTooltip) {
+            volumeTooltip.destroy();
+        }
+
         this.off();
 
         if (model) {
@@ -404,11 +411,6 @@ export default class Controls {
 
         if (infoOverlay) {
             infoOverlay.destroy();
-        }
-
-        const volumeTooltip = this.controlbar.elements.volumetooltip;
-        if (volumeTooltip) {
-            volumeTooltip.destroy();
         }
 
         this.removeBackdrop();
