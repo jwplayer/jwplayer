@@ -313,7 +313,7 @@ export default class Controlbar {
             }
             nextUpTip.setText(tipText);
             elements.next.toggle(!!nextUp);
-        });
+        }, this);
         _model.change('audioMode', this.onAudioMode, this);
         if (elements.cast) {
             _model.change('castAvailable', this.onCastAvailable, this);
