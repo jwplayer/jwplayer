@@ -11,7 +11,6 @@ import Events from 'utils/backbone.events';
 import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
-import { each } from 'utils/underscore';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 
 function text(name, role) {
@@ -119,8 +118,8 @@ export default class Controlbar {
         this._volumeAnnouncer = _accessibilityContainer.querySelector('.jw-volume-update');
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
+        const menus = [];
         let volumeTooltip;
-        let volumeTooltipEl;
         let muteTip;
         let muteButton;
         let feedShownId = '';
@@ -141,7 +140,8 @@ export default class Controlbar {
             volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
                 cloneIcons('volume-0,volume-50,volume-100'));
 
-            volumeTooltipEl = volumeTooltip.element();
+            const volumeTooltipEl = volumeTooltip.element();
+            menus.push(volumeTooltip);
             setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
             setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
             setAttribute(volumeTooltipEl, 'aria-orientation', 'vertical');
@@ -257,10 +257,6 @@ export default class Controlbar {
             elements.buttonContainer
         ].filter(e => e);
 
-        const menus = this.menus = [
-            elements.volumetooltip
-        ].filter(e => e);
-
         this.el = document.createElement('div');
         this.el.className = 'jw-controlbar jw-reset';
 
@@ -360,9 +356,9 @@ export default class Controlbar {
         new UI(this.el).on('click tap drag', function () {
             this.trigger(USER_ACTION);
         }, this);
-        each(menus, function (ele) {
+        menus.forEach(ele => {
             ele.on('open-tooltip', this.closeMenus, this);
-        }, this);
+        });
     }
 
     onVolume(model, pct) {
@@ -445,7 +441,7 @@ export default class Controlbar {
 
     // Close menus if it has no event.  Otherwise close all but the event's target.
     closeMenus(evt) {
-        each(this.menus, function (ele) {
+        this.menus.forEach(ele => {
             if (!evt || evt.target !== ele.el) {
                 ele.closeTooltip(evt);
             }
@@ -597,6 +593,14 @@ export default class Controlbar {
         }
 
         toggleClass(captionsButton.element(), 'jw-off', !active);
+    }
+
+    destroy() {
+        Object.keys(this.elements).forEach((elementName) => {
+            if (typeof this.elements[elementName].destroy === 'function') {
+                this.elements[elementName].destroy();
+            }
+        });
     }
 }
 
