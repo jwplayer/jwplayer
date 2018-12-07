@@ -601,6 +601,7 @@ export default class Controlbar {
                 this.elements[elementName].destroy();
             }
         });
+        this._model.off(null, null, this);
     }
 }
 
