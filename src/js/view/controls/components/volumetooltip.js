@@ -23,7 +23,6 @@ export default class VolumeTooltip extends Tooltip {
 
         this.volumeSlider.on('update', function (evt) {
             this.trigger('update', evt);
-            this.el.focus();
         }, this);
 
         this.closeTooltipHandler = this.closeTooltip.bind(this);
