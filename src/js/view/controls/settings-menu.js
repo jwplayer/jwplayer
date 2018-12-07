@@ -23,7 +23,7 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
 
     controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
-        const nonekeyboardInteraction = event && event.type !== 'enter';
+        const noneKeyboardInteraction = event && event.type !== 'enter';
         if (!submenu && !isDefault) {
             // Do nothing if activating an invalid submenu
             // An invalid submenu is one which does not exist
@@ -37,15 +37,15 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
                 settingsMenu.close();
             } else {
                 // Tab to the newly activated submenu
-                settingsMenu.activateSubmenu(submenuName, false, nonekeyboardInteraction);
+                settingsMenu.activateSubmenu(submenuName, false, noneKeyboardInteraction);
             }
         } else {
             if (submenu) {
                 // Activate the selected submenu
-                settingsMenu.activateSubmenu(submenuName, false, nonekeyboardInteraction);
+                settingsMenu.activateSubmenu(submenuName, false, noneKeyboardInteraction);
             } else {
                 // Activate the first submenu if clicking the default button
-                settingsMenu.activateFirstSubmenu(nonekeyboardInteraction);
+                settingsMenu.activateFirstSubmenu(noneKeyboardInteraction);
             }
             settingsMenu.open(isDefault, event);
         }
