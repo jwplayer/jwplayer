@@ -19,6 +19,7 @@ const Tracks = {
     _initTextTracks,
     addTracksListener,
     clearTracks,
+    clearMetaCues,
     clearCueData,
     disableTextTrack,
     enableTextTrack,
@@ -349,6 +350,15 @@ function removeTracksListener(tracks, eventType, handler) {
         tracks.removeEventListener(eventType, handler);
     } else {
         tracks['on' + eventType] = null;
+    }
+}
+
+function clearMetaCues() {
+    const metadataTrack = this._tracksById && this._tracksById.nativemetadata;
+    if (metadataTrack) {
+        _removeCues(this.renderNatively, [metadataTrack]);
+        metadataTrack.mode = 'hidden';
+        metadataTrack.inuse = true;
     }
 }
 
