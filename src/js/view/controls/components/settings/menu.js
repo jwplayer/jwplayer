@@ -56,7 +56,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
                 break;
             case 'Up':
             case 'Down':
-                instance.activateSubmenu(target.getAttribute('name'), key === 'Up', true);
+                instance.activateSubmenu(target.getAttribute('name'), key === 'Up');
                 break;
             default:
                 break;
@@ -171,7 +171,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
                 onMenuEmpty();
             }
         },
-        activateSubmenu(name, focusOnLast, keyboardInteraction) {
+        activateSubmenu(name, focusOnLast, noFocusOutline) {
             const submenu = submenus[name];
             if (submenu) {
                 if (!submenu.active) {
@@ -182,14 +182,14 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
 
                 const activeElement = focusOnLast ? submenu.element().lastChild : submenu.element().firstChild;
                 activeElement.focus();
-                if (!keyboardInteraction) {
+                if (noFocusOutline) {
                     addClass(activeElement, 'jw-no-focus');
                 }
             }
         },
-        activateFirstSubmenu(keyboardInteraction) {
+        activateFirstSubmenu(noFocusOutline) {
             const firstSubmenuName = Object.keys(submenus)[0];
-            this.activateSubmenu(firstSubmenuName, false, keyboardInteraction);
+            this.activateSubmenu(firstSubmenuName, false, noFocusOutline);
         },
         element() {
             return settingsMenuElement;
