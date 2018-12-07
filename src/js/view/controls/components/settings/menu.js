@@ -171,7 +171,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
                 onMenuEmpty();
             }
         },
-        activateSubmenu(name, focusOnLast) {
+        activateSubmenu(name, focusOnLast, noFocusOutline) {
             const submenu = submenus[name];
             if (submenu) {
                 if (!submenu.active) {
@@ -180,16 +180,16 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
                     active = submenu;
                 }
 
-                if (focusOnLast) {
-                    submenu.element().lastChild.focus();
-                } else {
-                    submenu.element().firstChild.focus();
+                const activeElement = focusOnLast ? submenu.element().lastChild : submenu.element().firstChild;
+                activeElement.focus();
+                if (noFocusOutline) {
+                    addClass(activeElement, 'jw-no-focus');
                 }
             }
         },
-        activateFirstSubmenu() {
+        activateFirstSubmenu(noFocusOutline) {
             const firstSubmenuName = Object.keys(submenus)[0];
-            this.activateSubmenu(firstSubmenuName);
+            this.activateSubmenu(firstSubmenuName, false, noFocusOutline);
         },
         element() {
             return settingsMenuElement;
