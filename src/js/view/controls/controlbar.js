@@ -11,7 +11,6 @@ import Events from 'utils/backbone.events';
 import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
-import { each } from 'utils/underscore';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 
 function text(name, role) {
@@ -119,7 +118,9 @@ export default class Controlbar {
         this._volumeAnnouncer = _accessibilityContainer.querySelector('.jw-volume-update');
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
+        const menus = [];
         let volumeTooltip;
+        let muteTip;
         let muteButton;
         let feedShownId = '';
 
@@ -140,10 +141,18 @@ export default class Controlbar {
                 cloneIcons('volume-0,volume-50,volume-100'));
 
             const volumeTooltipEl = volumeTooltip.element();
+            menus.push(volumeTooltip);
             setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
             setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
             setAttribute(volumeTooltipEl, 'aria-orientation', 'vertical');
             setAttribute(volumeTooltipEl, 'role', 'slider');
+            muteTip = SimpleTooltip(volumeTooltipEl, 'mutetooltip', localization.mute);
+            volumeTooltipEl.removeEventListener('mouseover', muteTip.open);
+            _model.change('mute', (model, muted) => {
+                const muteText = muted ? localization.unmute : localization.mute;
+                muteTip.setText(muteText);
+                setAttribute(volumeTooltipEl, 'aria-label', muteText);
+            }, this);
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -224,11 +233,6 @@ export default class Controlbar {
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
         const fullscreenTip = SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
 
-        const volumeTooltipEl = elements.volumetooltip.element();
-        const muteTip = SimpleTooltip(volumeTooltipEl, 'mutetooltip', localization.mute);
-        // We want the tooltip to show when tabbed over, but not when moused over; when moused over, the volume slider shows
-        volumeTooltipEl.removeEventListener('mouseover', muteTip.open);
-
         // Filter out undefined elements
         const buttonLayout = [
             elements.play,
@@ -253,10 +257,6 @@ export default class Controlbar {
             elements.buttonContainer
         ].filter(e => e);
 
-        const menus = this.menus = [
-            elements.volumetooltip
-        ].filter(e => e);
-
         this.el = document.createElement('div');
         this.el.className = 'jw-controlbar jw-reset';
 
@@ -279,9 +279,6 @@ export default class Controlbar {
         _model.change('volume', this.onVolume, this);
         _model.change('mute', (model, muted) => {
             this.renderVolume(muted, model.get('volume'));
-            const muteText = muted ? localization.unmute : localization.mute;
-            muteTip.setText(muteText);
-            setAttribute(volumeTooltipEl, 'aria-label', muteText);
         }, this);
         _model.change('state', this.onState, this);
         _model.change('duration', this.onDuration, this);
@@ -316,7 +313,7 @@ export default class Controlbar {
             }
             nextUpTip.setText(tipText);
             elements.next.toggle(!!nextUp);
-        });
+        }, this);
         _model.change('audioMode', this.onAudioMode, this);
         if (elements.cast) {
             _model.change('castAvailable', this.onCastAvailable, this);
@@ -359,9 +356,9 @@ export default class Controlbar {
         new UI(this.el).on('click tap drag', function () {
             this.trigger(USER_ACTION);
         }, this);
-        each(menus, function (ele) {
+        menus.forEach(ele => {
             ele.on('open-tooltip', this.closeMenus, this);
-        }, this);
+        });
     }
 
     onVolume(model, pct) {
@@ -444,7 +441,7 @@ export default class Controlbar {
 
     // Close menus if it has no event.  Otherwise close all but the event's target.
     closeMenus(evt) {
-        each(this.menus, function (ele) {
+        this.menus.forEach(ele => {
             if (!evt || evt.target !== ele.el) {
                 ele.closeTooltip(evt);
             }
@@ -596,6 +593,16 @@ export default class Controlbar {
         }
 
         toggleClass(captionsButton.element(), 'jw-off', !active);
+    }
+
+    destroy() {
+        Object.keys(this.elements).forEach((elementName) => {
+            const el = this.elements[elementName];
+            if (el && typeof el.destroy === 'function') {
+                this.elements[elementName].destroy();
+            }
+        });
+        this._model.off(null, null, this);
     }
 }
 

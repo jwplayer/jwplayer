@@ -361,7 +361,8 @@ export default class Controls {
     }
 
     disable(model) {
-        const { nextUpToolTip, settingsMenu, infoOverlay } = this;
+        const { nextUpToolTip, settingsMenu, infoOverlay, controlbar } = this;
+
         this.off();
 
         if (model) {
@@ -377,6 +378,11 @@ export default class Controls {
             removeClass(this.playerContainer, 'jw-flag-touch');
             this.div.parentNode.removeChild(this.div);
         }
+        
+        if (controlbar) {
+            controlbar.destroy();
+        }
+
         if (this.rightClickMenu) {
             this.rightClickMenu.destroy();
         }
@@ -404,11 +410,6 @@ export default class Controls {
 
         if (infoOverlay) {
             infoOverlay.destroy();
-        }
-
-        const volumeTooltip = this.controlbar.elements.volumetooltip;
-        if (volumeTooltip) {
-            volumeTooltip.destroy();
         }
 
         this.removeBackdrop();
