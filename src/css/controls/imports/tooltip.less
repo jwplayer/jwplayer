@@ -4,10 +4,6 @@
     opacity: 1;
     transition-delay: 0s;
     visibility: visible;
-
-    &:hover {
-        outline: 0;
-    }
 }
 
 .jw-slider-time .jw-overlay:before {
@@ -76,6 +72,12 @@
 
     .jw-icon-volume .jw-overlay {
         visibility: visible;
+        outline: none;
+        transition: none;
+
+        &:focus:not(:hover) {
+            outline: @ui-focus;
+        }
     }
 
     .jw-option {
