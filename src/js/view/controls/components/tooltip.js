@@ -2,6 +2,7 @@ import Events from 'utils/backbone.events';
 import ariaLabel from 'utils/aria';
 import { toggleClass } from 'utils/dom';
 import svgParse from 'utils/svgParser';
+import flagNoFocus from 'view/utils/flag-no-focus';
 
 export default class Tooltip {
     constructor(name, ariaText, elementShown, svgIcons) {
@@ -19,6 +20,7 @@ export default class Tooltip {
         this.container.className = 'jw-overlay jw-reset';
         this.openClass = 'jw-open';
         this.componentType = 'tooltip';
+        flagNoFocus(this.container);
 
         this.el.appendChild(this.container);
         if (svgIcons && svgIcons.length > 0) {
