@@ -106,21 +106,20 @@ class TimeSlider extends Slider {
             .change('buffer', this.onBuffer, this)
             .change('streamType', this.onStreamType, this);
 
-
-        setAttribute(this.el, 'tabindex', '0');
-        setAttribute(this.el, 'role', 'slider');
-        setAttribute(this.el, 'aria-label', this._model.get('localization').slider);
-        setAttribute(this.el, 'aria-live', 'off');
-        this.el.removeAttribute('aria-hidden');
+        const sliderElement = this.el;
+        setAttribute(sliderElement, 'tabindex', '0');
+        setAttribute(sliderElement, 'role', 'slider');
+        setAttribute(sliderElement, 'aria-label', this._model.get('localization').slider);
+        sliderElement.removeAttribute('aria-hidden');
         this.elementRail.appendChild(this.timeTip.element());
 
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
-        this.ui = (this.ui || new UI(this.el))
+        this.ui = (this.ui || new UI(sliderElement))
             .on('move', this.showTimeTooltip, this)
             .on('dragEnd out', this.hideTimeTooltip, this)
-            .on('click', () => this.el.focus());
+            .on('click', () => sliderElement.focus());
 
-        this.el.addEventListener('focus', () => this.updateAriaText());
+        sliderElement.addEventListener('focus', () => this.updateAriaText());
     }
 
     update(percent) {
@@ -301,8 +300,12 @@ class TimeSlider extends Slider {
         } else {
             ariaText = `${timeFormat(position)} of ${timeFormat(duration)}`;
         }
-        this.timeUpdateKeeper.textContent = ariaText;
-        setAttribute(this.el, 'aria-valuetext', ariaText);
+        const sliderElement = this.el;
+        if (document.activeElement !== sliderElement) {
+            this.timeUpdateKeeper.textContent = ariaText;
+        }
+        setAttribute(sliderElement, 'aria-valuenow', position);
+        setAttribute(sliderElement, 'aria-valuetext', ariaText);
     }
 
     reset() {

@@ -17,7 +17,6 @@ export default class VolumeTooltip extends Tooltip {
         volumeSliderElement.classList.remove('jw-background-color');
 
         setAttribute(volumeSliderElement, 'aria-label', localization.volumeSlider);
-        setAttribute(volumeSliderElement, 'aria-live', 'off');
         setAttribute(this.container, 'tabindex', '0');
 
         this.addContent(volumeSliderElement);
