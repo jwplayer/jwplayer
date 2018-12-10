@@ -441,7 +441,7 @@ export default class Controlbar {
 
     // Close menus if it has no event.
     closeMenus(evt) {
-        if (!this.menus) {
+        if (!evt || !this.menus) {
             return;
         }
 
