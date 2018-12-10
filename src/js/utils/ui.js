@@ -113,6 +113,10 @@ function initInteractionListeners(ui) {
             addEventListener(ui, WINDOW_GROUP, 'pointermove', interactDragHandler, listenerOptions);
             addEventListener(ui, WINDOW_GROUP, 'pointercancel', interactEndHandler);
             addEventListener(ui, WINDOW_GROUP, 'pointerup', interactEndHandler);
+
+            if (el.tagName === 'BUTTON') {
+                el.focus();
+            }
         } else if (type === 'mousedown') {
             addEventListener(ui, WINDOW_GROUP, 'mousemove', interactDragHandler, listenerOptions);
             addEventListener(ui, WINDOW_GROUP, 'mouseup', interactEndHandler);
