@@ -446,7 +446,7 @@ export default class Controlbar {
         }
 
         this.menus.forEach(ele => {
-            if (evt.target !== ele.el) {
+             if (!evt || evt.target !== ele.el) { 
                 ele.closeTooltip(evt);
             }
         });
