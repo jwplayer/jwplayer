@@ -439,8 +439,12 @@ export default class Controlbar {
         this.elements.alt.textContent = altText;
     }
 
-    // Close menus if it has no event.  Otherwise close all but the event's target.
+    // Close menus if it has no event.
     closeMenus(evt) {
+        if (!this.menus) {
+            return;
+        }
+
         this.menus.forEach(ele => {
             if (!evt || evt.target !== ele.el) {
                 ele.closeTooltip(evt);
