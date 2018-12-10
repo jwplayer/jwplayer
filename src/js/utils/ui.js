@@ -1,8 +1,8 @@
 import { OS, Features } from 'environment/environment';
 import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Eventable from 'utils/eventable';
-import flagNoFocus from 'view/utils/flag-no-focus';
 import { now } from 'utils/date';
+import { addClass, removeClass } from 'utils/dom';
 
 const TOUCH_SUPPORT = ('ontouchstart' in window);
 const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
@@ -38,7 +38,7 @@ export default class UI extends Eventable {
         this.pointerId = null;
         this.startX = 0;
         this.startY = 0;
-        this.noFocusHelper = flagNoFocus(element);
+        this.clickFocus = false;
     }
 
     on(name, callback, context) {
@@ -58,10 +58,6 @@ export default class UI extends Eventable {
             Object.keys(handlers).forEach(triggerName => {
                 removeHandlers(this, triggerName);
             });
-            if (this.noFocusHelper) {
-                this.noFocusHelper.destroy();
-                this.noFocusHelper = null;
-            }
         }
         return super.off(name, callback, context);
     }
@@ -107,10 +103,6 @@ function initInteractionListeners(ui) {
         ui.startY = pageY;
 
         removeHandlers(ui, WINDOW_GROUP);
-        if (!ui.handlers.blur || !ui.handlers.blur.blur) {
-            eventRegisters.blur(ui);
-        }
-
         if (type === 'pointerdown' && e.isPrimary) {
             if (!passive) {
                 const { pointerId } = e;
@@ -134,6 +126,9 @@ function initInteractionListeners(ui) {
                 preventDefault(e);
             }
         }
+
+        addClass(el, 'jw-no-focus');
+        ui.clickFocus = true;
     };
 
     const interactDragHandler = (e) => {
@@ -194,6 +189,15 @@ function initInteractionListeners(ui) {
         // Always add this, in case we don't properly identify the device as mobile
         addEventListener(ui, initGroup, 'touchstart', interactStartHandler, listenerOptions);
     }
+    addEventListener(ui, initGroup, 'blur', () => {
+        ui.clickFocus = false;
+        removeClass(el, 'jw-no-focus');
+    });
+    addEventListener(ui, initGroup, 'focus', () => {
+        if (!ui.clickFocus) {
+            removeClass(el, 'jw-no-focus');
+        }
+    });
 }
 
 function checkDoubleTap(ui, e, click) {

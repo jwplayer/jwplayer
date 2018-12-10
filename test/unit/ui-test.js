@@ -651,18 +651,18 @@ describe('UI', function() {
 
         spyOnDomEventListenerMethods([ button ]);
         ui = new UI(button);
-        expect(button.addEventListener, 'button without options').to.have.callCount(3);
+        expect(button.addEventListener, 'button without options').to.have.callCount(0);
         ui.destroy();
 
         spyOnDomEventListenerMethods([ button ]);
         ui = new UI(button)
             .on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {});
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(9);
         } else if (!USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(7);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
         }
         ui.destroy();
     });
@@ -673,14 +673,14 @@ describe('UI', function() {
             .on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {})
             .off();
         if (USE_POINTER_EVENTS) {
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(9);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(9);
+        } else if (!USE_MOUSE_EVENTS) {
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
+        } else {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
             expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
-        } else if (!USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(7);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(7);
-        } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(11);
         }
         ui.destroy();
     });
@@ -691,14 +691,14 @@ describe('UI', function() {
         const ui = new UI(button).on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {});
         ui.destroy();
         if (USE_POINTER_EVENTS) {
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(9);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(9);
+        } else if (!USE_MOUSE_EVENTS) {
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
+        } else {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
             expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
-        } else if (!USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(7);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(7);
-        } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(11);
         }
     });
 
