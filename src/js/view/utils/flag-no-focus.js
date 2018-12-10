@@ -1,7 +1,7 @@
 import { addClass, removeClass } from 'utils/dom';
 
 
-export default function (elementContext) {
+export default function (elementContext, focusOnMouseDown) {
     let _focusFromClick = false;
 
     const onBlur = function () {
@@ -12,6 +12,9 @@ export default function (elementContext) {
     const onMouseDown = function () {
         _focusFromClick = true;
         addClass(elementContext, 'jw-no-focus');
+        if (focusOnMouseDown) {
+            elementContext.focus();
+        }
     };
 
     const onFocus = function () {

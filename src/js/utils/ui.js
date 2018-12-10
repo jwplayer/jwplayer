@@ -38,7 +38,7 @@ export default class UI extends Eventable {
         this.pointerId = null;
         this.startX = 0;
         this.startY = 0;
-        this.noFocusHelper = flagNoFocus(element);
+        this.noFocusHelper = flagNoFocus(element, options.focusOnMouseDown);
     }
 
     on(name, callback, context) {
