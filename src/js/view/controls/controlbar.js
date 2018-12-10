@@ -439,9 +439,9 @@ export default class Controlbar {
         this.elements.alt.textContent = altText;
     }
 
-    // Close menus if it has no event.  Otherwise close all but the event's target.
+    // Close menus if it has no event.
     closeMenus(evt) {
-        if (evt) {
+        if (!this.menus) {
             return;
         }
 
