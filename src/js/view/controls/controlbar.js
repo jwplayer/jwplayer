@@ -441,12 +441,12 @@ export default class Controlbar {
 
     // Close menus if it has no event.
     closeMenus(evt) {
-        if (evt || !this.menus) {
+        if (!this.menus) {
             return;
         }
 
         this.menus.forEach(ele => {
-            if (evt.target !== ele.el) {
+            if (!evt || evt.target !== ele.el) {
                 ele.closeTooltip(evt);
             }
         });
