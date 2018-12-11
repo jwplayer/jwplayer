@@ -119,9 +119,8 @@ export default class Controlbar {
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
         const menus = this.menus = [];
-        this.ui= [];
+        this.ui = [];
         let volumeTooltip;
-        let muteTip;
         let muteButton;
         let feedShownId = '';
 
@@ -147,11 +146,8 @@ export default class Controlbar {
             setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
             setAttribute(volumeTooltipEl, 'aria-orientation', 'vertical');
             setAttribute(volumeTooltipEl, 'role', 'slider');
-            muteTip = SimpleTooltip(volumeTooltipEl, 'mutetooltip', localization.mute);
-            volumeTooltipEl.removeEventListener('mouseover', muteTip.open);
             _model.change('mute', (model, muted) => {
                 const muteText = muted ? localization.unmute : localization.mute;
-                muteTip.setText(muteText);
                 setAttribute(volumeTooltipEl, 'aria-label', muteText);
             }, this);
         }
