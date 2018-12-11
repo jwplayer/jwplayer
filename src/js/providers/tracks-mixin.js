@@ -359,6 +359,7 @@ function clearMetaCues() {
         _removeCues(this.renderNatively, [metadataTrack]);
         metadataTrack.mode = 'hidden';
         metadataTrack.inuse = true;
+        this._cachedVTTCues[metadataTrack._id] = {};
     }
 }
 
