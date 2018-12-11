@@ -118,7 +118,7 @@ export default class Controlbar {
         this._volumeAnnouncer = _accessibilityContainer.querySelector('.jw-volume-update');
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
-        const menus = [];
+        const menus = this.menus = [];
         let volumeTooltip;
         let muteTip;
         let muteButton;
@@ -443,10 +443,6 @@ export default class Controlbar {
 
     // Close menus if it has no event.
     closeMenus(evt) {
-        if (!this.menus) {
-            return;
-        }
-
         this.menus.forEach(ele => {
             if (!evt || evt.target !== ele.el) {
                 ele.closeTooltip(evt);
