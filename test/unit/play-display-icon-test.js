@@ -72,7 +72,7 @@ describe('PlayDisplayIcon', function() {
             model.set('state', 'complete');
             model.set('state', 'idle');
 
-            expect(displayIcon.icon.getAttribute('aria-label')).to.equal(localization.playback);
+            expect(displayIcon.el.getAttribute('aria-label')).to.equal(localization.playback);
         });
 
         it('should add pause aria label if old state is idle (start playback)', function() {
@@ -80,7 +80,7 @@ describe('PlayDisplayIcon', function() {
 
             model.set('state', 'playing');
 
-            expect(displayIcon.icon.getAttribute('aria-label')).to.equal(localization.pause);
+            expect(displayIcon.el.getAttribute('aria-label')).to.equal(localization.pause);
         });
 
         it('should remove aria label if new state label is empty', function() {
@@ -89,7 +89,7 @@ describe('PlayDisplayIcon', function() {
 
             model.set('state', 'complete');
 
-            expect(displayIcon.icon.getAttribute('aria-label')).to.equal(null);
+            expect(displayIcon.el.getAttribute('aria-label')).to.equal(null);
         });
 
         it('should remove aria label if new state is invalid', function() {
@@ -97,7 +97,7 @@ describe('PlayDisplayIcon', function() {
 
             model.set('state', 'invalid');
 
-            expect(displayIcon.icon.getAttribute('aria-label')).to.equal(null);
+            expect(displayIcon.el.getAttribute('aria-label')).to.equal(null);
         });
     });
 });

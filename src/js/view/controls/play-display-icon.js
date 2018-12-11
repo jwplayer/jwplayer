@@ -37,9 +37,9 @@ export default class PlayDisplayIcon {
                     break;
             }
             if (newStateLabel !== '') {
-                iconDisplay.setAttribute('aria-label', newStateLabel);
+                element.setAttribute('aria-label', newStateLabel);
             } else {
-                iconDisplay.removeAttribute('aria-label');
+                element.removeAttribute('aria-label');
             }
         });
 
