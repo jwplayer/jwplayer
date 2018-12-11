@@ -382,7 +382,9 @@ export default class Controlbar {
             setAttribute(volumeTooltipEl, 'aria-valuenow', volume);
             const ariaText = `Volume ${volume}%`;
             setAttribute(volumeTooltipEl, 'aria-valuetext', ariaText);
-            this._volumeAnnouncer.textContent = ariaText;
+            if (document.activeElement !== volumeTooltipEl) {
+                this._volumeAnnouncer.textContent = ariaText;
+            }
         }
     }
 
