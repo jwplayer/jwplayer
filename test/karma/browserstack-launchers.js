@@ -24,8 +24,16 @@ module.exports = {
     edge: {
         base: 'BrowserStack',
         browser: 'edge',
+        browser_version: '17',
         os: 'Windows',
         os_version: '10'
+    },
+
+    safari: {
+        base: 'BrowserStack',
+        browser: 'safari',
+        os: 'OS X',
+        os_version: 'Sierra'
     },
 
     iphone: {
