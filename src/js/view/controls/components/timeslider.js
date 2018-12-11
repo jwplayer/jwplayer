@@ -290,15 +290,18 @@ class TimeSlider extends Slider {
     }
 
     updateAriaText() {
-        const position = this._model.get('position');
-        const duration = this._model.get('duration');
-        let ariaText;
-
-        if (this.streamType === 'DVR') {
-            ariaText = timeFormat(position);
-        } else {
-            ariaText = `${timeFormat(position)} of ${timeFormat(duration)}`;
+        const model = this._model;
+        if (model.get('seeking')) {
+            return;
         }
+        const position = model.get('position');
+        const duration = model.get('duration');
+
+        let ariaText = timeFormat(position);
+        if (this.streamType !== 'DVR') {
+            ariaText += ` of ${timeFormat(duration)}`;
+        }
+
         const sliderElement = this.el;
         if (document.activeElement !== sliderElement) {
             this.timeUpdateKeeper.textContent = ariaText;
