@@ -15,9 +15,10 @@ export default class VolumeTooltip extends Tooltip {
 
         const volumeSliderElement = this.volumeSlider.element();
         volumeSliderElement.classList.remove('jw-background-color');
-
         setAttribute(volumeSliderElement, 'aria-label', localization.volumeSlider);
-        setAttribute(this.container, 'tabindex', '0');
+
+        const overlay = this.container;
+        setAttribute(overlay, 'tabindex', '0');
 
         this.addContent(volumeSliderElement);
 
@@ -26,16 +27,19 @@ export default class VolumeTooltip extends Tooltip {
         }, this);
 
         // Apply a click interaction listener to help with focus styling
-        this.uiOver = new UI(this.container)
+        const { openTooltip, closeTooltip } = this;
+        this.uiOver = new UI(overlay)
             .on('click', function() {}, this)
-            .on('focus', this.openTooltip, this)
-            .on('blur', this.closeTooltip, this);
+            .on('focus', openTooltip, this)
+            .on('blur', closeTooltip, this);
 
         this.ui = new UI(this.el, { directSelect: true })
             .on('click enter', this.toggleValue, this)
             .on('tap', this.toggleOpenState, this)
-            .on('over', this.openTooltip, this)
-            .on('out', this.closeTooltip, this);
+            .on('over', openTooltip, this)
+            .on('out', closeTooltip, this)
+            .on('focus', openTooltip, this)
+            .on('blur', closeTooltip, this);
 
         this._model.on('change:volume', this.onVolume, this);
     }

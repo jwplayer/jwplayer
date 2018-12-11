@@ -57,15 +57,19 @@ export default class Tooltip {
     }
 
     openTooltip(evt) {
-        this.trigger('open-' + this.componentType, evt, { isOpen: true });
-        this.isOpen = true;
-        toggleClass(this.el, this.openClass, this.isOpen);
+        if (!this.isOpen) {
+            this.trigger('open-' + this.componentType, evt, { isOpen: true });
+            this.isOpen = true;
+            toggleClass(this.el, this.openClass, this.isOpen);
+        }
     }
 
     closeTooltip(evt) {
-        this.trigger('close-' + this.componentType, evt, { isOpen: false });
-        this.isOpen = false;
-        toggleClass(this.el, this.openClass, this.isOpen);
+        if (this.isOpen) {
+            this.trigger('close-' + this.componentType, evt, { isOpen: false });
+            this.isOpen = false;
+            toggleClass(this.el, this.openClass, this.isOpen);
+        }
     }
 
     toggleOpenState(evt) {
