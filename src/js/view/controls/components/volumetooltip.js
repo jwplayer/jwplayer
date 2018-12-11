@@ -25,7 +25,7 @@ export default class VolumeTooltip extends Tooltip {
             this.trigger('update', evt);
         }, this);
 
-
+        // Apply a click interaction listener to help with focus styling
         this.uiOver = new UI(this.container)
             .on('click', function() {}, this)
             .on('focus', this.openTooltip, this)

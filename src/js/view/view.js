@@ -84,7 +84,7 @@ function View(_api, _model) {
     let focusHelper;
 
     let _breakpoint = null;
-    let _controls;
+    let _controls = null;
 
     function reasonInteraction() {
         return { reason: 'interaction' };

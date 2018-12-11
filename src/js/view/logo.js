@@ -117,5 +117,8 @@ export default function Logo(_model) {
 
     this.destroy = function() {
         _img.onload = null;
+        if (this.ui) {
+            this.ui.destroy();
+        }
     };
 }
