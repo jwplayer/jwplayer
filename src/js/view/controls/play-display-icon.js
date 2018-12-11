@@ -12,7 +12,7 @@ export default class PlayDisplayIcon {
         this.icon = iconDisplay;
         this.el = element;
 
-        new UI(this.el).on('click tap enter', (evt) => {
+        this.ui = new UI(this.el).on('click tap enter', (evt) => {
             this.trigger(evt.type);
         });
 
@@ -37,9 +37,9 @@ export default class PlayDisplayIcon {
                     break;
             }
             if (newStateLabel !== '') {
-                iconDisplay.setAttribute('aria-label', newStateLabel);
+                element.setAttribute('aria-label', newStateLabel);
             } else {
-                iconDisplay.removeAttribute('aria-label');
+                element.removeAttribute('aria-label');
             }
         });
 

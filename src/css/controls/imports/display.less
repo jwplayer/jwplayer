@@ -52,8 +52,8 @@ display icons
     padding: (@mobile-touch-target * 0.125);
     margin: 0 (@mobile-touch-target * 0.5);
 
-    &.jw-no-focus .jw-icon svg {
-        outline: none;
+    &:not(.jw-no-focus)&:focus {
+        outline: @ui-focus;
     }
 
     .jw-icon {

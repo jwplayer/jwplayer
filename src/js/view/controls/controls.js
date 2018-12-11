@@ -361,42 +361,43 @@ export default class Controls {
     }
 
     disable(model) {
-        const { nextUpToolTip, settingsMenu, infoOverlay, controlbar } = this;
-
-        this.off();
-
-        if (model) {
-            model.off(null, null, this);
-        }
+        const { nextUpToolTip, settingsMenu, infoOverlay, controlbar, rightClickMenu, playerContainer, div } = this;
 
         clearTimeout(this.activeTimeout);
         this.activeTimeout = -1;
 
+        this.off();
+
+        model.off(null, null, this);
         model.set('controlsEnabled', false);
 
-        if (this.div.parentNode) {
-            removeClass(this.playerContainer, 'jw-flag-touch');
-            this.div.parentNode.removeChild(this.div);
+        if (div.parentNode) {
+            removeClass(playerContainer, 'jw-flag-touch');
+            div.parentNode.removeChild(div);
         }
         
         if (controlbar) {
             controlbar.destroy();
         }
 
-        if (this.rightClickMenu) {
-            this.rightClickMenu.destroy();
+        if (rightClickMenu) {
+            rightClickMenu.destroy();
         }
 
         if (this.keydownCallback) {
-            this.playerContainer.removeEventListener('keydown', this.keydownCallback);
+            playerContainer.removeEventListener('keydown', this.keydownCallback);
         }
 
         if (this.keyupCallback) {
-            this.playerContainer.removeEventListener('keyup', this.keyupCallback);
+            playerContainer.removeEventListener('keyup', this.keyupCallback);
         }
 
         if (this.blurCallback) {
-            this.playerContainer.removeEventListener('blur', this.blurCallback);
+            playerContainer.removeEventListener('blur', this.blurCallback);
+        }
+
+        if (this.displayContainer) {
+            this.displayContainer.destroy();
         }
 
         if (nextUpToolTip) {
@@ -405,7 +406,7 @@ export default class Controls {
 
         if (settingsMenu) {
             settingsMenu.destroy();
-            this.div.removeChild(settingsMenu.element());
+            div.removeChild(settingsMenu.element());
         }
 
         if (infoOverlay) {

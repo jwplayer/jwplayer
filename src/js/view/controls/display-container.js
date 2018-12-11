@@ -23,6 +23,15 @@ export default class DisplayContainer {
     element() {
         return this.el;
     }
+
+    destroy() {
+        const buttons = this.buttons;
+        Object.keys(buttons).forEach(name => {
+            if (buttons[name].ui) {
+                buttons[name].ui.destroy();
+            }
+        });
+    }
 }
 
 function addButton(name, iconElements, ButtonClass, container, buttons, model, api) {

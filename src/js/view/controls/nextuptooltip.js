@@ -19,6 +19,8 @@ export default class NextUpTooltip {
         this.enabled = false;
         this.shown = false;
         this.feedShownId = '';
+        this.closeUi = null;
+        this.tooltipUi = null;
         this.reset();
     }
 
@@ -55,12 +57,12 @@ export default class NextUpTooltip {
         }, this);
 
         // Close button
-        new UI(this.closeButton, { directSelect: true }).on('click tap enter', function() {
+        this.closeUi = new UI(this.closeButton, { directSelect: true }).on('click tap enter', function() {
             this.nextUpSticky = false;
             this.toggle(false);
         }, this);
         // Tooltip
-        new UI(this.tooltip).on('click tap', this.click, this);
+        this.tooltipUi = new UI(this.tooltip).on('click tap', this.click, this);
     }
 
     loadThumbnail(url) {
@@ -223,5 +225,11 @@ export default class NextUpTooltip {
     destroy() {
         this.off();
         this._model.off(null, null, this);
+        if (this.closeUi) {
+            this.closeUi.destroy();
+        }
+        if (this.tooltipUi) {
+            this.tooltipUi.destroy();
+        }
     }
 }

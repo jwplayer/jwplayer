@@ -119,6 +119,7 @@ export default class Controlbar {
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
         const menus = this.menus = [];
+        this.ui= [];
         let volumeTooltip;
         let muteTip;
         let muteButton;
@@ -333,7 +334,7 @@ export default class Controlbar {
         }
 
         if (elements.cast && elements.cast.button) {
-            new UI(elements.cast.element()).on('click tap enter', function(evt) {
+            const castUi = new UI(elements.cast.element()).on('click tap enter', function(evt) {
                 // controlbar cast button needs to manually trigger a click
                 // on the native cast button for taps and enter key
                 if (evt.type !== 'click') {
@@ -341,9 +342,10 @@ export default class Controlbar {
                 }
                 this._model.set('castClicked', true);
             }, this);
+            this.ui.push(castUi);
         }
 
-        new UI(elements.duration).on('click tap enter', function () {
+        const durationUi = new UI(elements.duration).on('click tap enter', function () {
             if (this._model.get('streamType') === 'DVR') {
                 // Seek to "Live" position within live buffer, but not before current position
                 const currentPosition = this._model.get('position');
@@ -351,11 +353,14 @@ export default class Controlbar {
                 this._api.seek(Math.max(-dvrSeekLimit, currentPosition), reasonInteraction());
             }
         }, this);
+        this.ui.push(durationUi);
 
         // When the control bar is interacted with, trigger a user action event
-        new UI(this.el).on('click tap drag', function () {
+        const controlbarUi = new UI(this.el).on('click tap drag', function () {
             this.trigger(USER_ACTION);
         }, this);
+        this.ui.push(controlbarUi);
+
         menus.forEach(ele => {
             ele.on('open-tooltip', this.closeMenus, this);
         });
@@ -598,13 +603,17 @@ export default class Controlbar {
     }
 
     destroy() {
+        this._model.off(null, null, this);
         Object.keys(this.elements).forEach((elementName) => {
             const el = this.elements[elementName];
             if (el && typeof el.destroy === 'function') {
                 this.elements[elementName].destroy();
             }
         });
-        this._model.off(null, null, this);
+        this.ui.forEach(ui => {
+            ui.destroy();
+        });
+        this.ui = [];
     }
 }
 

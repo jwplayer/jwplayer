@@ -28,7 +28,7 @@ import {
 } from 'utils/css';
 import { isNumber } from 'utils/underscore';
 import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
-import flagNoFocus from 'view/utils/flag-no-focus';
+import UI from 'utils/ui';
 import ClickHandler from 'view/utils/clickhandler';
 import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
@@ -84,7 +84,7 @@ function View(_api, _model) {
     let focusHelper;
 
     let _breakpoint = null;
-    let _controls;
+    let _controls = null;
 
     function reasonInteraction() {
         return { reason: 'interaction' };
@@ -213,7 +213,7 @@ function View(_api, _model) {
         // Display Click and Double Click Handling
         displayClickHandler = clickHandlerHelper(_api, _model, _videoLayer);
 
-        focusHelper = flagNoFocus(_playerElement);
+        focusHelper = new UI(_playerElement).on('click', function() {});
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
         if (_floatOnScroll) {
