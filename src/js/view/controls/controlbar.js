@@ -118,7 +118,7 @@ export default class Controlbar {
         this._volumeAnnouncer = _accessibilityContainer.querySelector('.jw-volume-update');
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
-        const menus = [];
+        const menus = this.menus = [];
         let volumeTooltip;
         let muteTip;
         let muteButton;
