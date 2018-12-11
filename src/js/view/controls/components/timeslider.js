@@ -117,9 +117,8 @@ class TimeSlider extends Slider {
         this.ui = (this.ui || new UI(sliderElement))
             .on('move', this.showTimeTooltip, this)
             .on('dragEnd out', this.hideTimeTooltip, this)
-            .on('click', () => sliderElement.focus());
-
-        sliderElement.addEventListener('focus', () => this.updateAriaText());
+            .on('click', () => sliderElement.focus())
+            .on('focus', this.updateAriaText, this);
     }
 
     update(percent) {
