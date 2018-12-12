@@ -4,6 +4,10 @@
     opacity: 1;
     transition-delay: 0s;
     visibility: visible;
+
+    &:focus:not(.jw-not-focus) {
+        outline: @ui-focus;
+    }
 }
 
 .jw-slider-time .jw-overlay:before {
