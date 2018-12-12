@@ -56,6 +56,7 @@ export default class RightClick {
 
     rightClick(evt) {
         this.lazySetup();
+        addClass(this.playerElement, 'jw-no-focus');
 
         if (this.mouseOverContext) {
             // right click on menu item should execute it
