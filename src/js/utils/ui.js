@@ -86,8 +86,6 @@ function initInteractionListeners(ui) {
     const listenerOptions = passiveEvents ? { passive } : false;
 
     const interactStartHandler = (e) => {
-        addClass(el, 'jw-no-focus');
-        ui.clickFocus = true;
         if (isRightClick(e)) {
             return;
         }
@@ -132,6 +130,8 @@ function initInteractionListeners(ui) {
                 preventDefault(e);
             }
         }
+        addClass(el, 'jw-no-focus');
+        ui.clickFocus = true;
     };
 
     const interactDragHandler = (e) => {

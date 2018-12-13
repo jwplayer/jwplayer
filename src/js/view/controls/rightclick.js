@@ -91,6 +91,7 @@ export default class RightClick {
 
         addClass(this.playerElement, 'jw-flag-rightclick-open');
         addClass(this.el, 'jw-open');
+        this.el.focus();
         clearTimeout(this._menuTimeout);
         this._menuTimeout = setTimeout(() => this.hideMenu(), 3000);
         return false;
