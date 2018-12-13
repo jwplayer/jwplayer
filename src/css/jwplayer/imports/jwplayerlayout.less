@@ -18,6 +18,12 @@
         box-sizing: inherit;
     }
 
+    outline: none;
+
+    &.jw-tab-focus:focus {
+        outline: @ui-focus;
+    }
+
     // Aspect Ratio styles
     &.jw-flag-aspect-mode {
         /* Height auto required for displaying aspect ratio correctly */
@@ -35,14 +41,6 @@
 
     .jw-swf {
         outline: none;
-    }
-
-    &:not(.jw-tab-focus) {
-        outline: none;
-    }
-
-    &.jw-ie.jw-tab-focus:focus {
-        outline: @ui-focus;
     }
 }
 
