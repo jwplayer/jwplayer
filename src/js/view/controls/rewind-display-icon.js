@@ -2,9 +2,10 @@ import UI from 'utils/ui';
 
 export default class RewindDisplayIcon {
     constructor(model, api, element) {
-        this.el = element;
+        const iconDisplay = element.querySelector('.jw-icon');
 
-        this.ui = new UI(this.el).on('click tap enter', function() {
+        this.el = element;
+        this.ui = new UI(iconDisplay).on('click tap enter', function() {
             const currentPosition = model.get('position');
             const duration = model.get('duration');
             const rewindPosition = currentPosition - 10;
