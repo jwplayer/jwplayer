@@ -37,13 +37,13 @@
         outline: none;
     }
 
-    &.jw-ie:focus {
-        outline: #585858 dotted 1px;
+    &:not(.jw-tab-focus) {
+        outline: none;
     }
-}
 
-.jw-no-focus:focus {
-    outline: none;
+    &.jw-ie.jw-tab-focus:focus {
+        outline: @ui-focus;
+    }
 }
 
 .jw-media,

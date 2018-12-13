@@ -13,7 +13,7 @@ export default function (icon, apiAction, ariaText, svgIcons) {
 
     element.style.display = 'none';
 
-    new UI(element).on('click tap enter', apiAction || function() {});
+    const ui = new UI(element).on('click tap enter', apiAction || function() {});
 
     if (svgIcons) {
         Array.prototype.forEach.call(svgIcons, svgIcon => {
@@ -26,6 +26,7 @@ export default function (icon, apiAction, ariaText, svgIcons) {
     }
 
     return {
+        ui,
         element: function() {
             return element;
         },

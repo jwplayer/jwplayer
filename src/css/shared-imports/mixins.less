@@ -115,7 +115,6 @@
         &:not(.jw-flag-touch) .jw-button-color:not(.jw-logo-button) {
             &:focus,
             &:hover {
-                outline: none;
                 color: @hover-color;
             }
         }
@@ -209,12 +208,8 @@
             }
         }
 
-        .jw-icon-cast:not(.jw-no-focus) {
-            &:focus google-cast-launcher {
-                outline: @ui-focus;
-            }
-
-            google-cast-launcher:focus {
+        .jw-icon-cast.jw-tab-focus {
+            &:focus {
                 outline: @ui-focus;
             }
         }

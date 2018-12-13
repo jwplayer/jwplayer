@@ -101,6 +101,7 @@
     padding: 7px 0 7px 15px;
     width: 100%;
     text-align: left;
+    outline: none;
 
     &:hover {
         color: @hover-color;
@@ -115,7 +116,7 @@
     }
 }
 
-.jw-settings-content-item:focus:not(.jw-no-focus) {
+.jw-settings-content-item.jw-tab-focus:focus {
     outline: @ui-focus;
 }
 

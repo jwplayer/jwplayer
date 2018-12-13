@@ -18,6 +18,7 @@ const DOUBLE_CLICK_DELAY = 300;
 const LONG_PRESS_DELAY = 500;
 
 let longPressTimeout;
+let lastInteractionListener;
 
 export default class UI extends Eventable {
 
@@ -32,13 +33,14 @@ export default class UI extends Eventable {
         this.enableDoubleTap = false;
         this.el = element;
         this.handlers = {};
+        this.options = {};
         this.lastClick = 0;
         this.lastStart = 0;
         this.passive = passive;
         this.pointerId = null;
         this.startX = 0;
         this.startY = 0;
-        this.clickFocus = false;
+        this.event = null;
     }
 
     on(name, callback, context) {
@@ -86,6 +88,8 @@ function initInteractionListeners(ui) {
     const listenerOptions = passiveEvents ? { passive } : false;
 
     const interactStartHandler = (e) => {
+        removeClass(el, 'jw-tab-focus');
+
         if (isRightClick(e)) {
             return;
         }
@@ -130,9 +134,6 @@ function initInteractionListeners(ui) {
                 preventDefault(e);
             }
         }
-
-        addClass(el, 'jw-no-focus');
-        ui.clickFocus = true;
     };
 
     const interactDragHandler = (e) => {
@@ -193,15 +194,21 @@ function initInteractionListeners(ui) {
         // Always add this, in case we don't properly identify the device as mobile
         addEventListener(ui, initGroup, 'touchstart', interactStartHandler, listenerOptions);
     }
+    initInteractionListener();
     addEventListener(ui, initGroup, 'blur', () => {
-        ui.clickFocus = false;
-        removeClass(el, 'jw-no-focus');
+        removeClass(el, 'jw-tab-focus');
     });
     addEventListener(ui, initGroup, 'focus', () => {
-        if (!ui.clickFocus) {
-            removeClass(el, 'jw-no-focus');
+        if (lastInteractionListener.event && lastInteractionListener.event.type === 'keydown') {
+            addClass(el, 'jw-tab-focus');
         }
     });
+}
+
+function initInteractionListener() {
+    if (!lastInteractionListener) {
+        lastInteractionListener = new UI(document).on('interaction');
+    }
 }
 
 function checkDoubleTap(ui, e, click) {
@@ -318,11 +325,25 @@ const eventRegisters = {
             }
         });
     },
+    keydown(ui) {
+        const keydown = 'keydown';
+        addEventListener(ui, keydown, 'keydown', (e) => {
+            triggerSimpleEvent(ui, keydown, e);
+        }, false);
+    },
     gesture(ui) {
         const gesture = 'gesture';
         const triggerGesture = (e) => triggerEvent(ui, gesture, e);
         addEventListener(ui, gesture, 'click', triggerGesture);
         addEventListener(ui, gesture, 'keydown', triggerGesture);
+    },
+    interaction(ui) {
+        const interaction = 'interaction';
+        const triggerGesture = e => {
+            ui.event = e;
+        };
+        addEventListener(ui, interaction, 'mousedown', triggerGesture, true);
+        addEventListener(ui, interaction, 'keydown', triggerGesture, true);
     }
 };
 
@@ -331,31 +352,36 @@ export function getElementWindow(element) {
     return (document.defaultView || document.parentWindow || window);
 }
 
-function addEventListener(ui, triggerName, domEventName, handler, options) {
+function addEventListener(ui, triggerName, domEventName, handler, options = DEFAULT_LISTENER_OPTIONS) {
     let listeners = ui.handlers[triggerName];
+    let listenerOptions = ui.options[triggerName];
     if (!listeners) {
         listeners = ui.handlers[triggerName] = {};
+        listenerOptions = ui.options[triggerName] = {};
     }
     if (listeners[domEventName]) {
         throw new Error(`${triggerName} ${domEventName} already registered`);
     }
     listeners[domEventName] = handler;
+    listenerOptions[domEventName] = options;
 
     const { el } = ui;
     const element = triggerName === WINDOW_GROUP ? getElementWindow(el) : el;
 
-    element.addEventListener(domEventName, handler, options || DEFAULT_LISTENER_OPTIONS);
+    element.addEventListener(domEventName, handler, options);
 }
 
 function removeHandlers(ui, triggerName) {
-    const { el, handlers } = ui;
+    const { el, handlers, options } = ui;
     const element = triggerName === WINDOW_GROUP ? getElementWindow(el) : el;
     const listeners = handlers[triggerName];
+    const listenerOptions = options[triggerName];
     if (listeners) {
         Object.keys(listeners).forEach(domEventName => {
-            element.removeEventListener(domEventName, listeners[domEventName]);
+            element.removeEventListener(domEventName, listeners[domEventName], listenerOptions);
         });
         handlers[triggerName] = null;
+        options[triggerName] = null;
     }
 }
 
