@@ -535,6 +535,9 @@ function _addCueToTrack(renderNatively, track, vttCue) {
 
 function insertCueInOrder(track, vttCue) {
     const temp = [];
+    // If the track mode is 'disabled', track.cues will be null; set it to hidden so that we can access.
+    const mode = track.mode;
+    track.mode = 'hidden';
     const cues = track.cues;
     for (let i = cues.length - 1; i >= 0; i--) {
         if (cues[i].startTime > vttCue.startTime) {
@@ -546,6 +549,8 @@ function insertCueInOrder(track, vttCue) {
     }
     track.addCue(vttCue);
     temp.forEach(cue => track.addCue(cue));
+    // Restore the original track state
+    track.mode = mode;
 }
 
 function _removeCues(renderNatively, tracks) {
