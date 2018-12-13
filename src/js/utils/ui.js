@@ -130,6 +130,7 @@ function initInteractionListeners(ui) {
                 preventDefault(e);
             }
         }
+
         addClass(el, 'jw-no-focus');
         ui.clickFocus = true;
     };
