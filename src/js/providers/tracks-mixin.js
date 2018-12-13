@@ -517,15 +517,35 @@ function addVTTCuesToTrack(track, vttCues) {
 // ////////////////////
 
 function _addCueToTrack(renderNatively, track, vttCue) {
-    if (!(Browser.ie && renderNatively) || !window.TextTrackCue) {
-        track.addCue(vttCue);
-        return;
+    let cue = vttCue;
+    if (Browser.ie && renderNatively && window.TextTrackCue) {
+        // There's no support for the VTTCue interface in IE/Edge.
+        // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
+        // This unfortunately removes positioning properties from the cues
+        cue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
     }
-    // There's no support for the VTTCue interface in IE/Edge.
-    // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
-    // This unfortunately removes positioning properties from the cues
-    const textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
-    track.addCue(textTrackCue);
+
+    // IE/Edge will throw an exception if cues are not inserted in time order: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/13183203/
+    if (Browser.ie) {
+        insertCueInOrder(track, cue);
+    } else {
+        track.addCue(cue);
+    }
+}
+
+function insertCueInOrder(track, vttCue) {
+    const temp = [];
+    const cues = track.cues;
+    for (let i = cues.length - 1; i >= 0; i--) {
+        if (cues[i].startTime > vttCue.startTime) {
+            temp.push(cues[i]);
+            track.removeCue(cues[i]);
+        } else {
+            break;
+        }
+    }
+    track.addCue(vttCue);
+    temp.forEach(cue => track.addCue(cue));
 }
 
 function _removeCues(renderNatively, tracks) {
