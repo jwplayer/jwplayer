@@ -518,7 +518,7 @@ function addVTTCuesToTrack(track, vttCues) {
 
 function _addCueToTrack(renderNatively, track, vttCue) {
     let cue = vttCue;
-    if (Browser.ie && renderNatively && window.TextTrackCue) {
+    if (Browser.ie && renderNatively) {
         // There's no support for the VTTCue interface in IE/Edge.
         // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
         // This unfortunately removes positioning properties from the cues
