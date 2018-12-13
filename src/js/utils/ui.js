@@ -86,16 +86,14 @@ function initInteractionListeners(ui) {
     const listenerOptions = passiveEvents ? { passive } : false;
 
     const interactStartHandler = (e) => {
+        addClass(el, 'jw-no-focus');
+        ui.clickFocus = true;
+        if (isRightClick(e)) {
+            return;
+        }
         const { target, type } = e;
         if (ui.directSelect && target !== el) {
             // The 'directSelect' parameter only allows interactions on the element and not children
-            return;
-        }
-
-        addClass(el, 'jw-no-focus');
-        ui.clickFocus = true;
-
-        if (isRightClick(e)) {
             return;
         }
 
