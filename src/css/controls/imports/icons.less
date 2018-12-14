@@ -7,10 +7,11 @@
 .jw-icon {
     .square(44px);
     background-color: transparent;
+    outline: none;
 }
 
-.jw-icon:not(.jw-no-focus):focus svg {
-    outline: @ui-focus;
+.jw-icon.jw-tab-focus:focus {
+    border: @ui-focus;
 }
 
 .jw-icon-airplay {

@@ -6,7 +6,11 @@
     visibility: visible;
 
     &:focus {
-        outline: @ui-focus;
+        outline: none;
+
+        &.jw-tab-focus {
+            outline: @ui-focus;
+        }
     }
 }
 
@@ -106,7 +110,7 @@
         width: auto;
         z-index: 1;
 
-        &.jw-open:not(.jw-no-focus) {
+        &.jw-open {
             opacity: 1;
             transform: translate(-50%, (-@tooltip-font-size));
             transition-duration: 150ms;

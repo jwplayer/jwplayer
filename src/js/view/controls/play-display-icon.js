@@ -1,18 +1,16 @@
-import Events from 'utils/backbone.events';
+import Eventable from 'utils/eventable';
 import UI from 'utils/ui';
 import { addClass, createElement } from 'utils/dom';
 
-export default class PlayDisplayIcon {
+export default class PlayDisplayIcon extends Eventable {
     constructor(_model, api, element) {
-        Object.assign(this, Events);
-
+        super();
         const localization = _model.get('localization');
-        const iconDisplay = element.getElementsByClassName('jw-icon-display')[0];
-        element.style.cursor = 'pointer';
+        const iconDisplay = element.querySelector('.jw-icon');
+
         this.icon = iconDisplay;
         this.el = element;
-
-        this.ui = new UI(this.el).on('click tap enter', (evt) => {
+        this.ui = new UI(iconDisplay).on('click tap enter', (evt) => {
             this.trigger(evt.type);
         });
 
@@ -37,9 +35,9 @@ export default class PlayDisplayIcon {
                     break;
             }
             if (newStateLabel !== '') {
-                element.setAttribute('aria-label', newStateLabel);
+                iconDisplay.setAttribute('aria-label', newStateLabel);
             } else {
-                element.removeAttribute('aria-label');
+                iconDisplay.removeAttribute('aria-label');
             }
         });
 
