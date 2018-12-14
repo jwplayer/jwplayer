@@ -327,7 +327,7 @@ const eventRegisters = {
     },
     keydown(ui) {
         const keydown = 'keydown';
-        addEventListener(ui, keydown, 'keydown', (e) => {
+        addEventListener(ui, keydown, keydown, (e) => {
             triggerSimpleEvent(ui, keydown, e);
         }, false);
     },
