@@ -9,6 +9,7 @@ const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
 const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
 
 const WINDOW_GROUP = 'window';
+const keydown = 'keydown';
 
 const { passiveEvents } = Features;
 const DEFAULT_LISTENER_OPTIONS = passiveEvents ? { passive: true } : false;
@@ -199,7 +200,7 @@ function initInteractionListeners(ui) {
         removeClass(el, 'jw-tab-focus');
     });
     addEventListener(ui, initGroup, 'focus', () => {
-        if (lastInteractionListener.event && lastInteractionListener.event.type === 'keydown') {
+        if (lastInteractionListener.event && lastInteractionListener.event.type === keydown) {
             addClass(el, 'jw-tab-focus');
         }
     });
@@ -318,7 +319,7 @@ const eventRegisters = {
         }
     },
     enter(ui) {
-        addEventListener(ui, ENTER, 'keydown', (e) => {
+        addEventListener(ui, ENTER, keydown, (e) => {
             if (e.key === 'Enter' || e.keyCode === 13) {
                 e.stopPropagation();
                 triggerSimpleEvent(ui, ENTER, e);
@@ -326,8 +327,7 @@ const eventRegisters = {
         });
     },
     keydown(ui) {
-        const keydown = 'keydown';
-        addEventListener(ui, keydown, 'keydown', (e) => {
+        addEventListener(ui, keydown, keydown, (e) => {
             triggerSimpleEvent(ui, keydown, e);
         }, false);
     },
@@ -335,7 +335,7 @@ const eventRegisters = {
         const gesture = 'gesture';
         const triggerGesture = (e) => triggerEvent(ui, gesture, e);
         addEventListener(ui, gesture, 'click', triggerGesture);
-        addEventListener(ui, gesture, 'keydown', triggerGesture);
+        addEventListener(ui, gesture, keydown, triggerGesture);
     },
     interaction(ui) {
         const interaction = 'interaction';
@@ -343,7 +343,7 @@ const eventRegisters = {
             ui.event = e;
         };
         addEventListener(ui, interaction, 'mousedown', triggerGesture, true);
-        addEventListener(ui, interaction, 'keydown', triggerGesture, true);
+        addEventListener(ui, interaction, keydown, triggerGesture, true);
     }
 };
 
