@@ -378,7 +378,12 @@ function removeHandlers(ui, triggerName) {
     const listenerOptions = options[triggerName];
     if (listeners) {
         Object.keys(listeners).forEach(domEventName => {
-            element.removeEventListener(domEventName, listeners[domEventName], listenerOptions);
+            const useCapture = listenerOptions[domEventName];
+            if (typeof useCapture === 'boolean') {
+                element.removeEventListener(domEventName, listeners[domEventName], useCapture);
+            } else {
+                element.removeEventListener(domEventName, listeners[domEventName]);
+            }
         });
         handlers[triggerName] = null;
         options[triggerName] = null;
