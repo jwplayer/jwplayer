@@ -288,6 +288,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     /**
      * Preload an Item.
      * @param {Item|Array.<Item>} item - The ad item or ad pod array of items to be preloaded.
+     * @returns {void}
      */
     this.preloadItem = function(item) {
         if (_destroyed) {
