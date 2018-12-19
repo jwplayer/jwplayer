@@ -296,7 +296,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
 
         if (_adProgram.backgroundLoading) {
-            _adProgram.backgroundLoad(item);
+            _adProgram.backgroundLoad(Array.isArray(item) ? item[_arrayIndex] : item);
         }
     };
 
