@@ -286,6 +286,20 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     }
 
     /**
+     * Preload an Item.
+     * @param {Item|Array.<Item>} item - The ad item or ad pod array of items to be preloaded.
+     */
+    this.preloadItem = function(item) {
+        if (_destroyed) {
+            return;
+        }
+
+        if (_adProgram.backgroundLoading) {
+            _adProgram.backgroundLoad(item);
+        }
+    };
+
+    /**
      * Load an Item, playing it as an insteam ad.
      * @param {Item|Array.<Item>} item - The ad item or ad pod array of items to be played.
      * @param {Object|Array.<Object>} options - The ad options or ad pod array of options.
