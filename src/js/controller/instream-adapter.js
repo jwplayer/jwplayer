@@ -73,6 +73,8 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     };
 
+    this.isInitialized = () => _inited;
+
     /**
      * Put the player in instream ads mode, detaching media, and preparing the ad program for
      * instream playback
