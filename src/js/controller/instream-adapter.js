@@ -73,8 +73,6 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     };
 
-    this.isInitialized = () => _inited;
-
     /**
      * Put the player in instream ads mode, detaching media, and preparing the ad program for
      * instream playback
@@ -502,7 +500,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * @return {string|boolean} The ad player's playback state
      */
     this.getState = function() {
-        if (_destroyed) {
+        if (_destroyed || !_inited) {
             // api expects false to know we aren't in instreamMode
             return false;
         }

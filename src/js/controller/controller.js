@@ -346,7 +346,7 @@ Object.assign(Controller.prototype, {
         function _load(item, feedData) {
 
             const instream = _this._instreamAdapter;
-            if (instream) {
+            if (_model.get('instreamMode')) {
                 instream.noResume = true;
             }
             _this.trigger('destroyPlugin', {});
