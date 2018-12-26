@@ -115,7 +115,7 @@ class TimeSlider extends Slider {
 
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
         this.ui = (this.ui || new UI(sliderElement))
-            .on('move', this.showTimeTooltip, this)
+            .on('move drag', this.showTimeTooltip, this)
             .on('dragEnd out', this.hideTimeTooltip, this)
             .on('click', () => sliderElement.focus())
             .on('focus', this.updateAriaText, this);
