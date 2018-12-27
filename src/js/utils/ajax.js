@@ -1,4 +1,4 @@
-import { parseXML, isAbsolutePath } from 'utils/parser';
+import { parseXML } from 'utils/parser';
 import { isFileProtocol } from 'utils/validator';
 import { PlayerError, MSG_TECHNICAL_ERROR, MSG_CANT_PLAY_VIDEO } from 'api/errors';
 
@@ -9,6 +9,7 @@ const ERROR_XHR_OPEN = 3;
 const ERROR_XHR_SEND = 4;
 const ERROR_XHR_FILTER = 5;
 const ERROR_XHR_UNKNOWN = 6;
+const ERROR_XHR_FILE_PROTOCOL = 7;
 
 // Network Responses with http status 400-599
 // will produce an error with the http status code
@@ -167,8 +168,8 @@ function _readyStateChangeHandler(options) {
             if (status === 200) {
                 return _ajaxComplete(options)(e);
             }
-            if (status === 0 && isFileProtocol() && !isAbsolutePath(options.url)) {
-                _error(options, MSG_CANT_PLAY_VIDEO, 999);
+            if (status === 0 && isFileProtocol() && !/^(?:(?:https?|file):)?/.test(options.url)) {
+                _error(options, MSG_CANT_PLAY_VIDEO, ERROR_XHR_FILE_PROTOCOL);
 
             }
         }
