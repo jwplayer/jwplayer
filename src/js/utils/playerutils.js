@@ -1,4 +1,5 @@
 import { version } from 'version';
+import { isFileProtocol } from 'utils/validator';
 
 export const getScriptPath = function(scriptName) {
     const scripts = document.getElementsByTagName('script');
@@ -21,7 +22,7 @@ export const repo = function () {
     }
 
     const playerRepo = __REPO__;
-    const protocol = (playerRepo && window.location.protocol === 'file:') ? 'https:' : '';
+    const protocol = (playerRepo && isFileProtocol()) ? 'https:' : '';
     return `${protocol}${playerRepo}`;
 };
 

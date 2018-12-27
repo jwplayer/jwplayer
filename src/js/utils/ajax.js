@@ -1,4 +1,5 @@
-import { parseXML } from 'utils/parser';
+import { parseXML, isAbsolutePath } from 'utils/parser';
+import { isFileProtocol } from 'utils/validator';
 import { PlayerError, MSG_TECHNICAL_ERROR, MSG_CANT_PLAY_VIDEO } from 'api/errors';
 
 // XHR Request Errors
@@ -158,12 +159,17 @@ function _readyStateChangeHandler(options) {
         const xhr = e.currentTarget || options.xhr;
         if (xhr.readyState === 4) {
             clearTimeout(options.timeoutId);
-            if (xhr.status >= 400) {
-                _error(options, MSG_CANT_PLAY_VIDEO, (xhr.status < 600) ? xhr.status : ERROR_XHR_UNKNOWN);
+            const status = xhr.status;
+            if (status >= 400) {
+                _error(options, MSG_CANT_PLAY_VIDEO, (status < 600) ? status : ERROR_XHR_UNKNOWN);
                 return;
             }
-            if (xhr.status === 200) {
+            if (status === 200) {
                 return _ajaxComplete(options)(e);
+            }
+            if (status === 0 && isFileProtocol() && !isAbsolutePath(options.url)) {
+                _error(options, MSG_CANT_PLAY_VIDEO, 999);
+
             }
         }
     };

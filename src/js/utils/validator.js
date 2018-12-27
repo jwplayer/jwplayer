@@ -21,7 +21,21 @@ export function exists(item) {
  * @returns {boolean} Is the current page hosted over HTTPS?
  */
 export function isHTTPS() {
-    return (window.location.protocol === 'https:');
+    return getProtocol() === 'https:';
+}
+
+/**
+ * @returns {boolean} Is the current page hosted over the File protocol?
+ */
+export function isFileProtocol() {
+    return getProtocol() === 'file:';
+}
+
+/**
+ * @returns {string} the protocol of the current page
+ */
+function getProtocol() {
+    return window.location.protocol;
 }
 
 /**
