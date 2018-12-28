@@ -168,7 +168,7 @@ function _readyStateChangeHandler(options) {
             if (status === 200) {
                 return _ajaxComplete(options)(e);
             }
-            // verify that the error is due to a relative or protocol relative url being requested on page hosted over file: protocol
+            // regex checks that the url is relative or protocol relative
             if (status === 0 && isFileProtocol() && !/^(?:(?:https?|file):\/\/)/.test(options.url)) {
                 _error(options, MSG_CANT_PLAY_VIDEO, ERROR_XHR_FILE_PROTOCOL);
 
