@@ -1,5 +1,7 @@
 /** @module */
 
+const protocol = window.location.protocol;
+
 /**
  * @param {any} item - The variable to test.
  * @returns {boolean} Is the value of `item` null, undefined or an empty string?
@@ -21,21 +23,14 @@ export function exists(item) {
  * @returns {boolean} Is the current page hosted over HTTPS?
  */
 export function isHTTPS() {
-    return getProtocol() === 'https:';
+    return protocol === 'https:';
 }
 
 /**
  * @returns {boolean} Is the current page hosted over the File protocol?
  */
 export function isFileProtocol() {
-    return getProtocol() === 'file:';
-}
-
-/**
- * @returns {string} the protocol of the current page
- */
-function getProtocol() {
-    return window.location.protocol;
+    return protocol === 'file:';
 }
 
 /**

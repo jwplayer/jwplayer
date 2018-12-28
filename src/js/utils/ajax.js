@@ -169,9 +169,8 @@ function _readyStateChangeHandler(options) {
                 return _ajaxComplete(options)(e);
             }
             // regex checks that the url is relative or protocol relative
-            if (status === 0 && isFileProtocol() && !/^(?:(?:https?|file):\/\/)/.test(options.url)) {
+            if (status === 0 && isFileProtocol() && !/^[a-z][a-z0-9+.-]*:/.test(options.url)) {
                 _error(options, MSG_CANT_PLAY_VIDEO, ERROR_XHR_FILE_PROTOCOL);
-
             }
         }
     };
