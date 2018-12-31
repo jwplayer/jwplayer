@@ -1,4 +1,5 @@
 import { parseXML } from 'utils/parser';
+import { isFileProtocol } from 'utils/validator';
 import { PlayerError, MSG_TECHNICAL_ERROR, MSG_CANT_PLAY_VIDEO } from 'api/errors';
 
 // XHR Request Errors
@@ -8,6 +9,7 @@ const ERROR_XHR_OPEN = 3;
 const ERROR_XHR_SEND = 4;
 const ERROR_XHR_FILTER = 5;
 const ERROR_XHR_UNKNOWN = 6;
+const ERROR_XHR_FILE_PROTOCOL = 7;
 
 // Network Responses with http status 400-599
 // will produce an error with the http status code
@@ -158,12 +160,17 @@ function _readyStateChangeHandler(options) {
         const xhr = e.currentTarget || options.xhr;
         if (xhr.readyState === 4) {
             clearTimeout(options.timeoutId);
-            if (xhr.status >= 400) {
-                _error(options, MSG_CANT_PLAY_VIDEO, (xhr.status < 600) ? xhr.status : ERROR_XHR_UNKNOWN);
+            const status = xhr.status;
+            if (status >= 400) {
+                _error(options, MSG_CANT_PLAY_VIDEO, (status < 600) ? status : ERROR_XHR_UNKNOWN);
                 return;
             }
-            if (xhr.status === 200) {
+            if (status === 200) {
                 return _ajaxComplete(options)(e);
+            }
+            // regex checks that the url is relative or protocol relative
+            if (status === 0 && isFileProtocol() && !/^[a-z][a-z0-9+.-]*:/.test(options.url)) {
+                _error(options, MSG_CANT_PLAY_VIDEO, ERROR_XHR_FILE_PROTOCOL);
             }
         }
     };
