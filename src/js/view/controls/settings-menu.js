@@ -175,6 +175,11 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
         removeCaptionsSubmenu(settingsMenu);
         controlbar.elements.captionsButton.hide();
+
+        // Settings menu should not be visible when switching playlist items via controls or .load()
+        if (settingsMenu.visible) {
+            settingsMenu.close();
+        }
     });
     model.change('captionsList', onCaptionsChanged, settingsMenu);
     model.change('captionsIndex', (changedModel, index) => {
