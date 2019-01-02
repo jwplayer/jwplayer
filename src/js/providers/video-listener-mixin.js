@@ -48,7 +48,7 @@ const VideoListenerMixin = {
 
         if (!this.seeking && !this.video.paused &&
             (this.state === STATE_STALLED || this.state === STATE_LOADING) &&
-            this.stallTime !== currentTime) {
+            this.stallTime !== this.video.currentTime) {
             this.stallTime = -1;
             this.setState(STATE_PLAYING);
             this.trigger(PROVIDER_FIRST_FRAME);
@@ -103,6 +103,9 @@ const VideoListenerMixin = {
     playing() {
         // When stalling, STATE_PLAYING is only set on timeupdate
         // because Safari and Firefox will fire "playing" before playback recovers from stalling
+        if (this.state === STATE_PLAYING) {
+            return;
+        }
         if (this.stallTime === -1) {
             // Here setting STATE_PLAYING ensures a quick recovery from STATE_LOADING after seeking
             this.setState(STATE_PLAYING);
