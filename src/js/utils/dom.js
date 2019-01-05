@@ -1,15 +1,59 @@
 import { trim } from 'utils/strings';
 import { isString, contains, difference, isBoolean } from 'utils/underscore';
 
+const forEach = Array.prototype.forEach;
+let parser;
+
 export function hasClass(element, searchClass) {
     return element.classList.contains(searchClass);
 }
 
-// Given a string, convert to element and return
 export function createElement(html) {
-    const newElement = document.createElement('div');
-    newElement.innerHTML = html;
-    return newElement.firstChild;
+    return htmlToParentElement(html).firstChild;
+}
+
+export function replaceHtml(element, html) {
+    emptyElement(element);
+    appendHtml(element, html);
+}
+
+function appendHtml(element, html) {
+    // Add parsed html and text nodes to another element
+    const fragment = document.createDocumentFragment();
+    const nodes = htmlToParentElement(html).childNodes;
+    forEach.call(nodes, node => {
+        fragment.appendChild(node.cloneNode());
+    });
+    element.appendChild(fragment);
+}
+
+function htmlToParentElement(html) {
+    if (!parser) {
+        parser = new DOMParser();
+    }
+    const parsedElement = parser.parseFromString(html, 'text/html').body;
+
+    // Delete script nodes
+    const scripts = parsedElement.querySelectorAll('script');
+    forEach.call(scripts, script => {
+        script.parentNode.removeChild(script);
+    });
+
+    // Delete event handler attributes that could execute XSS JavaScript
+    const insecureElements = parsedElement.querySelectorAll('img,svg');
+    forEach.call(insecureElements, sanitizeElementAttributes);
+
+    return parsedElement;
+}
+
+export function sanitizeElementAttributes(element) {
+    forEach.call(element.attributes, attributeNode => {
+        const name = attributeNode.name;
+        if (/^on/.test(name)) {
+            element.removeAttribute(name);
+        }
+    });
+    return element;
 }
 
 // Used for styling dimensions in CSS
