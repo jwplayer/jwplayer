@@ -12,7 +12,7 @@ export function createElement(html) {
     return htmlToParentElement(html).firstChild;
 }
 
-export function replaceHtml(element, html) {
+export function replaceInnerHtml(element, html) {
     emptyElement(element);
     appendHtml(element, html);
 }

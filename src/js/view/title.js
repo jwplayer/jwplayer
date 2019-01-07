@@ -1,5 +1,7 @@
 import { style } from 'utils/css';
-import { replaceHtml } from 'utils/dom';
+import {
+    replaceInnerHtml
+} from 'utils/dom';
 
 const Title = function(_model) {
     this.model = _model.player;
@@ -65,8 +67,8 @@ Object.assign(Title.prototype, {
     },
 
     updateText: function(title, description) {
-        replaceHtml(this.title, title);
-        replaceHtml(this.description, description);
+        replaceInnerHtml(this.title, title);
+        replaceInnerHtml(this.description, description);
 
         if (this.title.firstChild || this.description.firstChild) {
             this.show();
