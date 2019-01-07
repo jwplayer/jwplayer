@@ -26,7 +26,7 @@ function appendHtml(element, html) {
     element.appendChild(fragment);
 }
 
-function htmlToParentElement(html) {
+export function htmlToParentElement(html) {
     if (!parser) {
         parser = new DOMParser();
     }

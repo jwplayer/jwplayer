@@ -20,6 +20,7 @@ import {
     replaceClass,
     toggleClass,
     createElement,
+    htmlToParentElement,
     bounds,
 } from 'utils/dom';
 import {
@@ -732,9 +733,8 @@ function View(_api, _model) {
         }
 
         // Writing a string to innerHTML completely decodes multiple-encoded strings
-        const dummyDiv = document.createElement('div');
-        dummyDiv.innerHTML = playlistItem.title || '';
-        videotag.setAttribute('title', dummyDiv.textContent);
+        const body = htmlToParentElement(playlistItem.title || '');
+        videotag.setAttribute('title', body.textContent);
     }
 
     function setPosterImage(item) {
