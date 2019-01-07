@@ -1,7 +1,6 @@
 import { trim } from 'utils/strings';
 import { isString, contains, difference, isBoolean } from 'utils/underscore';
 
-const forEach = Array.prototype.forEach;
 let parser;
 
 export function hasClass(element, searchClass) {
@@ -21,9 +20,9 @@ function appendHtml(element, html) {
     // Add parsed html and text nodes to another element
     const fragment = document.createDocumentFragment();
     const nodes = htmlToParentElement(html).childNodes;
-    forEach.call(nodes, node => {
-        fragment.appendChild(node.cloneNode());
-    });
+    for (let i = 0; i < nodes.length; i++) {
+        fragment.appendChild(nodes[i].cloneNode());
+    }
     element.appendChild(fragment);
 }
 
@@ -35,24 +34,29 @@ function htmlToParentElement(html) {
 
     // Delete script nodes
     const scripts = parsedElement.querySelectorAll('script');
-    forEach.call(scripts, script => {
+    for (let i = 0; i < scripts.length; i++) {
+        const script = scripts[i];
         script.parentNode.removeChild(script);
-    });
-
+    }
     // Delete event handler attributes that could execute XSS JavaScript
     const insecureElements = parsedElement.querySelectorAll('img,svg');
-    forEach.call(insecureElements, sanitizeElementAttributes);
+
+    for (let i = 0; i < insecureElements.length; i++) {
+        const element = insecureElements[i];
+        sanitizeElementAttributes(element);
+    }
 
     return parsedElement;
 }
 
 export function sanitizeElementAttributes(element) {
-    forEach.call(element.attributes, attributeNode => {
-        const name = attributeNode.name;
+    const attributes = element.attributes;
+    for (let i = 0; i < attributes.length; i++) {
+        const name = attributes[i].name;
         if (/^on/.test(name)) {
             element.removeAttribute(name);
         }
-    });
+    }
     return element;
 }
 
