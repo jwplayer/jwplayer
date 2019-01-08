@@ -15,8 +15,7 @@ export default class VolumeTooltip extends Tooltip {
 
         const volumeSliderElement = this.volumeSlider.element();
         volumeSliderElement.classList.remove('jw-background-color');
-
-
+        
         const overlay = this.container;
         setAttribute(overlay, 'tabindex', '0');
         setAttribute(overlay, 'aria-label', localization.volumeSlider);

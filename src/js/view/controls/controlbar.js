@@ -120,7 +120,7 @@ export default class Controlbar {
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
         const menus = this.menus = [];
         this.ui = [];
-        let volumeButton;
+        let volumeGroup;
         let muteButton;
         let feedShownId = '';
 
@@ -128,7 +128,7 @@ export default class Controlbar {
 
         // Do not show the volume toggle in the mobile SDKs or <iOS10
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
-            // Clone icons so that can be used in volumeButton
+            // Clone icons so that can be used in volumeGroup
             const svgIcons = cloneIcons('volume-0,volume-100');
             muteButton = button('jw-icon-volume', () => {
                 _api.setMute();
@@ -137,11 +137,11 @@ export default class Controlbar {
 
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
-            volumeButton = new VolumeTooltip(_model, 'jw-icon-volume', vol,
+            volumeGroup = new VolumeTooltip(_model, 'jw-icon-volume', vol,
                 cloneIcons('volume-0,volume-50,volume-100'));
 
-            const volumeButtonEl = volumeButton.element();
-            menus.push(volumeButton);
+            const volumeButtonEl = volumeGroup.element();
+            menus.push(volumeGroup);
             setAttribute(volumeButtonEl, 'role', 'button');
             _model.change('mute', (model, muted) => {
                 const muteText = muted ? localization.unmute : localization.mute;
@@ -183,7 +183,7 @@ export default class Controlbar {
             time: timeSlider,
             duration: textIcon('jw-text-duration', 'timer'),
             mute: muteButton,
-            volumetooltip: volumeButton,
+            volumetooltip: volumeGroup,
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
@@ -365,17 +365,17 @@ export default class Controlbar {
 
     renderVolume(muted, vol) {
         const mute = this.elements.mute;
-        const volumeButton = this.elements.volumetooltip;
+        const volumeGroup = this.elements.volumetooltip;
         // mute, volume, and volumetooltip do not exist on mobile devices.
         if (mute) {
             toggleClass(mute.element(), 'jw-off', muted);
             toggleClass(mute.element(), 'jw-full', !muted);
         }
-        if (volumeButton) {
+        if (volumeGroup) {
             const volume = muted ? 0 : vol;
-            const volumeButtonEl = volumeButton.element();
-            volumeButton.volumeSlider.render(volume);
-            const volumeSliderContainer = volumeButton.container;
+            const volumeButtonEl = volumeGroup.element();
+            volumeGroup.volumeSlider.render(volume);
+            const volumeSliderContainer = volumeGroup.container;
             toggleClass(volumeButtonEl, 'jw-off', muted);
             toggleClass(volumeButtonEl, 'jw-full', vol >= 75 && !muted);
             setAttribute(volumeSliderContainer, 'aria-valuenow', volume);
