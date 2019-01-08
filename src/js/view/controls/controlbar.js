@@ -374,15 +374,14 @@ export default class Controlbar {
         if (volumeButton) {
             const volume = muted ? 0 : vol;
             const volumeButtonEl = volumeButton.element();
-            const volumeSlider = volumeButton.volumeSlider;
-            volumeSlider.render(volume);
-            const volumeSliderEl = volumeSlider.element();
+            volumeButton.volumeSlider.render(volume);
+            const volumeSliderContainer = volumeButton.container;
             toggleClass(volumeButtonEl, 'jw-off', muted);
             toggleClass(volumeButtonEl, 'jw-full', vol >= 75 && !muted);
-            setAttribute(volumeSliderEl, 'aria-valuenow', volume);
+            setAttribute(volumeSliderContainer, 'aria-valuenow', volume);
             const ariaText = `Volume ${volume}%`;
-            setAttribute(volumeSliderEl, 'aria-valuetext', ariaText);
-            if (document.activeElement !== volumeButtonEl) {
+            setAttribute(volumeSliderContainer, 'aria-valuetext', ariaText);
+            if (document.activeElement !== volumeSliderContainer) {
                 this._volumeAnnouncer.textContent = ariaText;
             }
         }
