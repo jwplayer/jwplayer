@@ -120,7 +120,7 @@ export default class Controlbar {
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
         const menus = this.menus = [];
         this.ui = [];
-        let volumeTooltip;
+        let volumeButton;
         let muteButton;
         let feedShownId = '';
 
@@ -128,7 +128,7 @@ export default class Controlbar {
 
         // Do not show the volume toggle in the mobile SDKs or <iOS10
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
-            // Clone icons so that can be used in VolumeTooltip
+            // Clone icons so that can be used in volumeButton
             const svgIcons = cloneIcons('volume-0,volume-100');
             muteButton = button('jw-icon-volume', () => {
                 _api.setMute();
@@ -137,18 +137,15 @@ export default class Controlbar {
 
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
-            volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
+            volumeButton = new VolumeTooltip(_model, 'jw-icon-volume', vol,
                 cloneIcons('volume-0,volume-50,volume-100'));
 
-            const volumeTooltipEl = volumeTooltip.element();
-            menus.push(volumeTooltip);
-            setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
-            setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
-            setAttribute(volumeTooltipEl, 'aria-orientation', 'vertical');
-            setAttribute(volumeTooltipEl, 'role', 'slider');
+            const volumeButtonEl = volumeButton.element();
+            menus.push(volumeButton);
+            setAttribute(volumeButtonEl, 'role', 'button');
             _model.change('mute', (model, muted) => {
                 const muteText = muted ? localization.unmute : localization.mute;
-                setAttribute(volumeTooltipEl, 'aria-label', muteText);
+                setAttribute(volumeButtonEl, 'aria-label', muteText);
             }, this);
         }
 
@@ -186,7 +183,7 @@ export default class Controlbar {
             time: timeSlider,
             duration: textIcon('jw-text-duration', 'timer'),
             mute: muteButton,
-            volumetooltip: volumeTooltip,
+            volumetooltip: volumeButton,
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
@@ -368,22 +365,24 @@ export default class Controlbar {
 
     renderVolume(muted, vol) {
         const mute = this.elements.mute;
-        const volumeTooltip = this.elements.volumetooltip;
+        const volumeButton = this.elements.volumetooltip;
         // mute, volume, and volumetooltip do not exist on mobile devices.
         if (mute) {
             toggleClass(mute.element(), 'jw-off', muted);
             toggleClass(mute.element(), 'jw-full', !muted);
         }
-        if (volumeTooltip) {
+        if (volumeButton) {
             const volume = muted ? 0 : vol;
-            const volumeTooltipEl = volumeTooltip.element();
-            volumeTooltip.volumeSlider.render(volume);
-            toggleClass(volumeTooltipEl, 'jw-off', muted);
-            toggleClass(volumeTooltipEl, 'jw-full', vol >= 75 && !muted);
-            setAttribute(volumeTooltipEl, 'aria-valuenow', volume);
+            const volumeButtonEl = volumeButton.element();
+            const volumeSlider = volumeButton.volumeSlider;
+            volumeSlider.render(volume);
+            const volumeSliderEl = volumeSlider.element();
+            toggleClass(volumeButtonEl, 'jw-off', muted);
+            toggleClass(volumeButtonEl, 'jw-full', vol >= 75 && !muted);
+            setAttribute(volumeSliderEl, 'aria-valuenow', volume);
             const ariaText = `Volume ${volume}%`;
-            setAttribute(volumeTooltipEl, 'aria-valuetext', ariaText);
-            if (document.activeElement !== volumeTooltipEl) {
+            setAttribute(volumeSliderEl, 'aria-valuetext', ariaText);
+            if (document.activeElement !== volumeButtonEl) {
                 this._volumeAnnouncer.textContent = ariaText;
             }
         }
