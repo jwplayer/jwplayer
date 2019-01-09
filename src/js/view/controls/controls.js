@@ -320,13 +320,11 @@ export default class Controls {
 
         // keep controls active when navigating inside the player
         const handleKeyup = (evt) => {
-            if (!this.instreamState) {
-                const isTab = evt.keyCode === 9;
-                if (isTab) {
-                    const insideContainer = this.playerContainer.contains(evt.target);
-                    const activeTimeout = insideContainer ? 0 : ACTIVE_TIMEOUT;
-                    this.userActive(activeTimeout);
-                }
+            const isTab = evt.keyCode === 9;
+            if (isTab) {
+                const insideContainer = this.playerContainer.contains(evt.target);
+                const activeTimeout = insideContainer ? 0 : ACTIVE_TIMEOUT;
+                this.userActive(activeTimeout);
             }
         };
         this.playerContainer.addEventListener('keyup', handleKeyup);

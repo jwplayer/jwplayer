@@ -764,6 +764,7 @@ function View(_api, _model) {
 
         if (_controls) {
             _controls.setupInstream();
+            _controls.controlbar.el.querySelector('.jw-slider-time').setAttribute('tabindex', '-1');
         }
     };
 
@@ -774,6 +775,7 @@ function View(_api, _model) {
         }
         if (_controls) {
             _controls.destroyInstream(_model);
+            _controls.controlbar.el.querySelector('.jw-slider-time').setAttribute('tabindex', '0');
         }
 
         _this.setAltText('');
