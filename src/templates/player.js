@@ -13,8 +13,8 @@ export default (id, ariaLabel) => {
                 `</div>` +
                 `<div class="jw-overlays jw-reset"></div>` +
                 `<div class="jw-hidden-accessibility">` +
-                    `<p class="jw-time-update" aria-live="assertive"></p>` +
-                    `<p class="jw-volume-update" aria-live="assertive"></p>` +
+                    `<span class="jw-time-update" aria-live="assertive"></span>` +
+                    `<span class="jw-volume-update" aria-live="assertive"></span>` +
                 `</div>` +
             `</div>` +
         `</div>`
