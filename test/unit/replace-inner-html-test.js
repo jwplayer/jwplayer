@@ -34,4 +34,11 @@ describe('replaceInnerHtml', function () {
         expect(console.log).to.have.callCount(0);
         expect(element.firstChild).to.equal(null);
     });
+
+    it('should not append if html is an empty string', function() {
+        const empty = '';
+        replaceInnerHtml(element, empty);
+        expect(element.firstChild).to.equal(null);
+    });
+
 });

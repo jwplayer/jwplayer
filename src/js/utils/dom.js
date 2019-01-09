@@ -17,6 +17,9 @@ export function replaceInnerHtml(element, html) {
 }
 
 function appendHtml(element, html) {
+    if (!html) {
+        return;
+    }
     // Add parsed html and text nodes to another element
     const fragment = document.createDocumentFragment();
     const nodes = htmlToParentElement(html).childNodes;
