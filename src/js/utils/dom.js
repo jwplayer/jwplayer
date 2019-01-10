@@ -1,15 +1,66 @@
 import { trim } from 'utils/strings';
 import { isString, contains, difference, isBoolean } from 'utils/underscore';
 
+let parser;
+
 export function hasClass(element, searchClass) {
     return element.classList.contains(searchClass);
 }
 
-// Given a string, convert to element and return
 export function createElement(html) {
-    const newElement = document.createElement('div');
-    newElement.innerHTML = html;
-    return newElement.firstChild;
+    return htmlToParentElement(html).firstChild;
+}
+
+export function replaceInnerHtml(element, html) {
+    emptyElement(element);
+    appendHtml(element, html);
+}
+
+function appendHtml(element, html) {
+    if (!html) {
+        return;
+    }
+    // Add parsed html and text nodes to another element
+    const fragment = document.createDocumentFragment();
+    const nodes = htmlToParentElement(html).childNodes;
+    for (let i = 0; i < nodes.length; i++) {
+        fragment.appendChild(nodes[i].cloneNode());
+    }
+    element.appendChild(fragment);
+}
+
+export function htmlToParentElement(html) {
+    if (!parser) {
+        parser = new DOMParser();
+    }
+    const parsedElement = parser.parseFromString(html, 'text/html').body;
+
+    // Delete script nodes
+    const scripts = parsedElement.querySelectorAll('script');
+    for (let i = 0; i < scripts.length; i++) {
+        const script = scripts[i];
+        script.parentNode.removeChild(script);
+    }
+    // Delete event handler attributes that could execute XSS JavaScript
+    const insecureElements = parsedElement.querySelectorAll('img,svg');
+
+    for (let i = 0; i < insecureElements.length; i++) {
+        const element = insecureElements[i];
+        sanitizeElementAttributes(element);
+    }
+
+    return parsedElement;
+}
+
+export function sanitizeElementAttributes(element) {
+    const attributes = element.attributes;
+    for (let i = 0; i < attributes.length; i++) {
+        const name = attributes[i].name;
+        if (/^on/.test(name)) {
+            element.removeAttribute(name);
+        }
+    }
+    return element;
 }
 
 // Used for styling dimensions in CSS

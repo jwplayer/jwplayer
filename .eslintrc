@@ -18,7 +18,8 @@
     },
     "extends": "eslint:recommended",
     "plugins": [
-        "no-for-of-loops"
+        "no-for-of-loops",
+        "no-unsanitized"
     ],
     "rules": {
         "valid-jsdoc": 2,
@@ -30,6 +31,8 @@
             }
         ],
         "no-for-of-loops/no-for-of-loops": 2,
+        "no-unsanitized/method": 2,
+        "no-unsanitized/property": 2,
         "comma-dangle": 0,
         "no-cond-assign": 2,
         "no-console": ["warn", { "allow": ["warn", "error"] }],
