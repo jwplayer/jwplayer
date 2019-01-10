@@ -526,7 +526,6 @@ export default class Controls {
         }
         removeClass(this.playerContainer, 'jw-flag-autostart');
         this.controlbar.elements.time.element().setAttribute('tabindex', '-1');
-
     }
 
     destroyInstream(model) {
