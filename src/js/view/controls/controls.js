@@ -525,6 +525,8 @@ export default class Controls {
             this.settingsMenu.close();
         }
         removeClass(this.playerContainer, 'jw-flag-autostart');
+        this.controlbar.el.querySelector('.jw-slider-time').setAttribute('tabindex', '-1');
+
     }
 
     destroyInstream(model) {
@@ -533,5 +535,6 @@ export default class Controls {
         if (model.get('autostartMuted')) {
             addClass(this.playerContainer, 'jw-flag-autostart');
         }
+        this.controlbar.el.querySelector('.jw-slider-time').setAttribute('tabindex', '0');
     }
 }
