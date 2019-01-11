@@ -50,7 +50,7 @@ describe('Sanitize HTML', function () {
             const nestedElement = element.firstChild;
             expect(console.log).to.have.callCount(0);
             expect(nestedElement.getAttribute('onload')).to.equal(null);
-            expect(nestedElement.children.length).to.equal(0);
+            expect(nestedElement.firstChild).to.equal(null);
         });
     });
 
@@ -59,7 +59,7 @@ describe('Sanitize HTML', function () {
             const svg = svgParse(nestedHtml);
             expect(console.log).to.have.callCount(0);
             expect(svg.getAttribute('onload')).to.equal(null);
-            expect(svg.children.length).to.equal(0);
+            expect(svg.firstChild).to.equal(null);
         });
     });
 });
