@@ -36,11 +36,7 @@ export function htmlToParentElement(html) {
     const parsedElement = parser.parseFromString(html, 'text/html').body;
 
     // Delete script nodes
-    const scripts = parsedElement.querySelectorAll('script');
-    for (let i = 0; i < scripts.length; i++) {
-        const script = scripts[i];
-        script.parentNode.removeChild(script);
-    }
+    sanitizeScriptNodes(parsedElement);
     // Delete event handler attributes that could execute XSS JavaScript
     const insecureElements = parsedElement.querySelectorAll('img,svg');
 
@@ -50,6 +46,15 @@ export function htmlToParentElement(html) {
     }
 
     return parsedElement;
+}
+
+export function sanitizeScriptNodes(element) {
+    const scripts = element.querySelectorAll('script');
+    for (let i = 0; i < scripts.length; i++) {
+        const script = scripts[i];
+        script.parentNode.removeChild(script);
+    }
+    return element;
 }
 
 export function sanitizeElementAttributes(element) {
