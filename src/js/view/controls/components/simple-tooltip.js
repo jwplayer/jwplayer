@@ -18,7 +18,6 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
                 return;
             }
 
-            tooltipElement.setAttribute('aria-expanded', 'true');
             addClass(tooltipElement, 'jw-open');
 
             if (openCallback) {
@@ -30,7 +29,6 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
                 return;
             }
 
-            tooltipElement.setAttribute('aria-expanded', 'false');
             removeClass(tooltipElement, 'jw-open');
 
             if (closeCallback) {
