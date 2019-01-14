@@ -1,6 +1,6 @@
 {
   "name": "jwplayer",
-  "version": "8.7.1",
+  "version": "8.7.2",
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
@@ -23,7 +23,7 @@
     "esprima": "4.0.1",
     "fast-diff": "1.1.2",
     "file-loader": "1.1.11",
-    "grunt": "1.0.2",
+    "grunt": "^1.0.2",
     "grunt-cli": "1.2.0",
     "grunt-contrib-clean": "1.1.0",
     "grunt-contrib-connect": "1.0.2",
