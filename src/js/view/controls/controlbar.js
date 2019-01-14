@@ -184,6 +184,7 @@ export default class Controlbar {
             duration: textIcon('jw-text-duration', 'timer'),
             mute: muteButton,
             volumetooltip: volumeGroup,
+            horizontalVolumeSlider: volumeGroup.horizontalVolumeSlider,
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
@@ -234,6 +235,7 @@ export default class Controlbar {
             elements.next,
             elements.volumetooltip,
             elements.mute,
+            elements.horizontalVolumeSlider,
             elements.alt,
             elements.live,
             elements.elapsed,

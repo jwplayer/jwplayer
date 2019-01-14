@@ -12,6 +12,8 @@ export default class VolumeTooltip extends Tooltip {
         this._model = _model;
         this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', 'vertical');
         this.volumeSlider.setup();
+        this.horizontalVolumeSlider = new Slider('jw-horizontal-slider-volume jw-volume-tip', 'horizontal');
+        this.horizontalVolumeSlider.setup();
 
         const volumeSliderElement = this.volumeSlider.element();
         volumeSliderElement.classList.remove('jw-background-color');
