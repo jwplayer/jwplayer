@@ -1,5 +1,5 @@
 import InfoOverlayTemplate from 'view/controls/templates/info-overlay';
-import { createElement, prependChild } from 'utils/dom';
+import { createElement, prependChild, replaceInnerHtml } from 'utils/dom';
 import { STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
@@ -37,8 +37,8 @@ export default function (container, model, api, onVisibility) {
 
         model.change('playlistItem', (changeModel, item) => {
             const { description, title } = item;
-            descriptionContainer.textContent = description || '';
-            titleContainer.textContent = title || 'Unknown Title';
+            replaceInnerHtml(descriptionContainer, description || '');
+            replaceInnerHtml(titleContainer, title || 'Unknown Title');
         });
         model.change('duration', (changeModel, duration) => {
             const streamType = model.get('streamType');

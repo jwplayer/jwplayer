@@ -44,9 +44,8 @@ export default class PlayDisplayIcon extends Eventable {
         if (_model.get('displayPlaybackLabel')) {
             let iconText = this.icon.getElementsByClassName('jw-idle-icon-text')[0];
             if (!iconText) {
-                iconText = createElement(`<div class="jw-idle-icon-text"></div>`);
+                iconText = createElement(`<div class="jw-idle-icon-text">${localization.playback}</div>`);
                 addClass(this.icon, 'jw-idle-label');
-                iconText.textContent = localization.playback;
                 this.icon.appendChild(iconText);
             }
         }
