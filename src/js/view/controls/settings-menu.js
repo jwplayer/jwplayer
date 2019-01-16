@@ -54,8 +54,10 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
 function showSettingsMenuIcon(settingsMenu, controlbar) {
     // Show or hide settings menu icon dependant on amount of submenus
     const submenuNames = settingsMenu.getSubmenuNames();
-    const toggleIcon = submenuNames.indexOf('quality') > -1 || submenuNames.indexOf('playbackRates') > -1;
-    controlbar.elements.settingsButton.toggle(toggleIcon || submenuNames.length > 1);
+    const toggleIcon = submenuNames.length > 1 ||
+                        submenuNames.some(name => (name === 'quality' || name === 'playbackRates'));
+
+    controlbar.elements.settingsButton.toggle(toggleIcon);
 }
 
 export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) {
@@ -86,21 +88,18 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     const onQualitiesChanged = (changedModel, levels) => {
         if (!levels || levels.length <= 1) {
             removeQualitiesSubmenu(settingsMenu);
-            showSettingsMenuIcon(settingsMenu, controlbar);
-            return;
+        } else {
+            const { hd, auto } = model.get('localization');
+
+            addQualitiesSubmenu(
+                settingsMenu,
+                levels,
+                (index) => api.setCurrentQuality(index),
+                model.get('currentLevel'),
+                hd,
+                auto
+            );
         }
-
-        const { hd, auto } = model.get('localization');
-
-        addQualitiesSubmenu(
-            settingsMenu,
-            levels,
-            (index) => api.setCurrentQuality(index),
-            model.get('currentLevel'),
-            hd,
-            auto
-        );
-
         showSettingsMenuIcon(settingsMenu, controlbar);
     };
 
