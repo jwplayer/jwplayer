@@ -16,7 +16,7 @@ function focusSettingsElement(direction) {
     }
 }
 
-export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localization) {
+export function SettingsMenu(onVisibility, onMenuEmpty, localization) {
     const documentClickHandler = (e) => {
         // Close if anything other than the settings menu has been clicked
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
@@ -151,11 +151,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
             }
 
             settingsMenuElement.appendChild(submenu.element());
-
-            onSubmenuAdded(Object.keys(submenus));
         },
         getSubmenu(name) {
             return submenus[name];
+        },
+        getSubmenuNames() {
+            return Object.keys(submenus);
         },
         removeSubmenu(name) {
             const submenu = submenus[name];

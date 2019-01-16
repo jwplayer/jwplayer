@@ -12,16 +12,11 @@ import {
 
 export function createSettingsMenu(controlbar, onVisibility, localization) {
     const settingsButton = controlbar.elements.settingsButton;
-    const onSubmenuAdded = (submenuNames) => {
-        if (submenuNames.length > 1) {
-            settingsButton.show();
-        }
-    };
     const onMenuEmpty = () => {
         settingsButton.hide();
     };
 
-    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localization);
+    const settingsMenu = SettingsMenu(onVisibility, onMenuEmpty, localization);
 
     controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
@@ -56,6 +51,11 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
     return settingsMenu;
 }
 
+function showSettingsMenuIcon(settingsMenu, controlbar) {
+    // Show or hide settings menu icon dependant on amount of submenus
+    const submenuNames = settingsMenu.getSubmenuNames();
+    controlbar.elements.settingsButton.toggle(submenuNames.indexOf('quality') > -1 || submenuNames.length > 1);
+}
 
 export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) {
     const model = viewModel.player;
@@ -85,6 +85,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     const onQualitiesChanged = (changedModel, levels) => {
         if (!levels || levels.length <= 1) {
             removeQualitiesSubmenu(settingsMenu);
+            showSettingsMenuIcon(settingsMenu, controlbar);
             return;
         }
 
@@ -98,6 +99,8 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             hd,
             auto
         );
+
+        showSettingsMenuIcon(settingsMenu, controlbar);
     };
 
     const onCaptionsChanged = (changedModel, captionsList) => {
