@@ -54,7 +54,8 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
 function showSettingsMenuIcon(settingsMenu, controlbar) {
     // Show or hide settings menu icon dependant on amount of submenus
     const submenuNames = settingsMenu.getSubmenuNames();
-    controlbar.elements.settingsButton.toggle(submenuNames.indexOf('quality') > -1 || submenuNames.length > 1);
+    const toggleIcon = submenuNames.indexOf('quality') > -1 || submenuNames.indexOf('playbackRates') > -1;
+    controlbar.elements.settingsButton.toggle(toggleIcon || submenuNames.length > 1);
 }
 
 export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) {
