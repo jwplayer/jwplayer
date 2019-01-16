@@ -152,7 +152,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localiza
 
             settingsMenuElement.appendChild(submenu.element());
 
-            onSubmenuAdded();
+            onSubmenuAdded(Object.keys(submenus));
         },
         getSubmenu(name) {
             return submenus[name];

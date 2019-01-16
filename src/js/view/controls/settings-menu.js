@@ -12,8 +12,10 @@ import {
 
 export function createSettingsMenu(controlbar, onVisibility, localization) {
     const settingsButton = controlbar.elements.settingsButton;
-    const onSubmenuAdded = () => {
-        settingsButton.show();
+    const onSubmenuAdded = (submenuNames) => {
+        if (submenuNames.length > 1) {
+            settingsButton.show();
+        }
     };
     const onMenuEmpty = () => {
         settingsButton.hide();
