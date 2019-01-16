@@ -147,6 +147,28 @@ export default class Controlbar {
                 const muteText = muted ? localization.unmute : localization.mute;
                 setAttribute(volumeButtonEl, 'aria-label', muteText);
             }, this);
+
+            const horizontalVolumeSlider = volumeGroup.horizontalVolumeSlider;
+            const openHorizontalSlider = function (evt) {
+                console.log('open HorizontalSlider: ' + evt.type);
+                toggleClass(horizontalVolumeSlider.element(), 'jw-open', true);
+            };
+            const closeHorizontalSlider = function (evt) {
+                console.log('close HorizontalSlider: ' + evt.type);
+                toggleClass(horizontalVolumeSlider.element(), 'jw-open', false);
+            };
+            muteButton.ui
+                .on('over', openHorizontalSlider, this)
+                .on('out', closeHorizontalSlider, this)
+                .on('focus', openHorizontalSlider, this)
+                .on('blur', closeHorizontalSlider, this);
+
+            horizontalVolumeSlider.ui
+                .on('click', function() {}, this)
+                .on('focus', openHorizontalSlider, this)
+                .on('blur', closeHorizontalSlider, this)
+                .on('over', openHorizontalSlider, this)
+                .on('out', closeHorizontalSlider, this);
         }
 
         const nextButton = button('jw-icon-next', () => {
