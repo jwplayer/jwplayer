@@ -15,16 +15,17 @@
 .jw-idle-label {
     border-radius: 50%;
     color: @white;
+    filter: drop-shadow(1px 1px 5px rgba(12, 26, 71, 0.25));
     font: normal 16px/1 Arial, Helvetica, sans-serif;
     position: relative;
+    transition: background-color @default-transition;
+    transition-property: background-color, filter;
     -webkit-font-smoothing: antialiased;
 }
 
 .jw-state-idle {
     .jw-icon-display {
         &.jw-idle-label {
-            filter: drop-shadow(1px 1px 5px rgba(12, 26, 71, 0.25));
-
             .jw-idle-icon-text {
                 display: block;
             }
