@@ -197,7 +197,7 @@ class ProgramController extends Eventable {
         model.attributes.itemReady = false;
 
         const playlistItem = Object.assign({}, item);
-        playlistItem.starttime = model.mediaModel.get('position');
+        playlistItem.starttime = model.mediaModel.get('currentTime');
 
         this._destroyActiveMedia();
 
