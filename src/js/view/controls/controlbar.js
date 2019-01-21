@@ -123,6 +123,7 @@ export default class Controlbar {
         this.ui = [];
         let volumeGroup;
         let muteButton;
+        let pictureInPictureButton;
         let feedShownId = '';
         const pip = pipHelper(_model);
 
