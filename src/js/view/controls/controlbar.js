@@ -122,6 +122,7 @@ export default class Controlbar {
         this.ui = [];
         let volumeGroup;
         let muteButton;
+        let pictureInPictureButton;
         let feedShownId = '';
 
         const vol = localization.volume;
@@ -147,6 +148,15 @@ export default class Controlbar {
                 const muteText = muted ? localization.unmute : localization.mute;
                 setAttribute(volumeButtonEl, 'aria-label', muteText);
             }, this);
+        }
+
+        // Only add picture-in-picture button in Chrome and Safari for Desktop
+        if (!this._isMobile) {
+            if (Browser.chrome && Browser.version.major >= 68) {
+                // Call Chrome-specific PiP
+            } else if (Browser.safari && Browser.version.major >= 11) {
+                // Call Safari-specific PiP
+            }
         }
 
         const nextButton = button('jw-icon-next', () => {
