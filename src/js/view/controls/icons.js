@@ -21,6 +21,7 @@ import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import CLOSE_ICON from 'assets/SVG/close.svg';
 import JW_LOGO from 'assets/SVG/jw-logo.svg';
+import PICTURE_IN_PICTURE_OFF_ICON from 'assets/SVG/pip-off.svg';
 import svgParse from 'utils/svgParser';
 
 let collection = null;
@@ -84,5 +85,6 @@ function parseCollection() {
         FULLSCREEN_ENTER_ICON +
         CLOSE_ICON +
         JW_LOGO +
+        PICTURE_IN_PICTURE_OFF_ICON +
         '</xml>');
 }
