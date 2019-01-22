@@ -1,9 +1,31 @@
-export default function(videoElement) {
-    const isSupported = document.pictureInPictureEnabled || (videoElement.webkitSupportsPresentationMode && typeof videoElement.webkitSetPresentationMode === 'function');
+import { Browser } from 'environment/environment';
+
+export default function(_model) {
+    if (!_model) {
+        return;
+    }
+
+    const _video = _model.getVideo().video;
+
+    const checkAvailability = function() {
+        const pipIsSupported = document.pictureInPictureEnabled || (_video.webkitSupportsPresentationMode && typeof _video.webkitSetPresentationMode === 'function');
+
+        _model.set('pipAvailable', pipIsSupported);
+    };
+
+    const enablePictureInPicture = function() {
+        if (Browser.safari) {
+            _video.webkitSetPresentationMode(_video.webkitPresentationMode === 'picture-in-picture' ? 'inline' : 'picture-in-picture');
+        } else {
+            _video.requestPictureInPicture();
+        }
+    };
 
     return {
-        supportsPictureInPicture: function() {
-            return isSupported;
-        }
+        isAvailable: function() {
+            return _model.get('pipAvailable');
+        },
+        checkAvailability,
+        enablePictureInPicture
     };
 }

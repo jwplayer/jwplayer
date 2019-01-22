@@ -124,8 +124,7 @@ export default class Controlbar {
         let volumeGroup;
         let muteButton;
         let feedShownId = '';
-        let pictureInPictureButton;
-        const videoElement = document.querySelector('video');
+        const pip = pipHelper(_model);
 
         const vol = localization.volume;
 
@@ -152,13 +151,10 @@ export default class Controlbar {
             }, this);
         }
 
-        // Only add picture-in-picture button in environments that support it
-        const pip = pipHelper(videoElement);
-        if (pip.supportsPictureInPicture()) {
-            pictureInPictureButton = button('jw-icon-pip', () => {
-                console.log('Hi!');
-            }, 'Picture-In-Picture', cloneIcons('pip-off'));
-        }
+        const pictureInPictureButton = button('jw-icon-pip', () => {
+            pip.enablePictureInPicture();
+        }, 'Picture-In-Picture', cloneIcons('pip-off'));
+        SimpleTooltip(pictureInPictureButton.element(), 'pip', 'Picture-in-Picture');
 
         const nextButton = button('jw-icon-next', () => {
             _api.next({ feedShownId, reason: 'interaction' });
@@ -205,7 +201,7 @@ export default class Controlbar {
             buttonContainer: div('jw-button-container'),
             settingsButton,
             captionsButton,
-            pictureInPictureButton
+            pip: pictureInPictureButton
         };
 
         // Add text tooltips
@@ -254,7 +250,7 @@ export default class Controlbar {
             elements.spacer,
             elements.cast,
             elements.captionsButton,
-            elements.pictureInPictureButton,
+            elements.pip,
             elements.settingsButton,
             elements.fullscreen
         ].filter(e => e);
@@ -326,6 +322,9 @@ export default class Controlbar {
             _model.change('castAvailable', this.onCastAvailable, this);
             _model.change('castActive', this.onCastActive, this);
         }
+
+        pip.checkAvailability();
+        _model.change('pipAvailable', this.onPipAvailable, this);
 
         // Event listeners
         // Volume sliders do not exist on mobile so don't assign listeners to them.
@@ -409,6 +408,10 @@ export default class Controlbar {
         if (this.elements.cast.button) {
             toggleClass(this.elements.cast.button, 'jw-off', !val);
         }
+    }
+
+    onPipAvailable(model, val) {
+        this.elements.pip.toggle(val);
     }
 
     onElapsed(model, position) {
