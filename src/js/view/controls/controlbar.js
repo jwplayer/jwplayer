@@ -12,6 +12,7 @@ import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
+import pip from 'view/utils/request-pip-helper';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -122,8 +123,9 @@ export default class Controlbar {
         this.ui = [];
         let volumeGroup;
         let muteButton;
-        let pictureInPictureButton;
         let feedShownId = '';
+        let pictureInPictureButton;
+        const videoElement = _model.getVideo().video;
 
         const vol = localization.volume;
 
@@ -150,13 +152,11 @@ export default class Controlbar {
             }, this);
         }
 
-        // Only add picture-in-picture button in Chrome and Safari for Desktop
-        if (!this._isMobile) {
-            if (Browser.chrome && Browser.version.major >= 68) {
-                // Call Chrome-specific PiP
-            } else if (Browser.safari && Browser.version.major >= 11) {
-                // Call Safari-specific PiP
-            }
+        // Only add picture-in-picture button in environments that support it
+        if (pip.supportsPictureInPicture(videoElement)) {
+            pictureInPictureButton = button('jw-icon-pip', () => {
+                console.log('Hi!');
+            }, 'Picture-In-Picture', cloneIcons('picture-in-picture-off'));
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -203,7 +203,8 @@ export default class Controlbar {
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
-            captionsButton
+            captionsButton,
+            pictureInPictureButton
         };
 
         // Add text tooltips
@@ -253,6 +254,7 @@ export default class Controlbar {
             elements.cast,
             elements.captionsButton,
             elements.settingsButton,
+            elements.pictureInPictureButton,
             elements.fullscreen
         ].filter(e => e);
 
