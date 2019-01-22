@@ -1,9 +1,9 @@
 import { Browser } from 'environment/environment';
 
 export default function(_model) {
-    // if (!_model || _model.getVideo() !== undefined) {
-    //     return;
-    // }
+    if (!_model) {
+        return;
+    }
 
     const _video = _model.getVideo().video;
 
@@ -20,8 +20,6 @@ export default function(_model) {
             _video.requestPictureInPicture();
         }
     };
-
-    _model.on('itemReady', checkAvailability);
 
     return {
         isAvailable: function() {
