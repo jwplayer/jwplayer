@@ -60,12 +60,7 @@
             margin-right: 0;
             transition: margin-right @default-transition;
         }
-        //
-        //.jw-slider-time,
-        //.jw-horizontal-slider-volume {
-        //    flex: 0 1 auto;
-        //    align-items: center;
-        //}
+
         .jw-slider-time {
             flex: 0 1 auto;
             align-items: center;
@@ -74,28 +69,12 @@
         }
 
         .jw-horizontal-slider-volume {
-            //display: none;
-            //.bottomleft(@left: 100%);
-            //transform: none;
-            //width: @volume-rail-length;
-            //padding: calc(25% - 15.5px) 12px;//remove
             .jw-knob {
-                transform: translate(50%, -50%);
+                transform: translate(-50%, -50%);
             }
 
             &.jw-open {
-                //display: flex;
-                //opacity: 1;
-                //transition-delay: 0s;
-                //visibility: visible;
-                //position: absolute;
-                //bottom: 0;
-                //left: 100%;
-                //-webkit-transform: none;
-                //transform: none;
-                //width: 140px;
                 ~ .jw-icon-volume {
-                    //margin-right: 140px;
                     margin-right: @volume-rail-length;
                 }
 
@@ -110,11 +89,6 @@
                 display: none;
             }
         }
-        //
-        //.jw-slider-time {
-        //    display: flex;
-        //    order: 1;
-        //}
     }
 
     &.jw-flag-small-player {
