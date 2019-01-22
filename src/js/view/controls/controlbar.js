@@ -12,7 +12,7 @@ import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
-import pip from 'view/utils/request-pip-helper';
+import pipHelper from 'view/utils/request-pip-helper';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -125,7 +125,7 @@ export default class Controlbar {
         let muteButton;
         let feedShownId = '';
         let pictureInPictureButton;
-        const videoElement = _model.getVideo().video;
+        const videoElement = document.querySelector('video');
 
         const vol = localization.volume;
 
@@ -153,10 +153,11 @@ export default class Controlbar {
         }
 
         // Only add picture-in-picture button in environments that support it
-        if (pip.supportsPictureInPicture(videoElement)) {
+        const pip = pipHelper(videoElement);
+        if (pip.supportsPictureInPicture()) {
             pictureInPictureButton = button('jw-icon-pip', () => {
                 console.log('Hi!');
-            }, 'Picture-In-Picture', cloneIcons('picture-in-picture-off'));
+            }, 'Picture-In-Picture', cloneIcons('pip-off'));
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -253,8 +254,8 @@ export default class Controlbar {
             elements.spacer,
             elements.cast,
             elements.captionsButton,
-            elements.settingsButton,
             elements.pictureInPictureButton,
+            elements.settingsButton,
             elements.fullscreen
         ].filter(e => e);
 
