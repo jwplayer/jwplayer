@@ -110,10 +110,6 @@
     }
 }
 
-.jw-slider-time.jw-tab-focus:focus .jw-rail {
-    outline: @ui-focus;
-}
-
 .jw-slider-time,
 .jw-horizontal-slider-volume {
     .rect(100%, 17px);
@@ -172,5 +168,9 @@
         display: block;
         bottom: calc(100% - 17px);
         left: 0;
+    }
+
+    &.jw-tab-focus:focus .jw-rail {
+        outline: @ui-focus;
     }
 }

@@ -162,12 +162,10 @@ export default class Controlbar {
             setAttribute(horizontalVolumeElement, 'role', 'slider');
 
             const openHorizontalSlider = function (evt) {
-                console.log('open HorizontalSlider: ' + evt.type);
                 toggleClass(horizontalVolumeElement, 'jw-open', true);
                 setAttribute(horizontalVolumeElement, 'aria-hidden', 'false');
             };
             const closeHorizontalSlider = function (evt) {
-                console.log('close HorizontalSlider: ' + evt.type);
                 toggleClass(horizontalVolumeElement, 'jw-open', false);
                 setAttribute(horizontalVolumeElement, 'aria-hidden', 'true');
             };
@@ -416,7 +414,7 @@ export default class Controlbar {
             toggleClass(mute.element(), 'jw-full', !muted);
         }
         if (!this._isMobile) {
-            const { volumetooltip: volumeGroup, horizontalVolumeSlider }  = this.elements;
+            const { volumetooltip: volumeGroup, horizontalVolumeSlider } = this.elements;
             const volume = muted ? 0 : vol;
             const volumeButtonEl = volumeGroup.element();
             volumeGroup.volumeSlider.render(volume);
