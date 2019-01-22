@@ -541,7 +541,7 @@ function insertCueInOrder(track, vttCue) {
     const cues = track.cues;
     for (let i = cues.length - 1; i >= 0; i--) {
         if (cues[i].startTime > vttCue.startTime) {
-            temp.push(cues[i]);
+            temp.unshift(cues[i]);
             track.removeCue(cues[i]);
         } else {
             break;
