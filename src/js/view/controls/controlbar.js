@@ -12,6 +12,7 @@ import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
+import Slider from 'view/controls/components/slider';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -122,6 +123,7 @@ export default class Controlbar {
         this.ui = [];
         let volumeGroup;
         let muteButton;
+        let horizontalVolumeSlider;
         let feedShownId = '';
 
         const vol = localization.volume;
@@ -148,14 +150,26 @@ export default class Controlbar {
                 setAttribute(volumeButtonEl, 'aria-label', muteText);
             }, this);
 
-            const horizontalVolumeSlider = volumeGroup.horizontalVolumeSlider;
+            horizontalVolumeSlider = new Slider('jw-horizontal-slider-volume', 'horizontal');
+            horizontalVolumeSlider.setup();
+            const horizontalVolumeElement = horizontalVolumeSlider.element();
+            horizontalVolumeElement.classList.remove('jw-background-color');
+            setAttribute(horizontalVolumeElement, 'tabindex', '0');
+            setAttribute(horizontalVolumeElement, 'aria-label', localization.volumeSlider);
+            setAttribute(horizontalVolumeElement, 'aria-orientation', 'horizontal');
+            setAttribute(horizontalVolumeElement, 'aria-valuemin', 0);
+            setAttribute(horizontalVolumeElement, 'aria-valuemax', 100);
+            setAttribute(horizontalVolumeElement, 'role', 'slider');
+
             const openHorizontalSlider = function (evt) {
                 console.log('open HorizontalSlider: ' + evt.type);
-                toggleClass(horizontalVolumeSlider.element(), 'jw-open', true);
+                toggleClass(horizontalVolumeElement, 'jw-open', true);
+                setAttribute(horizontalVolumeElement, 'aria-hidden', 'false');
             };
             const closeHorizontalSlider = function (evt) {
                 console.log('close HorizontalSlider: ' + evt.type);
-                toggleClass(horizontalVolumeSlider.element(), 'jw-open', false);
+                toggleClass(horizontalVolumeElement, 'jw-open', false);
+                setAttribute(horizontalVolumeElement, 'aria-hidden', 'true');
             };
             muteButton.ui
                 .on('over', openHorizontalSlider, this)
@@ -206,7 +220,7 @@ export default class Controlbar {
             duration: textIcon('jw-text-duration', 'timer'),
             mute: muteButton,
             volumetooltip: volumeGroup,
-            horizontalVolumeSlider: volumeGroup.horizontalVolumeSlider,
+            horizontalVolumeSlider,
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
@@ -338,16 +352,22 @@ export default class Controlbar {
             _model.change('castActive', this.onCastActive, this);
         }
 
+        const volumeSliderUpdated = function (pct) {
+            const val = pct.percentage;
+            this._api.setVolume(val);
+        };
+
         // Event listeners
         // Volume sliders do not exist on mobile so don't assign listeners to them.
         if (elements.volumetooltip) {
-            elements.volumetooltip.on('update', function (pct) {
-                const val = pct.percentage;
-                this._api.setVolume(val);
-            }, this);
+            elements.volumetooltip.on('update', volumeSliderUpdated, this);
             elements.volumetooltip.on('toggleValue', function () {
                 this._api.setMute();
             }, this);
+        }
+
+        if (elements.horizontalVolumeSlider) {
+            elements.horizontalVolumeSlider.on('update', volumeSliderUpdated, this);
         }
 
         if (elements.cast && elements.cast.button) {
@@ -389,13 +409,14 @@ export default class Controlbar {
 
     renderVolume(muted, vol) {
         const mute = this.elements.mute;
-        const volumeGroup = this.elements.volumetooltip;
+
         // mute, volume, and volumetooltip do not exist on mobile devices.
         if (mute) {
             toggleClass(mute.element(), 'jw-off', muted);
             toggleClass(mute.element(), 'jw-full', !muted);
         }
-        if (volumeGroup) {
+        if (!this._isMobile) {
+            const { volumetooltip: volumeGroup, horizontalVolumeSlider }  = this.elements;
             const volume = muted ? 0 : vol;
             const volumeButtonEl = volumeGroup.element();
             volumeGroup.volumeSlider.render(volume);
@@ -405,7 +426,14 @@ export default class Controlbar {
             setAttribute(volumeSliderContainer, 'aria-valuenow', volume);
             const ariaText = `Volume ${volume}%`;
             setAttribute(volumeSliderContainer, 'aria-valuetext', ariaText);
-            if (document.activeElement !== volumeSliderContainer) {
+
+            horizontalVolumeSlider.render(volume);
+            const horizontalVolumeElement = horizontalVolumeSlider.element();
+            setAttribute(horizontalVolumeElement, 'aria-valuenow', volume);
+            setAttribute(horizontalVolumeElement, 'aria-valuetext', ariaText);
+
+            const activeElement = document.activeElement;
+            if (activeElement !== volumeSliderContainer && activeElement !== horizontalVolumeElement) {
                 this._volumeAnnouncer.textContent = ariaText;
             }
         }
