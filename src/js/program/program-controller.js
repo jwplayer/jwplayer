@@ -215,7 +215,7 @@ class ProgramController extends Eventable {
         const index = model.get('item');
         const item = model.get('playlist')[index];
 
-        item.starttime = model.mediaModel.get('position');
+        item.starttime = model.mediaModel.get('currentTime');
 
         this.stopVideo();
         this.setActiveItem(index);
