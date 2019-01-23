@@ -76,12 +76,12 @@ export default class Controls {
             }
             this.userInactive();
         };
-        this.resetActiveTimeout = () => {
-            console.log('im hit', this);
-            clearTimeout(this.activeTimeout);
-            this.activeTimeout = -1;
-            this.inactiveTime = 0;
-        };
+    }
+
+    resetActiveTimeout() {
+        clearTimeout(this.activeTimeout);
+        this.activeTimeout = -1;
+        this.inactiveTime = 0;
     }
 
     enable(api, model) {
