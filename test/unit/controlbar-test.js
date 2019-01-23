@@ -33,6 +33,9 @@ describe('Control Bar', function() {
         container = document.createElement('div');
         container.appendChild(settingsButton);
         container.appendChild(spacer);
+        model.getVideo = () => {
+            return '<video></video>';
+        };
 
         controlBar = new ControlBar({}, model, accessibilityContainer);
         controlBar.elements.spacer = spacer;
