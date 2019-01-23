@@ -71,7 +71,9 @@ export default class Controls {
                 this.activeTimeout = setTimeout(this.userInactiveTimeout, remainingTime);
                 return;
             }
-            this.userInactive();
+            if (!this.playerContainer.querySelector('.jw-tab-focus')) {
+                this.userInactive();
+            }
         };
     }
 
