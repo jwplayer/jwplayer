@@ -33,13 +33,17 @@ export default function(elementContext, documentContext, changeCallback) {
             requestFullscreen.apply(elementContext);
         },
         exitFullscreen: function() {
-            exitFullscreen.apply(documentContext);
+            if (this.fullscreenElement() !== null) {
+                exitFullscreen.apply(documentContext);
+            }
         },
         fullscreenElement: function() {
-            return documentContext.fullscreenElement ||
-                documentContext.webkitCurrentFullScreenElement ||
-                documentContext.mozFullScreenElement ||
-                documentContext.msFullscreenElement;
+            const { fullscreenElement, webkitCurrentFullScreenElement, mozFullScreenElement, msFullscreenElement } =
+                documentContext;
+            if (fullscreenElement === null) {
+                return fullscreenElement;
+            }
+            return fullscreenElement || webkitCurrentFullScreenElement || mozFullScreenElement || msFullscreenElement;
         },
         destroy: function() {
             for (let i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
