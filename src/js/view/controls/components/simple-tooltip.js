@@ -1,4 +1,4 @@
-import { addClass, removeClass } from 'utils/dom';
+import { addClass, removeClass, replaceInnerHtml } from 'utils/dom';
 
 export function SimpleTooltip(attachToElement, name, text, openCallback, closeCallback) {
     const tooltipElement = document.createElement('div');
@@ -7,7 +7,6 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
 
     const textElement = document.createElement('div');
     textElement.className = 'jw-text';
-    textElement.textContent = text;
 
     tooltipElement.appendChild(textElement);
     attachToElement.appendChild(tooltipElement);
@@ -36,9 +35,11 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
             }
         },
         setText(newText) {
-            tooltipElement.querySelector('.jw-text').textContent = newText;
+            replaceInnerHtml(textElement, newText);
         }
     };
+
+    instance.setText(text);
 
     attachToElement.addEventListener('mouseover', instance.open);
     attachToElement.addEventListener('focus', instance.open);
