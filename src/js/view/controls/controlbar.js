@@ -323,7 +323,6 @@ export default class Controlbar {
             _model.change('castActive', this.onCastActive, this);
         }
 
-        pip.checkAvailability();
         _model.change('pipAvailable', this.onPipAvailable, this);
 
         // Event listeners

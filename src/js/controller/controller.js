@@ -29,6 +29,7 @@ import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
 import { composePlayerError, convertToPlayerError, getPlayAttemptFailedErrorCode, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
     ERROR_COMPLETING_SETUP, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
+import pipHelper from 'view/utils/request-pip-helper';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -272,6 +273,9 @@ Object.assign(Controller.prototype, {
             _model.once('change:autostartFailed change:mute', function(model) {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
+
+            const pip = pipHelper(_model);
+            pip.checkAvailability();
 
             // Run _checkAutoStart() last
             // 'viewable' changes can result in preload() being called on the initial provider instance
