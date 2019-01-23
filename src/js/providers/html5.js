@@ -172,6 +172,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         webkitbeginfullscreen(e) {
+            const { video } = _this;
+            if (video.webkitPresentationMode && video.webkitPresentationMode === 'picture-in-picture') {
+                return;
+            }
+
             _fullscreenState = true;
             _sendFullscreen(e);
         },
