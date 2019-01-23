@@ -143,10 +143,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         seeking() {
-            const offset = _seekOffset !== null ? _seekOffset : _this.getCurrentTime();
+            const offset = _seekToTime !== null ? _convertTime(_seekToTime) : _this.getCurrentTime();
             const position = _positionBeforeSeek;
-            _setPositionBeforeSeek(offset);
-            _seekOffset = null;
+            _positionBeforeSeek = offset;
+            _seekToTime = null;
             _delayedSeek = 0;
             _this.seeking = true;
             _this.trigger(MEDIA_SEEK, {
@@ -265,7 +265,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     let _canSeek = false; // true on valid time event
     let _delayedSeek = 0;
-    let _seekOffset = null;
+    let _seekToTime = null;
     let _positionBeforeSeek = null;
     let _levels;
     let _currentQuality = -1;
@@ -305,30 +305,29 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     }
 
-    function _setPositionBeforeSeek(position) {
-        _positionBeforeSeek = _convertTime(position);
+    function _setPositionBeforeSeek(currentTime) {
+        _positionBeforeSeek = _convertTime(currentTime);
     }
 
     _this.getCurrentTime = function() {
         return _convertTime(_videotag.currentTime);
     };
 
-    function _convertTime(position) {
+    function _convertTime(currentTime) {
         const seekRange = _this.getSeekRange();
         if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
-            position -= seekRange.end;
             const rangeUpdated = Math.abs(dvrEnd - seekRange.end) > 1;
             if (!dvrPosition || rangeUpdated) {
                 updateDvrPosition(seekRange);
             }
             return dvrPosition;
         }
-        return position;
+        return currentTime;
     }
 
     function updateDvrPosition(seekRange) {
         dvrEnd = seekRange.end;
-        dvrPosition = _videotag.currentTime - dvrEnd;
+        dvrPosition = Math.min(0, _videotag.currentTime - dvrEnd);
         dvrUpdatedTime = now();
     }
 
@@ -596,12 +595,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 const behindLiveEdge = end - _videotag.currentTime;
                 if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
                     // resume playback at edge of live stream
-                    _seekOffset = Math.max(end - 10, end - seekableDuration);
-                    if (!isFinite(_seekOffset)) {
+                    _seekToTime = Math.max(end - 10, end - seekableDuration);
+                    if (!isFinite(_seekToTime)) {
                         return;
                     }
                     _setPositionBeforeSeek(_videotag.currentTime);
-                    _videotag.currentTime = _seekOffset;
+                    _videotag.currentTime = _seekToTime;
                 }
 
             }
@@ -609,10 +608,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         _videotag.pause();
     };
 
-    this.seek = function(seekPos) {
+    this.seek = function(seekToPosition) {
         const seekRange = _this.getSeekRange();
-        if (seekPos < 0) {
-            seekPos += seekRange.start + seekRange.end;
+        let seekToTime = seekToPosition;
+        if (seekToTime < 0) {
+            seekToTime += seekRange.end;
         }
         if (!_canSeek) {
             _canSeek = !!_getSeekableEnd();
@@ -624,19 +624,18 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 _this.seeking = true;
                 if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
                     const timeSinceUpdate = Math.min(12, (now() - dvrUpdatedTime) / 1000);
-                    dvrPosition = seekPos - dvrEnd;
-                    _seekOffset += timeSinceUpdate;
-                } else {
-                    _seekOffset = seekPos;
+                    dvrPosition = Math.min(0, seekToTime - dvrEnd);
+                    seekToTime += timeSinceUpdate;
                 }
+                _seekToTime = seekToTime;
                 _setPositionBeforeSeek(_videotag.currentTime);
-                _videotag.currentTime = seekPos;
+                _videotag.currentTime = seekToTime;
             } catch (e) {
                 _this.seeking = false;
-                _delayedSeek = seekPos;
+                _delayedSeek = seekToTime;
             }
         } else {
-            _delayedSeek = seekPos;
+            _delayedSeek = seekToTime;
             // Firefox isn't firing canplay event when in a paused state
             // https://bugzilla.mozilla.org/show_bug.cgi?id=1194624
             if (Browser.firefox && _videotag.paused) {
