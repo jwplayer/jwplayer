@@ -99,7 +99,8 @@ export function loadSkin(_model) {
 export function loadTranslations(_model) {
     const { attributes } = _model;
     const { language, base, setupConfig, intl } = attributes;
-    const customLocalization = getCustomLocalization(setupConfig.localization, intl, language);
+
+    const customLocalization = getCustomLocalization(setupConfig, intl, language);
     if (!isTranslationAvailable(language) || isLocalizationComplete(customLocalization)) {
         return Promise.resolve();
     }

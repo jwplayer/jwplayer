@@ -96,8 +96,61 @@ export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(normalizeLanguageCode(language)) >= 0;
 }
 
-export function getCustomLocalization(localization, intl, languageAndCountryCode) {
-    return Object.assign({}, localization, intl[normalizeLanguageCode(languageAndCountryCode)], intl[normalizeLanguageAndCountryCode(languageAndCountryCode)]);
+export function getCustomLocalization(config, intl, languageAndCountryCode) {
+    return Object.assign({}, getCustom(config), intl[normalizeLanguageCode(languageAndCountryCode)], intl[normalizeLanguageAndCountryCode(languageAndCountryCode)]);
+}
+
+function getCustom(config) {
+    const { advertising, related, sharing, abouttext } = config;
+    const localization = Object.assign({}, config.localization);
+
+    if (advertising) {
+        localization.advertising = localization.advertising || {};
+        mergeProperty(localization.advertising, advertising, 'admessage');
+        mergeProperty(localization.advertising, advertising, 'cuetext');
+        mergeProperty(localization.advertising, advertising, 'loadingAd');
+        mergeProperty(localization.advertising, advertising, 'podmessage');
+        mergeProperty(localization.advertising, advertising, 'skipmessage');
+        mergeProperty(localization.advertising, advertising, 'skiptext');
+    }
+
+    if (typeof localization.related === 'string') {
+        localization.related = {
+            heading: localization.related
+        };
+    } else {
+        localization.related = localization.related || {};
+    }
+
+    if (related) {
+        mergeProperty(localization.related, related, 'autoplaymessage');
+    }
+
+    if (sharing) {
+        localization.sharing = localization.sharing || {};
+        mergeProperty(localization.sharing, sharing, 'heading');
+        mergeProperty(localization.sharing, sharing, 'copied');
+    }
+
+    if (abouttext) {
+        mergeProperty(localization, config, 'abouttext');
+    }
+
+    const localizationClose = localization.close || localization.nextUpClose;
+
+    if (localizationClose) {
+        localization.close = localizationClose;
+    }
+
+    return localization;
+}
+
+function mergeProperty(localizationObj, allOptionsObj, prop) {
+    const propToCopy = localizationObj[prop] || allOptionsObj[prop];
+
+    if (propToCopy) {
+        localizationObj[prop] = propToCopy;
+    }
 }
 
 export function isLocalizationComplete(customLocalization) {
