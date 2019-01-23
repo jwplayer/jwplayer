@@ -33,7 +33,6 @@ instances.forEach(api => {
 const reasonInteraction = function() {
     return { reason: 'interaction' };
 };
-
 export default class Controls {
     constructor(context, playerContainer) {
         Object.assign(this, Events);
@@ -71,8 +70,18 @@ export default class Controls {
                 this.activeTimeout = setTimeout(this.userInactiveTimeout, remainingTime);
                 return;
             }
+            if (this.playerContainer.querySelector('.jw-tab-focus')) {
+                this.resetActiveTimeout();
+                return;
+            }
             this.userInactive();
         };
+    }
+
+    resetActiveTimeout() {
+        clearTimeout(this.activeTimeout);
+        this.activeTimeout = -1;
+        this.inactiveTime = 0;
     }
 
     enable(api, model) {
@@ -474,9 +483,7 @@ export default class Controls {
                 this.activeTimeout = setTimeout(this.userInactiveTimeout, timeout);
             }
         } else {
-            clearTimeout(this.activeTimeout);
-            this.activeTimeout = -1;
-            this.inactiveTime = 0;
+            this.resetActiveTimeout();
         }
         if (!this.showing) {
             removeClass(this.playerContainer, 'jw-flag-user-inactive');
