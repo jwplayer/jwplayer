@@ -173,7 +173,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         webkitbeginfullscreen(e) {
-            _iosFullscreenState = true;
+            const { video } = _this;
+            if (video.webkitPresentationMode && video.webkitPresentationMode === 'picture-in-picture') {
+                return;
+            }
+
             _sendFullscreen(e);
         },
 
