@@ -77,7 +77,7 @@ function View(_api, _model) {
     let _resizeOnFloat = false;
     let _stateClassRequestId = -1;
 
-    let _floatOnScroll = _model.get('floatOnScroll');
+    let _floatOnScroll = _model.get('float');
     let _canFloat = false;
 
     let displayClickHandler;
@@ -217,7 +217,7 @@ function View(_api, _model) {
         focusHelper = new UI(_playerElement).on('click', function() {});
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
-        if (_floatOnScroll) {
+        if (_floatOnScroll && _floatOnScroll.dismissible !== false) {
             const floatCloseButton = new FloatingCloseButton(_wrapperElement.querySelector('.jw-top'));
             floatCloseButton.setup(() => _stopFloating(true), _localization.close);
         }
@@ -886,7 +886,8 @@ function View(_api, _model) {
             floatingPlayer = null;
 
             if (forever) {
-                _floatOnScroll = false;
+                _floatOnScroll = null;
+                _api.pause({ reason: 'interaction' });
             }
 
             removeClass(_playerElement, 'jw-flag-floating');
