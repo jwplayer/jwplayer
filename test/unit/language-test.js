@@ -325,7 +325,7 @@ describe('languageUtils', function() {
         });
 
         it('should override the custom localization with the intl block', function() {
-            const customLocalization = getCustomLocalization(localization, intl, 'fr');
+            const customLocalization = getCustomLocalization({ localization }, intl, 'fr');
             expect(customLocalization.play).to.equal(frPlay);
             expect(customLocalization.pause).to.equal(frPause);
             expect(customLocalization.stop).to.equal(localizationStop);
@@ -333,24 +333,62 @@ describe('languageUtils', function() {
         });
 
         it('should override the language code intl block with the language-Country code intl block', function() {
-            const customLocalization = getCustomLocalization(localization, intl, 'fr-HT');
+            const customLocalization = getCustomLocalization({ localization }, intl, 'fr-HT');
             expect(customLocalization.play).to.equal(frHtPlay);
             expect(customLocalization.pause).to.equal(frPause);
             expect(customLocalization.stop).to.equal(localizationStop);
         });
 
         it('should fallback to the intl block for the matching language code if the country code is different', function() {
-            const customLocalization = getCustomLocalization(localization, intl, 'fr-CA');
+            const customLocalization = getCustomLocalization({ localization }, intl, 'fr-CA');
             expect(customLocalization.play).to.equal(frPlay);
             expect(customLocalization.pause).to.equal(frPause);
             expect(customLocalization.stop).to.equal(localizationStop);
         });
 
         it('should fallback to localization if country code is not defined in intl block', function() {
-            const customLocalization = getCustomLocalization(localization, intl, 'zz');
+            const customLocalization = getCustomLocalization({ localization }, intl, 'zz');
             expect(customLocalization.play).to.equal(localizationPlay);
             expect(customLocalization.pause).to.equal(localizationPause);
             expect(customLocalization.stop).to.equal(localizationStop);
+        });
+
+        it('should copy custom config values regardless of language (Localization Backwards Support)', function() {
+            const config = {
+                abouttext: 'Custom about',
+                advertising: {
+                    admessage: 'admessage',
+                    cuetext: 'cuetext',
+                    loadingAd: 'loadingAd',
+                    podmessage: 'podmessage',
+                    skipmessage: 'skipmessage',
+                    skiptext: 'skiptext',
+                },
+                related: {
+                    autoplaymessage: 'autoplaymessage'
+                },
+                sharing: {
+                    heading: 'heading',
+                    copied: 'copied'
+                },
+                localization: Object.assign({
+                    nextUpClose: 'nextUpClose'
+                }, localization)
+            };
+
+            const customLocalization = getCustomLocalization(config, intl, 'fr');
+            expect(customLocalization.play).to.equal(frPlay);
+            expect(customLocalization.abouttext).to.equal('Custom about');
+            expect(customLocalization.advertising.admessage).to.equal('admessage');
+            expect(customLocalization.advertising.cuetext).to.equal('cuetext');
+            expect(customLocalization.advertising.loadingAd).to.equal('loadingAd');
+            expect(customLocalization.advertising.podmessage).to.equal('podmessage');
+            expect(customLocalization.advertising.skipmessage).to.equal('skipmessage');
+            expect(customLocalization.advertising.skiptext).to.equal('skiptext');
+            expect(customLocalization.related.autoplaymessage).to.equal('autoplaymessage');
+            expect(customLocalization.sharing.heading).to.equal('heading');
+            expect(customLocalization.sharing.copied).to.equal('copied');
+            expect(customLocalization.close).to.equal('nextUpClose');
         });
 
         it('should only use custom localization block if "forceLocalizationDefaults" is true', function() {
