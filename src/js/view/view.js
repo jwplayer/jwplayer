@@ -862,8 +862,8 @@ function View(_api, _model) {
     }
 
     function _updateFloating(intersectionRatio) {
-        // Entirely invisible and no floating player already in the DOM.
-        const isVisible = intersectionRatio === 1;
+        // Player is 50% visible or less and no floating player already in the DOM.
+        const isVisible = intersectionRatio > 0.5;
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
