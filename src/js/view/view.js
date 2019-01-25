@@ -67,6 +67,9 @@ function View(_api, _model) {
     const _captionsRenderer = new CaptionsRenderer(_model);
     _captionsRenderer.on('all', _this.trigger, _this);
 
+    const _advertising = _model.get('advertising');
+    const _outstream = _advertising ? _advertising.outstream : false;
+
     let _logo;
 
     let _lastWidth;
@@ -710,6 +713,9 @@ function View(_api, _model) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
+                if (_outstream) {
+                    _stopFloating();
+                }
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
