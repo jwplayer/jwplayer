@@ -714,7 +714,7 @@ function View(_api, _model) {
             case STATE_ERROR:
             case STATE_COMPLETE:
                 if (_outstream) {
-                    _stopFloating();
+                    _stopFloating(true);
                 }
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
