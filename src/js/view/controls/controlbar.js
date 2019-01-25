@@ -450,15 +450,20 @@ export default class Controlbar {
     }
 
     rewind() {
-        const currentPosition = this._model.get('position');
-        const duration = this._model.get('duration');
-        const rewindPosition = currentPosition - 10;
+        let rewindPosition;
         let startPosition = 0;
+        const currentTime = this._model.get('currentTime');
+        if (currentTime) {
+            rewindPosition = currentTime - 10;
+        } else {
+            rewindPosition = this._model.get('position') - 10;
 
-        // duration is negative in DVR mode
-        if (this._model.get('streamType') === 'DVR') {
-            startPosition = duration;
+            // duration is negative in DVR mode
+            if (this._model.get('streamType') === 'DVR') {
+                startPosition = this._model.get('duration');
+            }
         }
+
         // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
         this._api.seek(Math.max(rewindPosition, startPosition), reasonInteraction());
     }
