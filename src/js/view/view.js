@@ -40,8 +40,8 @@ require('css/jwplayer.less');
 
 let ControlsModule;
 
-const MAX_FLOATING_WIDTH = 320;
-const MAX_FLOATING_HEIGHT = 320;
+const MAX_FLOATING_WIDTH = 400;
+const MAX_FLOATING_HEIGHT = 400;
 
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
@@ -880,8 +880,9 @@ function View(_api, _model) {
 
             // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
             const { width, height } = _this.getSafeRegion(false);
-            const ratio = Math.min(1, MAX_FLOATING_WIDTH / width, MAX_FLOATING_HEIGHT / height);
-            _this.resize(width * ratio, height * ratio, true);
+            const floatingWidth = Math.min(MAX_FLOATING_WIDTH, width);
+            const floatingHeight = height * Math.min(1, MAX_FLOATING_WIDTH / width, MAX_FLOATING_HEIGHT / height);
+            _this.resize(floatingWidth, floatingHeight, true);
 
             _resizeOnFloat = false;
         } else if (isVisible) {
