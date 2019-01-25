@@ -81,10 +81,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         timeupdate() {
-            if (_positionBeforeSeek !== _videotag.currentTime) {
-                _setPositionBeforeSeek(_videotag.currentTime);
-                VideoEvents.timeupdate.call(_this);
+            // Keep track of position before seek in iOS fullscreen
+            if (_iosFullscreenState && _timeBeforeSeek !== _videotag.currentTime) {
+                setTimeBeforeSeek(_videotag.currentTime);
             }
+            VideoEvents.timeupdate.call(_this);
             checkStaleStream();
             if (Browser.ie) {
                 checkVisualQuality();
@@ -143,9 +144,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         seeking() {
-            const offset = _seekToTime !== null ? _convertTime(_seekToTime) : _this.getCurrentTime();
-            const position = _positionBeforeSeek;
-            _positionBeforeSeek = offset;
+            const offset = _seekToTime !== null ? timeToPosition(_seekToTime) : _this.getCurrentTime();
+            const position = timeToPosition(_timeBeforeSeek);
+            _timeBeforeSeek = _seekToTime;
             _seekToTime = null;
             _delayedSeek = 0;
             _this.seeking = true;
@@ -172,12 +173,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         webkitbeginfullscreen(e) {
-            _fullscreenState = true;
+            _iosFullscreenState = true;
             _sendFullscreen(e);
         },
 
         webkitendfullscreen(e) {
-            _fullscreenState = false;
+            _iosFullscreenState = false;
             _sendFullscreen(e);
         },
 
@@ -266,10 +267,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     let _canSeek = false; // true on valid time event
     let _delayedSeek = 0;
     let _seekToTime = null;
-    let _positionBeforeSeek = null;
+    let _timeBeforeSeek = null;
     let _levels;
     let _currentQuality = -1;
-    let _fullscreenState = false;
+    let _iosFullscreenState = false;
     let _beforeResumeHandler = noop;
     let _audioTracks = null;
     let _currentAudioTrackIndex = -1;
@@ -305,19 +306,27 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     }
 
-    function _setPositionBeforeSeek(currentTime) {
-        _positionBeforeSeek = _convertTime(currentTime);
+    function setTimeBeforeSeek(currentTime) {
+        _timeBeforeSeek = currentTime;
     }
 
     _this.getCurrentTime = function() {
-        return _convertTime(_videotag.currentTime);
+        return getPosition(_videotag.currentTime);
     };
 
-    function _convertTime(currentTime) {
+    function timeToPosition(currentTime) {
         const seekRange = _this.getSeekRange();
         if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
-            const rangeUpdated = Math.abs(dvrEnd - seekRange.end) > 1;
-            if (!dvrPosition || rangeUpdated) {
+            return Math.min(0, currentTime - seekRange.end);
+        }
+        return currentTime;
+    }
+
+    function getPosition(currentTime) {
+        const seekRange = _this.getSeekRange();
+        if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
+            const rangeUpdated = !dvrPosition || Math.abs(dvrEnd - seekRange.end) > 1;
+            if (rangeUpdated) {
                 updateDvrPosition(seekRange);
             }
             return dvrPosition;
@@ -599,7 +608,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                     if (!isFinite(_seekToTime)) {
                         return;
                     }
-                    _setPositionBeforeSeek(_videotag.currentTime);
+                    setTimeBeforeSeek(_videotag.currentTime);
                     _videotag.currentTime = _seekToTime;
                 }
 
@@ -611,7 +620,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     this.seek = function(seekToPosition) {
         const seekRange = _this.getSeekRange();
         let seekToTime = seekToPosition;
-        if (seekToTime < 0) {
+        if (seekToPosition < 0) {
             seekToTime += seekRange.end;
         }
         if (!_canSeek) {
@@ -623,12 +632,14 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             try {
                 _this.seeking = true;
                 if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
-                    const timeSinceUpdate = Math.min(12, (now() - dvrUpdatedTime) / 1000);
                     dvrPosition = Math.min(0, seekToTime - dvrEnd);
-                    seekToTime += timeSinceUpdate;
+                    if (seekToPosition < 0) {
+                        const timeSinceUpdate = Math.min(12, (now() - dvrUpdatedTime) / 1000);
+                        seekToTime += timeSinceUpdate;
+                    }
                 }
                 _seekToTime = seekToTime;
-                _setPositionBeforeSeek(_videotag.currentTime);
+                setTimeBeforeSeek(_videotag.currentTime);
                 _videotag.currentTime = seekToTime;
             } catch (e) {
                 _this.seeking = false;
@@ -658,7 +669,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     function _sendFullscreen(e) {
         _this.trigger('fullscreenchange', {
             target: e.target,
-            jwstate: _fullscreenState
+            jwstate: _iosFullscreenState
         });
     }
 
@@ -713,7 +724,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     _this.getFullScreen = function() {
-        return _fullscreenState || !!_videotag.webkitDisplayingFullscreen;
+        return _iosFullscreenState || !!_videotag.webkitDisplayingFullscreen;
     };
 
     this.setCurrentQuality = function(quality) {
