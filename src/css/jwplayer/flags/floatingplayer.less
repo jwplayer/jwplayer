@@ -3,14 +3,23 @@
     background-color: #000;
 
     .jw-wrapper {
-        animation: jw-float 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
-        top: auto;
-        right: 1rem;
-        bottom: 1rem;
         left: auto;
+        right: 1rem;
         position: fixed;
         width: 100%;
         z-index: 1;
+
+        &.jw-float-bottom {
+            animation: jw-float-to-bottom 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
+            top: auto;
+            bottom: 1rem;
+        }
+
+        &.jw-float-top {
+            animation: jw-float-to-top 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
+            top: 2rem;
+            bottom: auto;
+        }
 
         @media screen and (max-width: 419px) and (orientation: portrait) {
             left: 0;
@@ -57,9 +66,19 @@
     justify-content: center;
 }
 
-@keyframes jw-float {
+@keyframes jw-float-to-bottom {
     from {
         transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes jw-float-to-top {
+    from {
+        transform: translateY(-100%);
     }
 
     to {
