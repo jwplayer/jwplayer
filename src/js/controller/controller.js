@@ -212,6 +212,10 @@ Object.assign(Controller.prototype, {
                 }
             });
 
+            if (_model.get('mute') && _model.get('enableCaptionsOnMute')) {
+                _captions.enableOnLoad = true;
+            }
+
             _view.init();
         };
 
@@ -502,6 +506,10 @@ Object.assign(Controller.prototype, {
 
                 // Only apply autostartMuted on un-muted autostart attempt.
                 if (result === AUTOPLAY_MUTED && !_this.getMute()) {
+                    if (_model.get('enableCaptionsOnMute')) {
+                        _captions.enableOnLoad = true;
+                    }
+
                     _model.set('autostartMuted', true);
                     updateProgramSoundSettings();
 

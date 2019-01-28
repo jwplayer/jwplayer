@@ -9,6 +9,7 @@ const Captions = function(_model) {
     let _tracks = [];
     let _tracksById = {};
     let _unknownCount = 0;
+    let _this = this;
 
     // Reset and load external captions on playlist item
     _model.on('change:playlistItem', (model) => {
@@ -51,6 +52,8 @@ const Captions = function(_model) {
         let track = null;
         if (captionsMenuIndex !== 0) {
             track = _tracks[captionsMenuIndex - 1];
+        } else {
+            this.enableOnLoad = false;
         }
         model.set('captionsTrack', track);
     }, this);
@@ -115,7 +118,11 @@ const Captions = function(_model) {
         // Because there is no explicit track for "Off"
         //  it is the implied zeroth track
         if (label === 'Off') {
-            _model.set('captionsIndex', 0);
+            if (_this.enableOnLoad && _tracks.length) {
+                _model.set('captionsIndex', 1);
+            } else {
+                _model.set('captionsIndex', 0);
+            }
             return;
         }
 
