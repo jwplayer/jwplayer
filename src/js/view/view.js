@@ -77,7 +77,7 @@ function View(_api, _model) {
     let _resizeOnFloat = false;
     let _stateClassRequestId = -1;
 
-    let _floatOnScroll = _model.get('float');
+    let _float = _model.get('float');
     let _canFloat = false;
 
     let displayClickHandler;
@@ -217,9 +217,12 @@ function View(_api, _model) {
         focusHelper = new UI(_playerElement).on('click', function() {});
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
-        if (_floatOnScroll && _floatOnScroll.dismissible !== false) {
+        if (_float && _float.dismissible !== false) {
             const floatCloseButton = new FloatingCloseButton(_wrapperElement.querySelector('.jw-top'));
-            floatCloseButton.setup(() => this.stopFloating(true, true), _localization.close);
+            floatCloseButton.setup(() => {
+                this.stopFloating(true);
+                _api.pause({ reason: 'interaction' });
+            }, _localization.close);
         }
 
         _model.on('change:hideAdsControls', function (model, val) {
@@ -569,7 +572,7 @@ function View(_api, _model) {
             _model.set('height', playerHeight);
         }
 
-        if (_floatOnScroll && _resizeOnFloat) {
+        if (_float && _resizeOnFloat) {
             style(_wrapperElement, playerStyle);
         } else {
             style(_playerElement, playerStyle);
@@ -840,7 +843,7 @@ function View(_api, _model) {
         const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
         _model.set('intersectionRatio', intersectionRatio);
 
-        if (_floatOnScroll) {
+        if (_float) {
             // Only start floating if player has been entirely visible at least once.
             _canFloat = _canFloat || intersectionRatio === 1;
             if (_canFloat) {
@@ -881,15 +884,12 @@ function View(_api, _model) {
         }
     }
 
-    this.stopFloating = function(forever, isClicked) {
+    this.stopFloating = function(forever) {
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
 
             if (forever) {
-                _floatOnScroll = null;
-                if (isClicked) {
-                    _api.pause({ reason: 'interaction' });
-                }
+                _float = null;
             }
 
             removeClass(_playerElement, 'jw-flag-floating');
