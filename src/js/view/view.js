@@ -219,7 +219,7 @@ function View(_api, _model) {
 
         if (_floatOnScroll && _floatOnScroll.dismissible !== false) {
             const floatCloseButton = new FloatingCloseButton(_wrapperElement.querySelector('.jw-top'));
-            floatCloseButton.setup(() => _stopFloating(true), _localization.close);
+            floatCloseButton.setup(() => this.stopFloating(true, true), _localization.close);
         }
 
         _model.on('change:hideAdsControls', function (model, val) {
@@ -877,17 +877,19 @@ function View(_api, _model) {
 
             _resizeOnFloat = false;
         } else if (isVisible) {
-            _stopFloating();
+            this.stopFloating();
         }
     }
 
-    function _stopFloating(forever) {
+    this.stopFloating = function(forever, isClicked) {
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
 
             if (forever) {
                 _floatOnScroll = null;
-                _api.pause({ reason: 'interaction' });
+                if (isClicked) {
+                    _api.pause({ reason: 'interaction' });
+                }
             }
 
             removeClass(_playerElement, 'jw-flag-floating');
@@ -899,7 +901,7 @@ function View(_api, _model) {
             style(_wrapperElement, { width: null, height: null });
             _this.resize(_model.get('width'), _model.get('aspectratio') ? undefined : _model.get('height'));
         }
-    }
+    };
 
 
     this.destroy = function () {
