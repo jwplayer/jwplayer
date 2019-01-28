@@ -77,7 +77,7 @@ function View(_api, _model) {
     let _resizeOnFloat = false;
     let _stateClassRequestId = -1;
 
-    let _float = _model.get('float');
+    let _floatingConfig = _model.get('float');
     let _canFloat = false;
 
     let displayClickHandler;
@@ -217,7 +217,7 @@ function View(_api, _model) {
         focusHelper = new UI(_playerElement).on('click', function() {});
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
-        if (_float && _float.dismissible !== false) {
+        if (_floatingConfig && _floatingConfig.dismissible !== false) {
             const floatCloseButton = new FloatingCloseButton(_wrapperElement.querySelector('.jw-top'));
             floatCloseButton.setup(() => {
                 this.stopFloating(true);
@@ -572,7 +572,7 @@ function View(_api, _model) {
             _model.set('height', playerHeight);
         }
 
-        if (_float && _resizeOnFloat) {
+        if (_floatingConfig && _resizeOnFloat) {
             style(_wrapperElement, playerStyle);
         } else {
             style(_playerElement, playerStyle);
@@ -843,7 +843,7 @@ function View(_api, _model) {
         const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
         _model.set('intersectionRatio', intersectionRatio);
 
-        if (_float) {
+        if (_floatingConfig) {
             // Only start floating if player has been entirely visible at least once.
             _canFloat = _canFloat || intersectionRatio === 1;
             if (_canFloat) {
@@ -889,7 +889,7 @@ function View(_api, _model) {
             floatingPlayer = null;
 
             if (forever) {
-                _float = null;
+                _floatingConfig = null;
             }
 
             removeClass(_playerElement, 'jw-flag-floating');
