@@ -161,11 +161,11 @@ export default class Controlbar {
             setAttribute(horizontalVolumeElement, 'aria-valuemax', 100);
             setAttribute(horizontalVolumeElement, 'role', 'slider');
 
-            const openHorizontalSlider = function (evt) {
+            const openHorizontalSlider = function () {
                 toggleClass(horizontalVolumeElement, 'jw-open', true);
                 setAttribute(horizontalVolumeElement, 'aria-hidden', 'false');
             };
-            const closeHorizontalSlider = function (evt) {
+            const closeHorizontalSlider = function () {
                 toggleClass(horizontalVolumeElement, 'jw-open', false);
                 setAttribute(horizontalVolumeElement, 'aria-hidden', 'true');
             };
