@@ -883,13 +883,10 @@ function View(_api, _model) {
                 _resizeOnFloat = true;
 
                 // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
-                const {
-                    width,
-                    height
-                } = _this.getSafeRegion(false);
+                const { width, height } = _this.getSafeRegion(false);
                 const ratio = Math.min(1, MAX_FLOATING_WIDTH / width, MAX_FLOATING_HEIGHT / height);
                 const floatingWidth = Math.min(MAX_FLOATING_WIDTH, width);
-                const floatingHeight = floatingWidth === MAX_FLOATING_WIDTH ? height * ratio : height;
+                const floatingHeight = Math.min(MAX_FLOATING_HEIGHT, height) * ratio;
                 _this.resize(floatingWidth, floatingHeight, true);
 
                 _resizeOnFloat = false;
