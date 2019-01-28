@@ -876,20 +876,23 @@ function View(_api, _model) {
             _this.trigger(FLOAT, { floating: true });
             _model.set('isFloating', true);
 
-            if (!_isMobile) {
+            if (_isMobile) {
+                addClass(_wrapperElement, 'jw-float-top');
+            } else {
                 addClass(_wrapperElement, 'jw-float-bottom');
                 _resizeOnFloat = true;
 
                 // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
-                const { width, height } = _this.getSafeRegion(false);
+                const {
+                    width,
+                    height
+                } = _this.getSafeRegion(false);
                 const ratio = Math.min(1, MAX_FLOATING_WIDTH / width, MAX_FLOATING_HEIGHT / height);
                 const floatingWidth = Math.min(MAX_FLOATING_WIDTH, width);
                 const floatingHeight = floatingWidth === MAX_FLOATING_WIDTH ? height * ratio : height;
                 _this.resize(floatingWidth, floatingHeight, true);
 
                 _resizeOnFloat = false;
-            } else {
-                addClass(_wrapperElement, 'jw-float-top');
             }
         } else if (isVisible) {
             _this.stopFloating();
