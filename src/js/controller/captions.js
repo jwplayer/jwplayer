@@ -51,6 +51,8 @@ const Captions = function(_model) {
         let track = null;
         if (captionsMenuIndex !== 0) {
             track = _tracks[captionsMenuIndex - 1];
+        } else {
+            this.captionsByDefault = false;
         }
         model.set('captionsTrack', track);
     }, this);
