@@ -4,7 +4,7 @@ import { PlayerError } from 'api/errors';
 import { SETUP_ERROR, READY } from 'events/events';
 
 describe('CoreShim', function() {
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     let core;
 

@@ -8,7 +8,7 @@ describe('SettingsMenu', function() {
     let controlbar;
     let settingsMenu;
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     beforeEach(function() {
         sandbox.stub(menu, 'SettingsMenu');

@@ -11,7 +11,7 @@ describe('api.setup', function() {
 
     this.timeout(6000);
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     const errorMessage = 'This video file cannot be played.';
 
