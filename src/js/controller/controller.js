@@ -212,10 +212,6 @@ Object.assign(Controller.prototype, {
                 }
             });
 
-            if (_model.get('mute') && _model.get('enableCaptionsOnMute')) {
-                _captions.enableOnLoad = true;
-            }
-
             _view.init();
         };
 
@@ -506,10 +502,6 @@ Object.assign(Controller.prototype, {
 
                 // Only apply autostartMuted on un-muted autostart attempt.
                 if (result === AUTOPLAY_MUTED && !_this.getMute()) {
-                    if (_model.get('enableCaptionsOnMute')) {
-                        _captions.enableOnLoad = true;
-                    }
-
                     _model.set('autostartMuted', true);
                     updateProgramSoundSettings();
 
@@ -517,6 +509,10 @@ Object.assign(Controller.prototype, {
                         model.off('change:viewable', _checkPlayOnViewable);
                         _this.trigger(MEDIA_MUTE, { mute: _model.getMute() });
                     });
+                }
+
+                if (_this.getMute()) {
+                    _captions.captionsByDefault = true;
                 }
 
                 // Enable autoPause behavior.

@@ -9,7 +9,6 @@ const Captions = function(_model) {
     let _tracks = [];
     let _tracksById = {};
     let _unknownCount = 0;
-    let _this = this;
 
     // Reset and load external captions on playlist item
     _model.on('change:playlistItem', (model) => {
@@ -44,7 +43,7 @@ const Captions = function(_model) {
                 }
             }
         }
-        _setCaptionsList();
+        _setCaptionsList(this.captionsByDefault);
     }, this);
 
     // Listen for captions menu index changes from the view
@@ -52,8 +51,6 @@ const Captions = function(_model) {
         let track = null;
         if (captionsMenuIndex !== 0) {
             track = _tracks[captionsMenuIndex - 1];
-        } else {
-            this.enableOnLoad = false;
         }
         model.set('captionsTrack', track);
     }, this);
@@ -111,14 +108,14 @@ const Captions = function(_model) {
         return list;
     }
 
-    function _selectDefaultIndex() {
+    function _selectDefaultIndex(selectAvailableTrack) {
         let captionsMenuIndex = 0;
         const label = _model.get('captionLabel');
 
         // Because there is no explicit track for "Off"
         //  it is the implied zeroth track
         if (label === 'Off') {
-            if (_this.enableOnLoad && _tracks.length) {
+            if (selectAvailableTrack) {
                 _model.set('captionsIndex', 1);
             } else {
                 _model.set('captionsIndex', 0);
@@ -149,10 +146,10 @@ const Captions = function(_model) {
         }
     }
 
-    function _setCaptionsList() {
+    function _setCaptionsList(selectAvailableTrack) {
         const captionsList = _captionsMenu();
         if (listIdentity(captionsList) !== listIdentity(_model.get('captionsList'))) {
-            _selectDefaultIndex();
+            _selectDefaultIndex(selectAvailableTrack);
             _model.set('captionsList', captionsList);
         }
     }
