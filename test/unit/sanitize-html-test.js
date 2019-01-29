@@ -4,7 +4,7 @@ import svgParse from 'utils/svgParser';
 import sinon from 'sinon';
 
 describe('Sanitize HTML', function () {
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
     const nestedHtml = '<svg xmlns=\"http://www.w3.org/2000/svg\" onload="console.log(\'baz\')"><script>console.log(document.domain)</script></svg>';
     let element;
 

@@ -95,7 +95,7 @@ function getReadOnlyError() {
 }
 
 describe('ProgramController', function () {
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
     let model = null;
     let programController = null;
 
