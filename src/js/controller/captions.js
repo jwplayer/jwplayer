@@ -43,7 +43,7 @@ const Captions = function(_model) {
                 }
             }
         }
-        _setCaptionsList(this.captionsByDefault);
+        _setCaptionsList();
     }, this);
 
     // Listen for captions menu index changes from the view
@@ -52,7 +52,7 @@ const Captions = function(_model) {
         if (captionsMenuIndex !== 0) {
             track = _tracks[captionsMenuIndex - 1];
         } else {
-            this.captionsByDefault = false;
+            _model.set('captionsByDefault', false);
         }
         model.set('captionsTrack', track);
     }, this);
@@ -110,18 +110,15 @@ const Captions = function(_model) {
         return list;
     }
 
-    function _selectDefaultIndex(selectAvailableTrack) {
-        let captionsMenuIndex = 0;
+    function _selectDefaultIndex() {
+        const captionsByDefault = _model.get('captionsByDefault');
+        let captionsMenuIndex = captionsByDefault ? 1 : 0;
         const label = _model.get('captionLabel');
 
         // Because there is no explicit track for "Off"
         //  it is the implied zeroth track
         if (label === 'Off') {
-            if (selectAvailableTrack) {
-                _model.set('captionsIndex', 1);
-            } else {
-                _model.set('captionsIndex', 0);
-            }
+            _model.set('captionsIndex', captionsMenuIndex);
             return;
         }
 
@@ -148,10 +145,10 @@ const Captions = function(_model) {
         }
     }
 
-    function _setCaptionsList(selectAvailableTrack) {
+    function _setCaptionsList() {
         const captionsList = _captionsMenu();
         if (listIdentity(captionsList) !== listIdentity(_model.get('captionsList'))) {
-            _selectDefaultIndex(selectAvailableTrack);
+            _selectDefaultIndex();
             _model.set('captionsList', captionsList);
         }
     }

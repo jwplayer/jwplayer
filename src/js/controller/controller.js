@@ -511,8 +511,8 @@ Object.assign(Controller.prototype, {
                     });
                 }
 
-                if (_this.getMute()) {
-                    _captions.captionsByDefault = true;
+                if (_this.getMute() && _model.get('enableCaptionsOnMutedAutostart')) {
+                    _model.set('captionsByDefault', true);
                 }
 
                 // Enable autoPause behavior.
