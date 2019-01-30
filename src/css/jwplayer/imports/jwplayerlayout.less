@@ -61,8 +61,10 @@
 }
 
 .jw-plugin {
-    position: absolute;
-    bottom: (@mobile-touch-target * 1.5);
+    &:not(.jw-plugin-googima) {
+        position: absolute;
+        bottom: (@mobile-touch-target * 1.5);
+    }
 
     .jw-banner {
         max-width: 100%;
