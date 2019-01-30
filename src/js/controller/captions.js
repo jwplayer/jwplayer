@@ -131,6 +131,9 @@ const Captions = function(_model) {
             }
         }
         // set the index without the side effect of storing the Off label in _selectCaptions
+        if (_model.get('enableDefaultCaptions') && _model.get('autostart') && !captionsMenuIndex) {
+            captionsMenuIndex = 1;
+        }
         _setCurrentIndex(captionsMenuIndex);
     }
 
