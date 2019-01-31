@@ -14,7 +14,7 @@ describe('PlayDisplayIcon', function() {
     };
 
     beforeEach(function() {
-        model = Object.assign({}, SimpleModel);
+        model = new SimpleModel();
         model.set('localization', localization);
         model.set('state', 'idle');
         svg = document.createElement('svg');

@@ -7,22 +7,25 @@ import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
 
 // Represents the state of the player
-const Model = function() {
-    const _this = this;
-    let providers;
-    let _provider;
-    this.mediaModel = new MediaModel();
+class Model extends SimpleModel {
 
-    this.set('mediaModel', this.mediaModel);
+    constructor() {
+        super();
+        this.providerController = null;
+        this._provider = null;
+        this.addAttributes({
+            mediaModel: new MediaModel()
+        });
+    }
 
-    this.setup = function(config) {
+    setup(config) {
         Object.assign(this.attributes, config, INITIAL_PLAYER_STATE);
-        providers = new Providers(this.getConfiguration());
+        this.providerController = new Providers(this.getConfiguration());
         this.setAutoStart();
         return this;
-    };
+    }
 
-    this.getConfiguration = function() {
+    getConfiguration() {
         const config = this.clone();
         const mediaModelAttributes = config.mediaModel.attributes;
         Object.keys(INITIAL_MEDIA_STATE).forEach(key => {
@@ -32,18 +35,18 @@ const Model = function() {
         delete config.instream;
         delete config.mediaModel;
         return config;
-    };
+    }
 
-    this.persistQualityLevel = function(quality, levels) {
+    persistQualityLevel(quality, levels) {
         const currentLevel = levels[quality] || {};
         const { label } = currentLevel;
         // Default to null if bitrate is bad, or when the quality to persist is "auto" (bitrate is undefined in this case)
         const bitrate = isValidNumber(currentLevel.bitrate) ? currentLevel.bitrate : null;
         this.set('bitrateSelection', bitrate);
         this.set('qualityLabel', label);
-    };
+    }
 
-    this.setActiveItem = function (index) {
+    setActiveItem(index) {
         const item = this.get('playlist')[index];
         this.resetItem(item);
         this.attributes.playlistItem = null;
@@ -51,44 +54,43 @@ const Model = function() {
         this.set('minDvrWindow', item.minDvrWindow);
         this.set('dvrSeekLimit', item.dvrSeekLimit);
         this.set('playlistItem', item);
-    };
+    }
 
-    this.setMediaModel = function (mediaModel) {
+    setMediaModel(mediaModel) {
         if (this.mediaModel && this.mediaModel !== mediaModel) {
             this.mediaModel.off();
         }
 
         mediaModel = mediaModel || new MediaModel();
-        this.mediaModel = mediaModel;
         this.set('mediaModel', mediaModel);
         syncPlayerWithMediaModel(mediaModel);
-    };
+    }
 
-    this.destroy = function() {
+    destroy() {
         this.attributes._destroyed = true;
         this.off();
-        if (_provider) {
-            _provider.off(null, null, this);
-            _provider.destroy();
+        if (this._provider) {
+            this._provider.off(null, null, this);
+            this._provider.destroy();
         }
-    };
+    }
 
-    this.getVideo = function() {
-        return _provider;
-    };
+    getVideo() {
+        return this._provider;
+    }
 
-    this.setFullscreen = function(state) {
+    setFullscreen(state) {
         state = !!state;
-        if (state !== _this.get('fullscreen')) {
-            _this.set('fullscreen', state);
+        if (state !== this.get('fullscreen')) {
+            this.set('fullscreen', state);
         }
-    };
+    }
 
-    this.getProviders = function() {
-        return providers;
-    };
+    getProviders() {
+        return this.providerController;
+    }
 
-    this.setVolume = function(volume) {
+    setVolume(volume) {
         if (!isValidNumber(volume)) {
             return;
         }
@@ -98,13 +100,13 @@ const Model = function() {
         if (mute !== (this.getMute())) {
             this.setMute(mute);
         }
-    };
+    }
 
-    this.getMute = function() {
+    getMute() {
         return this.get('autostartMuted') || this.get('mute');
-    };
+    }
 
-    this.setMute = function(mute) {
+    setMute(mute) {
         if (mute === undefined) {
             mute = !(this.getMute());
         }
@@ -114,26 +116,26 @@ const Model = function() {
             this.set('autostartMuted', false);
             this.setVolume(volume);
         }
-    };
+    }
 
-    this.setStreamType = function(streamType) {
+    setStreamType(streamType) {
         this.set('streamType', streamType);
         if (streamType === 'LIVE') {
             this.setPlaybackRate(1);
         }
-    };
+    }
 
-    this.setProvider = function (provider) {
-        _provider = provider;
+    setProvider(provider) {
+        this._provider = provider;
         syncProviderProperties(this, provider);
-    };
+    }
 
-    this.resetProvider = function () {
-        _provider = null;
+    resetProvider() {
+        this._provider = null;
         this.set('provider', undefined);
-    };
+    }
 
-    this.setPlaybackRate = function(playbackRate) {
+    setPlaybackRate(playbackRate) {
         if (!isNumber(playbackRate)) {
             return;
         }
@@ -147,12 +149,12 @@ const Model = function() {
 
         this.set('defaultPlaybackRate', playbackRate);
 
-        if (_provider && _provider.setPlaybackRate) {
-            _provider.setPlaybackRate(playbackRate);
+        if (this._provider && this._provider.setPlaybackRate) {
+            this._provider.setPlaybackRate(playbackRate);
         }
-    };
+    }
 
-    this.persistCaptionsTrack = function() {
+    persistCaptionsTrack() {
         const track = this.get('captionsTrack');
 
         if (track) {
@@ -161,10 +163,10 @@ const Model = function() {
         } else {
             this.set('captionLabel', 'Off');
         }
-    };
+    }
 
 
-    this.setVideoSubtitleTrack = function(trackIndex, tracks) {
+    setVideoSubtitleTrack(trackIndex, tracks) {
         this.set('captionsIndex', trackIndex);
         /*
          * Tracks could have changed even if the index hasn't.
@@ -173,25 +175,25 @@ const Model = function() {
         if (trackIndex && tracks && trackIndex <= tracks.length && tracks[trackIndex - 1].data) {
             this.set('captionsTrack', tracks[trackIndex - 1]);
         }
-    };
+    }
 
-    this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
+    persistVideoSubtitleTrack(trackIndex, tracks) {
         this.setVideoSubtitleTrack(trackIndex, tracks);
         this.persistCaptionsTrack();
-    };
+    }
 
     // Mobile players always wait to become viewable.
     // Desktop players must have autostart set to viewable
-    this.setAutoStart = function(autoStart) {
+    setAutoStart(autoStart) {
         if (autoStart !== undefined) {
             this.set('autostart', autoStart);
         }
 
         const autoStartOnMobile = OS.mobile && this.get('autostart');
         this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
-    };
+    }
 
-    this.resetItem = function (item) {
+    resetItem(item) {
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
         const mediaModel = this.mediaModel;
@@ -200,15 +202,15 @@ const Model = function() {
         mediaModel.set('position', position);
         mediaModel.set('currentTime', 0);
         mediaModel.set('duration', duration);
-    };
+    }
 
-    this.persistBandwidthEstimate = function (bwEstimate) {
+    persistBandwidthEstimate(bwEstimate) {
         if (!isValidNumber(bwEstimate)) {
             return;
         }
         this.set('bandwidthEstimate', bwEstimate);
-    };
-};
+    }
+}
 
 const syncProviderProperties = (model, provider) => {
     model.set('provider', provider.getName());
@@ -237,13 +239,15 @@ function syncPlayerWithMediaModel(mediaModel) {
 }
 
 // Represents the state of the provider/media element
-const MediaModel = Model.MediaModel = function() {
-    this.attributes = {
-        mediaState: STATE_IDLE
-    };
-};
+class MediaModel extends SimpleModel {
 
-Object.assign(MediaModel.prototype, SimpleModel, {
+    constructor() {
+        super();
+        this.addAttributes({
+            mediaState: STATE_IDLE
+        });
+    }
+
     srcReset() {
         Object.assign(this.attributes, {
             setup: false,
@@ -254,9 +258,7 @@ Object.assign(MediaModel.prototype, SimpleModel, {
             currentTime: 0
         });
     }
-});
-
-Object.assign(Model.prototype, SimpleModel);
+}
 
 export { MediaModel };
 export default Model;

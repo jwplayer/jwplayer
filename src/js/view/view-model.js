@@ -1,8 +1,5 @@
 import SimpleModel from 'model/simplemodel';
 
-class SimpleModelExtendable {}
-SimpleModelExtendable.prototype = Object.assign({}, SimpleModel);
-
 const changeEventRegEx = /^change:(.+)$/;
 
 function dispatchDiffChangeEvents(viewModel, newAttributes, oldAttributes) {
@@ -19,7 +16,7 @@ function removeListeners(instance, viewModel) {
     }
 }
 
-class PlayerViewModel extends SimpleModelExtendable {
+class PlayerViewModel extends SimpleModel {
 
     constructor(playerModel, eventFilter) {
         super();

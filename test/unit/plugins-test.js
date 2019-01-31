@@ -12,9 +12,10 @@ const mockApi = () => ({
     addPlugin: sinon.spy()
 });
 
-function MockModel(attributes) {
-    Object.assign(this, SimpleModel);
-    this.attributes = attributes || {};
+function mockModel(attributes) {
+    const model = new SimpleModel();
+    model.addAttributes(attributes || {});
+    return model;
 }
 
 function getFullyQualifiedUrl(path) {
@@ -91,7 +92,7 @@ describe('plugins', function() {
                 '/base/test/files/plugin2.js'
             ];
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: pluginList.reduce((plugins, url) => (plugins[url] = {} && plugins), {})
             });
             const scripts = getDocumentHeadScripts();
@@ -125,7 +126,7 @@ describe('plugins', function() {
 
         it('only loads the same plugin once', function() {
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     '/base/test/files/plugin1.js': {}
                 }
@@ -147,7 +148,7 @@ describe('plugins', function() {
 
         it('only loads the same plugin once', function() {
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     '/base/test/files/plugin1.js': {}
                 }
@@ -177,7 +178,7 @@ describe('plugins', function() {
             expect(registeredPlugins).to.have.property('plugin1');
 
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     '/base/test/files/plugin1.js': {}
                 }
@@ -196,7 +197,7 @@ describe('plugins', function() {
 
         it('loads one plugin with the same name, but instantiates both', function() {
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     '/base/test/files/plugin1.js': {},
                     '/base/404/plugin1.js': {}
@@ -219,7 +220,7 @@ describe('plugins', function() {
 
         it('will reload the same plugin if previous attempts were unsuccessful', function() {
             const api = mockApi();
-            const firstModel = new MockModel({
+            const firstModel = mockModel({
                 plugins: {
                     '/base/404/plugin1.js': {}
                 }
@@ -229,7 +230,7 @@ describe('plugins', function() {
                 const registeredPlugins = globalPluginsModel.getPlugins();
                 expect(Object.keys(registeredPlugins), 'registeredPlugins').to.have.lengthOf(0);
                 expect(getDocumentHeadScripts(), 'script loader does not remove tags that failed to load').to.have.lengthOf(scripts.length + 1);
-                const secondModel = new MockModel({
+                const secondModel = mockModel({
                     plugins: {
                         '/base/test/files/plugin1.js': {}
                     }
@@ -252,7 +253,7 @@ describe('plugins', function() {
 
         it('handles single request failure', function() {
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     '/base/404/plugin1.js': {}
                 }
@@ -268,7 +269,7 @@ describe('plugins', function() {
 
         it('handles request failure across multiple instances', function() {
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     '/base/404/plugin1.js': {}
                 }
@@ -294,7 +295,7 @@ describe('plugins', function() {
                 '/base/test/files/plugin2.js'
             ];
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: pluginList.reduce((plugins, url) => (plugins[url] = {} && plugins), {})
             });
             const scripts = getDocumentHeadScripts();
@@ -326,7 +327,7 @@ describe('plugins', function() {
 
             const pluginConfig = { options: true };
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     plugin1: pluginConfig
                 }
@@ -347,7 +348,7 @@ describe('plugins', function() {
         it('resolves asynchronously for loaded JavaScript that does not call registerPlugin()', function() {
             const pluginConfig = { options: true };
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     '/base/test/files/noop.js': pluginConfig
                 }
@@ -363,7 +364,7 @@ describe('plugins', function() {
 
         it('resolves immediately, removing unregistered inline plugin configs from the registry', function() {
             const api = mockApi();
-            const model = new MockModel({
+            const model = mockModel({
                 plugins: {
                     plugin1: {}
                 }

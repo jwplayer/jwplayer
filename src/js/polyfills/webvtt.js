@@ -521,14 +521,15 @@ function BoxPosition(obj) {
     let width;
     let top;
 
-    if (obj.div) {
-        height = obj.div.offsetHeight;
-        width = obj.div.offsetWidth;
-        top = obj.div.offsetTop;
+    const { div } = obj;
+    if (div) {
+        height = div.offsetHeight;
+        width = div.offsetWidth;
+        top = div.offsetTop;
 
-        let rects = (rects = obj.div.childNodes) && (rects = rects[0]) &&
-            rects.getClientRects && rects.getClientRects();
-        obj = obj.div.getBoundingClientRect();
+        const { firstChild } = div;
+        const rects = firstChild && firstChild.getClientRects && firstChild.getClientRects();
+        obj = div.getBoundingClientRect();
         // In certain cases the outter div will be slightly larger then the sum of
         // the inner div's lines. This could be due to bold text, etc, on some platforms.
         // In this case we should get the average line height and use that. This will

@@ -1,6 +1,6 @@
 import { OS, Features } from 'environment/environment';
 import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
-import Eventable from 'utils/eventable';
+import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 import { addClass, removeClass } from 'utils/dom';
 
@@ -21,7 +21,7 @@ const LONG_PRESS_DELAY = 500;
 let longPressTimeout;
 let lastInteractionListener;
 
-export default class UI extends Eventable {
+export default class UI extends Events {
 
     constructor(element, options) {
         super();

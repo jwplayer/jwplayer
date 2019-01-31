@@ -6,7 +6,9 @@ import * as SettingsMenu from 'view/controls/settings-menu';
 describe('SettingsMenu', function() {
 
     let controlbar;
-    let settingsMenu;
+    let onVisibility = () => {};
+    let localization = {};
+    let subMenu;
 
     const sandbox = sinon.createSandbox();
 
@@ -17,22 +19,23 @@ describe('SettingsMenu', function() {
         controlbar.on = sinon.stub();
         controlbar.elements = {
             hd: { selectItem: sinon.spy() },
-            settingsButton: sinon.spy()
+            settingsButton: {
+                show: sinon.spy(),
+                hide: sinon.spy()
+            }
         };
 
-        settingsMenu = {
-            setup: sinon.spy(),
-            open: sinon.spy(),
-            element: sinon.stub(),
-            removeSubmenu: sinon.spy(),
-            getSubmenu: sinon.spy(),
-            activateFirstSubmenu: sinon.spy(),
-            activateSubmenu: sinon.spy(),
-            destroy: sinon.spy()
-        };
-        settingsMenu.element.returns(document.createElement('div'));
+        const div = document.createElement('div');
+        div.appendChild(document.createElement('div'));
 
-        menu.SettingsMenu.returns(settingsMenu);
+        subMenu = {
+            name: 'menu',
+            isDefault: true,
+            categoryButtonElement: document.createElement('div'),
+            element: () => div,
+            activate: sinon.spy(),
+            deactivate: sinon.spy()
+        };
     });
 
     afterEach(function() {
@@ -42,28 +45,31 @@ describe('SettingsMenu', function() {
     describe('createSettingsMenu', function() {
 
         it('should create a SettingsMenu object', function() {
-            const settings = SettingsMenu.createSettingsMenu(controlbar, () => {});
-
-            expect(settings).to.equal(settingsMenu);
+            const settingsMenu =SettingsMenu.createSettingsMenu(controlbar, onVisibility, localization);
+            const sameThing = menu.SettingsMenu(onVisibility, onVisibility, onVisibility, localization);
+            expect(settingsMenu).to.have.keys(Object.keys(sameThing));
         });
 
         it('should setup Settings menu', function() {
-            SettingsMenu.createSettingsMenu(controlbar, () => {});
+            const settingsMenu = SettingsMenu.createSettingsMenu(controlbar, onVisibility, localization);
+            sandbox.stub(settingsMenu, 'activateFirstSubmenu');
 
-            const handler = controlbar.on.args[0][1];
+            settingsMenu.addSubmenu(subMenu);
 
-            handler('menu', true);
+            const settingsInteraction = controlbar.on.args[0][1];
+            settingsInteraction('menu', true, {});
 
-            expect(settingsMenu.activateFirstSubmenu.callCount).to.equal(1);
+            expect(subMenu.activate.callCount).to.equal(1);
         });
 
         it('should get submenu in visibility listener', function() {
-            SettingsMenu.userActive = sinon.spy();
-            SettingsMenu.createSettingsMenu(controlbar, () => {});
+            const settingsMenu = SettingsMenu.createSettingsMenu(controlbar, onVisibility, localization);
+            sandbox.stub(settingsMenu, 'getSubmenu');
 
-            const handler = controlbar.on.args[0][1];
+            settingsMenu.addSubmenu(subMenu);
 
-            handler('menu', true);
+            const settingsInteraction = controlbar.on.args[0][1];
+            settingsInteraction('menu', true, {});
 
             expect(settingsMenu.getSubmenu.callCount).to.equal(1);
         });
@@ -85,6 +91,18 @@ describe('SettingsMenu', function() {
                     setCurrentQuality: sinon.spy()
                 };
             };
+
+            const settingsMenu = {
+                setup: sinon.spy(),
+                open: sinon.spy(),
+                element: sinon.stub(),
+                removeSubmenu: sinon.spy(),
+                getSubmenu: sinon.spy(),
+                activateFirstSubmenu: sinon.spy(),
+                activateSubmenu: sinon.spy(),
+                destroy: sinon.spy()
+            };
+            settingsMenu.element.returns(document.createElement('div'));
 
             SettingsMenu.setupSubmenuListeners(settingsMenu, controlbar, {
                 player: viewModel
