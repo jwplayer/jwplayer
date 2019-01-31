@@ -511,6 +511,10 @@ Object.assign(Controller.prototype, {
                     });
                 }
 
+                if (!_this.getMute()) {
+                    _model.set('enableDefaultCaptions', false);
+                }
+
                 // Enable autoPause behavior.
                 const autoPause = _model.get('autoPause');
                 if (autoPause && autoPause.viewability) {
