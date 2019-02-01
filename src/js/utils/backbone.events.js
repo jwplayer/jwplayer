@@ -97,7 +97,7 @@ export default class Events {
 
     /**
      * Trigger one or many events, firing all bound callbacks. Callbacks are
-     * passed the same arguments as `trigger` is, apart from the event name
+     * passed the same arguments as `trigger`, apart from the event name
      * (unless you're listening on `"all"`, which will cause your callback to
      * receive the true name of the event as the first argument).
      * @param {string} [name] - The event name.
