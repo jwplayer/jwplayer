@@ -7,7 +7,6 @@ const fs = require('fs');
 const webpack = require('webpack');
 const webpackConfigs = require('./webpack.config');
 const webpackCompilers = {};
-const env = process.env;
 const execSync = require('child_process').execSync;
 
 function runCommand(command, dir) {
@@ -17,32 +16,13 @@ function runCommand(command, dir) {
     });
 }
 
-function getBuildVersion(packageInfo) {
-    // Build Version: {major.minor.revision}
-    let metadata = '';
-    if (env.BUILD_NUMBER) {
-        const branch = env.GIT_BRANCH;
-        metadata = 'opensource';
-        if (branch) {
-            metadata += '_' + branch.replace(/^origin\//, '').replace(/[^0-9A-Za-z-]/g, '-');
-        }
-        metadata += '.' + env.BUILD_NUMBER;
-    } else {
-        const now = new Date();
-        now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
-        metadata = 'local.' + now.toISOString().replace(/[.-:T]/g, '-').replace(/Z|\.\d/g, '');
-    }
-    return packageInfo.version +'+'+ metadata;
-}
-
 module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
 
     const packageInfo = grunt.file.readJSON('package.json');
-    const buildVersion = getBuildVersion(packageInfo);
 
-    console.log('%s v%s', packageInfo.name, buildVersion);
+    console.log('%s v%s', packageInfo.name, packageInfo.version);
 
     grunt.initConfig({
         starttime: new Date(),
@@ -227,7 +207,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('hooks', 'Install Pre Push Hook', function() {
-        runCommand('yarn run hooks', '.');
+        runCommand('yarn hooks', '.');
     });
     
     grunt.registerTask('notice', 'Create notice.txt file', function() {
@@ -242,7 +222,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('lint', 'ESLints JavaScript & Stylelints LESS', function(target) {
-        let command = 'yarn run lint';
+        let command = 'yarn lint';
         if (target === 'js') {
             command = command + ':js';
         }
@@ -253,7 +233,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('docs', 'Generate API documentation', function() {
-        runCommand('yarn run docs', '.');
+        runCommand('yarn docs', '.');
     });
 
     grunt.registerTask('karma:local', [

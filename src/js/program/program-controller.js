@@ -2,12 +2,12 @@ import Providers from 'providers/providers';
 import MediaController from 'program/media-controller';
 import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
-import Eventable from 'utils/eventable';
+import Events from 'utils/backbone.events';
 import BackgroundMedia from 'program/background-media';
 import { PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
 
-class ProgramController extends Eventable {
+class ProgramController extends Events {
     /**
      * ProgramController constructor
      * @param {Model} model - The player's model

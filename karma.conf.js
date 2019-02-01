@@ -5,23 +5,13 @@
 
 const path = require('path');
 const puppeteer = require('puppeteer');
-const webpack = require('webpack');
-const webpackConfig = require('./webpack.config.js')({ release: true });
+const merge = require('webpack-merge');
+const webpackConfig = require('./webpack.config.js')({ debug: true });
 
-const webpackKarmaConfig = Object.assign({}, webpackConfig, {
+const webpackTestConfig = merge(webpackConfig, {
     entry: null,
     output: null,
-    mode: 'development',
     devtool: false,
-    plugins: [
-        new webpack.DefinePlugin({
-            __SELF_HOSTED__: true,
-            __REPO__: '\'\'',
-            __DEBUG__: false,
-            __BUILD_VERSION__: '\'' + '8.2.2' + '\'',
-            __FLASH_VERSION__: 18.0
-        }),
-    ],
     externals: {
         $: {
             commonjs: 'jquery',
@@ -30,8 +20,8 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
         },
         sinon: 'sinon'
     },
-    resolve: Object.assign({}, webpackConfig.resolve, {
-        alias: Object.assign({}, webpackConfig.resolve.alias || {}, {
+    resolve: {
+        alias: {
             'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
             'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
             // Tests using jQuery: api-test, jwplayer-selectplayer-test, setup-test
@@ -39,33 +29,25 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
             sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
             data: path.resolve(__dirname + '/test/data'),
             mock: path.resolve(__dirname + '/test/mock')
-        })
-    }),
-    module: Object.assign({}, webpackConfig.module, {
+        }
+    },
+    module: {
         rules: [
             {
                 enforce: 'post',
                 test: /\.js$/,
-                include: /(src)\/(js)\//,
-                loader: 'istanbul-instrumenter-loader'
+                include: path.resolve('src/js/'),
+                use: {
+                    loader: 'istanbul-instrumenter-loader',
+                    options: { esModules: true }
+                }
             }
-        ].concat(webpackConfig.module.rules || []).map(rule => {
-            if (rule.options && rule.options.presets) {
-                rule.options.presets = rule.options.presets.map(preset => {
-                    if (Array.isArray(preset) && preset[0] === 'env' && preset[1]) {
-                        // karma-webpack fails if modules are not converted to commonjs by default
-                        delete preset[1].modules;
-                    }
-                    return preset;
-                });
-            }
-            return rule;
-        }),
+        ],
         noParse: [
             /node_modules\/sinon\//,
             /node_modules\/jquery\//
-        ].concat(webpackConfig.module.noParse || [])
-    })
+        ]
+    }
 });
 
 module.exports = function(config) {
@@ -159,7 +141,7 @@ module.exports = function(config) {
             fixWebpackSourcePaths: true
         },
 
-        webpack: webpackKarmaConfig,
+        webpack: webpackTestConfig,
 
         // number of browsers to run at once
         concurrency: Infinity

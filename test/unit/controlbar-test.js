@@ -3,17 +3,17 @@ import SimpleModel from 'model/simplemodel';
 import sinon from 'sinon';
 import * as utils from 'utils/dom';
 
-const model = Object.assign({}, SimpleModel);
-model.change = sinon.stub();
-model.change.returnsThis();
-model.on = sinon.stub();
-model.on.returnsThis();
-model.set('localization', {});
-model.mediaController = {};
-model.mediaController.on = sinon.stub();
-model.mediaController.on.returnsThis();
-
 describe('Control Bar', function() {
+
+    const model = new SimpleModel();
+    model.change = sinon.stub();
+    model.change.returnsThis();
+    model.on = sinon.stub();
+    model.on.returnsThis();
+    model.set('localization', {});
+    model.mediaController = {};
+    model.mediaController.on = sinon.stub();
+    model.mediaController.on.returnsThis();
 
     let accessibilityContainer;
     let controlBar;
@@ -114,27 +114,12 @@ describe('Control Bar', function() {
     });
 
     describe('toggleCaptionsButtonState', function() {
-
-        it('should do nothing if there is no captions button', function() {
-            const toggledReturn = controlBar.toggleCaptionsButtonState();
-            const toggleClass = sinon.stub(utils, 'toggleClass');
-
-            expect(toggleClass.notCalled).to.be.true;
-            expect(toggledReturn).to.be.undefined;
-
-            toggleClass.restore();
-        });
-
-        it('should toggle the captions button when the button is present', function() {
-            const captionsElement = { element: () => {} };
-            controlBar.elements.captionsButton = captionsElement;
-            const toggleClass = sinon.stub(utils, 'toggleClass');
-
-            controlBar.toggleCaptionsButtonState();
-            expect(toggleClass.called).to.be.true;
-            expect(toggleClass.calledWith(captionsElement));
-
-            toggleClass.restore();
+        it('should toggle the jw-off class', function() {
+            const captionsElement = controlBar.elements.captionsButton.element();
+            controlBar.toggleCaptionsButtonState(true);
+            expect(captionsElement.className).to.not.include('jw-off');
+            controlBar.toggleCaptionsButtonState(false);
+            expect(captionsElement.className).to.include('jw-off');
         });
 
     });

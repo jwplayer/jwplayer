@@ -4,11 +4,8 @@ import _ from 'test/underscore';
 
 describe('Storage', function() {
 
-    function MockModel() {}
-    Object.assign(MockModel.prototype, SimpleModel);
-
     it('provides persistent storage', function() {
-        const model = new MockModel();
+        const model = new SimpleModel();
         const storage = new Storage('namespace', [
             'volume',
             'mute',

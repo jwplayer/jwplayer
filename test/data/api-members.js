@@ -6,7 +6,7 @@ export default {
     uniqueId: 0,
     _qoe: {},
     _events: {},
-    Events: {},
+    Events: function() {},
     utils: {},
     _: _
 };
