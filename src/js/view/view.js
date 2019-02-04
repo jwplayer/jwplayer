@@ -863,7 +863,7 @@ function View(_api, _model) {
 
     function _updateFloating(intersectionRatio) {
         // Player is 50% visible or less and no floating player already in the DOM.
-        const isVisible = intersectionRatio > 0.5;
+        const isVisible = intersectionRatio >= 0.5;
         if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
@@ -884,9 +884,8 @@ function View(_api, _model) {
 
                 // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
                 const { width, height } = _this.getSafeRegion(false);
-                const ratio = Math.min(1, MAX_FLOATING_WIDTH / width, MAX_FLOATING_HEIGHT / height);
-                const floatingWidth = Math.min(MAX_FLOATING_WIDTH, width);
-                const floatingHeight = Math.min(MAX_FLOATING_HEIGHT, height) * ratio;
+                const floatingWidth = Math.min(width, MAX_FLOATING_WIDTH);
+                const floatingHeight = Math.min(height * floatingWidth / width, MAX_FLOATING_HEIGHT);
                 _this.resize(floatingWidth, floatingHeight, true);
 
                 _resizeOnFloat = false;
