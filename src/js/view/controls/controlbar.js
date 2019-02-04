@@ -251,7 +251,6 @@ export default class Controlbar {
             elements.cast,
             elements.captionsButton,
             elements.pip,
-            elements.pictureInPictureButton,
             elements.settingsButton,
             elements.fullscreen
         ].filter(e => e);
