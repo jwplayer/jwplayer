@@ -77,7 +77,7 @@ function View(_api, _model) {
     let _resizeOnFloat = false;
     let _stateClassRequestId = -1;
 
-    let _floatingConfig = _model.get('float');
+    let _floatingConfig = _model.get('floating');
     let _canFloat = false;
 
     let displayClickHandler;
