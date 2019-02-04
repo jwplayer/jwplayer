@@ -880,7 +880,7 @@ function View(_api, _model) {
 
             _resizeOnFloat = false;
         } else if (isVisible) {
-            this.stopFloating();
+            _this.stopFloating();
         }
     }
 
