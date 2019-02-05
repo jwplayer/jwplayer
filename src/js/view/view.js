@@ -853,7 +853,7 @@ function View(_api, _model) {
     };
 
     function _getCurrentElement() {
-        return _model.get('floating') ? _wrapperElement : _playerElement;
+        return _model.get('isFloating') ? _wrapperElement : _playerElement;
     }
 
     function _updateFloating(intersectionRatio) {
@@ -869,7 +869,7 @@ function View(_api, _model) {
 
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
-            _model.set('floating', true);
+            _model.set('isFloating', true);
 
             _resizeOnFloat = true;
 
@@ -894,7 +894,7 @@ function View(_api, _model) {
 
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });
-            _model.set('floating', false);
+            _model.set('isFloating', false);
 
             // Wrapper should inherit from parent unless floating.
             style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
