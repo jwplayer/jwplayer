@@ -15,19 +15,12 @@ export default class SimpleModel extends Events {
     }
 
     add(attr, value) {
-        // Add attribute with a fixed type to attributes
-        Object.defineProperty(this.attributes, attr, {
-            enumerable: true,
-            configurable: false,
-            writable: true,
-            value: value
-        });
-        // Define non-enumerable getter and setter
         Object.defineProperty(this, attr, {
             get: () => this.attributes[attr],
             set: (val) => this.set(attr, val),
             enumerable: false
         });
+        this.attributes[attr] = value;
     }
 
     get(attr) {
