@@ -10,7 +10,7 @@ export default function getVisibility(model, element) {
     }
 
     // Set visibility to 1 if we're floating in the active tab
-    if (model.get('floating')) {
+    if (model.get('isFloating')) {
         return 1;
     }
 
