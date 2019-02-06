@@ -348,6 +348,10 @@ const eventRegisters = {
 };
 
 export function getElementWindow(element) {
+    if (!element) {
+        return;
+    }
+
     const document = element.ownerDocument || element;
     return (document.defaultView || document.parentWindow || window);
 }
