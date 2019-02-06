@@ -84,6 +84,13 @@ const Config = function(options, persisted) {
     config.language = language;
     config.intl = intl;
 
+    // If autoPause is configured with an empty block,
+    // default autoPause.viewability to true.
+    let autoPause = config.autoPause;
+    if (autoPause && !autoPause.viewability) {
+        autoPause.viewability = true;
+    }
+
     let rateControls = config.playbackRateControls;
 
     if (rateControls) {
