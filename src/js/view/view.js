@@ -576,7 +576,7 @@ function View(_api, _model) {
             _model.set('height', playerHeight);
         }
 
-        if (_floatingConfig && _resizeOnFloat) {
+        if (_floatingConfig && _resizeOnFloat && playerStyle.width !== _model.get('containerWidth')) {
             style(_wrapperElement, playerStyle);
         } else {
             style(_playerElement, playerStyle);
@@ -876,20 +876,15 @@ function View(_api, _model) {
             _this.trigger(FLOAT, { floating: true });
             _model.set('isFloating', true);
 
-            if (_isMobile) {
-                addClass(_wrapperElement, 'jw-float-top');
-            } else {
-                addClass(_wrapperElement, 'jw-float-bottom');
-                _resizeOnFloat = true;
+            _resizeOnFloat = true;
 
-                // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
-                const { width, height } = _this.getSafeRegion(false);
-                const floatingWidth = Math.min(width, MAX_FLOATING_WIDTH);
-                const floatingHeight = Math.min(height * floatingWidth / width, MAX_FLOATING_HEIGHT);
-                _this.resize(floatingWidth, floatingHeight, true);
+            // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
+            const { width, height } = _this.getSafeRegion(false);
+            const floatingWidth = Math.min(width, MAX_FLOATING_WIDTH);
+            const floatingHeight = Math.min(height * floatingWidth / width, MAX_FLOATING_HEIGHT);
+            _this.resize(floatingWidth, floatingHeight, true);
 
-                _resizeOnFloat = false;
-            }
+            _resizeOnFloat = false;
         } else if (isVisible) {
             _this.stopFloating();
         }
