@@ -349,7 +349,7 @@ const eventRegisters = {
 
 export function getElementWindow(element) {
     if (!element) {
-        return;
+        return window;
     }
 
     const document = element.ownerDocument || element;
