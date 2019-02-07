@@ -159,6 +159,9 @@ function initInteractionListeners(ui) {
 
     const interactEndHandler = (e) => {
         clearTimeout(longPressTimeout);
+        if (!ui.el) {
+            return;
+        }
         releasePointerCapture(ui);
         removeHandlers(ui, WINDOW_GROUP);
         if (ui.dragged) {
@@ -348,10 +351,6 @@ const eventRegisters = {
 };
 
 export function getElementWindow(element) {
-    if (!element) {
-        return window;
-    }
-
     const document = element.ownerDocument || element;
     return (document.defaultView || document.parentWindow || window);
 }
