@@ -576,7 +576,7 @@ function View(_api, _model) {
             _model.set('height', playerHeight);
         }
 
-        if (_floatingConfig && _resizeOnFloat && playerStyle.width !== _model.get('containerWidth')) {
+        if (_floatingConfig && _resizeOnFloat) {
             style(_wrapperElement, playerStyle);
         } else {
             style(_playerElement, playerStyle);
