@@ -86,6 +86,13 @@ Object.assign(Controller.prototype, {
         addProgramControllerListeners();
         initQoe(_model, _programController);
 
+        // Enable autoPause behavior.
+        const autoPause = _model.get('autoPause');
+        const autostart = _model.get('autostart');
+        if (autostart && (autoPause && autoPause.viewability)) {
+            _model.set('playOnViewable', true);
+        }
+
         _model.on(ERROR, _this.triggerError, _this);
 
         _model.on('change:state', (model, newstate, oldstate) => {
@@ -430,6 +437,10 @@ Object.assign(Controller.prototype, {
             const playReason = _getReason(meta);
             _model.set('playReason', playReason);
 
+            if (!autostart && (autoPause && autoPause.viewability)) {
+                _model.set('playOnViewable', true);
+            }
+
             const adState = _getAdState();
             if (adState) {
                 // this will resume the ad. _api.playAd would load a new ad
@@ -513,12 +524,6 @@ Object.assign(Controller.prototype, {
 
                 if (!_this.getMute()) {
                     _model.set('enableDefaultCaptions', false);
-                }
-
-                // Enable autoPause behavior.
-                const autoPause = _model.get('autoPause');
-                if (autoPause && autoPause.viewability) {
-                    _model.set('playOnViewable', true);
                 }
 
                 return _play({ reason: 'autostart' }).catch(() => {
