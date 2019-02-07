@@ -3,7 +3,7 @@ import { USER_ACTION, STATE_PLAYING } from 'events/events';
 import { cloneIcons } from 'view/controls/icons';
 import CustomButton from 'view/controls/components/custom-button';
 import TimeSlider from 'view/controls/components/timeslider';
-import VolumeTooltip from 'view/controls/components/volumetooltip';
+import VolumeTooltipIcon from 'view/controls/components/volumetooltipicon';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import ariaLabel from 'utils/aria';
@@ -121,13 +121,14 @@ export default class Controlbar {
         const menus = this.menus = [];
         this.ui = [];
         let volumeGroup;
+        let volumeContainer;
         let muteButton;
         let feedShownId = '';
 
         const vol = localization.volume;
 
         // Do not show the volume toggle in the mobile SDKs or <iOS10
-        if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
+        if (this._isMobile && !_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
             // Clone icons so that can be used in volumeGroup
             const svgIcons = cloneIcons('volume-0,volume-100');
             muteButton = button('jw-icon-volume', () => {
@@ -137,8 +138,12 @@ export default class Controlbar {
 
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
-            volumeGroup = new VolumeTooltip(_model, 'jw-icon-volume', vol,
-                cloneIcons('volume-0,volume-50,volume-100'));
+            if (_model.get('audioMode')) {
+                volumeContainer = document.createElement('div');
+                volumeContainer.className = 'jw-horizontal-volume-container';
+            }
+            volumeGroup = new VolumeTooltipIcon(_model, 'jw-icon-volume', vol,
+                cloneIcons('volume-0,volume-50,volume-100'), volumeContainer);
 
             const volumeButtonEl = volumeGroup.element();
             menus.push(volumeGroup);
@@ -184,6 +189,7 @@ export default class Controlbar {
             duration: textIcon('jw-text-duration', 'timer'),
             mute: muteButton,
             volumetooltip: volumeGroup,
+            volumeContainer,
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
@@ -234,6 +240,7 @@ export default class Controlbar {
             elements.next,
             elements.volumetooltip,
             elements.mute,
+            elements.volumeContainer,
             elements.alt,
             elements.live,
             elements.elapsed,
@@ -375,7 +382,7 @@ export default class Controlbar {
             const volume = muted ? 0 : vol;
             const volumeButtonEl = volumeGroup.element();
             volumeGroup.volumeSlider.render(volume);
-            const volumeSliderContainer = volumeGroup.container;
+            const volumeSliderContainer = volumeGroup.tooltip;
             toggleClass(volumeButtonEl, 'jw-off', muted);
             toggleClass(volumeButtonEl, 'jw-full', vol >= 75 && !muted);
             setAttribute(volumeSliderContainer, 'aria-valuenow', volume);

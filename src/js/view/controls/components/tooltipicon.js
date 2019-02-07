@@ -3,8 +3,8 @@ import ariaLabel from 'utils/aria';
 import { toggleClass } from 'utils/dom';
 import svgParse from 'utils/svgParser';
 
-export default class Tooltip {
-    constructor(name, ariaText, elementShown, svgIcons) {
+export default class TooltipIcon {
+    constructor(name, ariaText, elementShown, svgIcons, container) {
         Object.assign(this, Events);
         this.el = document.createElement('div');
         let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
@@ -15,12 +15,15 @@ export default class Tooltip {
         ariaLabel(this.el, ariaText);
 
         this.el.className = className;
-        this.container = document.createElement('div');
-        this.container.className = 'jw-overlay jw-reset';
         this.openClass = 'jw-open';
         this.componentType = 'tooltip';
 
-        this.el.appendChild(this.container);
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'jw-overlay jw-reset';
+            this.el.appendChild(container);
+        }
+        this.tooltip = container;
         if (svgIcons && svgIcons.length > 0) {
             Array.prototype.forEach.call(svgIcons, svgIcon => {
                 if (typeof svgIcon === 'string') {
@@ -38,12 +41,12 @@ export default class Tooltip {
         }
 
         this.content = elem;
-        this.container.appendChild(elem);
+        this.tooltip.appendChild(elem);
     }
 
     removeContent() {
         if (this.content) {
-            this.container.removeChild(this.content);
+            this.tooltip.removeChild(this.content);
             this.content = null;
         }
     }
@@ -61,6 +64,7 @@ export default class Tooltip {
             this.trigger('open-' + this.componentType, evt, { isOpen: true });
             this.isOpen = true;
             toggleClass(this.el, this.openClass, this.isOpen);
+            toggleClass(this.tooltip, this.openClass, this.isOpen);
         }
     }
 
@@ -69,6 +73,7 @@ export default class Tooltip {
             this.trigger('close-' + this.componentType, evt, { isOpen: false });
             this.isOpen = false;
             toggleClass(this.el, this.openClass, this.isOpen);
+            toggleClass(this.tooltip, this.openClass, this.isOpen);
         }
     }
 
