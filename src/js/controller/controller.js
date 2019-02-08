@@ -341,10 +341,13 @@ Object.assign(Controller.prototype, {
         }
 
         function _checkPlayOnViewable(model, viewable) {
+            const autoPauseViewability = model.get('autoPause') && model.get('autoPause').viewability;
+            const adState = _getAdState();
+
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     _autoStart();
-                } else if (OS.mobile || (model.get('autoPause') && model.get('autoPause').viewability)) {
+                } else if (OS.mobile || (autoPauseViewability && !adState)) {
                     _this.pause({ reason: 'autostart' });
                 }
             }
