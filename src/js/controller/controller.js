@@ -142,8 +142,10 @@ Object.assign(Controller.prototype, {
         _this.on(AD_PAUSE, event => changeReason(null, event.pauseReason));
 
         _model.on('change:scrubbing', function(model, state) {
-            if (state && model.get('state') !== STATE_PLAYING) {
-                _pause();
+            if (model.get('state') !== STATE_PLAYING) {
+                if (state) {
+                    _pause();
+                }
             }
         });
 
@@ -603,13 +605,17 @@ Object.assign(Controller.prototype, {
         }
 
         function _seek(pos, meta) {
-            if (_model.get('state') === STATE_ERROR) {
+            const state = _model.get('state');
+            if (state === STATE_ERROR) {
                 return;
             }
             _programController.position = pos;
-            if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
+            if (!_model.get('scrubbing') && state !== STATE_PLAYING) {
                 meta = meta || {};
                 meta.startTime = pos;
+                if (state === STATE_COMPLETE || _model.get('mediaModel').get('duration') - pos < 1) {
+                    this.play(meta);
+                }
             }
         }
 
