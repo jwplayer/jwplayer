@@ -89,7 +89,7 @@ Object.assign(Controller.prototype, {
         // Enable autoPause behavior.
         const autoPause = _model.get('autoPause');
         const autostart = _model.get('autostart');
-        if (autostart && (autoPause && autoPause.viewability)) {
+        if (autoPause && autoPause.viewability) {
             _model.set('playOnViewable', true);
         }
 
@@ -197,6 +197,9 @@ Object.assign(Controller.prototype, {
                 };
                 mediaModel.on('change:position', onPosition, this);
             }
+            mediaModel.on('change:started', function() {
+                _checkPlayOnViewable(model, model.get('viewable'));
+            });
         });
 
         // Ensure captionsList event is raised after playlistItem
@@ -348,7 +351,8 @@ Object.assign(Controller.prototype, {
                 if (viewable) {
                     _autoStart();
                 } else if (OS.mobile || (autoPauseViewability && !adState)) {
-                    _this.pause({ reason: 'autostart' });
+                    const pauseReason = OS.mobile ? 'autostart' : 'viewability';
+                    _this.pause({ reason: pauseReason });
                 }
             }
         }
