@@ -890,6 +890,19 @@ function View(_api, _model) {
         }
     }
 
+    this.resizeFloatingPlayer = function() {
+        if (floatingPlayer && !_resizeOnFloat) {
+            const rect = bounds(_playerElement);
+            const containerWidth = Math.round(rect.width);
+            const containerHeight = Math.round(rect.height);
+            const floatingWidth = Math.min(containerWidth, MAX_FLOATING_WIDTH);
+            const floatingHeight = Math.min(containerHeight * floatingWidth / containerWidth, MAX_FLOATING_HEIGHT);
+            _resizeOnFloat = true;
+            _resizePlayer(floatingWidth, floatingHeight, true);
+            _resizeOnFloat = false;
+        }
+    };
+
     this.stopFloating = function(forever) {
         if (forever) {
             _floatingConfig = null;
