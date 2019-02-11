@@ -2,7 +2,7 @@ import { OS } from 'environment/environment';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import { between } from 'utils/math';
-import { addClass, hasClass, removeClass, toggleClass } from 'utils/dom';
+import { addClass, removeClass, toggleClass } from 'utils/dom';
 import { now } from 'utils/date';
 import button from 'view/controls/components/button';
 import Controlbar from 'view/controls/controlbar';
