@@ -144,8 +144,6 @@ Object.assign(Controller.prototype, {
         _model.on('change:scrubbing', function(model, state) {
             if (state) {
                 _pause();
-            } else {
-                _play({ reason: 'interaction' });
             }
         });
 
