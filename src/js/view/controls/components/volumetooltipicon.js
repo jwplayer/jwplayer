@@ -1,47 +1,57 @@
 import TooltipIcon from 'view/controls/components/tooltipicon';
 import Slider from 'view/controls/components/slider';
 import UI from 'utils/ui';
-import { setAttribute } from 'utils/dom';
+import { setAttribute, toggleClass } from 'utils/dom';
+
+class VolumeSlider extends Slider {
+    constructor(orientation, label, styleElement, callbacks) {
+        const className = orientation === 'vertical' ? 'jw-slider-volume jw-volume-tip' : 'jw-slider-volume';
+        super(className, orientation);
+        this.setup();
+
+        this.element().classList.remove('jw-background-color');
+
+        setAttribute(styleElement, 'tabindex', '0');
+        setAttribute(styleElement, 'aria-label', label);
+        setAttribute(styleElement, 'aria-orientation', orientation);
+        setAttribute(styleElement, 'aria-valuemin', 0);
+        setAttribute(styleElement, 'aria-valuemax', 100);
+        setAttribute(styleElement, 'role', 'slider');
+
+        // Apply a click interaction listener to help with focus styling
+        const { openTooltip, closeTooltip } = callbacks;
+        this.uiOver = new UI(styleElement)
+            .on('click', function() {}, callbacks)
+            .on('over', openTooltip, callbacks)
+            .on('out', closeTooltip, callbacks)
+            .on('focus', openTooltip, callbacks)
+            .on('blur', closeTooltip, callbacks);
+    }
+}
 
 export default class VolumeTooltipIcon extends TooltipIcon {
-    constructor(_model, name, ariaText, svgIcons, container) {
-        super(name, ariaText, true, svgIcons, container);
-
-        const localization = _model.get('localization');
-        const audioMode = _model.get('audioMode');
-        const orientation = audioMode ? 'horizontal' : 'vertical';
+    constructor(_model, name, ariaText, svgIcons, horizontalContainer) {
+        super(name, ariaText, true, svgIcons);
 
         this._model = _model;
-        this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', orientation);
-        //toggleClass(this.volumeSlider.element(), 'jw-volume-tip', !audioMode);
-        this.volumeSlider.setup();
+        this.horizontalContainer = horizontalContainer;
 
-        const volumeSliderElement = this.volumeSlider.element();
-        volumeSliderElement.classList.remove('jw-background-color');
-        
-        const overlay = this.tooltip;
-        setAttribute(overlay, 'tabindex', '0');
-        setAttribute(overlay, 'aria-label', localization.volumeSlider);
-        setAttribute(overlay, 'aria-orientation', 'vertical');
-        setAttribute(overlay, 'aria-valuemin', 0);
-        setAttribute(overlay, 'aria-valuemax', 100);
-        setAttribute(overlay, 'role', 'slider');
+        const volumeLabel = _model.get('localization').volumeSlider;
+        this.horizontalSlider = new VolumeSlider('horizontal', volumeLabel, horizontalContainer, this);
+        this.volumeSlider = new VolumeSlider('vertical', volumeLabel, this.tooltip, this);
 
-        this.addContent(volumeSliderElement);
+        horizontalContainer.appendChild(this.horizontalSlider.element());
+        this.addContent(this.volumeSlider.element());
 
         this.volumeSlider.on('update', function (evt) {
             this.trigger('update', evt);
         }, this);
 
-        // Apply a click interaction listener to help with focus styling
-        const { openTooltip, closeTooltip } = this;
-        this.uiOver = new UI(overlay)
-            .on('click', function() {}, this)
-            .on('over', openTooltip, this)
-            .on('out', closeTooltip, this)
-            .on('focus', openTooltip, this)
-            .on('blur', closeTooltip, this);
+        this.horizontalSlider.on('update', function (evt) {
+            this.trigger('update', evt);
+        }, this);
 
+        const { openTooltip, closeTooltip } = this;
         this.ui = new UI(this.el, { directSelect: true })
             .on('click enter', this.toggleValue, this)
             .on('tap', this.toggleOpenState, this)
@@ -53,12 +63,23 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         this._model.on('change:volume', this.onVolume, this);
     }
 
+    openTooltip(evt) {
+        super.openTooltip(evt);
+        toggleClass(this.horizontalContainer, this.openClass, this.isOpen);
+    }
+
+    closeTooltip(evt) {
+        super.closeTooltip(evt);
+        toggleClass(this.horizontalContainer, this.openClass, this.isOpen);
+    }
+
     toggleValue() {
         this.trigger('toggleValue');
     }
 
     destroy() {
-        this.uiOver.destroy();
+        this.horizontalSlider.uiOver.destroy();
+        this.volumeSlider.uiOver.destroy();
         this.ui.destroy();
     }
 }

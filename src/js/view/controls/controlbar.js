@@ -121,7 +121,7 @@ export default class Controlbar {
         const menus = this.menus = [];
         this.ui = [];
         let volumeGroup;
-        let volumeContainer;
+        let horizontalVolumeContainer;
         let muteButton;
         let feedShownId = '';
 
@@ -138,12 +138,11 @@ export default class Controlbar {
 
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
-            if (_model.get('audioMode')) {
-                volumeContainer = document.createElement('div');
-                volumeContainer.className = 'jw-horizontal-volume-container';
-            }
+            horizontalVolumeContainer = document.createElement('div');
+            horizontalVolumeContainer.className = 'jw-horizontal-volume-container';
+
             volumeGroup = new VolumeTooltipIcon(_model, 'jw-icon-volume', vol,
-                cloneIcons('volume-0,volume-50,volume-100'), volumeContainer);
+                cloneIcons('volume-0,volume-50,volume-100'), horizontalVolumeContainer);
 
             const volumeButtonEl = volumeGroup.element();
             menus.push(volumeGroup);
@@ -189,7 +188,7 @@ export default class Controlbar {
             duration: textIcon('jw-text-duration', 'timer'),
             mute: muteButton,
             volumetooltip: volumeGroup,
-            volumeContainer,
+            horizontalVolumeContainer,
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
@@ -240,7 +239,7 @@ export default class Controlbar {
             elements.next,
             elements.volumetooltip,
             elements.mute,
-            elements.volumeContainer,
+            elements.horizontalVolumeContainer,
             elements.alt,
             elements.live,
             elements.elapsed,
@@ -382,13 +381,16 @@ export default class Controlbar {
             const volume = muted ? 0 : vol;
             const volumeButtonEl = volumeGroup.element();
             volumeGroup.volumeSlider.render(volume);
-            const volumeSliderContainer = volumeGroup.tooltip;
+            volumeGroup.horizontalSlider.render(volume);
+            const { tooltip, horizontalContainer } = volumeGroup;
             toggleClass(volumeButtonEl, 'jw-off', muted);
             toggleClass(volumeButtonEl, 'jw-full', vol >= 75 && !muted);
-            setAttribute(volumeSliderContainer, 'aria-valuenow', volume);
+            setAttribute(tooltip, 'aria-valuenow', volume);
+            setAttribute(horizontalContainer, 'aria-valuenow', volume);
             const ariaText = `Volume ${volume}%`;
-            setAttribute(volumeSliderContainer, 'aria-valuetext', ariaText);
-            if (document.activeElement !== volumeSliderContainer) {
+            setAttribute(tooltip, 'aria-valuetext', ariaText);
+            setAttribute(horizontalContainer, 'aria-valuetext', ariaText);
+            if (document.activeElement !== tooltip && document.activeElement !== horizontalContainer) {
                 this._volumeAnnouncer.textContent = ariaText;
             }
         }

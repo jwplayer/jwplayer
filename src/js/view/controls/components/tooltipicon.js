@@ -4,7 +4,7 @@ import { toggleClass } from 'utils/dom';
 import svgParse from 'utils/svgParser';
 
 export default class TooltipIcon {
-    constructor(name, ariaText, elementShown, svgIcons, container) {
+    constructor(name, ariaText, elementShown, svgIcons) {
         Object.assign(this, Events);
         this.el = document.createElement('div');
         let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
@@ -15,15 +15,12 @@ export default class TooltipIcon {
         ariaLabel(this.el, ariaText);
 
         this.el.className = className;
+        this.tooltip = document.createElement('div');
+        this.tooltip.className = 'jw-overlay jw-reset';
         this.openClass = 'jw-open';
         this.componentType = 'tooltip';
 
-        if (!container) {
-            container = document.createElement('div');
-            container.className = 'jw-overlay jw-reset';
-            this.el.appendChild(container);
-        }
-        this.tooltip = container;
+        this.el.appendChild(this.tooltip);
         if (svgIcons && svgIcons.length > 0) {
             Array.prototype.forEach.call(svgIcons, svgIcon => {
                 if (typeof svgIcon === 'string') {
