@@ -882,7 +882,7 @@ function View(_api, _model) {
             const { width, height } = _this.getSafeRegion(false);
             const floatingWidth = Math.min(width, MAX_FLOATING_WIDTH);
             const floatingHeight = Math.min(height * floatingWidth / width, MAX_FLOATING_HEIGHT);
-            _this.resize(floatingWidth, floatingHeight, true);
+            _this.resize(floatingWidth, floatingHeight);
 
             _resizeOnFloat = false;
         } else if (isVisible) {
