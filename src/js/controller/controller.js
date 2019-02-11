@@ -612,7 +612,6 @@ Object.assign(Controller.prototype, {
             if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
                 meta = meta || {};
                 meta.startTime = pos;
-                this.play(meta);
             }
         }
 
