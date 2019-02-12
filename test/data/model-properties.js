@@ -76,6 +76,7 @@ export default {
     stretching: 'uniform',
     defaultPlaybackRate: 1.0,
     displaytitle: true,
+    displaytitleSecondary: true,
     displaydescription: true,
     displayPlaybackLabel: false,
     playbackRateControls: true,

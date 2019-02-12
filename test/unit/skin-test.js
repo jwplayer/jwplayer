@@ -91,6 +91,7 @@ describe('Skin Customization', function() {
             expect(cssText).to.contain('#id .jw-controlbar .jw-icon-inline.jw-text');
             expect(cssText).to.contain('#id .jw-title-primary');
             expect(cssText).to.contain('#id .jw-title-secondary');
+            expect(cssText).to.contain('#id .jw-title-description');
             expect(cssText).to.contain('color: green');
         });
 
@@ -107,6 +108,7 @@ describe('Skin Customization', function() {
             expect(cssText).to.contain('#id .jw-controlbar .jw-icon-inline.jw-text');
             expect(cssText).to.contain('#id .jw-title-primary');
             expect(cssText).to.contain('#id .jw-title-secondary');
+            expect(cssText).to.contain('#id .jw-title-description');
             expect(cssText).to.contain('color: green');
             expect(cssText).to.contain('#id .jw-button-color:not(.jw-icon-cast)');
             expect(cssText).to.contain('#id .jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)');

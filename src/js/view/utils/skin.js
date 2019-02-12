@@ -119,6 +119,7 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-controlbar .jw-icon-inline.jw-text',
             '.jw-title-primary',
             '.jw-title-secondary',
+            '.jw-title-description',
         ], 'color', config.text);
 
         if (config.icons) {

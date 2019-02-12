@@ -31,13 +31,15 @@ export default function (container, model, api, onVisibility) {
 
     function attachListeners() {
         const titleContainer = template.querySelector('.jw-info-title');
+        const titleSecondaryContainer = template.querySelector('.jw-info-title-secondary');
         const durationContainer = template.querySelector('.jw-info-duration');
         const descriptionContainer = template.querySelector('.jw-info-description');
         const clientIdContainer = template.querySelector('.jw-info-clientid');
 
         model.change('playlistItem', (changeModel, item) => {
-            const { description, title } = item;
+            const { description, title, titleSecondary } = item;
             replaceInnerHtml(descriptionContainer, description || '');
+            replaceInnerHtml(titleSecondaryContainer, titleSecondary || '');
             replaceInnerHtml(titleContainer, title || 'Unknown Title');
         });
         model.change('duration', (changeModel, duration) => {

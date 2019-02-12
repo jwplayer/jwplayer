@@ -159,9 +159,6 @@ function initInteractionListeners(ui) {
 
     const interactEndHandler = (e) => {
         clearTimeout(longPressTimeout);
-        if (!ui.el) {
-            return;
-        }
         releasePointerCapture(ui);
         removeHandlers(ui, WINDOW_GROUP);
         if (ui.dragged) {

@@ -16,7 +16,7 @@ describe('playlist item', function() {
     function testItemComplete(config) {
         const playlistItem = testItem(config);
 
-        const attrs = ['image', 'description', 'mediaid', 'title', 'minDvrWindow'];
+        const attrs = ['image', 'description', 'mediaid', 'title', 'minDvrWindow', 'titleSecondary'];
         _.each(attrs, function (a) {
             expect(_.has(playlistItem, a), 'Item has ' + a + ' attribute').to.be.true;
         });
@@ -57,6 +57,7 @@ describe('playlist item', function() {
                 }
             ],
             title: 'title',
+            titleSecondary: 'titleSecondary',
             mediaid: 12345,
             tracks: [
                 {

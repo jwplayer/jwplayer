@@ -19,6 +19,7 @@ export default class MockModel extends SimpleModel {
             file: '//playertest.longtailvideo.com/bunny.mp4',
             image: '//d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
             title: 'Big Buck Bunny',
+            titleSecondary: 'Buck Bunny animated',
             description: 'One caption track',
             tracks: [
                 {

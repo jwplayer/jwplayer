@@ -22,8 +22,9 @@ Object.assign(Title.prototype, {
 
         // Perform the DOM search only once
         const arr = this.el.getElementsByTagName('div');
-        this.title = arr[0];
-        this.description = arr[1];
+        this.title = arr[0]; 
+        this.titleSecondary = arr[1];
+        this.description = arr[2];
 
         this.model.on('change:logoWidth', this.update, this);
         this.model.change('playlistItem', this.playlistItem, this);
@@ -49,28 +50,35 @@ Object.assign(Title.prototype, {
         if (!item) {
             return;
         }
-        if (model.get('displaytitle') || model.get('displaydescription')) {
+        
+        if (model.get('displaytitle') || model.get('displaydescription') || model.get('displaytitleSecondary')) {
             let title = '';
             let description = '';
+            let titleSecondary = '';
 
             if (item.title && model.get('displaytitle')) {
                 title = item.title;
             }
+
             if (item.description && model.get('displaydescription')) {
                 description = item.description;
             }
-
-            this.updateText(title, description);
+                    
+            if (item.titleSecondary && model.get('displaytitleSecondary')) {
+                titleSecondary = item.titleSecondary;
+            }
+            this.updateText(title, description, titleSecondary);
         } else {
             this.hide();
         }
     },
 
-    updateText: function(title, description) {
+    updateText: function(title, description, titleSecondary) {
         replaceInnerHtml(this.title, title);
         replaceInnerHtml(this.description, description);
+        replaceInnerHtml(this.titleSecondary, titleSecondary);
 
-        if (this.title.firstChild || this.description.firstChild) {
+        if (this.title.firstChild || this.description.firstChild || this.titleSecondary.firstChild) {
             this.show();
         } else {
             this.hide();

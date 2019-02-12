@@ -18,6 +18,7 @@ const Defaults = {
     defaultPlaybackRate: 1,
     displaydescription: true,
     displaytitle: true,
+    displaytitleSecondary: true,
     displayPlaybackLabel: false,
     height: 360,
     intl: {},
@@ -121,6 +122,7 @@ const Config = function(options, persisted) {
         const obj = pick(config, [
             'title',
             'description',
+            'titleSecondary',
             'type',
             'mediaid',
             'image',
@@ -130,7 +132,6 @@ const Config = function(options, persisted) {
             'preload',
             'duration'
         ]);
-
         config.playlist = [ obj ];
     } else if (Array.isArray(configPlaylist.playlist)) {
         // The "playlist" in the config is actually a feed that contains a playlist
