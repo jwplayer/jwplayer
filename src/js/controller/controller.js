@@ -531,6 +531,7 @@ Object.assign(Controller.prototype, {
             }).catch(error => {
                 _model.set('canAutoplay', AUTOPLAY_DISABLED);
                 _model.set('autostart', false);
+                _model.set('enableDefaultCaptions', false);
                 _captions.selectDefaultIndex();
 
                 // Emit event unless test was explicitly canceled.
