@@ -277,8 +277,11 @@ Object.assign(Controller.prototype, {
             eventsReadyQueue.destroy();
             eventsReadyQueue = null;
 
+            if (autostart) {
+                _model.change('viewable', _checkPlayOnViewable);
+            }
+
             _model.change('viewable', viewableChange);
-            _model.change('viewable', _checkPlayOnViewable);
             _model.once('change:autostartFailed change:mute', function(model) {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
@@ -446,6 +449,7 @@ Object.assign(Controller.prototype, {
 
             if (!autostart && (autoPause && autoPause.viewability)) {
                 _model.set('playOnViewable', true);
+                _model.change('viewable', _checkPlayOnViewable);
             }
 
             const adState = _getAdState();
