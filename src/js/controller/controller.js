@@ -611,7 +611,8 @@ Object.assign(Controller.prototype, {
             if (!_model.get('scrubbing') && state !== STATE_PLAYING) {
                 meta = meta || {};
                 meta.startTime = pos;
-                if (state === STATE_COMPLETE || _model.get('mediaModel').get('duration') - pos < 1) {
+                if (_model.get('streamType') === 'VOD' && (state === STATE_COMPLETE || _model.get('mediaModel').get('duration') - pos < 1)) {
+                    // Only resume VOD playback when  state is complete or position is within 1 second of duration.
                     this.play(meta);
                 }
             }
