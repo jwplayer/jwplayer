@@ -9,7 +9,7 @@ const Captions = function(_model) {
     let _tracks = [];
     let _tracksById = {};
     let _unknownCount = 0;
-    let _defaultIndex;
+    let _defaultIndex = 0;
 
     // Reset and load external captions on playlist item
     _model.on('change:playlistItem', (model) => {
@@ -109,8 +109,8 @@ const Captions = function(_model) {
         return list;
     }
 
-    function _selectDefaultIndex() {
-        let captionsMenuIndex = 0;
+    function _selectDefaultIndex(defaultIndex) {
+        let captionsMenuIndex = _defaultIndex = defaultIndex;
         const label = _model.get('captionLabel');
 
         // Because there is no explicit track for "Off"
@@ -131,9 +131,6 @@ const Captions = function(_model) {
                 // TODO: auto select track by comparing track.language to system lang
             }
         }
-        if (_defaultIndex && !captionsMenuIndex) {
-            captionsMenuIndex = 1;
-        }
         // set the index without the side effect of storing the Off label in _selectCaptions
         _setCurrentIndex(captionsMenuIndex);
     }
@@ -149,7 +146,7 @@ const Captions = function(_model) {
     function _setCaptionsList() {
         const captionsList = _captionsMenu();
         if (listIdentity(captionsList) !== listIdentity(_model.get('captionsList'))) {
-            _selectDefaultIndex();
+            _selectDefaultIndex(_defaultIndex);
             _model.set('captionsList', captionsList);
         }
     }
@@ -160,10 +157,7 @@ const Captions = function(_model) {
 
     this.setSubtitlesTracks = _setSubtitlesTracks;
 
-    this.selectDefaultIndex = function(defaultIndex) {
-        _defaultIndex = defaultIndex;
-        _selectDefaultIndex();
-    };
+    this.selectDefaultIndex = _selectDefaultIndex;
 
     this.getCurrentIndex = function() {
         return _model.get('captionsIndex');
