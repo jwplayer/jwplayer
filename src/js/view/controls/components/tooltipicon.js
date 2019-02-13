@@ -61,7 +61,6 @@ export default class TooltipIcon {
             this.trigger('open-' + this.componentType, evt, { isOpen: true });
             this.isOpen = true;
             toggleClass(this.el, this.openClass, this.isOpen);
-            toggleClass(this.tooltip, this.openClass, this.isOpen);
         }
     }
 
@@ -70,7 +69,6 @@ export default class TooltipIcon {
             this.trigger('close-' + this.componentType, evt, { isOpen: false });
             this.isOpen = false;
             toggleClass(this.el, this.openClass, this.isOpen);
-            toggleClass(this.tooltip, this.openClass, this.isOpen);
         }
     }
 

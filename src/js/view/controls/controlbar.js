@@ -380,7 +380,7 @@ export default class Controlbar {
         if (volumeGroup) {
             const volume = muted ? 0 : vol;
             const volumeButtonEl = volumeGroup.element();
-            volumeGroup.volumeSlider.render(volume);
+            volumeGroup.verticalSlider.render(volume);
             volumeGroup.horizontalSlider.render(volume);
             const { tooltip, horizontalContainer } = volumeGroup;
             toggleClass(volumeButtonEl, 'jw-off', muted);
