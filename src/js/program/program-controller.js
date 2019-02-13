@@ -268,6 +268,7 @@ class ProgramController extends Events {
 
         const autoPause = model.get('autoPause');
 
+        // If background loading and using autoPause, we want to show the paused state after ads.
         backgroundMediaController.mediaModel.attributes.mediaState = autoPause ? 'paused' : 'buffering';
         this._setActiveMedia(backgroundMediaController);
         backgroundMediaController.background = false;
