@@ -86,13 +86,6 @@ Object.assign(Controller.prototype, {
         addProgramControllerListeners();
         initQoe(_model, _programController);
 
-        // Enable autoPause behavior.
-        const autoPause = _model.get('autoPause');
-        const autostart = _model.get('autostart');
-        if (autoPause && autoPause.viewability) {
-            _model.set('playOnViewable', true);
-        }
-
         _model.on(ERROR, _this.triggerError, _this);
 
         _model.on('change:state', (model, newstate, oldstate) => {
@@ -197,9 +190,6 @@ Object.assign(Controller.prototype, {
                 };
                 mediaModel.on('change:position', onPosition, this);
             }
-            mediaModel.on('change:started', function() {
-                _checkPlayOnViewable(model, model.get('viewable'));
-            });
         });
 
         // Ensure captionsList event is raised after playlistItem
@@ -277,11 +267,8 @@ Object.assign(Controller.prototype, {
             eventsReadyQueue.destroy();
             eventsReadyQueue = null;
 
-            if (autostart) {
-                _model.change('viewable', _checkPlayOnViewable);
-            }
-
             _model.change('viewable', viewableChange);
+            _model.change('viewable', _checkPlayOnViewable);
             _model.once('change:autostartFailed change:mute', function(model) {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
@@ -347,15 +334,11 @@ Object.assign(Controller.prototype, {
         }
 
         function _checkPlayOnViewable(model, viewable) {
-            const autoPauseViewability = model.get('autoPause') && model.get('autoPause').viewability;
-            const adState = _getAdState();
-
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     _autoStart();
-                } else if (OS.mobile || (autoPauseViewability && !adState)) {
-                    const pauseReason = OS.mobile ? 'autostart' : 'viewability';
-                    _this.pause({ reason: pauseReason });
+                } else if (OS.mobile || (model.get('autoPause') && model.get('autoPause').viewability)) {
+                    _this.pause({ reason: 'autostart' });
                 }
             }
         }
@@ -447,11 +430,6 @@ Object.assign(Controller.prototype, {
             const playReason = _getReason(meta);
             _model.set('playReason', playReason);
 
-            if (!autostart && (autoPause && autoPause.viewability)) {
-                _model.set('playOnViewable', true);
-                _model.change('viewable', _checkPlayOnViewable);
-            }
-
             const adState = _getAdState();
             if (adState) {
                 // this will resume the ad. _api.playAd would load a new ad
@@ -535,6 +513,12 @@ Object.assign(Controller.prototype, {
 
                 if (!_this.getMute()) {
                     _model.set('enableDefaultCaptions', false);
+                }
+
+                // Enable autoPause behavior.
+                const autoPause = _model.get('autoPause');
+                if (autoPause && autoPause.viewability) {
+                    _model.set('playOnViewable', true);
                 }
 
                 return _play({ reason: 'autostart' }).catch(() => {
