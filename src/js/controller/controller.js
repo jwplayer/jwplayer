@@ -335,8 +335,6 @@ Object.assign(Controller.prototype, {
         }
 
         function _checkPlayOnViewable(model, viewable) {
-            // const isAutoPaused = (model.get('state') === 'paused') && model.get('pauseReason') === 'viewability';
-            // if (model.get('playOnViewable') || isAutoPaused) {
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     _autoStart();
