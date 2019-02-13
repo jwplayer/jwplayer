@@ -512,7 +512,7 @@ Object.assign(Controller.prototype, {
                 }
 
                 if (_this.getMute() && _model.get('enableDefaultCaptions')) {
-                    _captions.selectDefaultIndex(true);
+                    _captions.selectDefaultIndex(1);
                 }
 
                 // Enable autoPause behavior.
