@@ -52,27 +52,27 @@ export default class VolumeTooltipIcon extends TooltipIcon {
             .on('click enter', this.toggleValue, this)
             .on('tap', this.toggleOpenState, this);
 
-        this.addTooltipHandlers(this.ui);
-        this.addTooltipHandlers(this.horizontalSlider.uiOver);
-        this.addTooltipHandlers(this.verticalSlider.uiOver);
+        this.addSliderHandlers(this.ui);
+        this.addSliderHandlers(this.horizontalSlider.uiOver);
+        this.addSliderHandlers(this.verticalSlider.uiOver);
 
         this._model.on('change:volume', this.onVolume, this);
     }
 
-    addTooltipHandlers(ui) {
-        const { openTooltip, closeTooltip } = this;
-        ui.on('over', openTooltip, this)
-            .on('out', closeTooltip, this)
-            .on('focus', openTooltip, this)
-            .on('blur', closeTooltip, this);
+    addSliderHandlers(ui) {
+        const { openSlider, closeSlider } = this;
+        ui.on('over', openSlider, this)
+            .on('out', closeSlider, this)
+            .on('focus', openSlider, this)
+            .on('blur', closeSlider, this);
     }
 
-    openTooltip(evt) {
+    openSlider(evt) {
         super.openTooltip(evt);
         toggleClass(this.horizontalContainer, this.openClass, this.isOpen);
     }
 
-    closeTooltip(evt) {
+    closeSlider(evt) {
         super.closeTooltip(evt);
         toggleClass(this.horizontalContainer, this.openClass, this.isOpen);
     }
