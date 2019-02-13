@@ -95,7 +95,7 @@ function getReadOnlyError() {
 }
 
 describe('ProgramController', function () {
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
     let model = null;
     let programController = null;
 
@@ -108,7 +108,7 @@ describe('ProgramController', function () {
         model = new Model().setup(config);
         programController = new ProgramController(model, new MediaElementPool());
         programController.providers = {
-            choose: () => ({name: 'mock', provider: MockProvider}),
+            choose: () => ({ name: 'mock', provider: MockProvider }),
             load: () => Promise.resolve(MockProvider),
             canPlay: () => true
         };

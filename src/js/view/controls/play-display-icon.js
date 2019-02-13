@@ -1,8 +1,8 @@
-import Eventable from 'utils/eventable';
+import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import { addClass, createElement } from 'utils/dom';
 
-export default class PlayDisplayIcon extends Eventable {
+export default class PlayDisplayIcon extends Events {
     constructor(_model, api, element) {
         super();
         const localization = _model.get('localization');

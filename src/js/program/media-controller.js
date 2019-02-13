@@ -1,5 +1,5 @@
 import cancelable from 'utils/cancelable';
-import Eventable from 'utils/eventable';
+import Events from 'utils/backbone.events';
 import ApiQueueDecorator from 'api/api-queue';
 import { PlayerError, getPlayAttemptFailedErrorCode } from 'api/errors';
 import { ProviderListener } from 'program/program-listeners';
@@ -10,7 +10,7 @@ import {
     PLAYER_STATE, STATE_PAUSED, STATE_PLAYING, STATE_BUFFERING, STATE_COMPLETE
 } from 'events/events';
 
-export default class MediaController extends Eventable {
+export default class MediaController extends Events {
     constructor(provider, model) {
         super();
         this.attached = true;

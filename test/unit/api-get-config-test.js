@@ -5,7 +5,7 @@ import sinon from 'sinon';
 
 describe('Api.getConfig', function() {
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     beforeEach(() => {
         const container = document.createElement('div');

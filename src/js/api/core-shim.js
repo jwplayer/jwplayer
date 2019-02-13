@@ -16,12 +16,9 @@ import { PlayerError, composePlayerError, convertToPlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_PROMISE_API_CONFLICT, SETUP_ERROR_UNKNOWN,
     MSG_TECHNICAL_ERROR } from 'api/errors';
 
-const ModelShim = function() {};
-Object.assign(ModelShim.prototype, SimpleModel);
-
 const CoreShim = function(originalContainer) {
     this._events = {};
-    this.modelShim = new ModelShim();
+    this.modelShim = new SimpleModel();
     this.modelShim._qoeItem = new Timer();
     this.mediaShim = {};
     this.setup = new Setup(this.modelShim);

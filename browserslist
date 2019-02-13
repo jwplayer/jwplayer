@@ -1,10 +1,9 @@
-Last 10 Chrome versions
-Last 10 ChromeAndroid versions
-Last 10 Firefox versions
+Chrome >= 55
+ChromeAndroid >= 55
+Firefox >= 51
 FirefoxAndroid >= 54
 Safari >= 9
-Last 4 Edge versions
+Edge >= 12
 IE 11
-ExplorerMobile 11
 iOS >= 9.2
 Android >= 4.4

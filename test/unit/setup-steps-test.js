@@ -4,7 +4,7 @@ import { ERROR_LOADING_TRANSLATIONS, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE }
 import sinon from 'sinon';
 
 describe('Load Translations', function () {
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
     const model = {
         attributes: {
             language: 'es-CL',

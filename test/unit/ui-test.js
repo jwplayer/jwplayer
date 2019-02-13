@@ -49,7 +49,7 @@ describe('UI', function() {
     }
 
     beforeEach(function() {
-        sandbox = sinon.sandbox.create();
+        sandbox = sinon.createSandbox();
 
         // add fixture
         const fixture = document.createElement('div');

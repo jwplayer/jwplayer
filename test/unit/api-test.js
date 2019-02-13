@@ -25,7 +25,7 @@ describe('Api', function() {
 
     this.timeout(6000);
 
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
 
     beforeEach(function() {
         sandbox.spy(utils, 'log');

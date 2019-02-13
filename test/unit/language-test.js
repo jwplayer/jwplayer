@@ -5,7 +5,7 @@ import en from 'assets/translations/en';
 import sinon from 'sinon';
 
 describe('languageUtils', function() {
-    const sandbox = sinon.sandbox.create();
+    const sandbox = sinon.createSandbox();
     const {
         getLabel,
         getCode,

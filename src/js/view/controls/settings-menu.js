@@ -12,14 +12,11 @@ import {
 
 export function createSettingsMenu(controlbar, onVisibility, localization) {
     const settingsButton = controlbar.elements.settingsButton;
-    const onSubmenuAdded = () => {
-        settingsButton.show();
-    };
     const onMenuEmpty = () => {
         settingsButton.hide();
     };
 
-    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty, localization);
+    const settingsMenu = SettingsMenu(onVisibility, onMenuEmpty, localization);
 
     controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
@@ -54,6 +51,14 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
     return settingsMenu;
 }
 
+function showSettingsMenuIcon(settingsMenu, controlbar) {
+    // Show or hide settings menu icon dependant on amount of submenus
+    const submenuNames = settingsMenu.getSubmenuNames();
+    const toggleIcon = submenuNames.length > 1 ||
+                        submenuNames.some(name => (name === 'quality' || name === 'playbackRates'));
+
+    controlbar.elements.settingsButton.toggle(toggleIcon);
+}
 
 export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) {
     const model = viewModel.player;
@@ -83,19 +88,19 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     const onQualitiesChanged = (changedModel, levels) => {
         if (!levels || levels.length <= 1) {
             removeQualitiesSubmenu(settingsMenu);
-            return;
+        } else {
+            const { hd, auto } = model.get('localization');
+
+            addQualitiesSubmenu(
+                settingsMenu,
+                levels,
+                (index) => api.setCurrentQuality(index),
+                model.get('currentLevel'),
+                hd,
+                auto
+            );
         }
-
-        const { hd, auto } = model.get('localization');
-
-        addQualitiesSubmenu(
-            settingsMenu,
-            levels,
-            (index) => api.setCurrentQuality(index),
-            model.get('currentLevel'),
-            hd,
-            auto
-        );
+        showSettingsMenuIcon(settingsMenu, controlbar);
     };
 
     const onCaptionsChanged = (changedModel, captionsList) => {
