@@ -475,7 +475,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         if (_beforeComplete) {
             _controller.stopVideo();
-        } else {
+        } else if (!_model.get('autoPause')) {
             _controller.playVideo();
         }
     };

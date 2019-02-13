@@ -254,7 +254,7 @@ class ProgramController extends Events {
      */
     restoreBackgroundMedia() {
         this.adPlaying = false;
-        const { background, mediaController } = this;
+        const { background, mediaController, model } = this;
         const backgroundMediaController = background.currentMedia;
         if (!backgroundMediaController) {
             return;
@@ -266,7 +266,9 @@ class ProgramController extends Events {
             return;
         }
 
-        backgroundMediaController.mediaModel.attributes.mediaState = 'buffering';
+        const autoPause = model.get('autoPause');
+
+        backgroundMediaController.mediaModel.attributes.mediaState = autoPause ? 'paused' : 'buffering';
         this._setActiveMedia(backgroundMediaController);
         backgroundMediaController.background = false;
         background.currentMedia = null;
