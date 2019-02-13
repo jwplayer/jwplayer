@@ -159,6 +159,8 @@ const Captions = function(_model) {
 
     this.setSubtitlesTracks = _setSubtitlesTracks;
 
+    this.selectDefaultIndex = _selectDefaultIndex;
+
     this.getCurrentIndex = function() {
         return _model.get('captionsIndex');
     };
