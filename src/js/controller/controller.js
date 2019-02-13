@@ -269,6 +269,7 @@ Object.assign(Controller.prototype, {
 
             _model.change('viewable', viewableChange);
             _model.change('viewable', _checkPlayOnViewable);
+            _model.change('viewable', _checkPauseOnViewable);
             _model.once('change:autostartFailed change:mute', function(model) {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
@@ -334,12 +335,28 @@ Object.assign(Controller.prototype, {
         }
 
         function _checkPlayOnViewable(model, viewable) {
+            // const isAutoPaused = (model.get('state') === 'paused') && model.get('pauseReason') === 'viewability';
+            // if (model.get('playOnViewable') || isAutoPaused) {
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     _autoStart();
-                } else if (OS.mobile || (model.get('autoPause') && model.get('autoPause').viewability)) {
+                } else if (OS.mobile) {
                     _this.pause({ reason: 'autostart' });
                 }
+            }
+        }
+
+        if (_model.get('autoPause') && _model.get('autoPause').viewability) {
+            _model.set('pauseOnViewable', true);
+        }
+
+        function _checkPauseOnViewable() {
+            const adState = _getAdState();
+            const viewable = _model.get('viewable');
+            const isPaused = _model.get('state') === 'paused';
+
+            if (_model.get('pauseOnViewable') && !viewable && !adState && !isPaused) {
+                _this.pause({ reason: 'viewability' });
             }
         }
 
@@ -577,7 +594,9 @@ Object.assign(Controller.prototype, {
             _actionOnAttach = null;
             checkAutoStartCancelable.cancel();
 
-            _model.set('pauseReason', _getReason(meta));
+            const pauseReason = _getReason(meta);
+            _model.set('pauseReason', pauseReason);
+            _model.set('playOnViewable', (pauseReason === 'viewability'));
 
             const adState = _getAdState();
             if (adState) {
