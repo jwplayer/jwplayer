@@ -41,9 +41,6 @@ function scheduleResponsiveRedraw() {
     cancelAnimationFrame(responsiveRepaintRequestId);
     responsiveRepaintRequestId = requestAnimationFrame(function responsiveRepaint() {
         views.forEach(view => {
-            view.resizeFloatingPlayer();
-        });
-        views.forEach(view => {
             view.updateBounds();
         });
         views.forEach(view => {

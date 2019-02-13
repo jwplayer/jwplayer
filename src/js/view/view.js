@@ -97,8 +97,8 @@ function View(_api, _model) {
         const currentElement = _getCurrentElement();
         const inDOM = document.body.contains(currentElement);
         const rect = bounds(currentElement);
-        const containerWidth = Math.round(rect.width);
-        const containerHeight = Math.round(rect.height);
+        let containerWidth = Math.round(rect.width);
+        let containerHeight = Math.round(rect.height);
 
         // If the container is the same size as before, return early
         if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
@@ -119,6 +119,15 @@ function View(_api, _model) {
 
         // Don't update container dimensions to 0, 0 when not in DOM
         if (containerWidth || containerHeight || inDOM) {
+            if (!_resizeOnFloat && floatingPlayer) {
+                // Update floating player based on player elements bounds when updateBounds fires on orientationChange.
+                const { floatingWidth, floatingHeight } = _getFloatingDimensions(containerWidth, containerHeight);
+                containerWidth = floatingWidth;
+                containerHeight = floatingHeight;
+                _resizeOnFloat = true;
+                _resizePlayer(floatingWidth, floatingHeight, true);
+                _resizeOnFloat = false;
+            }
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
         }
@@ -861,16 +870,11 @@ function View(_api, _model) {
         return _model.get('isFloating') && _resizeOnFloat ? _wrapperElement : _playerElement;
     }
 
-    function _getFloatingDimensions() {
+    function _getFloatingDimensions(width, height) {
         // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
-        const { width, height } = _this.getSafeRegion(false);
         const floatingWidth = Math.min(width, MAX_FLOATING_WIDTH);
         const floatingHeight = Math.min(height * floatingWidth / width, MAX_FLOATING_HEIGHT);
-
-        return {
-            floatingWidth,
-            floatingHeight
-        };
+        return { floatingWidth, floatingHeight };
     }
 
     function _updateFloating(intersectionRatio) {
@@ -889,8 +893,8 @@ function View(_api, _model) {
             _model.set('isFloating', true);
 
             _resizeOnFloat = true;
-
-            const { floatingWidth, floatingHeight } = _getFloatingDimensions();
+            const { width, height } = _this.getSafeRegion(false);
+            const { floatingWidth, floatingHeight } = _getFloatingDimensions(width, height);
         
             _this.resize(floatingWidth, floatingHeight);
 
@@ -899,15 +903,6 @@ function View(_api, _model) {
             _this.stopFloating();
         }
     }
-
-    this.resizeFloatingPlayer = function() {
-        if (floatingPlayer && !_resizeOnFloat) {
-            const { floatingWidth, floatingHeight } = _getFloatingDimensions();
-            _resizeOnFloat = true;
-            _resizePlayer(floatingWidth, floatingHeight, true);
-            _resizeOnFloat = false;
-        }
-    };
 
     this.stopFloating = function(forever) {
         if (forever) {
