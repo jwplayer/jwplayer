@@ -56,7 +56,15 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         this.addSliderHandlers(this.horizontalSlider.uiOver);
         this.addSliderHandlers(this.verticalSlider.uiOver);
 
+        this.onAudioMode(null, _model.get('audioMode'));
+
+        this._model.on('change:audioMode', this.onAudioMode, this);
         this._model.on('change:volume', this.onVolume, this);
+    }
+
+    onAudioMode(model, val) {
+        const tabIndex = val ? 0 : -1;
+        setAttribute(this.horizontalContainer, 'tabindex', tabIndex);
     }
 
     addSliderHandlers(ui) {
