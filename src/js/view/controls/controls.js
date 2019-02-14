@@ -132,10 +132,13 @@ export default class Controls {
 
         // Floating Close Button
         const floatingConfig = model.get('floating');
-        if (floatingConfig && floatingConfig.dismissible !== false) {
-            addClass(this.playerContainer, 'jw-floating-dismissible');
+        if (floatingConfig) {
             const floatCloseButton = new FloatingCloseButton(element, model.get('localization').close);
             floatCloseButton.on(USER_ACTION, () => this.trigger('dismissFloating'));
+
+            if (floatingConfig.dismissible !== false) {
+                addClass(this.playerContainer, 'jw-floating-dismissible');
+            }
         }
 
         // Controlbar

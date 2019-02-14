@@ -22,7 +22,7 @@
     .jw-float-icon {
         pointer-events: all;
         cursor: pointer;
-        display: flex;
+        display: none;
 
         .jw-svg-icon {
             filter: drop-shadow(0 0 1px #000);
@@ -31,6 +31,10 @@
 }
 
 .jw-flag-floating.jw-floating-dismissible {
+    .jw-float-icon {
+        display: flex;
+    }
+
     &:not(.jw-flag-controls-hidden) .jw-logo {
         display: none;
     }
