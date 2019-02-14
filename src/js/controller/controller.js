@@ -298,7 +298,7 @@ Object.assign(Controller.prototype, {
 
             // Autostart immediately if we're not waiting for the player to become viewable first.
             if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
-                _autoStart();
+                _autoStart({ reason: 'autostart' });
             }
             apiQueue.flush();
         }
@@ -338,7 +338,7 @@ Object.assign(Controller.prototype, {
         function _checkPlayOnViewable(model, viewable) {
             if (model.get('playOnViewable')) {
                 if (viewable) {
-                    _autoStart();
+                    _autoStart({ reason: 'viewability' });
                 } else if (OS.mobile) {
                     _this.pause({ reason: 'autostart' });
                 }
@@ -497,7 +497,7 @@ Object.assign(Controller.prototype, {
             return 'external';
         }
 
-        function _autoStart() {
+        function _autoStart(autostartReason) {
             const state = _getState();
             if (state !== STATE_IDLE && state !== STATE_PAUSED) {
                 return;
@@ -536,7 +536,7 @@ Object.assign(Controller.prototype, {
                     _model.set('playOnViewable', true);
                 }
 
-                return _play({ reason: 'autostart' }).catch(() => {
+                return _play(autostartReason).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
                     }
