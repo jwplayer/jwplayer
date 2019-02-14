@@ -20,16 +20,40 @@
     }
 
     .jw-float-icon {
-        display: block;
+        pointer-events: all;
+        cursor: pointer;
+        display: flex;
+
+        .jw-svg-icon {
+            filter: drop-shadow(0 0 1px #000);
+        }
+    }
+}
+
+.jw-flag-floating.jw-floating-dismissible {
+    &:not(.jw-flag-controls-hidden) .jw-logo {
+        display: none;
+    }
+
+    &.jw-flag-user-inactive.jw-state-playing,
+    &.jw-flag-user-inactive.jw-state-buffering {
+        .jw-float-icon {
+            display: none;
+        }
+
+        .jw-logo {
+            display: block;
+        }
     }
 }
 
 .jw-float-icon {
     display: none;
-
     position: absolute;
+    top: 0;
     right: 0;
-    bottom: 0;
+    align-items: center;
+    justify-content: center;
 }
 
 @keyframes jw-float {

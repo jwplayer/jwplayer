@@ -15,6 +15,7 @@ import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
+import FloatingCloseButton from 'view/floating-close-button';
 
 require('css/controls.less');
 
@@ -127,6 +128,14 @@ export default class Controls {
                     this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
                 }
             }, this);
+        }
+
+        // Floating Close Button
+        const floatingConfig = model.get('floating');
+        if (floatingConfig && floatingConfig.dismissible !== false) {
+            addClass(this.playerContainer, 'jw-floating-dismissible');
+            const floatCloseButton = new FloatingCloseButton(element, model.get('localization').close);
+            floatCloseButton.on(USER_ACTION, () => this.trigger('dismissFloating'));
         }
 
         // Controlbar

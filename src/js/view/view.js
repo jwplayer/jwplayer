@@ -35,7 +35,6 @@ import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
-import FloatingCloseButton from 'view/floating-close-button';
 
 require('css/jwplayer.less');
 
@@ -216,14 +215,6 @@ function View(_api, _model) {
 
         focusHelper = new UI(_playerElement).on('click', function() {});
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
-
-        if (_floatingConfig && _floatingConfig.dismissible !== false) {
-            const floatCloseButton = new FloatingCloseButton(_wrapperElement.querySelector('.jw-top'));
-            floatCloseButton.setup(() => {
-                this.stopFloating(true);
-                _api.pause({ reason: 'interaction' });
-            }, _localization.close);
-        }
 
         _model.on('change:hideAdsControls', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
@@ -500,6 +491,11 @@ function View(_api, _model) {
             if (state === STATE_PLAYING || state === STATE_BUFFERING) {
                 _captionsRenderer.renderCues(true);
             }
+        });
+
+        controls.on('dismissFloating', () => {
+            this.stopFloating(true);
+            _api.pause({ reason: 'interaction' });
         });
 
         controls.on('all', _this.trigger, _this);
@@ -885,12 +881,11 @@ function View(_api, _model) {
     }
 
     this.stopFloating = function(forever) {
+        if (forever) {
+            _floatingConfig = null;
+        }
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
-
-            if (forever) {
-                _floatingConfig = null;
-            }
 
             removeClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: false });
