@@ -269,7 +269,6 @@ Object.assign(Controller.prototype, {
 
             _model.change('viewable', viewableChange);
             _model.change('viewable', _checkPlayOnViewable);
-            _model.change('viewable', _checkPauseOnViewable);
             _model.once('change:autostartFailed change:mute', function(model) {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
@@ -310,6 +309,8 @@ Object.assign(Controller.prototype, {
             });
 
             preload();
+
+            _checkPauseOnViewable(model, viewable);
         }
 
         function preload() {
@@ -348,12 +349,11 @@ Object.assign(Controller.prototype, {
             _model.set('pauseOnViewable', true);
         }
 
-        function _checkPauseOnViewable() {
+        function _checkPauseOnViewable(model, viewable) {
             const adState = _getAdState();
-            const viewable = _model.get('viewable');
-            const isPaused = _model.get('state') === 'paused';
+            const isPaused = model.get('state') === 'paused';
 
-            if (_model.get('pauseOnViewable') && !viewable && !adState && !isPaused) {
+            if (!viewable && model.get('pauseOnViewable') && !adState && !isPaused) {
                 _this.pause({ reason: 'viewability' });
             }
         }
