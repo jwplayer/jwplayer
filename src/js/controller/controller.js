@@ -497,7 +497,7 @@ Object.assign(Controller.prototype, {
             return 'external';
         }
 
-        function _autoStart(autostartReason) {
+        function _autoStart(reason) {
             const state = _getState();
             if (state !== STATE_IDLE && state !== STATE_PAUSED) {
                 return;
@@ -536,7 +536,7 @@ Object.assign(Controller.prototype, {
                     _model.set('playOnViewable', true);
                 }
 
-                return _play(autostartReason).catch(() => {
+                return _play(reason).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
                     }
@@ -548,10 +548,9 @@ Object.assign(Controller.prototype, {
 
                 // Emit event unless test was explicitly canceled.
                 if (!checkAutoStartCancelable.cancelled()) {
-                    const { reason } = error;
                     const code = getPlayAttemptFailedErrorCode(error);
                     _this.trigger(AUTOSTART_NOT_ALLOWED, {
-                        reason,
+                        reason: error.reason,
                         code,
                         error
                     });
