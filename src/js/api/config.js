@@ -87,7 +87,7 @@ const Config = function(options, persisted) {
     // If autoPause is configured with an empty block,
     // default autoPause.viewability to true.
     let autoPause = config.autoPause;
-    if (autoPause && !autoPause.viewability) {
+    if (autoPause && !autoPause.hasOwnProperty('viewability')) {
         autoPause.viewability = true;
     }
 
