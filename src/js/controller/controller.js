@@ -351,7 +351,7 @@ Object.assign(Controller.prototype, {
 
         function _checkPauseOnViewable(model, viewable) {
             const adState = _getAdState();
-            const isPaused = model.get('state') === 'paused';
+            const isPaused = model.get('state') === STATE_PAUSED;
 
             if (!viewable && model.get('pauseOnViewable') && !adState && !isPaused) {
                 _this.pause({ reason: 'viewability' });
