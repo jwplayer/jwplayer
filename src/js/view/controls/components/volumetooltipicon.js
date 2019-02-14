@@ -77,12 +77,12 @@ export default class VolumeTooltipIcon extends TooltipIcon {
 
     openSlider(evt) {
         super.openTooltip(evt);
-        toggleClass(this.horizontalContainer, this.openClass, this.isOpen);
+        toggleClass(this.horizontalContainer, this.openClass, true);
     }
 
     closeSlider(evt) {
         super.closeTooltip(evt);
-        toggleClass(this.horizontalContainer, this.openClass, this.isOpen);
+        toggleClass(this.horizontalContainer, this.openClass, false);
         this.horizontalContainer.blur();
     }
 
