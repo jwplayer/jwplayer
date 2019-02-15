@@ -351,9 +351,7 @@ Object.assign(Controller.prototype, {
 
         function _checkPauseOnViewable(model, viewable) {
             const adState = _getAdState();
-            const isPaused = model.get('state') === STATE_PAUSED;
-
-            if (!viewable && model.get('pauseOnViewable') && !adState && !isPaused) {
+            if (!viewable && model.get('pauseOnViewable') && !adState) {
                 _this.pause({ reason: 'viewability' });
             }
         }
@@ -530,12 +528,6 @@ Object.assign(Controller.prototype, {
                     _model.set('enableDefaultCaptions', false);
                 }
 
-                // Enable autoPause behavior.
-                const autoPause = _model.get('autoPause');
-                if (autoPause && autoPause.viewability) {
-                    _model.set('playOnViewable', true);
-                }
-
                 return _play(reason).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
@@ -591,9 +583,12 @@ Object.assign(Controller.prototype, {
             _actionOnAttach = null;
             checkAutoStartCancelable.cancel();
 
-            const pauseReason = _getReason(meta);
-            _model.set('pauseReason', pauseReason);
-            _model.set('playOnViewable', (pauseReason === 'viewability'));
+            const state = _getState();
+            if (state !== STATE_PAUSED && state !== STATE_IDLE) {
+                const pauseReason = _getReason(meta);
+                _model.set('pauseReason', pauseReason);
+                _model.set('playOnViewable', (pauseReason === 'viewability'));
+            }
 
             const adState = _getAdState();
             if (adState) {
@@ -601,7 +596,7 @@ Object.assign(Controller.prototype, {
                 return;
             }
 
-            switch (_model.get('state')) {
+            switch (state) {
                 case STATE_ERROR:
                     return;
                 case STATE_PLAYING:
@@ -617,7 +612,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _isIdle() {
-            const state = _model.get('state');
+            const state = _getState();
             return (state === STATE_IDLE || state === STATE_COMPLETE || state === STATE_ERROR);
         }
 
