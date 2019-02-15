@@ -589,7 +589,7 @@ Object.assign(Controller.prototype, {
             _actionOnAttach = null;
             checkAutoStartCancelable.cancel();
 
-            const state = _getState();
+            const state = _model.get('state');
             if (state !== STATE_PAUSED && state !== STATE_IDLE) {
                 const pauseReason = _getReason(meta);
                 _model.set('pauseReason', pauseReason);
@@ -618,7 +618,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _isIdle() {
-            const state = _getState();
+            const state = _model.get('state');
             return (state === STATE_IDLE || state === STATE_COMPLETE || state === STATE_ERROR);
         }
 
