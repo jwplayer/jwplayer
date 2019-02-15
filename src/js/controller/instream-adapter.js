@@ -466,14 +466,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
 
         // Re-attach the controller & resume playback
-        // when instream was inited and the player was not destroyed\
+        // when instream was inited and the player was not destroyed
         _controller.attachMedia();
 
-        if (this.noResume) {
-            return;
-        }
-
-        if (_beforeComplete) {
+        if (this.noResume || _beforeComplete) {
             _controller.stopVideo();
         } else {
             _controller.playVideo();
