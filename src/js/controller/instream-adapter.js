@@ -473,15 +473,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             return;
         }
 
-        const viewable = _model.get('viewable');
         if (_beforeComplete) {
             _controller.stopVideo();
-        } else if (!_model.get('pauseOnViewable') || (_model.get('pauseOnViewable') && viewable)) {
-            // Play the content if pauseOnViewable is not set or if it is but player is viewable
-            _controller.playVideo();
         } else {
-            // If pauseOnViewable is set up and player is not viewable, resume when viewable
-            _model.set('playOnViewable', true);
+            _controller.playVideo();
         }
     };
 

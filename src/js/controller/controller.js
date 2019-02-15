@@ -345,14 +345,20 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        if (_model.get('autoPause') && _model.get('autoPause').viewability) {
-            _model.set('pauseOnViewable', true);
-        }
-
         function _checkPauseOnViewable(model, viewable) {
+            if (viewable || !model.get('autoPause').viewability) {
+                return;
+            }
+
             const adState = _getAdState();
-            if (!viewable && model.get('pauseOnViewable') && !adState) {
+            if (!adState) {
                 _this.pause({ reason: 'viewability' });
+            } else {
+                const instream = _this._instreamAdapter;
+                if (instream) {
+                    instream.noResume = true;
+                    model.set('playOnViewable', true);
+                }
             }
         }
 
