@@ -298,7 +298,7 @@ Object.assign(Controller.prototype, {
 
             // Autostart immediately if we're not waiting for the player to become viewable first.
             if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
-                _autoStart({ reason: 'autostart' });
+                _autoStart('autostart');
             }
             apiQueue.flush();
         }
@@ -338,7 +338,7 @@ Object.assign(Controller.prototype, {
         function _checkPlayOnViewable(model, viewable) {
             if (model.get('playOnViewable')) {
                 if (viewable) {
-                    _autoStart({ reason: 'viewability' });
+                    _autoStart('viewability');
                 } else if (OS.mobile) {
                     _this.pause({ reason: 'autostart' });
                 }
@@ -352,7 +352,7 @@ Object.assign(Controller.prototype, {
 
             const adState = _getAdState();
             if (!adState) {
-                _this.pause({ reason: 'viewability' });
+                _this.pause({ reason: 'viewable' });
             } else if (model.get('activeTab') && adState !== 'paused') {
                 const instream = _this._instreamAdapter;
                 if (instream) {
@@ -534,7 +534,7 @@ Object.assign(Controller.prototype, {
                     _model.set('enableDefaultCaptions', false);
                 }
 
-                return _play(reason).catch(() => {
+                return _play({ reason }).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
                     }
@@ -593,7 +593,7 @@ Object.assign(Controller.prototype, {
             if (state !== STATE_PAUSED && state !== STATE_IDLE) {
                 const pauseReason = _getReason(meta);
                 _model.set('pauseReason', pauseReason);
-                _model.set('playOnViewable', (pauseReason === 'viewability'));
+                _model.set('playOnViewable', (pauseReason === 'viewable'));
             }
 
             const adState = _getAdState();
