@@ -79,6 +79,7 @@ function View(_api, _model) {
 
     let _floatingConfig = _model.get('floating');
     let _canFloat = false;
+    let _dragDisabled = false;
 
     let displayClickHandler;
     let fullscreenHelpers;
@@ -764,6 +765,7 @@ function View(_api, _model) {
 
     const setupInstream = function() {
         addClass(_playerElement, 'jw-flag-ads');
+        _dragDisabled = hasClass(_playerElement, 'jw-flag-ads-freewheel');
 
         if (_controls) {
             _controls.setupInstream();
@@ -782,6 +784,7 @@ function View(_api, _model) {
         _this.setAltText('');
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
+        _dragDisabled = false;
 
         // Make sure that the provider's media element is returned to the DOM after instream mode
         const provider = _model.getVideo();
@@ -856,6 +859,44 @@ function View(_api, _model) {
         return _model.get('isFloating') ? _wrapperElement : _playerElement;
     }
 
+    function _createFloatingDragUI() {
+        let dragStartX;
+        let dragStartY;
+        let playerLeft;
+        let playerTop;
+
+        const { innerHeight, innerWidth } = window;
+
+        return new UI(_wrapperElement)
+            .on('dragStart', (e) => {
+                dragStartX = e.pageX;
+                dragStartY = e.pageY;
+                playerLeft = _wrapperElement.offsetLeft;
+                playerTop = _wrapperElement.offsetTop;
+            })
+            .on('drag', (e) => {
+                if (_dragDisabled) {
+                    return;
+                }
+                let left = Math.max(playerLeft + e.pageX - dragStartX, 0);
+                let top = Math.max(playerTop + e.pageY - dragStartY, 0);
+                let right = Math.max(innerWidth - (left + _wrapperElement.clientWidth), 0);
+                let bottom = Math.max(innerHeight - (top + _wrapperElement.clientHeight), 0);
+
+                left === 0 ? right = null : left = null;
+                top === 0 ? bottom = null : top = null;
+                style(_wrapperElement, {
+                    left,
+                    right,
+                    top,
+                    bottom
+                });
+            })
+            .on('dragEnd', () => {
+                dragStartX = dragStartY = playerLeft = playerTop = null;
+            });
+    }
+
     function _updateFloating(intersectionRatio) {
         // Entirely invisible and no floating player already in the DOM.
         const isVisible = intersectionRatio === 1;
@@ -877,6 +918,7 @@ function View(_api, _model) {
             const { width, height } = _this.getSafeRegion(false);
             const ratio = Math.min(1, MAX_FLOATING_WIDTH / width, MAX_FLOATING_HEIGHT / height);
             _this.resize(width * ratio, height * ratio, true);
+            _this.floatingUI = _createFloatingDragUI();
 
             _resizeOnFloat = false;
         } else if (isVisible) {
@@ -898,7 +940,15 @@ function View(_api, _model) {
 
             // Wrapper should inherit from parent unless floating.
             style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
-            style(_wrapperElement, { width: null, height: null });
+            style(_wrapperElement, {
+                width: null,
+                height: null,
+                left: null,
+                right: null,
+                top: null,
+                bottom: null
+            });
+            _this.floatingUI.destroy();
             _this.resize(_model.get('width'), _model.get('aspectratio') ? undefined : _model.get('height'));
         }
     };
