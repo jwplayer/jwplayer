@@ -338,7 +338,7 @@ Object.assign(Controller.prototype, {
         function _checkPlayOnViewable(model, viewable) {
             if (model.get('playOnViewable')) {
                 if (viewable) {
-                    _autoStart('viewability');
+                    _autoStart('viewable');
                 } else if (OS.mobile) {
                     _this.pause({ reason: 'autostart' });
                 }
@@ -346,7 +346,15 @@ Object.assign(Controller.prototype, {
         }
 
         function _checkPauseOnViewable(model, viewable) {
-            if (viewable || !model.get('autoPause').viewability) {
+            const instream = _this._instreamAdapter;
+
+            // If player left view and came back before ad completes,
+            // the player should begin/resume playing content.
+            if (viewable && instream && instream.noResume) {
+                instream.noResume = false;
+                model.set('playOnViewable', true);
+                return;
+            } else if (viewable || !model.get('autoPause').viewability) {
                 return;
             }
 
@@ -354,7 +362,6 @@ Object.assign(Controller.prototype, {
             if (!adState) {
                 _this.pause({ reason: 'viewable' });
             } else if (model.get('activeTab') && adState !== 'paused') {
-                const instream = _this._instreamAdapter;
                 if (instream) {
                     instream.noResume = true;
                 }
