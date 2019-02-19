@@ -353,7 +353,7 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
             if (!adState) {
                 _this.pause({ reason: 'viewability' });
-            } else {
+            } else if (adState !== 'paused') {
                 const instream = _this._instreamAdapter;
                 if (instream) {
                     instream.noResume = true;
