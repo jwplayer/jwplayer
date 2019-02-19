@@ -353,12 +353,12 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
             if (!adState) {
                 _this.pause({ reason: 'viewability' });
-            } else if (adState !== 'paused') {
+            } else if (model.get('activeTab') && adState !== 'paused') {
                 const instream = _this._instreamAdapter;
                 if (instream) {
                     instream.noResume = true;
-                    model.set('playOnViewable', true);
                 }
+                model.set('playOnViewable', true);
             }
         }
 
