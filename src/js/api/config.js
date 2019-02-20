@@ -87,8 +87,8 @@ const Config = function(options, persisted) {
 
     // If autoPause is configured with an empty block,
     // default autoPause.viewability to true.
-    let autoPause = allOptions.autoPause || {};
-    config.autoPause.viewability = ('viewability' in autoPause) ? !!autoPause.viewability : true;
+    let autoPause = allOptions.autoPause;
+    config.autoPause.viewability = (autoPause && ('viewability' in autoPause)) ? !!autoPause.viewability : true;
 
     let rateControls = config.playbackRateControls;
 
