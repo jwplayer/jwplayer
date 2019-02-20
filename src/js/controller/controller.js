@@ -273,6 +273,10 @@ Object.assign(Controller.prototype, {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
 
+            if (_model.get('autoPause').viewability) {
+                _model.change('viewable', _checkPauseOnViewable);
+            }
+
             // Run _checkAutoStart() last
             // 'viewable' changes can result in preload() being called on the initial provider instance
             _checkAutoStart();
@@ -309,8 +313,6 @@ Object.assign(Controller.prototype, {
             });
 
             preload();
-
-            _checkPauseOnViewable(model, viewable);
         }
 
         function preload() {
@@ -354,7 +356,7 @@ Object.assign(Controller.prototype, {
                 instream.noResume = false;
                 model.set('playOnViewable', true);
                 return;
-            } else if (viewable || !model.get('autoPause').viewability) {
+            } else if (viewable) {
                 return;
             }
 
