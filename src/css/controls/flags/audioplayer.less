@@ -88,18 +88,18 @@
             }
 
             &.jw-open {
-                transition: width 300ms @default-timing-function;
                 width: @volume-rail-length;
 
                 .jw-slider-volume {
                     padding: 0 12px;
+                    transition: opacity 300ms;
                     opacity: 1;
                 }
 
                 ~ .jw-slider-time {
                     flex: 1 1 auto;
                     width: auto;
-                    transition: opacity 1000ms;
+                    transition: opacity 300ms, width 300ms;
                 }
             }
         }
