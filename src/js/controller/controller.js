@@ -592,28 +592,29 @@ Object.assign(Controller.prototype, {
             _programController.stopVideo();
         }
 
+        function _updatePauseReason(meta) {
+            const pauseReason = _getReason(meta);
+            _model.set('pauseReason', pauseReason);
+            _model.set('playOnViewable', (pauseReason === 'viewable'));
+        }
+
         function _pause(meta) {
             _actionOnAttach = null;
             checkAutoStartCancelable.cancel();
 
-            const state = _model.get('state');
-            if (state !== STATE_PAUSED && state !== STATE_IDLE) {
-                const pauseReason = _getReason(meta);
-                _model.set('pauseReason', pauseReason);
-                _model.set('playOnViewable', (pauseReason === 'viewable'));
-            }
-
             const adState = _getAdState();
-            if (adState) {
+            if (adState && adState !== STATE_PAUSED) {
+                _updatePauseReason(meta);
                 _api.pauseAd(true, meta);
                 return;
             }
 
-            switch (state) {
+            switch (_model.get('state')) {
                 case STATE_ERROR:
                     return;
                 case STATE_PLAYING:
                 case STATE_BUFFERING: {
+                    _updatePauseReason(meta);
                     _programController.pause();
                     break;
                 }
