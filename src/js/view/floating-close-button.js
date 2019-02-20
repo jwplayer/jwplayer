@@ -5,9 +5,9 @@ import { cloneIcon } from 'view/controls/icons';
 import Events from 'utils/backbone.events';
 import { USER_ACTION } from 'events/events';
 
-export default class FloatingCloseButton {
+export default class FloatingCloseButton extends Events {
     constructor(container, ariaLabel) {
-        Object.assign(this, Events);
+        super();
         this.element = createElement(floatingCloseButton(ariaLabel));
 
         this.element.appendChild(cloneIcon('close'));

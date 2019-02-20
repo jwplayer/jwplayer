@@ -28,25 +28,21 @@
             filter: drop-shadow(0 0 1px #000);
         }
     }
-}
 
-.jw-flag-floating.jw-floating-dismissible {
-    .jw-float-icon {
-        display: flex;
-    }
-
-    &:not(.jw-flag-controls-hidden) .jw-logo {
+    &.jw-floating-dismissible .jw-dismiss-icon {
         display: none;
     }
+}
 
-    &.jw-flag-user-inactive.jw-state-playing,
-    &.jw-flag-user-inactive.jw-state-buffering {
+.jw-flag-floating.jw-floating-dismissible:not(.jw-flag-controls-hidden) {
+    &.jw-state-paused,
+    &:not(.jw-state-paused):not(.jw-flag-user-inactive) {
         .jw-float-icon {
-            display: none;
+            display: flex;
         }
 
         .jw-logo {
-            display: block;
+            display: none;
         }
     }
 }
