@@ -17,7 +17,7 @@
     "close": "Schließen",
     "errors": {
         "badConnection": "Dieses Video kann nicht abgespielt werden, weil es ein Problem mit der Internetverbindung gibt.",
-        "cantLoadPlayer": "Entschuldingung, der Videoplayer konnte es nicht Laden.",
+        "cantLoadPlayer": "Entschuldigung, der Videoplayer konnte es nicht Laden.",
         "cantPlayInBrowser": "Das Video kann in diesem Browser nicht abgespielt werden.",
         "cantPlayVideo": "Diese Videodatei kann nicht abgespielt werden.",
         "errorCode": "Fehlercode",
