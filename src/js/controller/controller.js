@@ -511,8 +511,8 @@ Object.assign(Controller.prototype, {
                     });
                 }
 
-                if (!_this.getMute()) {
-                    _model.set('enableDefaultCaptions', false);
+                if (_this.getMute() && _model.get('enableDefaultCaptions')) {
+                    _captions.selectDefaultIndex(1);
                 }
 
                 // Enable autoPause behavior.
@@ -530,7 +530,6 @@ Object.assign(Controller.prototype, {
             }).catch(error => {
                 _model.set('canAutoplay', AUTOPLAY_DISABLED);
                 _model.set('autostart', false);
-
                 // Emit event unless test was explicitly canceled.
                 if (!checkAutoStartCancelable.cancelled()) {
                     const { reason } = error;
