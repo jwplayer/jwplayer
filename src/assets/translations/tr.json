@@ -20,7 +20,7 @@
         "cantLoadPlayer": "Üzgünüz, video oynatıcı yüklemede başarısız oldu.",
         "cantPlayInBrowser": "Video bu tarayıcıda oynatılamıyor.",
         "cantPlayVideo": "Bu video dosyası oynatılamıyor.",
-        "errorCode": "Hata kodu",
+        "errorCode": "Hata Kodu",
         "liveStreamDown": "Canlı yayın ya kesildi ya da sona erdi.",
         "protectedContent": "Korunan içeriğe erişimde bir sorun var.",
         "technicalError": "Bir teknik hatadan dolayı bu video oynatılamıyor."
