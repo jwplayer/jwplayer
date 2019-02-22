@@ -57,7 +57,11 @@ function View(_api, _model) {
     });
 
     const _localization = _model.get('localization');
-    const _playerElement = createElement(playerTemplate(_model.get('id'), _localization.player));
+    const _playerElement = createElement(playerTemplate(
+        _model.get('id'), 
+        _localization.player.label, 
+        _localization.player.describedBy
+    ));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
 

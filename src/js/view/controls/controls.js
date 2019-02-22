@@ -15,6 +15,7 @@ import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
+import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
 
 require('css/controls.less');
 
@@ -56,6 +57,7 @@ export default class Controls {
         this.wrapperElement = playerContainer.querySelector('.jw-wrapper');
         this.rightClickMenu = null;
         this.settingsMenu = null;
+        this.shortcutsTooltip = null;
         this.showing = false;
         this.muteChangeCallback = null;
         this.unmuteCallback = null;
@@ -115,7 +117,11 @@ export default class Controls {
         this.infoOverlay = new InfoOverlay(element, model, api, visible => {
             toggleClass(this.div, 'jw-info-open', visible);
         });
-        this.rightClickMenu = new RightClick(this.infoOverlay);
+        //  Add keyboard shortcuts if not on mobi;e
+        if (!OS.mobile) {
+            this.shortcutsTooltip = new ShortcutsTooltip(this.playerContainer);
+        }
+        this.rightClickMenu = new RightClick(this.infoOverlay, this.shortcutsTooltip);
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
             this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
@@ -188,6 +194,8 @@ export default class Controls {
         if (OS.mobile) {
             this.div.appendChild(settingsMenu.element());
         } else {
+            console.log('adding description');
+            this.playerContainer.setAttribute('aria-describedby', 'jw-new-features-explanation');
             this.div.insertBefore(settingsMenu.element(), controlbar.element());
         }
 
@@ -250,7 +258,6 @@ export default class Controls {
             }
             const menuHidden = !this.settingsMenu.visible;
             const adMode = this.instreamState;
-
             switch (evt.keyCode) {
                 case 27: // Esc
                     if (model.get('fullscreen')) {
@@ -262,6 +269,18 @@ export default class Controls {
                         if (related) {
                             related.close({ type: 'escape' });
                         }
+                    }
+                    //close all modals on esc press.
+                    if (this.rightClickMenu.el) {
+                        console.log(this.rightClickMenu);
+                        this.rightClickMenu.hideMenuHandler();
+                    }
+                    if (this.infoOverlay.visible) {
+                        this.infoOverlay
+                    }
+                    if (this.shortcutsTooltip) {
+                        this.shortcutsTooltip.close();
+                        
                     }
                     break;
                 case 13: // enter
@@ -304,6 +323,14 @@ export default class Controls {
                 case 70: // f-key
                     api.setFullscreen();
                     break;
+                case 191: // ? key
+                    if (!this.shortcutsTooltip) {
+                        this.shortcutsTooltip.open();
+                    } else {
+                        //toggle visibility
+                        this.shortcutsTooltip.toggleVisibility();
+                    }
+                    break;
                 default:
                     if (evt.keyCode >= 48 && evt.keyCode <= 59) {
                         // if 0-9 number key, move to n/10 of the percentage of the video
@@ -336,6 +363,10 @@ export default class Controls {
 
         // Hide controls when focus leaves the player
         const blurCallback = (evt) => {
+            //Remove new shortcut tooltip after first read.
+            if (!OS.mobile) {
+                this.playerContainer.removeAttribute('aria-describedby');
+            }
             const focusedElement = evt.relatedTarget || document.querySelector(':focus');
             if (!focusedElement) {
                 return;

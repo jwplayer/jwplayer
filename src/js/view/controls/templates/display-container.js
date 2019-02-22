@@ -5,6 +5,9 @@ export default (localization) => {
         `<div class="jw-display jw-reset">` +
             `<div class="jw-display-container jw-reset">` +
                 `<div class="jw-display-controls jw-reset">` +
+                `<span class="jw-hidden" id="jw-new-features-explanation">` +
+                    localization.infos.shortcutsTooltip +
+                `</span>` +
                     displayIconTemplate('rewind', localization.rewind) +
                     displayIconTemplate('display', localization.playback) +
                     displayIconTemplate('next', localization.next) +

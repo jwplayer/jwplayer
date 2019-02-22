@@ -17,8 +17,9 @@ function createDomElement(html) {
 }
 
 export default class RightClick {
-    constructor(infoOverlay) {
+    constructor(infoOverlay, shortcutsTooltip) {
         this.infoOverlay = infoOverlay;
+        this.shortcutsTooltip = shortcutsTooltip;
     }
 
     buildArray() {
@@ -48,6 +49,12 @@ export default class RightClick {
                 title: text,
                 type: 'link',
                 link: 'http://www.adobe.com/software/flash/about/'
+            });
+        }
+        if (!OS.mobile) {
+            const secondToLastIndex = menu.items.length - 1;
+            menu.items.splice(secondToLastIndex, 0, {
+                type: 'keyboardShortcuts'
             });
         }
 
@@ -140,6 +147,12 @@ export default class RightClick {
             this.hideMenu();
             this.infoOverlay.open();
         };
+        this.shortcutsTooltipHandler = () => {
+            // Open the info overlay if clicked, and hide the rightclick menu
+            this.mouseOverContext = false;
+            this.hideMenu();
+            this.shortcutsTooltip.open();
+        };
     }
 
     setup(_model, _playerElement, layer) {
@@ -164,6 +177,7 @@ export default class RightClick {
             this.el.addEventListener('mouseout', this.outHandler);
         }
         this.el.querySelector('.jw-info-overlay-item').addEventListener('click', this.infoOverlayHandler);
+        this.el.querySelector('.jw-shortcuts-item').addEventListener('click', this.shortcutsTooltipHandler);
     }
 
     removeHideMenuHandlers() {
@@ -172,6 +186,7 @@ export default class RightClick {
         }
         if (this.el) {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
+            this.el.querySelector('.jw-shortcuts-item').removeEventListener('click', this.shortcutsTooltipHandler);
             this.el.removeEventListener('mouseover', this.overHandler);
             this.el.removeEventListener('mouseout', this.outHandler);
         }

@@ -29,6 +29,9 @@ export default {
     "exitFullscreen": "Exit Fullscreen",
     "fullscreen": "Fullscreen",
     "hd": "Quality",
+    "infos" : {
+        "shortcutsTooltip": "Press shift question mark to access a list of keyboard shortcuts",
+    },
     "liveBroadcast": "Live",
     "logo": "Logo",
     "mute": "Mute",
