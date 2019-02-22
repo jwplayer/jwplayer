@@ -268,7 +268,7 @@ class ProgramController extends Events {
 
         let mediaState = backgroundMediaController.mediaModel.attributes.mediaState;
         if (mediaState !== 'paused') {
-            mediaState = 'buffering';
+            backgroundMediaController.mediaModel.attributes.mediaState = 'buffering';
         }
 
         this._setActiveMedia(backgroundMediaController);
