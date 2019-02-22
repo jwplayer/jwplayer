@@ -270,13 +270,13 @@ export default class Controls {
                             related.close({ type: 'escape' });
                         }
                     }
-                    //close all modals on esc press.
+                    //  Close all modals on esc press.
                     if (this.rightClickMenu.el) {
                         console.log(this.rightClickMenu);
                         this.rightClickMenu.hideMenuHandler();
                     }
                     if (this.infoOverlay.visible) {
-                        this.infoOverlay
+                        this.infoOverlay.close();
                     }
                     if (this.shortcutsTooltip) {
                         this.shortcutsTooltip.close();
@@ -327,7 +327,7 @@ export default class Controls {
                     if (!this.shortcutsTooltip) {
                         this.shortcutsTooltip.open();
                     } else {
-                        //toggle visibility
+                        //  toggle visibility
                         this.shortcutsTooltip.toggleVisibility();
                     }
                     break;
@@ -363,7 +363,7 @@ export default class Controls {
 
         // Hide controls when focus leaves the player
         const blurCallback = (evt) => {
-            //Remove new shortcut tooltip after first read.
+            //  Remove new shortcut tooltip after first read.
             if (!OS.mobile) {
                 this.playerContainer.removeAttribute('aria-describedby');
             }

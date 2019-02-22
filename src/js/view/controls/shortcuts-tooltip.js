@@ -50,7 +50,7 @@ export default function (container) {
         addClass(template, 'jw-open');
         container.appendChild(template);
         template.querySelector('.jw-info-close').focus();
-    }
+    };
     const close = () => {
         removeClass(template, 'jw-open');
         template.parentElement.focus();
