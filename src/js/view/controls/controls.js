@@ -194,7 +194,6 @@ export default class Controls {
         if (OS.mobile) {
             this.div.appendChild(settingsMenu.element());
         } else {
-            console.log('adding description');
             this.playerContainer.setAttribute('aria-describedby', 'jw-new-features-explanation');
             this.div.insertBefore(settingsMenu.element(), controlbar.element());
         }
@@ -272,7 +271,6 @@ export default class Controls {
                     }
                     //  Close all modals on esc press.
                     if (this.rightClickMenu.el) {
-                        console.log(this.rightClickMenu);
                         this.rightClickMenu.hideMenuHandler();
                     }
                     if (this.infoOverlay.visible) {
