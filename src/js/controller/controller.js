@@ -340,7 +340,7 @@ Object.assign(Controller.prototype, {
         function _checkPlayOnViewable(model, viewable) {
             if (model.get('playOnViewable')) {
                 if (viewable) {
-                    _autoStart('viewable');
+                    _play('viewable');
                 } else if (OS.mobile) {
                     _this.pause({ reason: 'autostart' });
                 }
@@ -349,14 +349,13 @@ Object.assign(Controller.prototype, {
 
         function _checkPauseOnViewable(model, viewable) {
             const playerState = model.get('state');
-            const pauseReason = model.get('pauseReason');
             const adState = _getAdState();
             if (adState) {
                 _this._instreamAdapter.noResume = !viewable;
                 if (!viewable) {
                     _updatePauseReason({ reason: 'viewable' });
                 }
-            } else if (playerState !== STATE_PAUSED && playerState !== STATE_IDLE && pauseReason !== 'interaction') {
+            } else if (playerState !== STATE_PAUSED && playerState !== STATE_IDLE) {
                 if (!viewable) {
                     _this.pause({ reason: 'viewable' });
                     model.set('playOnViewable', !viewable);
@@ -365,7 +364,6 @@ Object.assign(Controller.prototype, {
         }
 
         function _load(item, feedData) {
-
             const instream = _this._instreamAdapter;
             if (instream) {
                 instream.noResume = true;
@@ -452,6 +450,11 @@ Object.assign(Controller.prototype, {
             _model.set('playReason', playReason);
 
             const adState = _getAdState();
+            const pauseReason = _model.get('pauseReason');
+            if (adState && pauseReason === 'viewable' && playReason !== 'interaction') {
+                return;
+            }
+
             if (adState) {
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false, meta);
