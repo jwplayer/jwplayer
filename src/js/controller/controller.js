@@ -348,26 +348,19 @@ Object.assign(Controller.prototype, {
         }
 
         function _checkPauseOnViewable(model, viewable) {
-            const instream = _this._instreamAdapter;
-
-            // If player left view and came back before ad completes,
-            // the player should begin/resume playing content.
-            if (viewable && instream && instream.noResume) {
-                instream.noResume = false;
-                model.set('playOnViewable', true);
-                return;
-            } else if (viewable) {
-                return;
-            }
-
+            const playerState = model.get('state');
+            const pauseReason = model.get('pauseReason');
             const adState = _getAdState();
-            if (!adState) {
-                _this.pause({ reason: 'viewable' });
-            } else if (model.get('activeTab') && adState !== 'paused') {
-                if (instream) {
-                    instream.noResume = true;
+            if (adState) {
+                _this._instreamAdapter.noResume = !viewable;
+                if (!viewable) {
+                    _updatePauseReason({ reason: 'viewable' });
                 }
-                model.set('playOnViewable', true);
+            } else if (playerState !== STATE_PAUSED && playerState !== STATE_IDLE && pauseReason !== 'interaction') {
+                if (!viewable) {
+                    _this.pause({ reason: 'viewable' });
+                    model.set('playOnViewable', !viewable);
+                }
             }
         }
 
