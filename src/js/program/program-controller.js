@@ -266,7 +266,11 @@ class ProgramController extends Events {
             return;
         }
 
-        backgroundMediaController.mediaModel.attributes.mediaState = 'buffering';
+        const attributes = backgroundMediaController.mediaModel.attributes;
+        if (attributes.mediaState !== 'paused') {
+            attributes.mediaState = 'buffering';
+        }
+
         this._setActiveMedia(backgroundMediaController);
         backgroundMediaController.background = false;
         background.currentMedia = null;

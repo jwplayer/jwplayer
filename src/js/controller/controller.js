@@ -273,6 +273,10 @@ Object.assign(Controller.prototype, {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
 
+            if (_model.get('autoPause').viewability) {
+                _model.change('viewable', _checkPauseOnViewable);
+            }
+
             // Run _checkAutoStart() last
             // 'viewable' changes can result in preload() being called on the initial provider instance
             _checkAutoStart();
@@ -298,7 +302,7 @@ Object.assign(Controller.prototype, {
 
             // Autostart immediately if we're not waiting for the player to become viewable first.
             if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
-                _autoStart();
+                _autoStart('autostart');
             }
             apiQueue.flush();
         }
@@ -336,15 +340,34 @@ Object.assign(Controller.prototype, {
         function _checkPlayOnViewable(model, viewable) {
             if (model.get('playOnViewable')) {
                 if (viewable) {
-                    _autoStart();
-                } else if (OS.mobile || (model.get('autoPause') && model.get('autoPause').viewability)) {
+                    if (model.get('state') === STATE_IDLE) {
+                        _autoStart('viewable');
+                    } else {
+                        _play('viewable');
+                    }
+                } else if (OS.mobile) {
                     _this.pause({ reason: 'autostart' });
                 }
             }
         }
 
-        function _load(item, feedData) {
+        function _checkPauseOnViewable(model, viewable) {
+            const playerState = model.get('state');
+            const adState = _getAdState();
+            if (adState) {
+                _this._instreamAdapter.noResume = !viewable;
+                if (!viewable) {
+                    _updatePauseReason({ reason: 'viewable' });
+                }
+            } else if (playerState !== STATE_PAUSED && playerState !== STATE_IDLE) {
+                if (!viewable) {
+                    _this.pause({ reason: 'viewable' });
+                    model.set('playOnViewable', !viewable);
+                }
+            }
+        }
 
+        function _load(item, feedData) {
             const instream = _this._instreamAdapter;
             if (instream) {
                 instream.noResume = true;
@@ -431,6 +454,11 @@ Object.assign(Controller.prototype, {
             _model.set('playReason', playReason);
 
             const adState = _getAdState();
+            const pauseReason = _model.get('pauseReason');
+            if (adState && pauseReason === 'viewable' && playReason !== 'interaction') {
+                return;
+            }
+
             if (adState) {
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false, meta);
@@ -482,9 +510,9 @@ Object.assign(Controller.prototype, {
             return 'external';
         }
 
-        function _autoStart() {
+        function _autoStart(reason) {
             const state = _getState();
-            if (state !== STATE_IDLE && state !== STATE_PAUSED) {
+            if (state !== STATE_IDLE) {
                 return;
             }
 
@@ -515,13 +543,7 @@ Object.assign(Controller.prototype, {
                     _captions.selectDefaultIndex(1);
                 }
 
-                // Enable autoPause behavior.
-                const autoPause = _model.get('autoPause');
-                if (autoPause && autoPause.viewability) {
-                    _model.set('playOnViewable', true);
-                }
-
-                return _play({ reason: 'autostart' }).catch(() => {
+                return _play({ reason }).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
                     }
@@ -532,10 +554,9 @@ Object.assign(Controller.prototype, {
                 _model.set('autostart', false);
                 // Emit event unless test was explicitly canceled.
                 if (!checkAutoStartCancelable.cancelled()) {
-                    const { reason } = error;
                     const code = getPlayAttemptFailedErrorCode(error);
                     _this.trigger(AUTOSTART_NOT_ALLOWED, {
-                        reason,
+                        reason: error.reason,
                         code,
                         error
                     });
@@ -572,14 +593,19 @@ Object.assign(Controller.prototype, {
             _programController.stopVideo();
         }
 
+        function _updatePauseReason(meta) {
+            const pauseReason = _getReason(meta);
+            _model.set('pauseReason', pauseReason);
+            _model.set('playOnViewable', (pauseReason === 'viewable'));
+        }
+
         function _pause(meta) {
             _actionOnAttach = null;
             checkAutoStartCancelable.cancel();
 
-            _model.set('pauseReason', _getReason(meta));
-
             const adState = _getAdState();
-            if (adState) {
+            if (adState && adState !== STATE_PAUSED) {
+                _updatePauseReason(meta);
                 _api.pauseAd(true, meta);
                 return;
             }
@@ -589,6 +615,7 @@ Object.assign(Controller.prototype, {
                     return;
                 case STATE_PLAYING:
                 case STATE_BUFFERING: {
+                    _updatePauseReason(meta);
                     _programController.pause();
                     break;
                 }
