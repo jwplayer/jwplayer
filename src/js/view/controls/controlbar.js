@@ -527,6 +527,10 @@ export default class Controlbar {
             const dvrPosition = Math.min(this._model.get('position'), -1);
             const dvrSeekLimit = this._model.get('dvrSeekLimit');
 
+            this._model.once('seeked', () => {
+                this._api.play(reasonInteraction());
+            });
+
             this._api.seek(Math.max(-dvrSeekLimit, dvrPosition), reasonInteraction());
         }
     }
