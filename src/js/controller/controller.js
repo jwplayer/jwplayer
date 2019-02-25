@@ -142,8 +142,10 @@ Object.assign(Controller.prototype, {
         _this.on(AD_PAUSE, event => changeReason(null, event.pauseReason));
 
         _model.on('change:scrubbing', function(model, state) {
-            if (state && model.get('state') !== STATE_PLAYING) {
+            if (state) {
                 _pause();
+            } else if (_model.get('state') === STATE_PLAYING) {
+                _play({ reason: 'interaction' });
             }
         });
 
