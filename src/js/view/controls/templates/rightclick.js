@@ -3,7 +3,7 @@ export default (menu, localization) => {
     const menuItems = items.map(item => rightClickItem(item, localization));
 
     return (
-        `<div class="jw-rightclick jw-reset">` +
+        `<div class="jw-rightclick jw-modal jw-reset">` +
             `<ul class="jw-rightclick-list jw-reset">${menuItems.join('')}</ul>` +
         `</div>`
     );

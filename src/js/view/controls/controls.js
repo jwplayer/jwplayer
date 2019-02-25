@@ -116,10 +116,14 @@ export default class Controls {
         // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
         this.infoOverlay = new InfoOverlay(element, model, api, visible => {
             toggleClass(this.div, 'jw-info-open', visible);
+            if (visible) {
+                //  Focus modal close button on open
+                this.div.querySelector('.jw-info-close').focus();
+            }  
         });
         //  Add keyboard shortcuts if not on mobi;e
         if (!OS.mobile) {
-            this.shortcutsTooltip = new ShortcutsTooltip(this.playerContainer);
+            this.shortcutsTooltip = new ShortcutsTooltip(this.playerContainer, api, model);
         }
         this.rightClickMenu = new RightClick(this.infoOverlay, this.shortcutsTooltip);
         if (touchMode) {
