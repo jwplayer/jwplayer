@@ -340,7 +340,11 @@ Object.assign(Controller.prototype, {
         function _checkPlayOnViewable(model, viewable) {
             if (model.get('playOnViewable')) {
                 if (viewable) {
-                    _play('viewable');
+                    if (model.get('state') === STATE_IDLE) {
+                        _autoStart('viewable');
+                    } else {
+                        _play('viewable');
+                    }
                 } else if (OS.mobile) {
                     _this.pause({ reason: 'autostart' });
                 }
@@ -508,7 +512,7 @@ Object.assign(Controller.prototype, {
 
         function _autoStart(reason) {
             const state = _getState();
-            if (state !== STATE_IDLE && state !== STATE_PAUSED) {
+            if (state !== STATE_IDLE) {
                 return;
             }
 
