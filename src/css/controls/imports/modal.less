@@ -1,5 +1,6 @@
 .jw-modal {
     width: 284px;
+
     .jw-breakpoint-7 &,
     .jw-breakpoint-6 &,
     .jw-breakpoint-5 & {
@@ -16,5 +17,16 @@
     .jw-breakpoint-2 & {
         .rect(284px, 179px);
         max-height: 179px;
+    }
+
+    .jw-breakpoint-2 &,
+    .jw-flag-small-player & {
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        max-height: none;
+        max-width: none;
+        z-index: 1;
     }
 }
