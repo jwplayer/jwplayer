@@ -97,8 +97,8 @@ function View(_api, _model) {
         const currentElement = _getCurrentElement();
         const inDOM = document.body.contains(currentElement);
         const rect = bounds(currentElement);
-        let containerWidth = Math.round(rect.width);
-        let containerHeight = Math.round(rect.height);
+        const containerWidth = Math.round(rect.width);
+        const containerHeight = Math.round(rect.height);
 
         // If the container is the same size as before, return early
         if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
@@ -119,15 +119,6 @@ function View(_api, _model) {
 
         // Don't update container dimensions to 0, 0 when not in DOM
         if (containerWidth || containerHeight || inDOM) {
-            if (!_resizeOnFloat && floatingPlayer) {
-                // Update floating player based on player elements bounds when updateBounds fires on orientationChange.
-                const { floatingWidth, floatingHeight } = _getFloatingDimensions(containerWidth, containerHeight);
-                containerWidth = floatingWidth;
-                containerHeight = floatingHeight;
-                _resizeOnFloat = true;
-                _resizePlayer(floatingWidth, floatingHeight, true);
-                _resizeOnFloat = false;
-            }
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
         }
@@ -618,8 +609,7 @@ function View(_api, _model) {
     }
 
     this.resize = function (playerWidth, playerHeight) {
-        const resetAspectMode = true;
-        _resizePlayer(playerWidth, playerHeight, resetAspectMode);
+        _resizePlayer(playerWidth, playerHeight, true);
         _responsiveUpdate();
     };
     this.resizeMedia = _resizeMedia;
@@ -870,8 +860,9 @@ function View(_api, _model) {
         return _model.get('isFloating') && _resizeOnFloat ? _wrapperElement : _playerElement;
     }
 
-    function _getFloatingDimensions(width, height) {
+    function _getFloatingDimensions() {
         // Resize within MAX_FLOATING_WIDTH×MAX_FLOATING_HEIGHT bounds, never enlarge.
+        const { width, height } = _this.getSafeRegion(false);
         const floatingWidth = Math.min(width, MAX_FLOATING_WIDTH);
         const floatingHeight = Math.min(height * floatingWidth / width, MAX_FLOATING_HEIGHT);
         return { floatingWidth, floatingHeight };
@@ -891,14 +882,7 @@ function View(_api, _model) {
             addClass(_playerElement, 'jw-flag-floating');
             _this.trigger(FLOAT, { floating: true });
             _model.set('isFloating', true);
-
-            _resizeOnFloat = true;
-            const { width, height } = _this.getSafeRegion(false);
-            const { floatingWidth, floatingHeight } = _getFloatingDimensions(width, height);
-        
-            _this.resize(floatingWidth, floatingHeight);
-
-            _resizeOnFloat = false;
+            _this.resizeFloatingPlayer();
         } else if (isVisible) {
             _this.stopFloating();
         }
@@ -922,6 +906,20 @@ function View(_api, _model) {
         }
     };
 
+    this.resizeFloatingPlayer = function() {
+        const html = document.documentElement;
+        const body = document.body;
+        const isMobilePortrait = _isMobile && (html.clientWidth || body.clientWidth) < 420;
+
+        if (isMobilePortrait) {
+            style(_wrapperElement, { width: '100%' });
+        } else {
+            _resizeOnFloat = true;
+            const { floatingWidth, floatingHeight } = _getFloatingDimensions();
+            _this.resize(floatingWidth, floatingHeight);
+            _resizeOnFloat = false;
+        }
+    };
 
     this.destroy = function () {
         _model.destroy();

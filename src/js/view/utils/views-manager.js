@@ -51,6 +51,9 @@ function scheduleResponsiveRedraw() {
         views.forEach(view => {
             view.checkResized();
         });
+        views.forEach(view => {
+            view.resizeFloatingPlayer();
+        });
     });
 }
 
