@@ -48,6 +48,21 @@ export default class VolumeTooltipIcon extends TooltipIcon {
             this.trigger('update', evt);
         }, this);
 
+        this.horizontalSlider.uiOver.on('keydown', (evt) => {
+            const event = evt.sourceEvent;
+            switch (event.keyCode) {
+                case 37:
+                    event.stopPropagation();
+                    this.trigger('adjustVolume', -10);
+                    break;
+                case 39:
+                    event.stopPropagation();
+                    this.trigger('adjustVolume', 10);
+                    break;
+                default:
+            }
+        });
+
         this.ui = new UI(this.el, { directSelect: true })
             .on('click enter', this.toggleValue, this)
             .on('tap', this.toggleOpenState, this);

@@ -2,7 +2,7 @@ import { OS } from 'environment/environment';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import { between } from 'utils/math';
-import { addClass, hasClass, removeClass, toggleClass } from 'utils/dom';
+import { addClass, removeClass, toggleClass } from 'utils/dom';
 import { now } from 'utils/date';
 import button from 'view/controls/components/button';
 import Controlbar from 'view/controls/controlbar';
@@ -136,7 +136,7 @@ export default class Controls {
         controlbar.on('nextShown', function (data) {
             this.trigger('nextShown', data);
         }, this);
-        const horizontalVolumeContainer = controlbar.element().querySelector('.jw-horizontal-volume-container');
+        controlbar.on('adjustVolume', adjustVolume, this);
 
         // Next Up Tooltip
         if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
@@ -251,8 +251,6 @@ export default class Controls {
             }
             const menuHidden = !this.settingsMenu.visible;
             const adMode = this.instreamState;
-            const horizontalVolumeActive = document.activeElement === horizontalVolumeContainer &&
-                hasClass(horizontalVolumeContainer, 'jw-open');
 
             switch (evt.keyCode) {
                 case 27: // Esc
@@ -272,16 +270,12 @@ export default class Controls {
                     api.playToggle(reasonInteraction());
                     break;
                 case 37: // left-arrow, if not adMode and settings menu is hidden
-                    if (horizontalVolumeActive) {
-                        adjustVolume(-10);
-                    } else if (!adMode && menuHidden) {
+                    if (!adMode && menuHidden) {
                         adjustSeek(-5);
                     }
                     break;
                 case 39: // right-arrow, if not adMode and settings menu is hidden
-                    if (horizontalVolumeActive) {
-                        adjustVolume(10);
-                    } else if (!adMode && menuHidden) {
+                    if (!adMode && menuHidden) {
                         adjustSeek(5);
                     }
                     break;

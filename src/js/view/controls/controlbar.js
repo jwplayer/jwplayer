@@ -127,15 +127,6 @@ export default class Controlbar {
 
         const vol = localization.volume;
 
-        // Do not show the volume toggle in the mobile SDKs or <iOS10
-        if (this._isMobile && !_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
-            // Clone icons so that can be used in volumeGroup
-            const svgIcons = cloneIcons('volume-0,volume-100');
-            muteButton = button('jw-icon-volume', () => {
-                _api.setMute();
-            }, vol, svgIcons);
-        }
-
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
             horizontalVolumeContainer = document.createElement('div');
@@ -151,6 +142,13 @@ export default class Controlbar {
                 const muteText = muted ? localization.unmute : localization.mute;
                 setAttribute(volumeButtonEl, 'aria-label', muteText);
             }, this);
+        } else if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
+            // Do not show the volume toggle in the mobile SDKs or <iOS10
+            // Clone icons so that can be used in volumeGroup
+            const svgIcons = cloneIcons('volume-0,volume-100');
+            muteButton = button('jw-icon-volume', () => {
+                _api.setMute();
+            }, vol, svgIcons);
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -329,6 +327,9 @@ export default class Controlbar {
             }, this);
             elements.volumetooltip.on('toggleValue', function () {
                 this._api.setMute();
+            }, this);
+            elements.volumetooltip.on('adjustVolume', function(evt) {
+                this.trigger('adjustVolume', evt);
             }, this);
         }
 
