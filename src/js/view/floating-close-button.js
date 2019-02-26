@@ -13,7 +13,7 @@ export default class FloatingCloseButton extends Events {
         this.element.appendChild(cloneIcon('close'));
         this.ui = new UI(this.element).on('click tap enter', () => {
             this.trigger(USER_ACTION);
-        }, this);
+        });
 
         container.appendChild(this.element);
     }

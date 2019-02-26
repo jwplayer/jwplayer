@@ -79,7 +79,8 @@ function View(_api, _model) {
     let _floatingConfig = _model.get('floating');
     let _advertising = _model.get('advertising');
 
-    let _dismissible = _floatingConfig.dismissible || (_advertising.outstream && _advertising.dismisible);
+    let _dismissible = _floatingConfig && _floatingConfig.dismissible ||
+        (_advertising && _advertising.outstream && _advertising.dismisible);
     let _canFloat = false;
 
     let displayClickHandler;
