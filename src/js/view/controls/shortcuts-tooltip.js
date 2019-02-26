@@ -2,35 +2,30 @@ import shortcutTooltipTemplate from 'view/controls/templates/shortcuts-tooltip';
 import { createElement, removeClass, addClass } from 'utils/dom';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
-import { STATE_PAUSED, STATE_PLAYING } from 'events/events';
+import { STATE_PLAYING } from 'events/events';
 
 export default function (container, api, model) {
     let isOpen = false;
     let lastState = null;
     const template = createElement(shortcutTooltipTemplate());
     const settingsInteraction = { reason: 'settingsInteraction' };
-    const getState = () => model.get('state');
-    const play = () => api.play(settingsInteraction);
-    const pause = () => api.pause(settingsInteraction);
+
     const open = () => {
         addClass(template, 'jw-open');
+        lastState = model.get('state');
         template.querySelector('.jw-shortcuts-close').focus();
-        isOpen = true;
-        if (getState() === STATE_PLAYING) {
-            lastState = STATE_PLAYING;
-            pause();
-        }
         document.addEventListener('click', documentClickHandler);
+        isOpen = true;
+        api.pause(settingsInteraction);
     };
     const close = () => {
-        removeClass(template, 'jw-open');
-        template.parentElement.focus();      
-        isOpen = false;
-        if (getState() === STATE_PAUSED && lastState === STATE_PLAYING) {
-            lastState = STATE_PAUSED;
-            play();
-        }
+        removeClass(template, 'jw-open');     
         document.removeEventListener('click', documentClickHandler);
+        container.focus();
+        isOpen = false;
+        if (lastState === STATE_PLAYING) {
+            api.play(settingsInteraction);
+        }
     };
     const documentClickHandler = (e) => {
         if (!/jw-shortcuts/.test(e.target.className)) {
@@ -45,7 +40,6 @@ export default function (container, api, model) {
         }
     };
     const render = () => {
-        const header = template.querySelector('.jw-shortcuts-close');
         const keyList = template.querySelector('.jw-shortcuts-tooltip-keys');
         const descriptionList = template.querySelector('.jw-shortcuts-tooltip-descriptions');
         const shortcuts = [
@@ -85,7 +79,9 @@ export default function (container, api, model) {
                 description: 'seek to %'
             }
         ];
-        const closeButton = button('jw-close', close);
+        const closeButton = button('jw-shortcuts-close', () => {
+            close();
+        }, model.get('localization').close, [cloneIcon('close')]);
         
         //  Iterate all shortcuts to create list of them. 
         shortcuts.map(shortcut => {
@@ -104,8 +100,7 @@ export default function (container, api, model) {
         });
 
         //  Append close button to modal.
-        closeButton.element().appendChild(cloneIcon('close'));
-        header.prepend(closeButton.element());
+        template.prepend(closeButton.element());
         closeButton.show();
         
         //  Append modal to container
@@ -116,7 +111,6 @@ export default function (container, api, model) {
 
     return {
         el: template,
-        isOpen,
         close,
         open,
         toggleVisibility,

@@ -1,3 +1,6 @@
+//  Import added so this file can be used in unit testing.
+@import "../../shared-imports/mixins.less";
+
 @rightclick-primary-text: #fefefe;
 @rightclick-secondary-text: #333;
 @rightclick-bg: #333;
@@ -23,6 +26,11 @@
     .jw-shortcuts-close {
         flex: 0 0 auto;
         margin: 5px 5px 5px auto;
+
+        &:focus {
+            border: none;
+            outline: none;
+        }
     }
 
     .jw-shortcuts-container {

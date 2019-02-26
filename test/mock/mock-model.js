@@ -1,6 +1,7 @@
 import SimpleModel from 'model/simplemodel';
 import Config from 'api/config';
 import Events from 'utils/backbone.events';
+import en from 'assets/translations/en';
 
 
 export default class MockModel extends SimpleModel {
@@ -68,6 +69,7 @@ export default class MockModel extends SimpleModel {
             seekRange: { start: 0, end: 0 },
             scrubbing: false,
             playlistItem: playlistItem,
+            localization: en,
             logo: {
                 position: 'top-right',
                 margin: 2
