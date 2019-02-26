@@ -77,6 +77,9 @@ function View(_api, _model) {
     let _stateClassRequestId = -1;
 
     let _floatingConfig = _model.get('floating');
+    let _advertising = _model.get('advertising');
+
+    let _dismissible = _floatingConfig.dismissible || (_advertising.outstream && _advertising.dismisible);
     let _canFloat = false;
 
     let displayClickHandler;
@@ -246,6 +249,7 @@ function View(_api, _model) {
         updateContainerStyles(width, height);
         if (!_model.get('controls')) {
             addClass(_playerElement, 'jw-flag-controls-hidden');
+            removeClass(_playerElement, 'jw-floating-dismissible');
         }
 
         if (_isIE) {
@@ -409,6 +413,9 @@ function View(_api, _model) {
                         return;
                     }
                     toggleClass(_playerElement, 'jw-flag-controls-hidden');
+                    if (_dismissible) {
+                        toggleClass(_playerElement, 'jw-floating-dismissible');
+                    }
                     _captionsRenderer.renderCues(true);
                 } else if (_controls) {
                     if (!_controls.showing) {
@@ -476,6 +483,7 @@ function View(_api, _model) {
         _controls = controls;
 
         removeClass(_playerElement, 'jw-flag-controls-hidden');
+        toggleClass(_playerElement, 'jw-floating-dismissible', _dismissible);
 
         controls.enable(_api, _model);
 
@@ -512,6 +520,7 @@ function View(_api, _model) {
         }
 
         addClass(_playerElement, 'jw-flag-controls-hidden');
+        removeClass(_playerElement, 'jw-floating-dismissible');
     };
 
     // Perform the switch to fullscreen
@@ -702,6 +711,7 @@ function View(_api, _model) {
     function _stateUpdate(state) {
         if (_model.get('controls') && state !== STATE_PAUSED && hasClass(_playerElement, 'jw-flag-controls-hidden')) {
             removeClass(_playerElement, 'jw-flag-controls-hidden');
+            toggleClass(_playerElement, 'jw-floating-dismissible', _dismissible);
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
