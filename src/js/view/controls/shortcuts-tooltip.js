@@ -1,5 +1,5 @@
 import shortcutTooltipTemplate from 'view/controls/templates/shortcuts-tooltip';
-import { createElement, removeClass, addClass } from 'utils/dom';
+import { createElement, removeClass, addClass, prependChild } from 'utils/dom';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { STATE_PLAYING } from 'events/events';
@@ -100,7 +100,7 @@ export default function (container, api, model) {
         });
 
         //  Append close button to modal.
-        template.prepend(closeButton.element());
+        prependChild(template, closeButton.element());
         closeButton.show();
         
         //  Append modal to container
