@@ -69,6 +69,7 @@ export const addedProperties = {
 
 export default {
     id: '',
+    autoPause: { viewability: false },
     autostart: false,
     base: '',
     controls: true,

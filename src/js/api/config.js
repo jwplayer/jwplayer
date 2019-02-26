@@ -10,6 +10,7 @@ import { getLanguage, getCustomLocalization, applyTranslation, normalizeIntl } f
 // Defaults
 // Alphabetical order
 const Defaults = {
+    autoPause: { viewability: false },
     autostart: false,
     bandwidthEstimate: null,
     bitrateSelection: null,
@@ -83,6 +84,13 @@ const Config = function(options, persisted) {
     config.mute = !!config.mute;
     config.language = language;
     config.intl = intl;
+
+    // If autoPause is configured with an empty block,
+    // default autoPause.viewability to true.
+    let autoPause = allOptions.autoPause;
+    if (autoPause) {
+        config.autoPause.viewability = ('viewability' in autoPause) ? !!autoPause.viewability : true;
+    }
 
     let rateControls = config.playbackRateControls;
 
