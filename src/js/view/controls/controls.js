@@ -198,7 +198,7 @@ export default class Controls {
         if (OS.mobile) {
             this.div.appendChild(settingsMenu.element());
         } else {
-            this.playerContainer.setAttribute('aria-describedby', 'jw-new-features-explanation');
+            this.playerContainer.setAttribute('aria-describedby', 'jw-shortcuts-tooltip-explanation');
             this.div.insertBefore(settingsMenu.element(), controlbar.element());
         }
 
@@ -326,10 +326,7 @@ export default class Controls {
                     api.setFullscreen();
                     break;
                 case 191: // ? key
-                    if (!this.shortcutsTooltip) {
-                        this.shortcutsTooltip.open();
-                    } else {
-                        //  toggle visibility
+                    if (!OS.mobile) {
                         this.shortcutsTooltip.toggleVisibility();
                     }
                     break;
@@ -367,7 +364,11 @@ export default class Controls {
         const blurCallback = (evt) => {
             //  Remove new shortcut tooltip after first read.
             if (!OS.mobile) {
-                this.playerContainer.removeAttribute('aria-describedby');
+                const ariaDescriptionId = this.playerContainer.getAttribute('aria-describedby');
+                //  Remove tooltip description after first focus.
+                if (ariaDescriptionId === 'jw-shortcuts-tooltip-explanation') {
+                    this.playerContainer.removeAttribute('aria-describedby');
+                }
             }
             const focusedElement = evt.relatedTarget || document.querySelector(':focus');
             if (!focusedElement) {
