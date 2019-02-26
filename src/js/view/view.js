@@ -79,7 +79,6 @@ function View(_api, _model) {
 
     let _floatingConfig = _model.get('floating');
     let _canFloat = false;
-    let _dragDisabled = false;
 
     let displayClickHandler;
     let fullscreenHelpers;
@@ -765,7 +764,6 @@ function View(_api, _model) {
 
     const setupInstream = function() {
         addClass(_playerElement, 'jw-flag-ads');
-        _dragDisabled = hasClass(_playerElement, 'jw-flag-ads-freewheel');
 
         if (_controls) {
             _controls.setupInstream();
@@ -784,7 +782,6 @@ function View(_api, _model) {
         _this.setAltText('');
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
-        _dragDisabled = false;
 
         // Make sure that the provider's media element is returned to the DOM after instream mode
         const provider = _model.getVideo();
@@ -875,9 +872,6 @@ function View(_api, _model) {
                 playerTop = _wrapperElement.offsetTop;
             })
             .on('drag', (e) => {
-                if (_dragDisabled) {
-                    return;
-                }
                 let left = Math.max(playerLeft + e.pageX - dragStartX, 0);
                 let top = Math.max(playerTop + e.pageY - dragStartY, 0);
                 let right = Math.max(innerWidth - (left + _wrapperElement.clientWidth), 0);
