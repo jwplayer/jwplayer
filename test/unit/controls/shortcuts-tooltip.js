@@ -4,7 +4,7 @@ import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
 
 require('css/controls/imports/shortcuts-tooltip.less');
 
-describe('Keyboard Shortcuts Modal Test', () => {
+describe('Keyboard Shortcuts Modal Test', function() {
     function isHidden (el) {
         var style = window.getComputedStyle(el);
         return (style.display === 'none')
@@ -16,34 +16,34 @@ describe('Keyboard Shortcuts Modal Test', () => {
     const api = new MockApi();
     let player;
     let shortcutsTooltip;
-    beforeEach(() => {
+    beforeEach(function(){
         player = document.createElement('div');
         player.classList.add('jwplayer');
         model.setup({});
         shortcutsTooltip = new ShortcutsTooltip(player, api, model);
         document.body.appendChild(player);
     });
-    afterEach(() => {
+    afterEach(function() {
         document.body.removeChild(player);
         shortcutsTooltip = null;
         player = null;
     });
-    it('should be hidden initially', () => {
+    it('should be hidden initially', function() {
         const isInitiallyHidden = isHidden(shortcutsTooltip.el);
-        expect(isInitiallyHidden).to.deep.equal(true)
+        expect(isInitiallyHidden).to.equal(true)
     })
-    it('should be visible when open', () => {
+    it('should be visible when open', function() {
         shortcutsTooltip.open();
         const isVisibleAfterOpening = isVisible(shortcutsTooltip.el)
-        expect(isVisibleAfterOpening).to.deep.equal(true)
+        expect(isVisibleAfterOpening).to.equal(true)
     });
-    it('should be hidden when closed', () => {
+    it('should be hidden when closed', function() {
         shortcutsTooltip.open();
         shortcutsTooltip.close();
         const isHiddenAfterClosing = isHidden(shortcutsTooltip.el);
-        expect(isHiddenAfterClosing).to.deep.equal(true);
+        expect(isHiddenAfterClosing).to.equal(true);
     });
-    it('should toggle visibility on toggleVisibility', () => {
+    it('should toggle visibility on toggleVisibility', function() {
         let isTogglingWorking;
         const isInitiallyHidden = isHidden(shortcutsTooltip.el);
         shortcutsTooltip.toggleVisibility();
@@ -52,12 +52,11 @@ describe('Keyboard Shortcuts Modal Test', () => {
         const isHiddenAfterSecondToggle = isHidden(shortcutsTooltip.el);
         
         isTogglingWorking = isInitiallyHidden && isVisibleAfterFirstToggle && isHiddenAfterSecondToggle;
-        expect(isTogglingWorking).to.deep.equal(true);
+        expect(isTogglingWorking).to.equal(true);
     });
-    it('should focus the closing button when opened', () => {
+    it('should focus the closing button when opened', function() {
         const closeButton = player.querySelector('.jw-shortcuts-close');
         shortcutsTooltip.open();
-        document.activeElement.isSameNode(closeButton)
-        expect(true).to.deep.equal(true);
+        expect(document.activeElement.isSameNode(closeButton)).to.equal(true);
     });
 });
