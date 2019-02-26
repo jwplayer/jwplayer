@@ -574,6 +574,7 @@ Object.assign(Controller.prototype, {
                 if (instream) {
                     instream.noResume = true;
                 }
+                _actionOnAttach = () => _programController.stopVideo();
                 return;
             }
 
