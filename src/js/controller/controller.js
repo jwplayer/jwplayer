@@ -52,6 +52,7 @@ Object.assign(Controller.prototype, {
         let _actionOnAttach;
         let _stopPlaylist = false;
         let _interruptPlay;
+        let _stateOnScrubbing = null;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
         let updatePlaylistCancelable = cancelable(noop);
 
@@ -144,7 +145,8 @@ Object.assign(Controller.prototype, {
         _model.on('change:scrubbing', function(model, state) {
             if (state) {
                 _pause();
-            } else if (_model.get('state') === STATE_PLAYING) {
+                _stateOnScrubbing = _model.get('state');
+            } else if (_stateOnScrubbing === STATE_PLAYING) {
                 _play({ reason: 'interaction' });
             }
         });
@@ -613,6 +615,10 @@ Object.assign(Controller.prototype, {
             if (!_model.get('scrubbing') && state !== STATE_PLAYING) {
                 meta = meta || {};
                 meta.startTime = pos;
+
+                if (state === STATE_IDLE) {
+                    this.play(meta);
+                }
             }
         }
 
