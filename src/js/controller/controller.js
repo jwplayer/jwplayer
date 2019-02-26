@@ -977,9 +977,17 @@ Object.assign(Controller.prototype, {
             _programController.controls = mode;
         };
 
+        this.addCues = function (cues) {
+            const existingCues = this.getCues();
+            const newCues = existingCues ? existingCues.concat(cues) : cues;
+            this.setCues(newCues);
+        };
+
         this.setCues = function (cues) {
             _model.set('cues', cues);
         };
+
+        this.getCues = _model.get('cues');
 
         this.updatePlaylist = function(playlist, feedData) {
             try {

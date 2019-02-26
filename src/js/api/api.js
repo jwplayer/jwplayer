@@ -252,6 +252,16 @@ export default function Api(element) {
         },
 
         /**
+         * Adds to the list of cues to be displayed on the time slider.
+         * @param {Array.<SliderCue>} sliderCues - The list of cues.
+         * @returns {Api} The Player API instance.
+         */
+        addCues(sliderCues) {
+            core.addCues(sliderCues);
+            return this;
+        },
+
+        /**
          * Gets the list of available audio tracks.
          * @returns {Array.<AudioTrackOption>} An array of AudioTrackOption objects representing the current media's audio tracks.
          */
@@ -314,6 +324,14 @@ export default function Api(element) {
          */
         getControls() {
             return core.get('controls');
+        },
+
+        /**
+         * Gets the list of cues
+         * @returns {Array.<SliderCue>} sliderCues - The list of cues.
+         */
+        getCues() {
+            return core.get('cues');
         },
 
         /**

@@ -49,6 +49,7 @@ const CoreShim = function(originalContainer) {
         'setMute',
         'setVolume',
         'setPlaybackRate',
+        'addCues',
         'setCues',
         'setPlaylistItem',
 
