@@ -280,7 +280,6 @@ class TimeSlider extends Slider {
     }
 
     addCues(model, cues) {
-        this.resetChapters();
         if (cues && cues.length) {
             cues.forEach((ele) => {
                 this.addCue(ele);
@@ -312,6 +311,7 @@ class TimeSlider extends Slider {
 
     reset() {
         this.resetThumbnails();
+        this.resetChapters();
         this.timeTip.resetWidth();
         this.textLength = 0;
     }
