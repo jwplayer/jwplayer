@@ -20,16 +20,40 @@
     }
 
     .jw-float-icon {
-        display: block;
+        pointer-events: all;
+        cursor: pointer;
+        display: none;
+
+        .jw-svg-icon {
+            filter: drop-shadow(0 0 1px #000);
+        }
+    }
+
+    &.jw-floating-dismissible .jw-dismiss-icon {
+        display: none;
+    }
+}
+
+.jw-flag-floating.jw-floating-dismissible {
+    &.jw-state-paused,
+    &:not(.jw-flag-user-inactive) {
+        .jw-float-icon {
+            display: flex;
+        }
+
+        .jw-logo {
+            display: none;
+        }
     }
 }
 
 .jw-float-icon {
     display: none;
-
     position: absolute;
+    top: 0;
     right: 0;
-    bottom: 0;
+    align-items: center;
+    justify-content: center;
 }
 
 @keyframes jw-float {
