@@ -861,8 +861,8 @@ function View(_api, _model) {
         let dragStartY;
         let playerLeft;
         let playerTop;
-
-        const { innerHeight, innerWidth } = window;
+        let innerHeight;
+        let innerWidth;
 
         return new UI(_wrapperElement)
             .on('dragStart', (e) => {
@@ -870,6 +870,8 @@ function View(_api, _model) {
                 dragStartY = e.pageY;
                 playerLeft = _wrapperElement.offsetLeft;
                 playerTop = _wrapperElement.offsetTop;
+                innerHeight = window.innerHeight;
+                innerWidth = window.innerWidth;
             })
             .on('drag', (e) => {
                 let left = Math.max(playerLeft + e.pageX - dragStartX, 0);
@@ -887,7 +889,7 @@ function View(_api, _model) {
                 });
             })
             .on('dragEnd', () => {
-                dragStartX = dragStartY = playerLeft = playerTop = null;
+                dragStartX = dragStartY = playerLeft = playerTop = innerWidth = innerHeight = null;
             });
     }
 
