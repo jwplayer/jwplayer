@@ -77,10 +77,8 @@ function View(_api, _model) {
     let _stateClassRequestId = -1;
 
     let _floatingConfig = _model.get('floating');
-    let _advertising = _model.get('advertising');
 
-    let _dismissible = _floatingConfig && _floatingConfig.dismissible ||
-        (_advertising && _advertising.outstream && _advertising.dismisible);
+    this.dismissible = _floatingConfig && _floatingConfig.dismissible;
     let _canFloat = false;
 
     let displayClickHandler;
@@ -414,8 +412,8 @@ function View(_api, _model) {
                         return;
                     }
                     toggleClass(_playerElement, 'jw-flag-controls-hidden');
-                    if (_dismissible) {
-                        toggleClass(_playerElement, 'jw-floating-dismissible');
+                    if (_this.dismissible) {
+                        toggleClass(_playerElement, 'jw-floating-dismissible', hasClass(_playerElement, 'jw-flag-controls-hidden'));
                     }
                     _captionsRenderer.renderCues(true);
                 } else if (_controls) {
@@ -484,7 +482,7 @@ function View(_api, _model) {
         _controls = controls;
 
         removeClass(_playerElement, 'jw-flag-controls-hidden');
-        toggleClass(_playerElement, 'jw-floating-dismissible', _dismissible);
+        toggleClass(_playerElement, 'jw-floating-dismissible', this.dismissible);
 
         controls.enable(_api, _model);
 
@@ -712,7 +710,7 @@ function View(_api, _model) {
     function _stateUpdate(state) {
         if (_model.get('controls') && state !== STATE_PAUSED && hasClass(_playerElement, 'jw-flag-controls-hidden')) {
             removeClass(_playerElement, 'jw-flag-controls-hidden');
-            toggleClass(_playerElement, 'jw-floating-dismissible', _dismissible);
+            toggleClass(_playerElement, 'jw-floating-dismissible', _this.dismissible);
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
