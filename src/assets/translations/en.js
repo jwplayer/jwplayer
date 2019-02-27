@@ -1,3 +1,4 @@
+/* eslint-disable quote-props, quotes */
 export default {
     "advertising": {
         "admessage": "This ad will end in xx",
