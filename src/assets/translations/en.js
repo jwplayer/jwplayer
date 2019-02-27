@@ -1,4 +1,3 @@
-/* eslint-disable quote-props, quotes */
 export default {
     "advertising": {
         "admessage": "This ad will end in xx",
@@ -41,7 +40,6 @@ export default {
     "playback": "Play",
     "playbackRates": "Playback Rates",
     "player": "Video Player",
-    "playlist": "Playlist",
     "poweredBy": "Powered by",
     "prev": "Previous",
     "related": {
