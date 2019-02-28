@@ -1,0 +1,84 @@
+//  Import added so this file can be used in unit testing.
+@import "../../shared-imports/mixins.less";
+
+@rightclick-primary-text: #fefefe;
+@rightclick-secondary-text: #333;
+@rightclick-bg: #333;
+@rightclick-secondary-bg: #fefefe;
+@ui-padding: 0.5em;
+@ui-margin: 20px;
+
+.jwplayer .jw-shortcuts-tooltip {
+    .topleft(50%, 50%);
+    background: @menu-background-color;
+    transform: translate(-50%, -50%);
+    display: none;
+    color: @active-color;
+    pointer-events: all;
+    user-select: text;
+    overflow: hidden;
+    flex-direction: column;
+
+    &.jw-open {
+        display: flex;
+    }
+
+    .jw-shortcuts-close {
+        flex: 0 0 auto;
+        margin: 5px 5px 5px auto;
+
+        &:focus {
+            border: none;
+            outline: none;
+        }
+    }
+
+    .jw-shortcuts-container {
+        .scrollbar-style();
+        display: flex;
+        flex: 1 1 auto;
+        flex-flow: column;
+        margin: 0 20px 20px;
+        overflow-y: auto;
+        padding: 5px;
+    }
+
+    .jw-shortcuts-title {
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .jw-shortcuts-description {
+        margin-bottom: 30px;
+    }
+
+    .jw-shortcuts-tooltip-list {
+        display: flex;
+        max-width: 340px;
+
+        .jw-shortcuts-tooltip-descriptions {
+            list-style: none;
+            padding-left: 0;
+            font-size: 12px;
+            margin-right: 20px;
+            margin-left: 10px;
+            padding-top: 5px;
+        }
+
+        .jw-shortcuts-tooltip-keys {
+            list-style: none;
+            font-size: 12px;
+            padding-top: 5px;
+
+            .jw-hotkey {
+                color: @rightclick-secondary-text;
+                background: @rightclick-secondary-bg;
+                padding: 7px 10px;
+            }
+        }
+
+        li {
+            line-height: 2.15rem;
+        }
+    }
+}
