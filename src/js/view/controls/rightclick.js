@@ -43,17 +43,17 @@ export default class RightClick {
         };
 
         const provider = model.get('provider');
+        const menuItems = menu.items;
         if (provider && provider.name.indexOf('flash') >= 0) {
             const text = 'Flash Version ' + flashVersion();
-            menu.items.push({
+            menuItems.push({
                 title: text,
                 type: 'link',
                 link: 'http://www.adobe.com/software/flash/about/'
             });
         }
         if (this.shortcutsTooltip) {
-            const secondToLastIndex = menu.items.length - 1;
-            menu.items.splice(secondToLastIndex, 0, {
+            menuItems.splice(menuItems.length - 1, 0, {
                 type: 'keyboardShortcuts'
             });
         }

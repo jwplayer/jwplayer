@@ -85,18 +85,10 @@ export default function (container, api, model) {
         
         //  Iterate all shortcuts to create list of them. 
         shortcuts.map(shortcut => {
-            const keyWrapper = document.createElement('li');
-            const key = document.createElement('span');
-            const descriptionWrapper = document.createElement('li');
-            const description = document.createElement('span');
-            key.textContent = shortcut.key;
-            key.classList.add('jw-hotkey');
-            keyWrapper.appendChild(key);
-            keyList.appendChild(keyWrapper);
-            description.textContent = shortcut.description;
-            description.classList.add('jw-hotkey-description');
-            descriptionWrapper.appendChild(description);
-            descriptionList.appendChild(descriptionWrapper);
+            const key = createElement(`<li><span class="jw-hotkey">${shortcut.key}</span></li>`);
+            const description = createElement(`<li><span class="jw-hotkey-description">${shortcut.description}</span></li>`);
+            keyList.appendChild(key);
+            descriptionList.appendChild(description);
         });
 
         //  Append close button to modal.
