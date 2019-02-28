@@ -718,6 +718,7 @@ function View(_api, _model) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
+                _this.stopFloating();
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
@@ -864,7 +865,7 @@ function View(_api, _model) {
     function _updateFloating(intersectionRatio) {
         // Entirely invisible and no floating player already in the DOM.
         const isVisible = intersectionRatio === 1;
-        if (!isVisible && _model.get('state') !== STATE_IDLE && floatingPlayer === null) {
+        if (!isVisible && _model.get('state') !== STATE_IDLE && _model.get('state') !== STATE_COMPLETE && floatingPlayer === null) {
             floatingPlayer = _playerElement;
 
             // Copy background from preview element, fallback to image config.
