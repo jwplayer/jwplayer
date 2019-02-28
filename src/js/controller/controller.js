@@ -52,7 +52,7 @@ Object.assign(Controller.prototype, {
         let _actionOnAttach;
         let _stopPlaylist = false;
         let _interruptPlay;
-        let _stateOnScrubbing = null;
+        let _stateBeforeScrubbing = null;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
         let updatePlaylistCancelable = cancelable(noop);
 
@@ -144,9 +144,9 @@ Object.assign(Controller.prototype, {
 
         _model.on('change:scrubbing', function(model, state) {
             if (state) {
+                _stateBeforeScrubbing = _model.get('state');
                 _pause();
-                _stateOnScrubbing = _model.get('state');
-            } else if (_stateOnScrubbing === STATE_PLAYING) {
+            } else if (_stateBeforeScrubbing === STATE_PLAYING) {
                 _play({ reason: 'interaction' });
             }
         });
