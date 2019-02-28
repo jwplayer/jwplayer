@@ -4,7 +4,7 @@ import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Events from 'utils/backbone.events';
 import BackgroundMedia from 'program/background-media';
-import { PLAYER_STATE, STATE_BUFFERING } from 'events/events';
+import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_PAUSED } from 'events/events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
 
 class ProgramController extends Events {
@@ -267,8 +267,10 @@ class ProgramController extends Events {
         }
 
         const attributes = backgroundMediaController.mediaModel.attributes;
-        if (attributes.mediaState !== 'paused') {
-            attributes.mediaState = 'buffering';
+        if (attributes.mediaState === STATE_IDLE) {
+            attributes.mediaState = STATE_PAUSED;
+        } else if (attributes.mediaState !== STATE_PAUSED) {
+            attributes.mediaState = STATE_BUFFERING;
         }
 
         this._setActiveMedia(backgroundMediaController);
