@@ -439,7 +439,7 @@ Object.assign(Controller.prototype, {
                 return Promise.resolve();
             }
 
-            if (_model.get('state') === STATE_COMPLETE && !meta.fromSeek) {
+            if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
                 _this.setItemIndex(0);
             }
@@ -618,10 +618,6 @@ Object.assign(Controller.prototype, {
 
                 if (state === STATE_IDLE) {
                     this.play(meta);
-                }
-                if (state === STATE_COMPLETE) {
-                    meta.fromSeek = true;
-                    _play(meta).then(_pause).catch(noop);
                 }
             }
         }
