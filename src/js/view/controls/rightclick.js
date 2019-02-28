@@ -51,7 +51,7 @@ export default class RightClick {
                 link: 'http://www.adobe.com/software/flash/about/'
             });
         }
-        if (!OS.mobile) {
+        if (this.shortcutsTooltip) {
             const secondToLastIndex = menu.items.length - 1;
             menu.items.splice(secondToLastIndex, 0, {
                 type: 'keyboardShortcuts'

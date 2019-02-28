@@ -338,7 +338,7 @@ export default class Controls {
                     api.setFullscreen();
                     break;
                 case 191: // ? key
-                    if (!OS.mobile) {
+                    if (this.shortcutsTooltip) {
                         this.shortcutsTooltip.toggleVisibility();
                     }
                     break;
@@ -374,14 +374,6 @@ export default class Controls {
 
         // Hide controls when focus leaves the player
         const blurCallback = (evt) => {
-            //  Remove new shortcut tooltip after first read.
-            if (!OS.mobile) {
-                const ariaDescriptionId = this.playerContainer.getAttribute('aria-describedby');
-                //  Remove tooltip description after first focus.
-                if (ariaDescriptionId === 'jw-shortcuts-tooltip-explanation') {
-                    this.playerContainer.removeAttribute('aria-describedby');
-                }
-            }
             const focusedElement = evt.relatedTarget || document.querySelector(':focus');
             if (!focusedElement) {
                 return;
@@ -391,8 +383,24 @@ export default class Controls {
                 this.userInactive();
             }
         };
+
         this.playerContainer.addEventListener('blur', blurCallback, true);
         this.blurCallback = blurCallback;
+
+        //  Remove new shortcut tooltip description after first read.
+        const onRemoveShortcutsDescription = () => {
+            const ariaDescriptionId = this.playerContainer.getAttribute('aria-describedby');
+            //  Remove tooltip description after first focus.
+            if (ariaDescriptionId === 'jw-shortcuts-tooltip-explanation') {
+                this.playerContainer.removeAttribute('aria-describedby');
+            }
+            this.playerContainer.removeEventListener('blur', onRemoveShortcutsDescription, true);
+        };
+        
+        if (this.shortcutsTooltip) {
+            this.playerContainer.addEventListener('blur', onRemoveShortcutsDescription, true);
+            this.onRemoveShortcutsDescription = onRemoveShortcutsDescription;
+        }
 
         // Show controls when enabled
         this.userActive();
@@ -442,6 +450,10 @@ export default class Controls {
 
         if (this.blurCallback) {
             playerContainer.removeEventListener('blur', this.blurCallback);
+        }
+
+        if (this.onRemoveShortcutsDescription) {
+            playerContainer.removeEventListener('blur', this.onRemoveShortcutsDescription);
         }
 
         if (this.displayContainer) {
