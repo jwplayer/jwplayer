@@ -888,7 +888,6 @@ function View(_api, _model) {
 
                 // Perform resize and trigger "float" event responsively to prevent layout thrashing
                 _responsiveListener();
-
             }
         } else {
             _this.stopFloating();
