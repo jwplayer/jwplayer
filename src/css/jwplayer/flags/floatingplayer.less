@@ -1,21 +1,37 @@
+@import "../../shared-imports/vars.less";
+
 .jw-flag-floating {
     background-size: cover;
     background-color: #000;
 
     .jw-wrapper {
-        animation: jw-float 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
-        top: auto;
-        right: 1rem;
-        bottom: 1rem;
-        left: auto;
         position: fixed;
         z-index: 1;
+        animation: jw-float-to-bottom 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
+        top: auto;
+        bottom: 1rem;
+        left: auto;
+        right: 1rem;
+        max-width: 400px;
+        max-height: 400px;
+        margin: 0 auto;
 
-        @media screen and (max-width: 419px) and (orientation: portrait) {
+        @media screen and (max-width : 480px) {
+            width: 100% !important; /* stylelint-disable-line declaration-no-important */
             left: 0;
             right: 0;
-            margin-left: auto;
-            margin-right: auto;
+        }
+
+        .jw-flag-touch& {
+            @media screen and (max-device-width : 480px) and (orientation: portrait) {
+                animation: jw-float-to-top 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
+                top: 125px;
+                bottom: auto;
+                left: 0;
+                right: 0;
+                max-width: none !important; /* stylelint-disable-line declaration-no-important */
+                max-height: none;
+            }
         }
     }
 
@@ -50,15 +66,25 @@
 .jw-float-icon {
     display: none;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: @dismiss-top-padding;
+    right: @dismiss-right-padding;
     align-items: center;
     justify-content: center;
 }
 
-@keyframes jw-float {
+@keyframes jw-float-to-bottom {
     from {
         transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes jw-float-to-top {
+    from {
+        transform: translateY(-100%);
     }
 
     to {

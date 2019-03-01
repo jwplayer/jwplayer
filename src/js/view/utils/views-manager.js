@@ -39,15 +39,19 @@ function matchIntersection(entry, group) {
 
 function scheduleResponsiveRedraw() {
     cancelAnimationFrame(responsiveRepaintRequestId);
+    // Batch DOM changes on animation frame
     responsiveRepaintRequestId = requestAnimationFrame(function responsiveRepaint() {
+        // First read all DOM bounds (compute player size)
         views.forEach(view => {
             view.updateBounds();
         });
+        // Then write all DOM changes (apply styles and classes based on player size)
         views.forEach(view => {
             if (view.model.get('visibility')) {
                 view.updateStyles();
             }
         });
+        // Finally dispatch events for any changes
         views.forEach(view => {
             view.checkResized();
         });
@@ -58,7 +62,7 @@ function onOrientationChange() {
     views.forEach(view => {
         const model = view.model;
         if (model.get('audioMode') || !model.get('controls') || model.get('visibility') < 0.75) {
-            // return early if chromless player/audio only mode and player is less than 75% visible
+            // return early if chromeless player/audio only mode and player is less than 75% visible
             return;
         }
 
