@@ -36,6 +36,7 @@ import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
 import FloatingCloseButton from 'view/floating-close-button';
+import FloatingDragUI from 'view/floating-drag-ui';
 
 require('css/jwplayer.less');
 
@@ -48,49 +49,6 @@ const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
 
 let floatingPlayer = null;
-
-class FloatingDragUI {
-    constructor(wrapperElement) {
-        let dragStartX;
-        let dragStartY;
-        let playerLeft;
-        let playerTop;
-        let innerHeight;
-        let innerWidth;
-
-        this.ui = new UI(wrapperElement)
-            .on('dragStart', (e) => {
-                dragStartX = e.pageX;
-                dragStartY = e.pageY;
-                playerLeft = wrapperElement.offsetLeft;
-                playerTop = wrapperElement.offsetTop;
-                innerHeight = window.innerHeight;
-                innerWidth = window.innerWidth;
-            })
-            .on('drag', (e) => {
-                let left = Math.max(playerLeft + e.pageX - dragStartX, 0);
-                let top = Math.max(playerTop + e.pageY - dragStartY, 0);
-                let right = Math.max(innerWidth - (left + wrapperElement.clientWidth), 0);
-                let bottom = Math.max(innerHeight - (top + wrapperElement.clientHeight), 0);
-
-                left === 0 ? right = null : left = null;
-                top === 0 ? bottom = null : top = null;
-                style(wrapperElement, {
-                    left,
-                    right,
-                    top,
-                    bottom
-                });
-            })
-            .on('dragEnd', () => {
-                dragStartX = dragStartY = playerLeft = playerTop = innerWidth = innerHeight = null;
-            });
-    }
-
-    destroy() {
-        this.ui.destroy();
-    }
-}
 
 function View(_api, _model) {
     const _this = Object.assign(this, Events, {
