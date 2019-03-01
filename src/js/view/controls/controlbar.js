@@ -3,7 +3,7 @@ import { USER_ACTION, STATE_PLAYING } from 'events/events';
 import { cloneIcons } from 'view/controls/icons';
 import CustomButton from 'view/controls/components/custom-button';
 import TimeSlider from 'view/controls/components/timeslider';
-import VolumeTooltip from 'view/controls/components/volumetooltip';
+import VolumeTooltipIcon from 'view/controls/components/volumetooltipicon';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import ariaLabel from 'utils/aria';
@@ -121,24 +121,19 @@ export default class Controlbar {
         const menus = this.menus = [];
         this.ui = [];
         let volumeGroup;
+        let horizontalVolumeContainer;
         let muteButton;
         let feedShownId = '';
 
         const vol = localization.volume;
 
-        // Do not show the volume toggle in the mobile SDKs or <iOS10
-        if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
-            // Clone icons so that can be used in volumeGroup
-            const svgIcons = cloneIcons('volume-0,volume-100');
-            muteButton = button('jw-icon-volume', () => {
-                _api.setMute();
-            }, vol, svgIcons);
-        }
-
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
-            volumeGroup = new VolumeTooltip(_model, 'jw-icon-volume', vol,
-                cloneIcons('volume-0,volume-50,volume-100'));
+            horizontalVolumeContainer = document.createElement('div');
+            horizontalVolumeContainer.className = 'jw-horizontal-volume-container';
+
+            volumeGroup = new VolumeTooltipIcon(_model, 'jw-icon-volume', vol,
+                cloneIcons('volume-0,volume-50,volume-100'), horizontalVolumeContainer);
 
             const volumeButtonEl = volumeGroup.element();
             menus.push(volumeGroup);
@@ -147,6 +142,13 @@ export default class Controlbar {
                 const muteText = muted ? localization.unmute : localization.mute;
                 setAttribute(volumeButtonEl, 'aria-label', muteText);
             }, this);
+        } else if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
+            // Do not show the volume toggle in the mobile SDKs or <iOS10
+            // Clone icons so that can be used in volumeGroup
+            const svgIcons = cloneIcons('volume-0,volume-100');
+            muteButton = button('jw-icon-volume', () => {
+                _api.setMute();
+            }, vol, svgIcons);
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -184,6 +186,7 @@ export default class Controlbar {
             duration: textIcon('jw-text-duration', 'timer'),
             mute: muteButton,
             volumetooltip: volumeGroup,
+            horizontalVolumeContainer,
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
@@ -234,6 +237,7 @@ export default class Controlbar {
             elements.next,
             elements.volumetooltip,
             elements.mute,
+            elements.horizontalVolumeContainer,
             elements.alt,
             elements.live,
             elements.elapsed,
@@ -324,6 +328,9 @@ export default class Controlbar {
             elements.volumetooltip.on('toggleValue', function () {
                 this._api.setMute();
             }, this);
+            elements.volumetooltip.on('adjustVolume', function(evt) {
+                this.trigger('adjustVolume', evt);
+            }, this);
         }
 
         if (elements.cast && elements.cast.button) {
@@ -374,14 +381,17 @@ export default class Controlbar {
         if (volumeGroup) {
             const volume = muted ? 0 : vol;
             const volumeButtonEl = volumeGroup.element();
-            volumeGroup.volumeSlider.render(volume);
-            const volumeSliderContainer = volumeGroup.container;
+            volumeGroup.verticalSlider.render(volume);
+            volumeGroup.horizontalSlider.render(volume);
+            const { tooltip, horizontalContainer } = volumeGroup;
             toggleClass(volumeButtonEl, 'jw-off', muted);
             toggleClass(volumeButtonEl, 'jw-full', vol >= 75 && !muted);
-            setAttribute(volumeSliderContainer, 'aria-valuenow', volume);
+            setAttribute(tooltip, 'aria-valuenow', volume);
+            setAttribute(horizontalContainer, 'aria-valuenow', volume);
             const ariaText = `Volume ${volume}%`;
-            setAttribute(volumeSliderContainer, 'aria-valuetext', ariaText);
-            if (document.activeElement !== volumeSliderContainer) {
+            setAttribute(tooltip, 'aria-valuetext', ariaText);
+            setAttribute(horizontalContainer, 'aria-valuetext', ariaText);
+            if (document.activeElement !== tooltip && document.activeElement !== horizontalContainer) {
                 this._volumeAnnouncer.textContent = ariaText;
             }
         }

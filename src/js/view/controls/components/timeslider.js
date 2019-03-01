@@ -5,11 +5,11 @@ import { timeFormat } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
 import UI from 'utils/ui';
 import Slider from 'view/controls/components/slider';
-import Tooltip from 'view/controls/components/tooltip';
+import TooltipIcon from 'view/controls/components/tooltipicon';
 import ChaptersMixin from 'view/controls/components/chapters.mixin';
 import ThumbnailsMixin from 'view/controls/components/thumbnails.mixin';
 
-class TimeTip extends Tooltip {
+class TimeTipIcon extends TooltipIcon {
 
     setup() {
         this.text = document.createElement('span');
@@ -52,7 +52,7 @@ class TimeTip extends Tooltip {
             return;
         }
 
-        if (!this.container) {
+        if (!this.tooltip) {
             return;
         }
 
@@ -77,7 +77,7 @@ class TimeSlider extends Slider {
 
         this.timeUpdateKeeper = _timeUpdateKeeper;
 
-        this.timeTip = new TimeTip('jw-tooltip-time', null, true);
+        this.timeTip = new TimeTipIcon('jw-tooltip-time', null, true);
         this.timeTip.setup();
 
         this.cues = [];

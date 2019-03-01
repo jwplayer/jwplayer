@@ -159,6 +159,7 @@ export default class Controls extends Events {
         controlbar.on('nextShown', function (data) {
             this.trigger('nextShown', data);
         }, this);
+        controlbar.on('adjustVolume', adjustVolume, this);
 
         // Next Up Tooltip
         if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {

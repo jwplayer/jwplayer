@@ -16,6 +16,10 @@
         min-height: @mobile-touch-target;
     }
 
+    .jw-spacer {
+        display: none;
+    }
+
     .jw-preview, // overrides 'block' from .jw-state-idle
     .jw-display, // overrides 'block' from .jw-flag-touch.jw-state-paused
     .jw-title, // overrides 'block' from .jw-state-idle
@@ -37,7 +41,7 @@
             display: none;
         }
 
-        .jw-icon-volume:not(.jw-icon-tooltip),
+        .jw-icon-volume,
         .jw-icon-playback,
         .jw-icon-next,
         .jw-icon-rewind,
@@ -57,9 +61,66 @@
         }
 
         .jw-slider-time {
-            display: flex;
             flex: 0 1 auto;
             align-items: center;
+            display: flex;
+            order: 1;
+        }
+
+        .jw-icon-volume {
+            margin-right: 0;
+            transition: margin-right @default-transition;
+
+            .jw-overlay {
+                display: none;
+            }
+        }
+
+        .jw-horizontal-volume-container {
+            transition: width 300ms @default-timing-function;
+            width: 0;
+            height: 17px;
+            align-items: center;
+            outline: none;
+
+            &.jw-tab-focus:focus {
+                outline: @ui-focus;
+            }
+
+            &.jw-open {
+                width: @volume-rail-length;
+
+                .jw-slider-volume {
+                    padding: 0 12px;
+                    transition: opacity 300ms;
+                    opacity: 1;
+                }
+
+                ~ .jw-slider-time {
+                    flex: 1 1 auto;
+                    width: auto;
+                    transition: opacity 300ms, width 300ms;
+                }
+            }
+        }
+
+        .jw-slider-volume {
+            opacity: 0;
+
+            .jw-knob {
+                transform: translate(-50%, -50%);
+            }
+
+            ~ .jw-icon-volume {
+                margin-right: @volume-rail-length;
+            }
+        }
+    }
+
+    &.jw-breakpoint-1,
+    &.jw-breakpoint-2 {
+        .jw-horizontal-volume-container.jw-open ~ .jw-slider-time {
+            opacity: 0;
         }
     }
 
