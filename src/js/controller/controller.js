@@ -133,8 +133,6 @@ Object.assign(Controller.prototype, {
             if (reason === 'clickthrough' || reason === 'interaction' || reason === 'external') {
                 _model.set('playOnViewable', false);
                 _model.off('change:playReason change:pauseReason', changeReason);
-            } else if (reason === 'playlist') {
-                _checkPauseOnViewable(_model, _model.get('viewable'));
             }
         };
         _model.on('change:playReason change:pauseReason', changeReason);
@@ -482,6 +480,10 @@ Object.assign(Controller.prototype, {
 
                 if (_inInteraction(window.event) && !mediaPool.primed()) {
                     mediaPool.prime();
+                }
+
+                if (playReason === 'playlist') {
+                    _checkPauseOnViewable(_model, _model.get('viewable'));
                 }
 
                 if (_interruptPlay) {
