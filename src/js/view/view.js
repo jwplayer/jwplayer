@@ -616,6 +616,9 @@ function View(_api, _model) {
             _model.set('height', playerHeight);
         }
         style(_playerElement, styles);
+        if (_model.get('isFloating')) {
+            updateFloatingSize();
+        }
         _responsiveUpdate();
     };
     this.resizeMedia = _resizeMedia;
@@ -882,22 +885,7 @@ function View(_api, _model) {
                     backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
                 });
 
-                // Always use aspect ratio to determine floating player size
-                // This allows us to support fixed pixel width/height or 100%*100% by matching the player container
-                const width = _model.get('width');
-                const height = _model.get('height');
-                const styles = getPlayerSizeStyles(width);
-                if (!_model.get('aspectratio')) {
-                    const containerWidth = _model.get('containerWidth');
-                    const containerHeight = _model.get('containerHeight');
-                    let aspectRatio = (containerHeight / containerWidth) || 0.5625; // (fallback to 16 by 9)
-                    if (isNumber(width) && isNumber(height)) {
-                        aspectRatio = height / width;
-                    }
-                    onAspectRatioChange(_model, (aspectRatio * 100) + '%');
-                }
-
-                style(_wrapperElement, styles);
+                updateFloatingSize();
 
                 // Perform resize and trigger "float" event responsively to prevent layout thrashing
                 _responsiveListener();
@@ -905,6 +893,26 @@ function View(_api, _model) {
         } else {
             _this.stopFloating();
         }
+    }
+
+    function updateFloatingSize() {
+        // Always use aspect ratio to determine floating player size
+        // This allows us to support fixed pixel width/height or 100%*100% by matching the player container
+        const width = _model.get('width');
+        const height = _model.get('height');
+        const styles = getPlayerSizeStyles(width);
+        styles.maxWidth = width;
+        if (!_model.get('aspectratio')) {
+            const containerWidth = _model.get('containerWidth');
+            const containerHeight = _model.get('containerHeight');
+            let aspectRatio = (containerHeight / containerWidth) || 0.5625; // (fallback to 16 by 9)
+            if (isNumber(width) && isNumber(height)) {
+                aspectRatio = height / width;
+            }
+            onAspectRatioChange(_model, (aspectRatio * 100) + '%');
+        }
+
+        style(_wrapperElement, styles);
     }
 
     this.stopFloating = function(forever) {
@@ -921,7 +929,7 @@ function View(_api, _model) {
 
             // Wrapper should inherit from parent unless floating.
             style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
-            style(_wrapperElement, { width: null, height: null });
+            style(_wrapperElement, { width: null, maxWidth: null });
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             _responsiveListener();
