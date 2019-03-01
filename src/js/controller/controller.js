@@ -366,7 +366,7 @@ Object.assign(Controller.prototype, {
                 if (!viewable) {
                     _updatePauseReason({ reason: 'viewable' });
                 }
-            } else if (playerState !== STATE_PAUSED && playerState !== STATE_IDLE) {
+            } else if (playerState === STATE_PLAYING || playerState === STATE_BUFFERING) {
                 if (!viewable) {
                     _this.pause({ reason: 'viewable' });
                     model.set('playOnViewable', !viewable);
