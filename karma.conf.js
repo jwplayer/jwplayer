@@ -34,7 +34,6 @@ const webpackTestConfig = merge(webpackConfig, {
     module: {
         rules: [
             {
-                // enforce: 'post',
                 test: /\.js$/,
                 include: path.resolve('src/js/'),
                 use: {
