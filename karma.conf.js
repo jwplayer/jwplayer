@@ -34,11 +34,11 @@ const webpackTestConfig = merge(webpackConfig, {
     module: {
         rules: [
             {
-                enforce: 'post',
+                // enforce: 'post',
                 test: /\.js$/,
                 include: path.resolve('src/js/'),
                 use: {
-                    loader: 'istanbul-instrumenter-loader',
+                    loader: 'coverage-istanbul-loader',
                     options: { esModules: true }
                 }
             }
