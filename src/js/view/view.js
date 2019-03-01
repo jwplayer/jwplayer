@@ -49,6 +49,49 @@ const _isIE = Browser.ie;
 
 let floatingPlayer = null;
 
+class FloatingDragUI {
+    constructor(wrapperElement) {
+        let dragStartX;
+        let dragStartY;
+        let playerLeft;
+        let playerTop;
+        let innerHeight;
+        let innerWidth;
+
+        this.ui = new UI(wrapperElement)
+            .on('dragStart', (e) => {
+                dragStartX = e.pageX;
+                dragStartY = e.pageY;
+                playerLeft = wrapperElement.offsetLeft;
+                playerTop = wrapperElement.offsetTop;
+                innerHeight = window.innerHeight;
+                innerWidth = window.innerWidth;
+            })
+            .on('drag', (e) => {
+                let left = Math.max(playerLeft + e.pageX - dragStartX, 0);
+                let top = Math.max(playerTop + e.pageY - dragStartY, 0);
+                let right = Math.max(innerWidth - (left + wrapperElement.clientWidth), 0);
+                let bottom = Math.max(innerHeight - (top + wrapperElement.clientHeight), 0);
+
+                left === 0 ? right = null : left = null;
+                top === 0 ? bottom = null : top = null;
+                style(wrapperElement, {
+                    left,
+                    right,
+                    top,
+                    bottom
+                });
+            })
+            .on('dragEnd', () => {
+                dragStartX = dragStartY = playerLeft = playerTop = innerWidth = innerHeight = null;
+            });
+    }
+
+    destroy() {
+        this.ui.destroy();
+    }
+}
+
 function View(_api, _model) {
     const _this = Object.assign(this, Events, {
         isSetup: false,
@@ -856,43 +899,6 @@ function View(_api, _model) {
         return _model.get('isFloating') ? _wrapperElement : _playerElement;
     }
 
-    function _createFloatingDragUI() {
-        let dragStartX;
-        let dragStartY;
-        let playerLeft;
-        let playerTop;
-        let innerHeight;
-        let innerWidth;
-
-        return new UI(_wrapperElement)
-            .on('dragStart', (e) => {
-                dragStartX = e.pageX;
-                dragStartY = e.pageY;
-                playerLeft = _wrapperElement.offsetLeft;
-                playerTop = _wrapperElement.offsetTop;
-                innerHeight = window.innerHeight;
-                innerWidth = window.innerWidth;
-            })
-            .on('drag', (e) => {
-                let left = Math.max(playerLeft + e.pageX - dragStartX, 0);
-                let top = Math.max(playerTop + e.pageY - dragStartY, 0);
-                let right = Math.max(innerWidth - (left + _wrapperElement.clientWidth), 0);
-                let bottom = Math.max(innerHeight - (top + _wrapperElement.clientHeight), 0);
-
-                left === 0 ? right = null : left = null;
-                top === 0 ? bottom = null : top = null;
-                style(_wrapperElement, {
-                    left,
-                    right,
-                    top,
-                    bottom
-                });
-            })
-            .on('dragEnd', () => {
-                dragStartX = dragStartY = playerLeft = playerTop = innerWidth = innerHeight = null;
-            });
-    }
-
     function _updateFloating(intersectionRatio) {
         // Entirely invisible and no floating player already in the DOM.
         const isVisible = intersectionRatio === 1;
@@ -914,7 +920,7 @@ function View(_api, _model) {
             const { width, height } = _this.getSafeRegion(false);
             const ratio = Math.min(1, MAX_FLOATING_WIDTH / width, MAX_FLOATING_HEIGHT / height);
             _this.resize(width * ratio, height * ratio, true);
-            _this.floatingUI = _createFloatingDragUI();
+            _this.floatingUI = new FloatingDragUI(_wrapperElement);
 
             _resizeOnFloat = false;
         } else if (isVisible) {
