@@ -35,6 +35,8 @@ import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
+import FloatingDragUI from 'view/floating-drag-ui';
+
 
 require('css/jwplayer.less');
 
@@ -882,6 +884,8 @@ function View(_api, _model) {
 
                 updateFloatingSize();
 
+                _this.floatingUI = new FloatingDragUI(_wrapperElement);
+
                 // Perform resize and trigger "float" event responsively to prevent layout thrashing
                 _responsiveListener();
             }
@@ -926,7 +930,16 @@ function View(_api, _model) {
 
             // Wrapper should inherit from parent unless floating.
             style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
-            style(_wrapperElement, { width: null, maxWidth: null });
+            style(_wrapperElement, {
+                width: null,
+                maxWidth: null,
+                height: null,
+                left: null,
+                right: null,
+                top: null,
+                bottom: null
+            });
+            _this.floatingUI.destroy();
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             _responsiveListener();
