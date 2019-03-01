@@ -612,13 +612,13 @@ Object.assign(Controller.prototype, {
                 return;
             }
             _programController.position = pos;
-            if (!_model.get('scrubbing') && state !== STATE_PLAYING) {
-                meta = meta || {};
-                meta.startTime = pos;
-
-                if (state === STATE_IDLE) {
-                    this.play(meta);
+            const isIdle = state === STATE_IDLE;
+            if (!_model.get('scrubbing') && (isIdle || state === STATE_COMPLETE)) {
+                if (isIdle) {
+                    meta = meta || {};
+                    meta.startTime = pos;
                 }
+                this.play(meta);
             }
         }
 
