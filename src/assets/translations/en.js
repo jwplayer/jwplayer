@@ -41,7 +41,6 @@ export default {
     "playback": "Play",
     "playbackRates": "Playback Rates",
     "player": "Video Player",
-    "playlist": "Playlist",
     "poweredBy": "Powered by",
     "prev": "Previous",
     "related": {

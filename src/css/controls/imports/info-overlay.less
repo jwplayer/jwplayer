@@ -8,8 +8,6 @@
     user-select: text;
     overflow: hidden;
     flex-direction: column;
-    max-width: calc(50% + @mobile-touch-target);
-    max-height: calc(50% + @mobile-touch-target);
 
     .jw-info-close {
         flex: 0 0 auto;
@@ -18,17 +16,6 @@
 
     .jw-info-open & {
         display: flex;
-    }
-
-    .jw-breakpoint-2 &,
-    .jw-flag-small-player & {
-        bottom: 0;
-        right: 0;
-        height: 100%;
-        width: 100%;
-        max-height: none;
-        max-width: none;
-        z-index: 1;
     }
 }
 

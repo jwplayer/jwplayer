@@ -20,7 +20,7 @@
         "cantLoadPlayer": "Disculpe, no se pudo cargar el video.",
         "cantPlayInBrowser": "El video no se puede reproducir en este navegador.",
         "cantPlayVideo": "Este archivo de video no se puede reproducir.",
-        "errorCode": "Código de error",
+        "errorCode": "Código de Error",
         "liveStreamDown": "La emisión en directo no funciona o terminó.",
         "protectedContent": "Hubo un problema al dar acceso a contenido protegido.",
         "technicalError": "Este video no se puede reproducir por un error técnico."
@@ -40,7 +40,6 @@
     "playback": "Reproducir",
     "playbackRates": "Velocidad de Reproducción",
     "player": "Reproductor de Video",
-    "playlist": "Lista de Reproducción",
     "poweredBy": "Reproducido por",
     "prev": "Anterior",
     "related": {
