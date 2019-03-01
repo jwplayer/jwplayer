@@ -317,6 +317,14 @@ export default function Api(element) {
         },
 
         /**
+         * Gets the list of cues
+         * @returns {Array.<SliderCue>} sliderCues - The list of cues.
+         */
+        getCues() {
+            return core.get('cues');
+        },
+
+        /**
          * Gets the index of the active audio track.
          * @returns {number} The index of the active audio track, or -1 if there are no alternative audio tracks.
          */

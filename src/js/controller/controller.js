@@ -981,6 +981,8 @@ Object.assign(Controller.prototype, {
             _model.set('cues', cues);
         };
 
+        this.getCues = _model.get('cues');
+
         this.updatePlaylist = function(playlist, feedData) {
             try {
                 const filteredPlaylist = filterPlaylist(playlist, _model, feedData);
