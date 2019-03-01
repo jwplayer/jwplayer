@@ -34,9 +34,9 @@ instances.forEach(api => {
 const reasonInteraction = function() {
     return { reason: 'interaction' };
 };
-export default class Controls {
+export default class Controls extends Events {
     constructor(context, playerContainer) {
-        Object.assign(this, Events);
+        super();
 
         // Alphabetic order
         // Any property on the prototype should be initialized here first
@@ -134,7 +134,8 @@ export default class Controls {
         const floatingConfig = model.get('floating');
         if (floatingConfig) {
             const floatCloseButton = new FloatingCloseButton(element, model.get('localization').close);
-            floatCloseButton.on(USER_ACTION, () => this.trigger('dismissFloating'));
+            const doNotForward = true;
+            floatCloseButton.on(USER_ACTION, () => this.trigger('dismissFloating', { doNotForward }));
 
             if (floatingConfig.dismissible !== false) {
                 addClass(this.playerContainer, 'jw-floating-dismissible');
