@@ -79,7 +79,12 @@ Object.assign(Controller.prototype, {
         const viewModel = new ViewModel(_model);
 
         _view = this._view = new View(_api, viewModel);
-        _view.on('all', _trigger, _this);
+        _view.on('all', (type, event) => {
+            if (event && event.doNotForward) {
+                return;
+            }
+            _trigger(type, event);
+        }, _this);
 
         const _programController = this._programController = new ProgramController(_model, mediaPool);
         updateProgramSoundSettings();

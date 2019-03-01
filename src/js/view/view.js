@@ -510,12 +510,7 @@ function View(_api, _model) {
             _api.pause({ reason: 'interaction' });
         });
 
-        controls.on('all', (type, event) => {
-            if (event && event.doNotForward) {
-                return;
-            }
-            _this.trigger(type, event);
-        }, _this);
+        controls.on('all', _this.trigger, _this);
 
         if (_model.get('instream')) {
             _controls.setupInstream();
