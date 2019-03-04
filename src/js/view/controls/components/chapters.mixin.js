@@ -35,6 +35,7 @@ const ChaptersMixin = {
         if (Array.isArray(data)) {
             data.forEach((obj) => this.addCue(obj));
             this.drawCues();
+            this._model.set('cues', data);
         }
     },
 
@@ -50,11 +51,9 @@ const ChaptersMixin = {
     },
 
     removeCue: function (cueToRemove) {
-        const cueIndex = this.cues.findIndex(cue => cue.time === cueToRemove.time);
         if (cueToRemove.el.parentNode) {
             cueToRemove.el.parentNode.removeChild(cueToRemove.el);
         }
-        this.cues.splice(cueIndex, 1);
     },
 
     drawCues: function () {
