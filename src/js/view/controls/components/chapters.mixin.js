@@ -41,7 +41,20 @@ const ChaptersMixin = {
     chaptersFailed: function () {},
 
     addCue: function (obj) {
+        this.cues.forEach((cue) => {
+            if (cue.time === obj.begin) {
+                this.removeCue(cue);
+            }
+        });
         this.cues.push(new Cue(obj.begin, obj.text));
+    },
+
+    removeCue: function (cueToRemove) {
+        const cueIndex = this.cues.findIndex(cue => cue.time === cueToRemove.time);
+        if (cueToRemove.el.parentNode) {
+            cueToRemove.el.parentNode.removeChild(cueToRemove.el);
+        }
+        this.cues.splice(cueIndex, 1);
     },
 
     drawCues: function () {
@@ -52,11 +65,6 @@ const ChaptersMixin = {
         }
 
         this.cues.forEach((cue) => {
-            this._model.get('cues').forEach((existingCue) => {
-                if (cue.time === existingCue.begin) {
-                    cue.text = existingCue.text;
-                }
-            });
             cue.align(duration);
             cue.el.addEventListener('mouseover', () => {
                 this.activeCue = cue;
@@ -69,11 +77,7 @@ const ChaptersMixin = {
     },
 
     resetChapters: function() {
-        this.cues.forEach((cue) => {
-            if (cue.el.parentNode) {
-                cue.el.parentNode.removeChild(cue.el);
-            }
-        });
+        this.cues.forEach((cue) => this.removeCue(cue));
         this.cues = [];
     }
 };
