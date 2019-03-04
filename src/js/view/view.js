@@ -724,6 +724,7 @@ function View(_api, _model) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
+                _this.stopFloating();
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
@@ -880,7 +881,8 @@ function View(_api, _model) {
         // Player is 50% visible or less and no floating player already in the DOM.
         const shouldFloat = intersectionRatio < 0.5;
         if (shouldFloat) {
-            if (_model.get('state') !== STATE_IDLE && floatingPlayer === null) {
+            const state = _model.get('state');
+            if (state !== STATE_IDLE && state !== STATE_COMPLETE && floatingPlayer === null) {
                 floatingPlayer = _playerElement;
 
                 _model.set('isFloating', true);
