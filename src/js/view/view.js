@@ -901,9 +901,7 @@ function View(_api, _model) {
         const width = _model.get('width');
         const height = _model.get('height');
         const styles = getPlayerSizeStyles(width);
-        if (isNumber(width)) {
-            styles.maxWidth = width;
-        }
+
         if (!_model.get('aspectratio')) {
             const containerWidth = _model.get('containerWidth');
             const containerHeight = _model.get('containerHeight');
