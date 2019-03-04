@@ -779,6 +779,11 @@ function View(_api, _model) {
         if (_controls) {
             _controls.setupInstream();
         }
+
+        if (_this.floatingUI) {
+            _this.floatingUI.destroy();
+            _this.floatingUI = null;
+        }
     };
 
     const destroyInstream = function() {
@@ -788,6 +793,10 @@ function View(_api, _model) {
         }
         if (_controls) {
             _controls.destroyInstream(_model);
+        }
+
+        if (floatingPlayer === _playerElement) {
+            _this.floatingUI = new FloatingDragUI(_wrapperElement);
         }
 
         _this.setAltText('');
@@ -885,7 +894,9 @@ function View(_api, _model) {
 
                 updateFloatingSize();
 
-                _this.floatingUI = new FloatingDragUI(_wrapperElement);
+                if (!_model.get('instreamMode')) {
+                    _this.floatingUI = new FloatingDragUI(_wrapperElement);
+                }
 
                 // Perform resize and trigger "float" event responsively to prevent layout thrashing
                 _responsiveListener();
@@ -941,6 +952,7 @@ function View(_api, _model) {
                 bottom: null
             });
             _this.floatingUI.destroy();
+            _this.floatingUI = null;
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             _responsiveListener();
