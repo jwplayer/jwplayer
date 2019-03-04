@@ -953,8 +953,10 @@ function View(_api, _model) {
                 top: null,
                 bottom: null
             });
-            _this.floatingUI.destroy();
-            _this.floatingUI = null;
+            if (_this.floatingUI) {
+                _this.floatingUI.destroy();
+                _this.floatingUI = null;
+            }
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             _responsiveListener();
