@@ -142,7 +142,6 @@ export default class Controls extends Events {
 
         // Floating Close Button
         let floatingConfig = model.get('floating');
-        floatingConfig = floatingConfig && floatingConfig.disabled ? null : floatingConfig;
 
         if (floatingConfig) {
             const floatCloseButton = new FloatingCloseButton(element, model.get('localization').close);

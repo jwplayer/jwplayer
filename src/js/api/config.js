@@ -92,6 +92,13 @@ const Config = function(options, persisted) {
         config.autoPause.viewability = ('viewability' in autoPause) ? !!autoPause.viewability : true;
     }
 
+    // If floating is configured to be disabled,
+    // remove the floating block from the config
+    const floating = config.floating;
+    if (floating && !!floating.disabled) {
+        config.floating = null;
+    }
+
     let rateControls = config.playbackRateControls;
 
     if (rateControls) {

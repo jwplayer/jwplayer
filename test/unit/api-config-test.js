@@ -163,4 +163,19 @@ describe('API Config', function() {
             expect(apiConfig.base).to.equal(CUSTOM_BASE);
         });
     });
+
+    describe('floating', function() {
+        it('removes the config block when disabled is true', () => {
+            let conf = new Config({ floating: { disabled: true } });
+            expect(conf.floating).to.equal(null);
+        });
+        it('does not touch the block when disabled is not true', () => {
+            let conf = new Config({ floating: {} });
+            expect(conf.floating).to.deep.equal({});
+        });
+        it('does not add a value where there is not one', () => {
+            let conf = new Config({});
+            expect(conf.floating).to.equal(undefined);
+        });
+    });
 });

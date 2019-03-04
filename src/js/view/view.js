@@ -76,7 +76,6 @@ function View(_api, _model) {
     let _stateClassRequestId = -1;
 
     let _floatingConfig = _model.get('floating');
-    _floatingConfig = _floatingConfig && _floatingConfig.disabled ? null : _floatingConfig;
 
     this.dismissible = _floatingConfig && _floatingConfig.dismissible;
     let _canFloat = false;
