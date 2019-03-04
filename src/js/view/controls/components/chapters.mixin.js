@@ -52,6 +52,11 @@ const ChaptersMixin = {
         }
 
         this.cues.forEach((cue) => {
+            this._model.get('cues').forEach((existingCue) => {
+                if (cue.time === existingCue.begin) {
+                    cue.text = existingCue.text;
+                }
+            });
             cue.align(duration);
             cue.el.addEventListener('mouseover', () => {
                 this.activeCue = cue;
