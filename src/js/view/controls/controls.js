@@ -120,7 +120,7 @@ export default class Controls extends Events {
             if (visible) {
                 //  Focus modal close button on open
                 this.div.querySelector('.jw-info-close').focus();
-            }  
+            }
         });
         //  Add keyboard shortcuts if not on mobi;e
         if (!OS.mobile) {
@@ -141,7 +141,9 @@ export default class Controls extends Events {
         }
 
         // Floating Close Button
-        const floatingConfig = model.get('floating');
+        let floatingConfig = model.get('floating');
+        floatingConfig = floatingConfig && floatingConfig.disabled ? null : floatingConfig;
+
         if (floatingConfig) {
             const floatCloseButton = new FloatingCloseButton(element, model.get('localization').close);
             const doNotForward = true;
@@ -296,7 +298,7 @@ export default class Controls extends Events {
                     }
                     if (this.shortcutsTooltip) {
                         this.shortcutsTooltip.close();
-                        
+
                     }
                     break;
                 case 13: // enter
@@ -398,7 +400,7 @@ export default class Controls extends Events {
             }
             this.playerContainer.removeEventListener('blur', onRemoveShortcutsDescription, true);
         };
-        
+
         if (this.shortcutsTooltip) {
             this.playerContainer.addEventListener('blur', onRemoveShortcutsDescription, true);
             this.onRemoveShortcutsDescription = onRemoveShortcutsDescription;
@@ -433,7 +435,7 @@ export default class Controls extends Events {
             removeClass(playerContainer, 'jw-flag-touch');
             div.parentNode.removeChild(div);
         }
-        
+
         if (controlbar) {
             controlbar.destroy();
         }
