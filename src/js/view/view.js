@@ -58,6 +58,7 @@ function View(_api, _model) {
     const _playerElement = createElement(playerTemplate(_model.get('id'), _localization.player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
+    const _floatingUI = new FloatingDragUI(_wrapperElement);
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -781,7 +782,7 @@ function View(_api, _model) {
             _controls.setupInstream();
         }
 
-        _disableDragging();
+        _floatingUI.disable();
     };
 
     const destroyInstream = function() {
@@ -794,7 +795,7 @@ function View(_api, _model) {
         }
 
         if (floatingPlayer === _playerElement) {
-            _this.floatingUI = new FloatingDragUI(_wrapperElement);
+            _floatingUI.enable();
         }
 
         _this.setAltText('');
@@ -894,7 +895,7 @@ function View(_api, _model) {
                 updateFloatingSize();
 
                 if (!_model.get('instreamMode')) {
-                    _this.floatingUI = new FloatingDragUI(_wrapperElement);
+                    _floatingUI.enable();
                 }
 
                 // Perform resize and trigger "float" event responsively to prevent layout thrashing
@@ -902,13 +903,6 @@ function View(_api, _model) {
             }
         } else {
             _this.stopFloating();
-        }
-    }
-
-    function _disableDragging() {
-        if (_this.floatingUI) {
-            _this.floatingUI.destroy();
-            _this.floatingUI = null;
         }
     }
 
@@ -957,7 +951,7 @@ function View(_api, _model) {
                 top: null,
                 bottom: null
             });
-            _disableDragging();
+            _floatingUI.disable();
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             _responsiveListener();

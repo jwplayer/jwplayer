@@ -3,11 +3,19 @@ import { style } from 'utils/css';
 
 export default class FloatingDragUI {
     constructor(element) {
+        this.element = element;
+    }
+
+    disable() {
+        this.ui.destroy();
+    }
+
+    enable() {
         let playerLeft;
         let playerTop;
         let innerHeight;
         let innerWidth;
-
+        const { element } = this;
         const ui = this.ui = new UI(element)
             .on('dragStart', () => {
                 playerLeft = element.offsetLeft;
@@ -33,9 +41,5 @@ export default class FloatingDragUI {
             .on('dragEnd', () => {
                 playerLeft = playerTop = innerWidth = innerHeight = null;
             });
-    }
-
-    destroy() {
-        this.ui.destroy();
     }
 }
