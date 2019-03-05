@@ -978,7 +978,9 @@ Object.assign(Controller.prototype, {
         };
 
         this.setCues = function (cues) {
-            _model.set('cues', cues);
+            const existingCues = this._model.get('cues');
+            const newCues = existingCues.concat(cues);
+            _model.set('cues', newCues);
         };
 
         this.getCues = _model.get('cues');
