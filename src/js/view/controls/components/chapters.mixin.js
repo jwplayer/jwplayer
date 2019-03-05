@@ -10,10 +10,6 @@ class Cue {
     }
 
     align(duration) {
-        if (!this.time) {
-            return;
-        }
-
         // If a percentage, use it, else calculate the percentage
         if (this.time.toString().slice(-1) === '%') {
             this.pct = this.time;
