@@ -978,8 +978,14 @@ Object.assign(Controller.prototype, {
         };
 
         this.setCues = function (cues) {
-            const existingCues = _model.get('cues');
-            const newCues = existingCues ? existingCues.concat(cues) : cues;
+            let newCues = [];
+            if (cues && cues.length) {
+                // If setCues() is called with empty array, we want to clear the cues.
+                // Otherwise, add the new cues to the existing cues.
+                // This allows setting of cues by ad plugins or setCues() API.
+                const existingCues = _model.get('cues');
+                newCues = existingCues ? existingCues.concat(cues) : cues;
+            }
             _model.set('cues', newCues);
         };
 

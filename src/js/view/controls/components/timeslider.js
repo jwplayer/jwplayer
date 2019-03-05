@@ -280,12 +280,14 @@ class TimeSlider extends Slider {
     }
 
     addCues(model, cues) {
-        this.resetChapters();
+        // Only reset chapters if setCues() is called with empty array (to clear cues)
         if (cues && cues.length) {
             cues.forEach((ele) => {
                 this.addCue(ele);
             });
             this.drawCues();
+        } else {
+            this.resetChapters();
         }
     }
 
