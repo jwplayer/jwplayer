@@ -781,7 +781,7 @@ function View(_api, _model) {
             _controls.setupInstream();
         }
 
-        _destroyFloatingUI();
+        _disableDragging();
     };
 
     const destroyInstream = function() {
@@ -905,7 +905,7 @@ function View(_api, _model) {
         }
     }
 
-    function _destroyFloatingUI() {
+    function _disableDragging() {
         if (_this.floatingUI) {
             _this.floatingUI.destroy();
             _this.floatingUI = null;
@@ -957,7 +957,7 @@ function View(_api, _model) {
                 top: null,
                 bottom: null
             });
-            _destroyFloatingUI();
+            _disableDragging();
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             _responsiveListener();
