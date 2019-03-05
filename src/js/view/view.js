@@ -781,10 +781,7 @@ function View(_api, _model) {
             _controls.setupInstream();
         }
 
-        if (_this.floatingUI) {
-            _this.floatingUI.destroy();
-            _this.floatingUI = null;
-        }
+        _destroyFloatingUI();
     };
 
     const destroyInstream = function() {
@@ -908,6 +905,13 @@ function View(_api, _model) {
         }
     }
 
+    function _destroyFloatingUI() {
+        if (_this.floatingUI) {
+            _this.floatingUI.destroy();
+            _this.floatingUI = null;
+        }
+    }
+
     function updateFloatingSize() {
         // Always use aspect ratio to determine floating player size
         // This allows us to support fixed pixel width/height or 100%*100% by matching the player container
@@ -953,10 +957,7 @@ function View(_api, _model) {
                 top: null,
                 bottom: null
             });
-            if (_this.floatingUI) {
-                _this.floatingUI.destroy();
-                _this.floatingUI = null;
-            }
+            _destroyFloatingUI();
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             _responsiveListener();
