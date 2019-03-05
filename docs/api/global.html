@@ -276,6 +276,1021 @@ Otherwise, returns an object containing the <code>registerPlugin</code> method.<
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(name<span class="signature-attributes">opt</span>, callback<span class="signature-attributes">opt</span>, context<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Removes one or more callbacks.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The event name. If null, all bound callbacks for all events will be removed.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If null, all callbacks for the event will be removed.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If null, all callbacks with that function will be removed.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p><code>this</code> context for chaining.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(name, callback, context<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Adds an event listener.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The event name. Passing &quot;all&quot; will bind the callback to all events.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The event callback.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The context to apply to the callback's function invocation.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p><code>this</code> context for chaining.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="once"><span class="type-signature"></span>once<span class="signature">(name, callback, context<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Adds an event listener which is triggered at most once.
+The listener is removed after the first call.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The event name. Passing &quot;all&quot; will bind the callback to all events.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The event callback.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The context to apply to the callback's function invocation.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p><code>this</code> context for chaining.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="trigger"><span class="type-signature"></span>trigger<span class="signature">(name<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Trigger one or many events, firing all bound callbacks. Callbacks are
+passed the same arguments as <code>trigger</code>, apart from the event name
+(unless you're listening on <code>&quot;all&quot;</code>, which will cause your callback to
+receive the true name of the event as the first argument).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The event name.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p><code>this</code> context for chaining.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="triggerSafe"><span class="type-signature"></span>triggerSafe<span class="signature">(name<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {any}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>&quot;Safe&quot; version of <code>trigger</code> that causes each callback's execution
+to be wrapped in a try-catch block</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The event name.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p><code>this</code> context for chaining.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">any</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     
@@ -3583,7 +4598,7 @@ and treated as a DVR stream.</p></td>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_errors.html">api/errors</a></li><li><a href="module-api_Setup.html">api/Setup</a></li><li><a href="module-events_events.html">events/events</a></li><li><a href="module-providers_html5.html">providers/html5</a></li><li><a href="module-providers_utils_stream-type.html">providers/utils/stream-type</a></li><li><a href="module-utils_validator.html">utils/validator</a></li></ul><h3>Classes</h3><ul><li><a href="Api.html">Api</a></li><li><a href="BackgroundMedia.html">BackgroundMedia</a></li><li><a href="CaptionsRenderer.html">CaptionsRenderer</a></li><li><a href="InstreamAdapter.html">InstreamAdapter</a></li><li><a href="module-api_errors-PlayerError.html">PlayerError</a></li><li><a href="module-api_Setup-Setup.html">Setup</a></li><li><a href="ProgramController.html">ProgramController</a></li><li><a href="Timer.html">Timer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#jwplayer">jwplayer</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-api_errors.html">api/errors</a></li><li><a href="module-api_Setup.html">api/Setup</a></li><li><a href="module-events_events.html">events/events</a></li><li><a href="module-providers_html5.html">providers/html5</a></li><li><a href="module-providers_utils_stream-type.html">providers/utils/stream-type</a></li><li><a href="module-utils_validator.html">utils/validator</a></li></ul><h3>Classes</h3><ul><li><a href="Api.html">Api</a></li><li><a href="BackgroundMedia.html">BackgroundMedia</a></li><li><a href="CaptionsRenderer.html">CaptionsRenderer</a></li><li><a href="InstreamAdapter.html">InstreamAdapter</a></li><li><a href="module-api_errors-PlayerError.html">PlayerError</a></li><li><a href="module-api_Setup-Setup.html">Setup</a></li><li><a href="ProgramController.html">ProgramController</a></li><li><a href="Timer.html">Timer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#jwplayer">jwplayer</a></li><li><a href="global.html#off">off</a></li><li><a href="global.html#on">on</a></li><li><a href="global.html#once">once</a></li><li><a href="global.html#trigger">trigger</a></li><li><a href="global.html#triggerSafe">triggerSafe</a></li></ul>
 </nav>
 
 <br class="clear">
