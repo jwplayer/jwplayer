@@ -879,7 +879,7 @@ function View(_api, _model) {
         const shouldFloat = intersectionRatio < 0.5;
         if (shouldFloat) {
             const state = _model.get('state');
-            if (state !== STATE_IDLE && state !== STATE_COMPLETE && floatingPlayer === null) {
+            if (state !== STATE_IDLE && state !== STATE_ERROR && state !== STATE_COMPLETE && floatingPlayer === null) {
                 floatingPlayer = _playerElement;
 
                 _model.set('isFloating', true);
