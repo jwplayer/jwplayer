@@ -35,6 +35,9 @@ const ChaptersMixin = {
         if (Array.isArray(data)) {
             data.forEach((obj) => this.addCue(obj));
             this.drawCues();
+            const existingCues = this._model.get('cues');
+            const playerCues = existingCues.concat(data);
+            this._model.set('cues', playerCues);
         }
     },
 
