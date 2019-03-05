@@ -363,7 +363,7 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
             const playReason = model.get('playReason');
 
-            function pauseWhenVisible() {
+            function pauseWhenNotViewable() {
                 if (!viewable) {
                     _this.pause({ reason: 'viewable' });
                     model.set('playOnViewable', !viewable);
@@ -376,10 +376,10 @@ Object.assign(Controller.prototype, {
                     _updatePauseReason({ reason: 'viewable' });
                 }
             } else if (playerState === STATE_PLAYING || playerState === STATE_BUFFERING) {
-                pauseWhenVisible();
+                pauseWhenNotViewable();
             } else if (playerState === STATE_IDLE && playReason === 'playlist') {
                 // After VAST ads, instream is destroyed and player state is 'idle'
-                model.once('change:state', pauseWhenVisible);
+                model.once('change:state', pauseWhenNotViewable);
             }
         }
 
