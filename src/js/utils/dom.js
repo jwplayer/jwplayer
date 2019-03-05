@@ -40,7 +40,7 @@ export function htmlToParentElement(html) {
     // Delete event handler attributes that could execute XSS JavaScript
     const insecureElements = parsedElement.querySelectorAll('img,svg');
 
-    for (let i = 0; i < insecureElements.length; i++) {
+    for (let i = insecureElements.length; i--;) {
         const element = insecureElements[i];
         sanitizeElementAttributes(element);
     }
@@ -49,17 +49,17 @@ export function htmlToParentElement(html) {
 }
 
 export function sanitizeScriptNodes(element) {
-    const scripts = element.querySelectorAll('script');
-    for (let i = 0; i < scripts.length; i++) {
-        const script = scripts[i];
-        script.parentNode.removeChild(script);
+    const nodes = element.querySelectorAll('script,object,iframe');
+    for (let i = nodes.length; i--;) {
+        const node = nodes[i];
+        node.parentNode.removeChild(node);
     }
     return element;
 }
 
 export function sanitizeElementAttributes(element) {
     const attributes = element.attributes;
-    for (let i = 0; i < attributes.length; i++) {
+    for (let i = attributes.length; i--;) {
         const name = attributes[i].name;
         if (/^on/.test(name)) {
             element.removeAttribute(name);
