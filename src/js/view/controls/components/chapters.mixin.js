@@ -34,7 +34,9 @@ const ChaptersMixin = {
         const data = srt(evt.responseText);
         if (Array.isArray(data)) {
             // Add chapter cues directly to model which will trigger addCue()
-            this._model.set('cues', data);
+            const existingCues = this._model.get('cues');
+            const newCues = existingCues ? existingCues.concat(data) : data;
+            this._model.set('cues', newCues);
         }
     },
 
