@@ -7,6 +7,7 @@ export default {
     //   jw...: null,
 
     addButton: null,
+    addCues: null,
     addPlugin: null,
     getPlugin: null,
     castToggle: null,
