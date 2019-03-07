@@ -941,12 +941,12 @@ function View(_api, _model) {
             style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
             style(_wrapperElement, {
                 width: null,
-                maxWidth: null,
                 height: null,
                 left: null,
                 right: null,
                 top: null,
-                bottom: null
+                bottom: null,
+                margin: null
             });
             _floatingUI.disable();
 
