@@ -95,7 +95,7 @@ class TimeSlider extends Slider {
 
         this._model
             .on('change:duration', this.onDuration, this)
-            .on('change:cues', this.addCues, this)
+            .on('change:cues', this.updateCues, this)
             .on('seeked', () => {
                 if (!this._model.get('scrubbing')) {
                     this.updateAriaText();
@@ -177,7 +177,7 @@ class TimeSlider extends Slider {
             return;
         }
         this.reset();
-        this.addCues(model, model.get('cues'));
+        this.updateCues(model, model.get('cues'));
 
         const tracks = playlistItem.tracks;
         each(tracks, function (track) {
@@ -279,7 +279,7 @@ class TimeSlider extends Slider {
         removeClass(this.timeTip.el, 'jw-open');
     }
 
-    addCues(model, cues) {
+    updateCues(model, cues) {
         // Only reset chapters if setCues() is called with empty array (to clear cues)
         if (cues && cues.length) {
             cues.forEach((ele) => {
@@ -287,7 +287,7 @@ class TimeSlider extends Slider {
             });
             this.drawCues();
         } else {
-            this.resetChapters();
+            this.resetCues();
         }
     }
 
@@ -314,7 +314,7 @@ class TimeSlider extends Slider {
 
     reset() {
         this.resetThumbnails();
-        this.resetChapters();
+        this.resetCues();
         this.timeTip.resetWidth();
         this.textLength = 0;
     }
