@@ -977,6 +977,10 @@ Object.assign(Controller.prototype, {
             _programController.controls = mode;
         };
 
+        this.addCues = function (cues) {
+            this.setCues(_model.get('cues').concat(cues));
+        };
+
         this.setCues = function (cues) {
             _model.set('cues', cues);
         };

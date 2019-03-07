@@ -7,6 +7,7 @@ export default {
     //   jw...: null,
 
     addButton: null,
+    addCues: null,
     addPlugin: null,
     getPlugin: null,
     castToggle: null,
@@ -21,6 +22,7 @@ export default {
     getConfig: null,
     getContainer: null,
     getControls: null,
+    getCues: null,
     getCurrentAudioTrack: null,
     getCurrentCaptions: null,
     getCurrentQuality: null,

@@ -33,8 +33,10 @@ const ChaptersMixin = {
     chaptersLoaded: function (evt) {
         const data = srt(evt.responseText);
         if (Array.isArray(data)) {
-            data.forEach((obj) => this.addCue(obj));
-            this.drawCues();
+            // Add chapter cues directly to model which will trigger addCue()
+            const existingCues = this._model.get('cues');
+            const newCues = existingCues.concat(data);
+            this._model.set('cues', newCues);
         }
     },
 
@@ -63,7 +65,7 @@ const ChaptersMixin = {
         });
     },
 
-    resetChapters: function() {
+    resetCues: function() {
         this.cues.forEach((cue) => {
             if (cue.el.parentNode) {
                 cue.el.parentNode.removeChild(cue.el);

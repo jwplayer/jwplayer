@@ -74,6 +74,7 @@ export default {
     base: '',
     controls: true,
     controlsEnabled: true,
+    cues: [],
     stretching: 'uniform',
     defaultPlaybackRate: 1.0,
     displaytitle: true,

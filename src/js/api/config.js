@@ -16,6 +16,7 @@ const Defaults = {
     bitrateSelection: null,
     castAvailable: false,
     controls: true,
+    cues: [],
     defaultPlaybackRate: 1,
     displaydescription: true,
     displaytitle: true,
