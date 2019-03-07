@@ -345,8 +345,6 @@ Object.assign(Controller.prototype, {
         }
 
         function _checkPlayOnViewable(model, viewable) {
-            const adState = _getAdState();
-
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     if (model.get('state') === STATE_IDLE) {
@@ -354,7 +352,7 @@ Object.assign(Controller.prototype, {
                     } else {
                         _play('viewable');
                     }
-                } else if (OS.mobile && !adState) {
+                } else if (OS.mobile && !_getAdState()) {
                     _this.pause({ reason: 'autostart' });
                 }
             }
