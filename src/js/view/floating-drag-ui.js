@@ -29,8 +29,16 @@ export default class FloatingDragUI {
                 let right = Math.max(innerWidth - (left + element.clientWidth), 0);
                 let bottom = Math.max(innerHeight - (top + element.clientHeight), 0);
 
-                left === 0 ? right = null : left = null;
-                top === 0 ? bottom = null : top = null;
+                if (right === 0) {
+                    left = null;
+                } else {
+                    right = null;
+                }
+                if (bottom === 0) {
+                    top = null;
+                } else {
+                    bottom = null;
+                }
                 style(element, {
                     left,
                     right,
