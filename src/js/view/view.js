@@ -58,6 +58,7 @@ function View(_api, _model) {
     const _playerElement = createElement(playerTemplate(_model.get('id'), _localization.player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
+    const _floatingUI = new FloatingDragUI(_wrapperElement);
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -723,6 +724,7 @@ function View(_api, _model) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
+                _this.stopFloating();
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
@@ -778,6 +780,8 @@ function View(_api, _model) {
         if (_controls) {
             _controls.setupInstream();
         }
+
+        _floatingUI.disable();
     };
 
     const destroyInstream = function() {
@@ -787,6 +791,10 @@ function View(_api, _model) {
         }
         if (_controls) {
             _controls.destroyInstream(_model);
+        }
+
+        if (floatingPlayer === _playerElement) {
+            _floatingUI.enable();
         }
 
         _this.setAltText('');
@@ -870,7 +878,8 @@ function View(_api, _model) {
         // Player is 50% visible or less and no floating player already in the DOM.
         const shouldFloat = intersectionRatio < 0.5;
         if (shouldFloat) {
-            if (_model.get('state') !== STATE_IDLE && floatingPlayer === null) {
+            const state = _model.get('state');
+            if (state !== STATE_IDLE && state !== STATE_ERROR && state !== STATE_COMPLETE && floatingPlayer === null) {
                 floatingPlayer = _playerElement;
 
                 _model.set('isFloating', true);
@@ -884,7 +893,9 @@ function View(_api, _model) {
 
                 updateFloatingSize();
 
-                _this.floatingUI = new FloatingDragUI(_wrapperElement);
+                if (!_model.get('instreamMode')) {
+                    _floatingUI.enable();
+                }
 
                 // Perform resize and trigger "float" event responsively to prevent layout thrashing
                 _responsiveListener();
@@ -930,14 +941,14 @@ function View(_api, _model) {
             style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
             style(_wrapperElement, {
                 width: null,
-                maxWidth: null,
                 height: null,
                 left: null,
                 right: null,
                 top: null,
-                bottom: null
+                bottom: null,
+                margin: null
             });
-            _this.floatingUI.destroy();
+            _floatingUI.disable();
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             _responsiveListener();
