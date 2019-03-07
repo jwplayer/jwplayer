@@ -11,7 +11,10 @@ export default class FloatingDragUI {
     }
 
     disable() {
-        this.ui.destroy();
+        if (this.ui) {
+            this.ui.destroy();
+            this.ui = null;
+        }
     }
 
     enable() {
