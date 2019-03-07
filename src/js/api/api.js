@@ -253,6 +253,7 @@ export default function Api(element) {
 
         /**
          * Adds to the list of cues to be displayed on the time slider.
+         * New cues are appended to cues already on the time slider.
          * @param {Array.<SliderCue>} sliderCues - The list of cues.
          * @returns {Api} The Player API instance.
          */
@@ -327,7 +328,7 @@ export default function Api(element) {
         },
 
         /**
-         * Gets the list of cues
+         * Gets the list of cues displayed in the timeslider.
          * @returns {Array.<SliderCue>} sliderCues - The list of cues.
          */
         getCues() {

@@ -979,15 +979,19 @@ Object.assign(Controller.prototype, {
 
         this.addCues = function (cues) {
             const existingCues = this.getCues();
-            const newCues = existingCues ? existingCues.concat(cues) : cues;
+            const newCues = existingCues.concat(cues);
             this.setCues(newCues);
         };
 
         this.setCues = function (cues) {
-            _model.set('cues', cues);
+            if (Array.isArray(cues)) {
+                _model.set('cues', cues);
+            }
         };
 
-        this.getCues = _model.get('cues');
+        this.getCues = function() {
+            return _model.get('cues');
+        };
 
         this.updatePlaylist = function(playlist, feedData) {
             try {

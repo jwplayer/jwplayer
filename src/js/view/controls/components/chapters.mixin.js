@@ -35,7 +35,7 @@ const ChaptersMixin = {
         if (Array.isArray(data)) {
             // Add chapter cues directly to model which will trigger addCue()
             const existingCues = this._model.get('cues');
-            const newCues = existingCues ? existingCues.concat(data) : data;
+            const newCues = existingCues.concat(data);
             this._model.set('cues', newCues);
         }
     },
@@ -65,7 +65,7 @@ const ChaptersMixin = {
         });
     },
 
-    resetChapters: function() {
+    resetCues: function() {
         this.cues.forEach((cue) => {
             if (cue.el.parentNode) {
                 cue.el.parentNode.removeChild(cue.el);
