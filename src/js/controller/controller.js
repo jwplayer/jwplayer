@@ -358,19 +358,30 @@ Object.assign(Controller.prototype, {
             }
         }
 
+        function _pauseWhenNotViewable(viewable) {
+            if (!viewable) {
+                _this.pause({ reason: 'viewable' });
+                _model.set('playOnViewable', !viewable);
+            }
+        }
+
         function _checkPauseOnViewable(model, viewable) {
             const playerState = model.get('state');
             const adState = _getAdState();
+            const playReason = model.get('playReason');
+
             if (adState) {
                 _this._instreamAdapter.noResume = !viewable;
                 if (!viewable) {
                     _updatePauseReason({ reason: 'viewable' });
                 }
             } else if (playerState === STATE_PLAYING || playerState === STATE_BUFFERING) {
-                if (!viewable) {
-                    _this.pause({ reason: 'viewable' });
-                    model.set('playOnViewable', !viewable);
-                }
+                _pauseWhenNotViewable(viewable);
+            } else if (playerState === STATE_IDLE && playReason === 'playlist') {
+                // After VAST ads, instream is destroyed and player state is 'idle'
+                model.once('change:state', () => {
+                    _pauseWhenNotViewable(viewable);
+                });
             }
         }
 

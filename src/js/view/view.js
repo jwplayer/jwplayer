@@ -77,7 +77,6 @@ function View(_api, _model) {
     let _stateClassRequestId = -1;
 
     let _floatingConfig = _model.get('floating');
-    _floatingConfig = _floatingConfig && _floatingConfig.disabled ? null : _floatingConfig;
 
     this.dismissible = _floatingConfig && _floatingConfig.dismissible;
     let _canFloat = false;
@@ -912,9 +911,7 @@ function View(_api, _model) {
         const width = _model.get('width');
         const height = _model.get('height');
         const styles = getPlayerSizeStyles(width);
-        if (isNumber(width)) {
-            styles.maxWidth = width;
-        }
+
         if (!_model.get('aspectratio')) {
             const containerWidth = _model.get('containerWidth');
             const containerHeight = _model.get('containerHeight');
