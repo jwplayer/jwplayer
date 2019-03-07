@@ -258,7 +258,9 @@ export default function Api(element) {
          * @returns {Api} The Player API instance.
          */
         addCues(sliderCues) {
-            core.addCues(sliderCues);
+            if (Array.isArray(sliderCues)) {
+                core.addCues(sliderCues);
+            }
             return this;
         },
 
@@ -691,7 +693,9 @@ export default function Api(element) {
          * @returns {Api} The Player API instance.
          */
         setCues(sliderCues) {
-            core.setCues(sliderCues);
+            if (Array.isArray(sliderCues)) {
+                core.setCues(sliderCues);
+            }
             return this;
         },
 

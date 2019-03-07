@@ -978,19 +978,11 @@ Object.assign(Controller.prototype, {
         };
 
         this.addCues = function (cues) {
-            const existingCues = this.getCues();
-            const newCues = existingCues.concat(cues);
-            this.setCues(newCues);
+            this.setCues(_model.get('cues').concat(cues));
         };
 
         this.setCues = function (cues) {
-            if (Array.isArray(cues)) {
-                _model.set('cues', cues);
-            }
-        };
-
-        this.getCues = function() {
-            return _model.get('cues');
+            _model.set('cues', cues);
         };
 
         this.updatePlaylist = function(playlist, feedData) {
