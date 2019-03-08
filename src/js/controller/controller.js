@@ -352,7 +352,7 @@ Object.assign(Controller.prototype, {
                     } else {
                         _play('viewable');
                     }
-                } else if (OS.mobile) {
+                } else if (OS.mobile && !_getAdState()) {
                     _this.pause({ reason: 'autostart' });
                 }
             }
