@@ -195,6 +195,9 @@ export default class RightClick {
                 this.el.querySelector('.jw-shortcuts-item').removeEventListener('click', this.shortcutsTooltipHandler);
             }
         }
+        if (this.shortcutsTooltip) {
+            this.el.querySelector('.jw-shortcuts-item').removeEventListener('click', this.shortcutsTooltipHandler);
+        }
         document.removeEventListener('click', this.hideMenuHandler);
         document.removeEventListener('touchstart', this.hideMenuHandler);
     }
