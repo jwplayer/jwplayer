@@ -79,10 +79,13 @@ export default function (container, api, model) {
     };
     const render = () => {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         const keyList = template.querySelector('.jw-shortcuts-tooltip-keys');
         const descriptionList = template.querySelector('.jw-shortcuts-tooltip-descriptions');
 >>>>>>> 'About This Video' right click option doesn't work on mobile JW8-5632
+=======
+>>>>>>> remove two lines of dead code
         const closeButton = button('jw-shortcuts-close', () => {
             close();
         }, model.get('localization').close, [cloneIcon('close')]);
