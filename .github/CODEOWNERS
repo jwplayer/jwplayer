@@ -1,0 +1,7 @@
+# This is a comment.
+# Each line is a file pattern followed by one or more owners.
+# See https://help.github.com/en/articles/about-code-owners#example-of-a-codeowners-file for more details and examples
+
+*            @robwalch
+/test/unit/  @jnatalzia
+jwplayer/src/css/ @pajong @DanFerrer @robwalch
