@@ -2,8 +2,8 @@ export default (shortcuts = {}) => {
     //  Iterate all shortcuts to create list of them. 
     const shortcutsKey = (key) => `<li><span class="jw-hotkey">${key}</span></li>`;
     const shortcutsDescription = (description) => `<li><span class="jw-hotkey-description">${description}</span></li>`;
-    let keyList = shortcuts.map(shortcut => shortcutsKey(shortcut.key));
-    let descriptionList = shortcuts.map(shortcut => shortcutsDescription(shortcut.description));
+    const keyList = shortcuts.map(shortcut => shortcutsKey(shortcut.key));
+    const descriptionList = shortcuts.map(shortcut => shortcutsDescription(shortcut.description));
 
     return (
         `<div class="jw-shortcuts-tooltip jw-modal jw-reset" title="Keyboard Shortcuts">` +
