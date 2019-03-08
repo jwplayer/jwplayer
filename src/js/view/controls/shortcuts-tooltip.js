@@ -78,8 +78,6 @@ export default function (container, api, model) {
         }
     };
     const render = () => {
-        const keyList = template.querySelector('.jw-shortcuts-tooltip-keys');
-        const descriptionList = template.querySelector('.jw-shortcuts-tooltip-descriptions');
         const closeButton = button('jw-shortcuts-close', () => {
             close();
         }, model.get('localization').close, [cloneIcon('close')]);
