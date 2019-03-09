@@ -1,6 +1,5 @@
 import UI from 'utils/ui';
 import { style } from 'utils/css';
-import { OS } from 'environment/environment';
 
 export default class FloatingDragUI {
     constructor(element) {
@@ -21,7 +20,7 @@ export default class FloatingDragUI {
         let innerWidth;
         const auto = 'auto';
         const { element } = this;
-        const ui = this.ui = new UI(element, { preventScrolling: OS.mobile })
+        const ui = this.ui = new UI(element, { preventScrolling: true })
             .on('dragStart', () => {
                 playerLeft = element.offsetLeft;
                 playerTop = element.offsetTop;
