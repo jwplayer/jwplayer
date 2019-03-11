@@ -109,7 +109,7 @@ function initInteractionListeners(ui) {
 
         removeHandlers(ui, WINDOW_GROUP);
         if (type === 'pointerdown' && e.isPrimary) {
-            if (!passive) {
+            if (!passive && e.target === el) {
                 const { pointerId } = e;
                 ui.pointerId = pointerId;
                 el.setPointerCapture(pointerId);
