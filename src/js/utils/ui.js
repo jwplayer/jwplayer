@@ -112,7 +112,6 @@ function initInteractionListeners(ui) {
             if (!passive) {
                 const { pointerId } = e;
                 ui.pointerId = pointerId;
-                el.setPointerCapture(pointerId);
             }
 
             addEventListener(ui, WINDOW_GROUP, 'pointermove', interactDragHandler, listenerOptions);
@@ -145,6 +144,10 @@ function initInteractionListeners(ui) {
             const moveX = pageX - ui.startX;
             const moveY = pageY - ui.startY;
             if (moveX * moveX + moveY * moveY > MOVEMENT_THRESHOLD * MOVEMENT_THRESHOLD) {
+                if (!passive && ui.pointerId) {
+                    el.setPointerCapture(ui.pointerId);
+                }
+
                 triggerEvent(ui, DRAG_START, e);
                 ui.dragged = true;
                 triggerEvent(ui, DRAG, e);
