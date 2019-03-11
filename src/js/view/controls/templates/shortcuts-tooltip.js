@@ -1,9 +1,12 @@
 export default (shortcuts = {}) => {
     //  Iterate all shortcuts to create list of them. 
-    const shortcutsKey = (key) => `<li><span class="jw-hotkey">${key}</span></li>`;
-    const shortcutsDescription = (description) => `<li><span class="jw-hotkey-description">${description}</span></li>`;
-    let keyList = shortcuts.map(shortcut => shortcutsKey(shortcut.key));
-    let descriptionList = shortcuts.map(shortcut => shortcutsDescription(shortcut.description));
+    const keyList = [];
+    const descriptionList = [];
+    
+    shortcuts.forEach(shortcut => {
+        keyList.push(`<li><span class="jw-hotkey">${shortcut.key}</span></li>`);
+        descriptionList.push(`<li><span class="jw-hotkey-description">${shortcut.description}</span></li>`);
+    });
 
     return (
         `<div class="jw-shortcuts-tooltip jw-modal jw-reset" title="Keyboard Shortcuts">` +
