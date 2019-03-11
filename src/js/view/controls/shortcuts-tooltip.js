@@ -4,10 +4,48 @@ import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { STATE_PLAYING } from 'events/events';
 
+const shortcuts = [
+    {
+        key: 'SPACE',
+        description: 'play/pause'
+    },
+    {
+        key: '↑',
+        description: 'increase volume'
+    },
+    {
+        key: '↓',
+        description: 'decrease volume'
+    },
+    {
+        key: '→',
+        description: 'seek forwards'
+    },
+    {
+        key: '←',
+        description: 'seek backwards'
+    },
+    {
+        key: 'c',
+        description: 'toggle captions'
+    },
+    {
+        key: 'f',
+        description: 'toggle fullscreen',
+    },
+    {
+        key: 'm',
+        description: 'mute/unmute'
+    }, {
+        key: '0-9',
+        description: 'seek to %'
+    }
+];
+
 export default function (container, api, model) {
     let isOpen = false;
     let lastState = null;
-    const template = createElement(shortcutTooltipTemplate());
+    const template = createElement(shortcutTooltipTemplate(shortcuts));
     const settingsInteraction = { reason: 'settingsInteraction' };
 
     const open = () => {
@@ -40,56 +78,9 @@ export default function (container, api, model) {
         }
     };
     const render = () => {
-        const keyList = template.querySelector('.jw-shortcuts-tooltip-keys');
-        const descriptionList = template.querySelector('.jw-shortcuts-tooltip-descriptions');
-        const shortcuts = [
-            {
-                key: 'SPACE',
-                description: 'play/pause'
-            },
-            {
-                key: '↑',
-                description: 'increase volume'
-            },
-            {
-                key: '↓',
-                description: 'decrease volume'
-            },
-            {
-                key: '→',
-                description: 'seek forwards'
-            },
-            {
-                key: '←',
-                description: 'seek backwards'
-            },
-            {
-                key: 'c',
-                description: 'toggle captions'
-            },
-            {
-                key: 'f',
-                description: 'toggle fullscreen',
-            },
-            {
-                key: 'm',
-                description: 'mute/unmute'
-            }, {
-                key: '0-9',
-                description: 'seek to %'
-            }
-        ];
         const closeButton = button('jw-shortcuts-close', () => {
             close();
         }, model.get('localization').close, [cloneIcon('close')]);
-        
-        //  Iterate all shortcuts to create list of them. 
-        shortcuts.map(shortcut => {
-            const key = createElement(`<li><span class="jw-hotkey">${shortcut.key}</span></li>`);
-            const description = createElement(`<li><span class="jw-hotkey-description">${shortcut.description}</span></li>`);
-            keyList.appendChild(key);
-            descriptionList.appendChild(description);
-        });
 
         //  Append close button to modal.
         prependChild(template, closeButton.element());
