@@ -579,18 +579,22 @@ describe('UI', function() {
         let result;
         let event;
         if (USE_POINTER_EVENTS) {
-            const pointerMouseOptions = xyCoords(0, 0, {
+            const pointerCoordsOptions = {
                 isPrimary: true,
                 pointerType: 'mouse',
+                pointerId: 1234,
                 view: window,
                 bubbles: true,
                 cancelable: true
-            });
+            };
+            const pointerMouseOptions = xyCoords(0, 0, pointerCoordsOptions);
+
             event = new PointerEvent('pointerdown', pointerMouseOptions);
             sandbox.stub(button, 'setPointerCapture').callsFake(sinon.spy());
             sandbox.stub(button, 'releasePointerCapture').callsFake(sinon.spy());
             sandbox.spy(event, 'preventDefault');
             result = button.dispatchEvent(event);
+            button.dispatchEvent(new PointerEvent('pointermove', xyCoords(5, 5, pointerCoordsOptions)));
             button.dispatchEvent(new PointerEvent('pointerup', pointerMouseOptions));
             expect(button.setPointerCapture).to.have.callCount(1);
             expect(button.releasePointerCapture).to.have.callCount(1);
