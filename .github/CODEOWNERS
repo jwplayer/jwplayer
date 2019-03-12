@@ -4,5 +4,11 @@
 
 *            @robwalch
 /test/unit/  @jnatalzia
-jwplayer/src/css/ @pajong @DanFerrer @robwalch @jnatalzia
-jwplayer/src/js/program @johnBartos @robwalch
+/src/css/ @pajong @DanFerrer @robwalch @jnatalzia
+/src/js/program @johnBartos @robwalch
+
+# Auto-translate
+/src/assets/translations @karimMourra
+/src/js/utils/language.js @karimMourra
+/src/js/api/setup-steps.js @karimMourra @robwalch
+/test/unit/language-test.js @karimMourra
