@@ -80,6 +80,7 @@ function View(_api, _model) {
 
     this.dismissible = _floatingConfig && _floatingConfig.dismissible;
     let _canFloat = false;
+    let playerBounds = {};
 
     let displayClickHandler;
     let fullscreenHelpers;
@@ -100,6 +101,7 @@ function View(_api, _model) {
         const rect = bounds(currentElement);
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
+        playerBounds = bounds(_playerElement);
 
         // If the container is the same size as before, return early
         if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
@@ -911,10 +913,11 @@ function View(_api, _model) {
         const width = _model.get('width');
         const height = _model.get('height');
         const styles = getPlayerSizeStyles(width);
+        styles.maxWidth = Math.min(400, playerBounds.width);
 
         if (!_model.get('aspectratio')) {
-            const containerWidth = _model.get('containerWidth');
-            const containerHeight = _model.get('containerHeight');
+            const containerWidth = playerBounds.width;
+            const containerHeight = playerBounds.height;
             let aspectRatio = (containerHeight / containerWidth) || 0.5625; // (fallback to 16 by 9)
             if (isNumber(width) && isNumber(height)) {
                 aspectRatio = height / width;
@@ -940,6 +943,7 @@ function View(_api, _model) {
             // Wrapper should inherit from parent unless floating.
             style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
             style(_wrapperElement, {
+                maxWidth: null,
                 width: null,
                 height: null,
                 left: null,
