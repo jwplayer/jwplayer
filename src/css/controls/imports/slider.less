@@ -1,5 +1,12 @@
 @import "../../shared-imports/vars.less";
 
+.jw-slider-components() {
+    backface-visibility: hidden;
+    height: 100%;
+    transform: translate(0, -50%) scale(1, 0.6);
+    transition: transform 150ms ease-in-out;
+}
+
 .jw-slider-container {
     display: flex;
     align-items: center;
@@ -122,6 +129,14 @@
     padding: 0 12px;
 }
 
+.jw-slider-time .jw-cue {
+    .jw-slider-components();
+    background-color: @background-color;
+    cursor: pointer;
+    position: absolute;
+    width: 6px;
+}
+
 .jw-slider-time,
 .jw-horizontal-volume-container {
     z-index: 1;
@@ -129,19 +144,8 @@
 
     .jw-rail,
     .jw-buffer,
-    .jw-progress,
-    .jw-cue {
-        backface-visibility: hidden;
-        height: 100%;
-        transform: translate(0, -50%) scale(1, 0.6);
-        transition: transform 150ms ease-in-out;
-    }
-
-    .jw-cue {
-        background-color: @background-color;
-        cursor: pointer;
-        position: absolute;
-        width: 6px;
+    .jw-progress {
+        .jw-slider-components();
     }
 
     &:hover,
