@@ -177,7 +177,7 @@ class TimeSlider extends Slider {
             return;
         }
         this.reset();
-        this.updateCues(model, []);
+        model.set('cues', []);
 
         const tracks = playlistItem.tracks;
         each(tracks, function (track) {
@@ -280,12 +280,6 @@ class TimeSlider extends Slider {
     }
 
     updateCues(model, cues) {
-        // If updateCues is called with cues === [], clear the cues on the model.
-        // This will clear out the cues on the model on new playlist items.
-        if (cues && cues.length === 0) {
-            model.set('cues', cues);
-        }
-
         this.resetCues();
         if (cues && cues.length) {
             cues.forEach((ele) => {
