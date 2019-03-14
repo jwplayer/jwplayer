@@ -122,19 +122,19 @@ export default class NextUpTooltip {
 
             // Set header
             this.header = this.content.querySelector('.jw-nextup-header');
-            this.header.innerText = this.localization.nextUp;
+            this.header.textContent = this.localization.nextUp;
 
             // Set title
             this.title = this.content.querySelector('.jw-nextup-title');
             const title = nextUpItem.title;
             // createElement is used to leverage 'textContent', to protect against developers passing a title with html styling.
-            this.title.innerText = title ? createElement(title).textContent : '';
+            this.title.textContent = title ? createElement(title).textContent : '';
 
             // Set duration
             const duration = nextUpItem.duration;
             if (duration) {
                 this.duration = this.content.querySelector('.jw-nextup-duration');
-                this.duration.innerText = typeof duration === 'number' ? timeFormat(duration) : duration;
+                this.duration.textContent = typeof duration === 'number' ? timeFormat(duration) : duration;
             }
         }, 500);
     }
