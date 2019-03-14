@@ -120,6 +120,17 @@
     align-items: center;
     background: transparent none;
     padding: 0 12px;
+}
+
+.jw-slider-time .jw-cue {
+    background-color: @background-color;
+    cursor: pointer;
+    position: absolute;
+    width: 6px;
+}
+
+.jw-slider-time,
+.jw-horizontal-volume-container {
     z-index: 1;
     outline: none;
 
@@ -131,13 +142,6 @@
         height: 100%;
         transform: translate(0, -50%) scale(1, 0.6);
         transition: transform 150ms ease-in-out;
-    }
-
-    .jw-cue {
-        background-color: @background-color;
-        cursor: pointer;
-        position: absolute;
-        width: 6px;
     }
 
     &:hover,

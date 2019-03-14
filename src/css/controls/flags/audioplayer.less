@@ -79,19 +79,12 @@
         .jw-horizontal-volume-container {
             transition: width 300ms @default-timing-function;
             width: 0;
-            height: 17px;
-            align-items: center;
-            outline: none;
-
-            &.jw-tab-focus:focus {
-                outline: @ui-focus;
-            }
 
             &.jw-open {
                 width: @volume-rail-length;
 
                 .jw-slider-volume {
-                    padding: 0 12px;
+                    padding-right: 24px;
                     transition: opacity 300ms;
                     opacity: 1;
                 }
