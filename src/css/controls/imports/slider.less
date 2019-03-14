@@ -1,12 +1,5 @@
 @import "../../shared-imports/vars.less";
 
-.jw-slider-components() {
-    backface-visibility: hidden;
-    height: 100%;
-    transform: translate(0, -50%) scale(1, 0.6);
-    transition: transform 150ms ease-in-out;
-}
-
 .jw-slider-container {
     display: flex;
     align-items: center;
@@ -130,7 +123,6 @@
 }
 
 .jw-slider-time .jw-cue {
-    .jw-slider-components();
     background-color: @background-color;
     cursor: pointer;
     position: absolute;
@@ -144,8 +136,12 @@
 
     .jw-rail,
     .jw-buffer,
-    .jw-progress {
-        .jw-slider-components();
+    .jw-progress,
+    .jw-cue {
+        backface-visibility: hidden;
+        height: 100%;
+        transform: translate(0, -50%) scale(1, 0.6);
+        transition: transform 150ms ease-in-out;
     }
 
     &:hover,
