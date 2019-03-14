@@ -263,7 +263,6 @@ Object.assign(Controller.prototype, {
                             // catch error that occurs when mediaSession fails to setup
                         }
                     }
-                    model.set('cues', []);
                     _this.trigger(PLAYLIST_ITEM, {
                         index: _model.get('item'),
                         item: playlistItem

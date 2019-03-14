@@ -106,6 +106,12 @@ class TimeSlider extends Slider {
             .change('buffer', this.onBuffer, this)
             .change('streamType', this.onStreamType, this);
 
+        // Clear cues on player model's playlistItem change event
+        const { _model } = this._model;
+        _model.change('playlistItem', (model) => {
+            model.set('cues', []);
+        });
+
         const sliderElement = this.el;
         setAttribute(sliderElement, 'tabindex', '0');
         setAttribute(sliderElement, 'role', 'slider');
