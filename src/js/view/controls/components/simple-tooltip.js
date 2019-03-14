@@ -1,4 +1,4 @@
-import { addClass, removeClass, replaceInnerHtml } from 'utils/dom';
+import { toggleClass, replaceInnerHtml } from 'utils/dom';
 
 export function SimpleTooltip(attachToElement, name, text, openCallback, closeCallback) {
     const tooltipElement = document.createElement('div');
@@ -12,12 +12,15 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
     attachToElement.appendChild(tooltipElement);
 
     const instance = {
+        dirty: !!text,
+        opened: false,
+        text,
         open() {
             if (instance.touchEvent) {
                 return;
             }
 
-            addClass(tooltipElement, 'jw-open');
+            redraw(true);
 
             if (openCallback) {
                 openCallback();
@@ -28,18 +31,32 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
                 return;
             }
 
-            removeClass(tooltipElement, 'jw-open');
+            redraw(false);
 
             if (closeCallback) {
                 closeCallback();
             }
         },
         setText(newText) {
-            replaceInnerHtml(textElement, newText);
+            if (newText !== instance.text) {
+                instance.text = newText;
+                instance.dirty = true;
+            }
+            if (instance.opened) {
+                redraw(true);
+            }
         }
     };
 
-    instance.setText(text);
+    const redraw = (opened) => {
+        if (opened && instance.dirty) {
+            replaceInnerHtml(textElement, instance.text);
+            instance.dirty = false;
+        }
+
+        instance.opened = opened;
+        toggleClass(tooltipElement, 'jw-open', open);
+    };
 
     attachToElement.addEventListener('mouseover', instance.open);
     attachToElement.addEventListener('focus', instance.open);
