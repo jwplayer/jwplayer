@@ -1,0 +1,14 @@
+# This is a comment.
+# Each line is a file pattern followed by one or more owners.
+# See https://help.github.com/en/articles/about-code-owners#example-of-a-codeowners-file for more details and examples
+
+*            @robwalch
+/test/unit/  @jnatalzia
+/src/css/ @pajong @DanFerrer @robwalch @jnatalzia
+/src/js/program @johnBartos @robwalch
+
+# Auto-translate
+/src/assets/translations @karimMourra
+/src/js/utils/language.js @karimMourra
+/src/js/api/setup-steps.js @karimMourra @robwalch
+/test/unit/language-test.js @karimMourra
