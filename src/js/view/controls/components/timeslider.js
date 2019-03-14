@@ -177,7 +177,7 @@ class TimeSlider extends Slider {
             return;
         }
         this.reset();
-        model.set('cues', []);
+        this.updateCues(model, model.get('cues'));
 
         const tracks = playlistItem.tracks;
         each(tracks, function (track) {
