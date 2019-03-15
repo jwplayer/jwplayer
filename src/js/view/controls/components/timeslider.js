@@ -176,7 +176,7 @@ class TimeSlider extends Slider {
 
     onPlaylistItem(model, playlistItem) {
         this.reset();
-        this.updateCues(model, model.get('cues'));
+        model.set('cues', []);
 
         const tracks = playlistItem.tracks;
         each(tracks, function (track) {
