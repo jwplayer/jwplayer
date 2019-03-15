@@ -101,16 +101,12 @@ class TimeSlider extends Slider {
                     this.updateAriaText();
                 }
             })
-            .change('playlistItem', this.onPlaylistItem, this)
             .change('position', this.onPosition, this)
             .change('buffer', this.onBuffer, this)
             .change('streamType', this.onStreamType, this);
 
         // Clear cues on player model's playlistItem change event
-        const { _model } = this._model;
-        _model.change('playlistItem', (model) => {
-            model.set('cues', []);
-        });
+        this._model.player.change('playlistItem', this.onPlaylistItem, this);
 
         const sliderElement = this.el;
         setAttribute(sliderElement, 'tabindex', '0');
@@ -179,9 +175,6 @@ class TimeSlider extends Slider {
     }
 
     onPlaylistItem(model, playlistItem) {
-        if (!playlistItem) {
-            return;
-        }
         this.reset();
         this.updateCues(model, model.get('cues'));
 

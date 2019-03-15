@@ -14,10 +14,6 @@ describe('Control Bar', function() {
     model.mediaController = {};
     model.mediaController.on = sinon.stub();
     model.mediaController.on.returnsThis();
-    const playerModel = new SimpleModel();
-    playerModel.change = sinon.stub();
-    playerModel.change.returnsThis();
-    model._model = playerModel;
 
     let accessibilityContainer;
     let controlBar;
