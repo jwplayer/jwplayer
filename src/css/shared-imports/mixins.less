@@ -2,6 +2,7 @@
 @import (reference) "mixins/rect.less";
 @import (reference) "mixins/position.less";
 @import (reference) "mixins/pseudo.less";
+@import (reference) "mixins/modal.less";
 
 .inset-controlbar() {
     &:not(.jw-flag-audio-player) {
@@ -88,6 +89,17 @@
     }
 }
 
+.fullscreen-at-small-player() {
+    .jw-flag-small-player & {
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        max-height: none;
+        max-width: none;
+        z-index: 1;
+    }
+}
 /* Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316 */
 
 /* Mixin for common skin styles with variable colors */

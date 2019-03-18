@@ -1,6 +1,4 @@
 //  Import added so this file can be used in unit testing.
-@import "../../shared-imports/mixins.less";
-
 @rightclick-primary-text: #fefefe;
 @rightclick-secondary-text: #333;
 @rightclick-bg: #333;
@@ -8,16 +6,9 @@
 @ui-padding: 0.5em;
 @ui-margin: 20px;
 
-.jwplayer .jw-shortcuts-tooltip {
-    .topleft(50%, 50%);
-    background: @menu-background-color;
-    transform: translate(-50%, -50%);
-    display: none;
-    color: @active-color;
-    pointer-events: all;
-    user-select: text;
-    overflow: hidden;
-    flex-direction: column;
+.jw-shortcuts-tooltip {
+    &:extend(.jw-modal);
+    .modal-sizing();
 
     &.jw-open {
         display: flex;

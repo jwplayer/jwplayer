@@ -1,25 +1,11 @@
 .jw-modal {
-    width: 284px;
-
-    .jw-breakpoint-7 &,
-    .jw-breakpoint-6 &,
-    .jw-breakpoint-5 & {
-        height: 232px;
-    }
-
-    .jw-breakpoint-4 &,
-    .jw-breakpoint-3 & {
-        height: 192px;
-    }
-
-    .jw-breakpoint-2 &,
-    .jw-flag-small-player & {
-        bottom: 0;
-        right: 0;
-        height: 100%;
-        width: 100%;
-        max-height: none;
-        max-width: none;
-        z-index: 1;
-    }
+    .topleft(50%, 50%);
+    background: @menu-background-color;
+    transform: translate(-50%, -50%);
+    display: none;
+    color: @active-color;
+    pointer-events: all;
+    user-select: text;
+    overflow: hidden;
+    flex-direction: column;
 }

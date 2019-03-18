@@ -1,13 +1,13 @@
 .jw-info-overlay {
-    .topleft(50%, 50%);
-    background: @menu-background-color;
-    transform: translate(-50%, -50%);
-    display: none;
-    color: @active-color;
-    pointer-events: all;
-    user-select: text;
-    overflow: hidden;
-    flex-direction: column;
+    &:extend(.jw-modal);
+
+    &:not(.jw-error-msg) {
+        .modal-sizing();
+    }
+
+    &.jw-error-msg {
+        .modal-sizing(@widthProperty: max-width, @heightProperty: max-height);
+    }
 
     .jw-info-close {
         flex: 0 0 auto;
