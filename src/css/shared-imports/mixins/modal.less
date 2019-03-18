@@ -1,0 +1,19 @@
+.modal-sizing(@widthProperty: width, @heightProperty: height) {
+    @{widthProperty}: 284px;
+    .fullscreen-at-small-player();
+
+    .jw-breakpoint-7 &,
+    .jw-breakpoint-6 &,
+    .jw-breakpoint-5 & {
+        @{heightProperty}: 232px;
+    }
+
+    .jw-breakpoint-4 &,
+    .jw-breakpoint-3 & {
+        @{heightProperty}: 192px;
+    }
+
+    .jw-breakpoint-2 & {
+        @{heightProperty}: 179px;
+    }
+}
