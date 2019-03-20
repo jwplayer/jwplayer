@@ -57,7 +57,6 @@ function createCastButton(castToggle, localization) {
 
 
     const castButton = document.createElement('google-cast-launcher');
-    setAttribute(castButton, 'type', 'button');
     setAttribute(castButton, 'tabindex', '-1');
     castButton.className += ' jw-reset';
 
