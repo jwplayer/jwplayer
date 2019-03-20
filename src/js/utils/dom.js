@@ -214,6 +214,6 @@ export function open(link, target, additionalOptions = {}) {
     let a = document.createElement('a');
     a.href = link;
     a.target = target;
-    a = Object.assign(a, { additionalOptions });
+    a = Object.assign(a, additionalOptions);
     a.click();
 }
