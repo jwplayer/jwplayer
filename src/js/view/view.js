@@ -726,7 +726,6 @@ function View(_api, _model) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
-                _this.stopFloating();
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
