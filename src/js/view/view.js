@@ -722,12 +722,10 @@ function View(_api, _model) {
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
-        if (state === STATE_ERROR) {
-            _this.stopFloating();
-        }
-
         switch (state) {
             case STATE_ERROR:
+                _this.stopFloating();
+                 /* falls through to update captions renderer */
             case STATE_IDLE:
             case STATE_COMPLETE:
                 if (_captionsRenderer) {
