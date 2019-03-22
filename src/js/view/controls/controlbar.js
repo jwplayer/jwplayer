@@ -209,6 +209,10 @@ export default class Controlbar {
             }
             captionsTip.setText(newText);
         };
+        const playPauseStopTooltip = SimpleTooltip(elements.play.element(), 'play', localization.play);
+        this.onPlaybuttonTooltipChange = (newLocalization) => {
+            playPauseStopTooltip.setText(newLocalization);
+        };
 
         const nextElement = elements.next.element();
         const nextUpTip = SimpleTooltip(nextElement, 'next', localization.nextUp, () => {
@@ -225,6 +229,7 @@ export default class Controlbar {
         }, () => {
             feedShownId = '';
         });
+
         setAttribute(nextElement, 'dir', 'auto');
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
@@ -481,11 +486,15 @@ export default class Controlbar {
     onState(model, state) {
         const localization = model.get('localization');
         let label = localization.play;
+        this.onPlaybuttonTooltipChange(label);
+        
         if (state === STATE_PLAYING) {
             if (model.get('streamType') !== 'LIVE') {
                 label = localization.pause;
+                this.onPlaybuttonTooltipChange(label);
             } else {
                 label = localization.stop;
+                this.onPlaybuttonTooltipChange(label);
             }
         }
         setAttribute(this.elements.play.element(), 'aria-label', label);
