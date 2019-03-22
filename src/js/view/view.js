@@ -723,8 +723,13 @@ function View(_api, _model) {
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
         switch (state) {
-            case STATE_IDLE:
             case STATE_ERROR:
+                _this.stopFloating();
+                if (_captionsRenderer) {
+                    _captionsRenderer.hide();
+                }
+                break;
+            case STATE_IDLE:
             case STATE_COMPLETE:
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
