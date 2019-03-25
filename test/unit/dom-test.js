@@ -8,10 +8,14 @@ import {
     classList,
     styleDimension,
     createElement,
+    replaceInnerHtml,
     emptyElement,
     empty,
     addStyleSheet,
     bounds,
+    htmlToParentElement,
+    sanitizeScriptNodes,
+    sanitizeElementAttributes
 } from 'utils/dom';
 
 describe('dom', function() {
@@ -81,10 +85,216 @@ describe('dom', function() {
         expect(element.getAttribute('a')).to.equal('1');
     });
 
-    it('createElement', function() {
-        const element = createElement('<div id=\'testid\'></div>');
+    function verifyHtmlElement(element, tagName, id, childCount = 0) {
+        expect(element.nodeType, `${element} is an HtmlElement`).to.equal(1);
+        expect(element).to.have.property('tagName').which.equals(tagName);
+        expect(element).to.have.property('id').which.equals(id);
+        expect(element).to.have.property('childNodes').which.has.property('length').which.equals(childCount);
+    }
 
-        expect(element.id, 'element create test').to.equal('testid');
+    function listAttributeNames(element) {
+        return Array.prototype.map.call(element.attributes, attr => attr.name);
+    }
+
+    describe('createElement', function() {
+        it('Returns a new element based on HTML', function() {
+            const element = createElement(`<div id="testid"></div>`);
+            verifyHtmlElement(element, 'DIV', 'testid');
+        });
+
+        it('Returns only the first element', function() {
+            const element = createElement(`<div id="d1"></div><div id="d2"></div>`);
+            verifyHtmlElement(element, 'DIV', 'd1');
+        });
+
+        it('Sanitizes HTML input: XSS script, object and iframe elements', function() {
+            const element = createElement(
+                `<div>` +
+                    `<script></script>` +
+                    `<div id="firstChild"></div>` +
+                    `<object></object>` +
+                    `<div id="secondChild"></div>` +
+                    `<iframe></iframe>` +
+                `</div>`
+            );
+            verifyHtmlElement(element, 'DIV', '', 2);
+            verifyHtmlElement(element.firstChild, 'DIV', 'firstChild');
+            verifyHtmlElement(element.childNodes[1], 'DIV', 'secondChild');
+        });
+
+        it('Sanitizes HTML input: XSS img and svg attributes', function() {
+            const element = createElement(
+                `<div>` +
+                    `<img id="firstChild" src="foobar" onerror="throw new Error('XSS image error attack')"></img>` +
+                    `<svg id="secondChild" onload="throw new Error('XSS svg load attack')" data="ok" onwhatever="not allowed"></svg>` +
+                `</div>`
+            );
+            const img = element.firstChild;
+            const svg = element.childNodes[1];
+            verifyHtmlElement(element, 'DIV', '', 2);
+            verifyHtmlElement(img, 'IMG', 'firstChild');
+            verifyHtmlElement(svg, 'svg', 'secondChild');
+
+            expect(listAttributeNames(img)).to.include('id');
+            expect(listAttributeNames(img)).to.include('src');
+            expect(listAttributeNames(img)).to.not.include('onerror');
+            expect(img.getAttribute('src')).to.contain('foobar');
+            expect(img).to.have.property('attributes').which.has.property('length').which.equals(2);
+
+            expect(listAttributeNames(svg)).to.include('id');
+            expect(listAttributeNames(svg)).to.include('data');
+            expect(listAttributeNames(svg)).to.not.include('onload');
+            expect(listAttributeNames(svg)).to.not.include('onwhatever');
+            expect(svg.getAttribute('data')).to.equal('ok');
+            expect(svg).to.have.property('attributes').which.has.property('length').which.equals(2);
+        });
+    });
+
+    describe('htmlToParentElement', function() {
+        it('Returns a new parent element containing parsed HTML', function() {
+            const body = htmlToParentElement(`<div id="firstChild"></div><div id="secondChild"></div>`);
+            verifyHtmlElement(body, 'BODY', '', 2);
+            verifyHtmlElement(body.firstChild, 'DIV', 'firstChild');
+            verifyHtmlElement(body.childNodes[1], 'DIV', 'secondChild');
+        });
+
+        it('Sanitizes HTML input: XSS script, object and iframe elements', function() {
+            const body = htmlToParentElement(
+                `<script>a</script>` +
+                `<object src="x">b</object>` +
+                `<iframe src="y"></iframe>` +
+                `<div id="onlyChild"></div>`
+            );
+            verifyHtmlElement(body, 'BODY', '', 1);
+            verifyHtmlElement(body.firstChild, 'DIV', 'onlyChild');
+        });
+
+        it('Sanitizes HTML input: XSS img and svg attributes', function() {
+            const body = htmlToParentElement(
+                `<img id="firstChild" src="foobar" onerror="throw 'error'"></img>` +
+                `<svg id="secondChild" onload="throw 'error'" data="ok" onerror="throw 'error'"></svg>`
+            );
+            const img = body.firstChild;
+            const svg = body.childNodes[1];
+            verifyHtmlElement(body, 'BODY', '', 2);
+            verifyHtmlElement(img, 'IMG', 'firstChild');
+            verifyHtmlElement(svg, 'svg', 'secondChild');
+
+            expect(listAttributeNames(img)).to.include('id');
+            expect(listAttributeNames(img)).to.include('src');
+            expect(listAttributeNames(img)).to.not.include('onerror');
+            expect(img.getAttribute('src')).to.contain('foobar');
+            expect(img).to.have.property('attributes').which.has.property('length').which.equals(2);
+
+            expect(listAttributeNames(svg)).to.include('id');
+            expect(listAttributeNames(svg)).to.include('data');
+            expect(listAttributeNames(svg)).to.not.include('onload');
+            expect(listAttributeNames(svg)).to.not.include('onerror');
+            expect(svg.getAttribute('data')).to.equal('ok');
+            expect(svg).to.have.property('attributes').which.has.property('length').which.equals(2);
+        });
+    });
+
+    describe('replaceInnerHtml', function() {
+        it('Replaces an element\'s children with HTML', function() {
+            const element = document.createElement('div');
+            element.textContent = 'hello';
+            element.appendChild(document.createElement('li'));
+
+            replaceInnerHtml(element, `<div id="newChild"></div>`);
+            verifyHtmlElement(element, 'DIV', '', 1);
+            expect(element).to.have.property('textContent').which.equals('');
+            verifyHtmlElement(element.firstChild, 'DIV', 'newChild');
+
+            replaceInnerHtml(element, '');
+            verifyHtmlElement(element, 'DIV', '', 0);
+        });
+
+        it('Replaces an element\'s children with text', function() {
+            const element = document.createElement('div');
+            element.textContent = 'hello';
+            element.appendChild(document.createElement('li'));
+
+            replaceInnerHtml(element, `world`);
+            verifyHtmlElement(element, 'DIV', '', 1);
+            expect(element).to.have.property('textContent').which.equals('world');
+
+            replaceInnerHtml(element, '');
+            verifyHtmlElement(element, 'DIV', '', 0);
+            expect(element).to.have.property('textContent').which.equals('');
+        });
+
+        it('Sanitizes HTML input', function() {
+            const element = document.createElement('div');
+            element.textContent = 'hello';
+            element.appendChild(document.createElement('li'));
+
+            replaceInnerHtml(element,
+                `hello` +
+                `<script>a</script>` +
+                `<object src="x">b</object>` +
+                `<iframe src="y"></iframe>` +
+                `<div id="onlyChild"></div>` +
+                ` world` +
+                `<img id="image" src="foobar" onerror="throw 'error'"></img>` +
+                `<svg id="vector" data="ok" onerror="throw 'error'"></svg>`
+            );
+            verifyHtmlElement(element, 'DIV', '', 5);
+            expect(element).to.have.property('textContent').which.equals('hello world');
+            expect(element.childNodes[0].nodeType, `${element} is a TextElement`).to.equal(3);
+            verifyHtmlElement(element.childNodes[1], 'DIV', 'onlyChild');
+            expect(element.childNodes[2].nodeType, `${element} is a TextElement`).to.equal(3);
+            verifyHtmlElement(element.childNodes[3], 'IMG', 'image');
+            verifyHtmlElement(element.childNodes[4], 'svg', 'vector');
+            expect(listAttributeNames(element.childNodes[3])).to.not.include('onerror');
+            expect(listAttributeNames(element.childNodes[4])).to.not.include('onerror');
+        });
+    });
+
+    describe('sanitizeScriptNodes', function() {
+        it('Sanitizes HTML input: XSS script, object and iframe elements', function() {
+            const parser = new DOMParser();
+            const element = parser.parseFromString(
+                `<div id="container">` +
+                    `<iframe src="y"></iframe>` +
+                    `<script>a</script>` +
+                    `<object src="x">b</object>` +
+                    `<div id="firstChild">hello</div>` +
+                    `<script>c</script>` +
+                    `<div id="secondChild">world</div>` +
+                    `<object src="y">bye bye</object>` +
+                `</div>`, 'text/html').body.firstChild;
+
+            sanitizeScriptNodes(element);
+
+            verifyHtmlElement(element, 'DIV', 'container', 2);
+            verifyHtmlElement(element.firstChild, 'DIV', 'firstChild', 1);
+            verifyHtmlElement(element.childNodes[1], 'DIV', 'secondChild', 1);
+            expect(element).to.have.property('textContent').which.equals('helloworld');
+        });
+    });
+
+    describe('sanitizeElementAttributes', function() {
+        it('Removes attributes starting with "on" from element', function() {
+            const parser = new DOMParser();
+            const element = parser.parseFromString(
+                `<div id="container" onload="throw 'error'" data="ok" onerror="throw 'error'" ondata src></div>`,
+                'text/html').body.firstChild;
+
+            sanitizeElementAttributes(element);
+
+            verifyHtmlElement(element, 'DIV', 'container');
+
+            expect(listAttributeNames(element)).to.include('id');
+            expect(listAttributeNames(element)).to.include('data');
+            expect(listAttributeNames(element)).to.include('src');
+            expect(listAttributeNames(element)).to.not.include('onload');
+            expect(listAttributeNames(element)).to.not.include('onerror');
+            expect(listAttributeNames(element)).to.not.include('onany');
+            expect(listAttributeNames(element)).to.not.include('ondata');
+            expect(element.getAttribute('data')).to.equal('ok');
+            expect(element).to.have.property('attributes').which.has.property('length').which.equals(3);
+        });
     });
 
     it('styleDimension', function() {
