@@ -48,17 +48,17 @@ describe('Model', function() {
             model._normalizeConfig(startingCfg);
             expect(startingCfg.floating).to.deep.eq({});
         });
-        it('should null the floating block when disabled is true', () => {
+        it('should delete the floating block when disabled is true', () => {
             let startingCfg = {
                 floating: {disabled: true}
             };
             model._normalizeConfig(startingCfg);
-            expect(startingCfg.floating).to.eq(null);
+            expect(startingCfg).to.not.have.property('floating');
         });
-        it('should null the floating block when it is not otherwise present', () => {
+        it('should not touch the floating block when it is not otherwise present', () => {
             let startingCfg = {};
             model._normalizeConfig(startingCfg);
-            expect(startingCfg.floating).to.eq(null);
+            expect(startingCfg).to.not.have.property('floating');
         });
     });
 });

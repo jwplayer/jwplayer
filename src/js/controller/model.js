@@ -216,8 +216,8 @@ class Model extends SimpleModel {
     _normalizeConfig(cfg) {
         const floating = cfg.floating;
 
-        if (!floating || !!floating.disabled) {
-            cfg.floating = null;
+        if (floating && !!floating.disabled) {
+            delete cfg.floating;
         }
     }
 }
