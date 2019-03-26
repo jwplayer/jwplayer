@@ -21,7 +21,7 @@ import {
     toggleClass,
     createElement,
     htmlToParentElement,
-    getAncestor,
+    isIframe,
     bounds,
 } from 'utils/dom';
 import {
@@ -797,7 +797,7 @@ function View(_api, _model) {
             _controls.destroyInstream(_model);
         }
 
-        if (floatingPlayer === _playerElement && !getAncestor(_playerElement, 'iframe')) {
+        if (floatingPlayer === _playerElement && !isIframe()) {
             _floatingUI.enable();
         }
 
@@ -880,7 +880,7 @@ function View(_api, _model) {
 
     function _updateFloating(intersectionRatio) {
         // Player is 50% visible or less and no floating player already in the DOM. Player is not in iframe
-        const shouldFloat = intersectionRatio < 0.5 && !getAncestor(_playerElement, 'iframe');
+        const shouldFloat = intersectionRatio < 0.5 && !isIframe();
         if (shouldFloat) {
             const state = _model.get('state');
             if (state !== STATE_IDLE && state !== STATE_ERROR && state !== STATE_COMPLETE && floatingPlayer === null) {
