@@ -210,7 +210,7 @@ export default class Controlbar {
             captionsTip.setText(newText);
         };
         const playPauseStopTooltip = SimpleTooltip(elements.play.element(), 'play', localization.play);
-        this.onPlaybuttonTooltipChange = (newLocalization) => {
+        this.setPlayText = (newLocalization) => {
             playPauseStopTooltip.setText(newLocalization);
         };
 
@@ -486,15 +486,15 @@ export default class Controlbar {
     onState(model, state) {
         const localization = model.get('localization');
         let label = localization.play;
-        this.onPlaybuttonTooltipChange(label);
+        this.setPlayText(label);
         
         if (state === STATE_PLAYING) {
             if (model.get('streamType') !== 'LIVE') {
                 label = localization.pause;
-                this.onPlaybuttonTooltipChange(label);
+                this.setPlayText(label);
             } else {
                 label = localization.stop;
-                this.onPlaybuttonTooltipChange(label);
+                this.setPlayText(label);
             }
         }
         setAttribute(this.elements.play.element(), 'aria-label', label);
