@@ -21,9 +21,9 @@ import {
     toggleClass,
     createElement,
     htmlToParentElement,
-    isIframe,
     bounds,
 } from 'utils/dom';
+import { isIframe } from 'utils/browser';
 import {
     clearCss,
     style,
