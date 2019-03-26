@@ -55,7 +55,7 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
         }
 
         instance.opened = opened;
-        toggleClass(tooltipElement, 'jw-open', open);
+        toggleClass(tooltipElement, 'jw-open', opened);
     };
 
     attachToElement.addEventListener('mouseover', instance.open);
