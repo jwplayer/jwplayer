@@ -19,6 +19,8 @@ class Model extends SimpleModel {
     }
 
     setup(config) {
+        config = config || {};
+        this._normalizeConfig(config);
         Object.assign(this.attributes, config, INITIAL_PLAYER_STATE);
         this.providerController = new Providers(this.getConfiguration());
         this.setAutoStart();
@@ -209,6 +211,14 @@ class Model extends SimpleModel {
             return;
         }
         this.set('bandwidthEstimate', bwEstimate);
+    }
+
+    _normalizeConfig(cfg) {
+        const floating = cfg.floating;
+
+        if (floating && !!floating.disabled) {
+            delete cfg.floating;
+        }
     }
 }
 
