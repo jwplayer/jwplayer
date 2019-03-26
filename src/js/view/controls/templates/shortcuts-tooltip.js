@@ -9,7 +9,7 @@ export default (shortcuts = {}) => {
     });
 
     return (
-        `<div class="jw-shortcuts-tooltip jw-modal jw-reset" title="Keyboard Shortcuts">` +
+        `<div class="jw-shortcuts-tooltip jw-reset" title="Keyboard Shortcuts">` +
             `<span class="jw-hidden" id="jw-shortcuts-tooltip-explanation">` +
                 `Press shift question mark to access a list of keyboard shortcuts` +
             `</span>` +

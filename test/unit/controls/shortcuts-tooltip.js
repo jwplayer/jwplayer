@@ -2,14 +2,14 @@ import sinon from 'sinon';
 import MockModel from 'mock/mock-model';
 import MockApi from 'mock/mock-api';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
-import { STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import { STATE_PLAYING } from 'events/events';
 
 require('css/controls/imports/shortcuts-tooltip.less');
 
 describe('Keyboard Shortcuts Modal Test', function() {
     function isHidden (el) {
-        var style = window.getComputedStyle(el);
-        return (style.display === 'none')
+        let style = window.getComputedStyle(el);
+        return (style.display === 'none');
     }
     function isVisible (el) {
         return !isHidden(el);
@@ -18,7 +18,7 @@ describe('Keyboard Shortcuts Modal Test', function() {
     const api = new MockApi();
     let player;
     let shortcutsTooltip;
-    beforeEach(function(){
+    beforeEach(function() {
         player = document.createElement('div');
         player.classList.add('jwplayer');
         model.setup({});
@@ -37,7 +37,7 @@ describe('Keyboard Shortcuts Modal Test', function() {
     it('should be hidden initially', function() {
         const isInitiallyHidden = isHidden(shortcutsTooltip.el);
         expect(isInitiallyHidden).to.equal(true)
-    })
+    });
     it('should be visible when open', function() {
         shortcutsTooltip.open();
         const isVisibleAfterOpening = isVisible(shortcutsTooltip.el)
