@@ -726,7 +726,7 @@ function View(_api, _model) {
         switch (state) {
             case STATE_ERROR:
                 _this.stopFloating();
-                 /* falls through to update captions renderer */
+            /* falls through to update captions renderer */
             case STATE_IDLE:
             case STATE_COMPLETE:
                 if (_captionsRenderer) {
@@ -798,7 +798,6 @@ function View(_api, _model) {
         }
 
         if (floatingPlayer === _playerElement && !getAncestor(_playerElement, 'iframe')) {
-            debugger;
             _floatingUI.enable();
         }
 
