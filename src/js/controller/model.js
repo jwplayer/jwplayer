@@ -219,6 +219,10 @@ class Model extends SimpleModel {
         if (floating && !!floating.disabled) {
             delete cfg.floating;
         }
+
+        if (typeof cfg.abHideNextUpDisplay !== 'undefined') {
+            cfg.nextUpDisplay = !cfg.abHideNextUpDisplay;
+        }
     }
 }
 

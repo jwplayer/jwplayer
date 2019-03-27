@@ -35,30 +35,57 @@ describe('Model', function() {
     });
 
     describe('#_normalizeConfig', () => {
-        it('should leave the floating block untouched when disabled is not true', () => {
-            let startingCfg = {
-                floating: { disabled: false }
-            };
-            model._normalizeConfig(startingCfg);
-            expect(startingCfg.floating).to.deep.eq({ disabled: false });
+        describe('floating block', () => {
+            it('should leave the floating block untouched when disabled is not true', () => {
+                let startingCfg = {
+                    floating: { disabled: false }
+                };
+                model._normalizeConfig(startingCfg);
+                expect(startingCfg.floating).to.deep.eq({ disabled: false });
 
-            startingCfg = {
-                floating: {}
-            };
-            model._normalizeConfig(startingCfg);
-            expect(startingCfg.floating).to.deep.eq({});
+                startingCfg = {
+                    floating: {}
+                };
+                model._normalizeConfig(startingCfg);
+                expect(startingCfg.floating).to.deep.eq({});
+            });
+            it('should delete the floating block when disabled is true', () => {
+                let startingCfg = {
+                    floating: {disabled: true}
+                };
+                model._normalizeConfig(startingCfg);
+                expect(startingCfg).to.not.have.property('floating');
+            });
+            it('should not touch the floating block when it is not otherwise present', () => {
+                let startingCfg = {};
+                model._normalizeConfig(startingCfg);
+                expect(startingCfg).to.not.have.property('floating');
+            });
         });
-        it('should delete the floating block when disabled is true', () => {
-            let startingCfg = {
-                floating: {disabled: true}
-            };
-            model._normalizeConfig(startingCfg);
-            expect(startingCfg).to.not.have.property('floating');
-        });
-        it('should not touch the floating block when it is not otherwise present', () => {
-            let startingCfg = {};
-            model._normalizeConfig(startingCfg);
-            expect(startingCfg).to.not.have.property('floating');
+        describe('next up overlay a/b test', () => {
+            it('should set nextUpDisplay to false when ab hide config is true', () => {
+                let startingCfg = {
+                    abHideNextUpDisplay: true,
+                    nextUpDisplay: 'blah'
+                };
+                model._normalizeConfig(startingCfg);
+                expect(startingCfg.nextUpDisplay).to.eq(false);
+            });
+            it('should set nextUpDisplay to true when ab hide config is false', () => {
+                let startingCfg = {
+                    abHideNextUpDisplay: false,
+                    nextUpDisplay: 'blah'
+                };
+                model._normalizeConfig(startingCfg);
+                expect(startingCfg.nextUpDisplay).to.eq(true);
+            });
+            it('should not touch the nextUpDisplay value when the a/b config is not present', () => {
+                let startingCfg = {
+                    nextUpDisplay: 'blah'
+                };
+                model._normalizeConfig(startingCfg);
+                expect(startingCfg.nextUpDisplay).to.eq('blah');
+            });
         });
     });
 });
