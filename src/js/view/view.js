@@ -22,7 +22,7 @@ import {
     createElement,
     htmlToParentElement,
     bounds,
-    open,
+    openLink,
 } from 'utils/dom';
 import { isIframe } from 'utils/browser';
 import {
@@ -486,7 +486,7 @@ function View(_api, _model) {
         } else {
             _api.pause(reasonInteraction());
             _api.setFullscreen(false);
-            open(evt.link, evt.linktarget, { rel: 'noreferrer' });
+            openLink(evt.link, evt.linktarget, { rel: 'noreferrer' });
         }
     }
 

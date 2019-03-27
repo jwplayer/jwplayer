@@ -210,7 +210,7 @@ export function previousSibling(element) {
     return element.previousElementSibling;
 }
 
-export function open(link, target, additionalOptions = {}) {
+export function openLink(link, target, additionalOptions = {}) {
     let a = document.createElement('a');
     a.href = link;
     a.target = target;
