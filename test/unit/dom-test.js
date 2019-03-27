@@ -394,7 +394,7 @@ describe('dom', function() {
         expect('bounds should not be empty when element has layout').to.not.equal(bounds(element), emptyBound);
     });
 
-    it.only('opens a link', function() {
+    it('opens a link', function() {
         const oldClick = HTMLElement.prototype.click;
         const clickSpy = sinon.spy();
 
