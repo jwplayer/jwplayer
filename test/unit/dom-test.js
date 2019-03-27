@@ -15,7 +15,8 @@ import {
     bounds,
     htmlToParentElement,
     sanitizeScriptNodes,
-    sanitizeElementAttributes
+    sanitizeElementAttributes,
+    openLink,
 } from 'utils/dom';
 
 describe('dom', function() {
@@ -391,6 +392,30 @@ describe('dom', function() {
         element.style.width = '400px';
         element.style.height = '400px';
         expect('bounds should not be empty when element has layout').to.not.equal(bounds(element), emptyBound);
+    });
+
+    it.only('opens a link', function() {
+        const oldClick = HTMLElement.prototype.click;
+        const clickSpy = sinon.spy();
+
+        HTMLElement.prototype.click = clickSpy;
+        sinon.spy(document, 'createElement');
+        openLink('http://localhost/', '_blank', { rel: 'noreferrer' });
+
+        const clickedElement = clickSpy.thisValues[0];
+
+        //  Anchor is created.
+        expect(document.createElement.calledWith('a'));
+        //  Element is clicked.
+        expect(clickSpy.calledOnce).to.be.true;
+        //  Element has expected href.
+        expect(clickedElement.href).to.equal('http://localhost/');
+        //  Element has expected target.
+        expect(clickedElement.target).to.equal('_blank');
+        //  Element has expected options
+        expect(clickedElement.rel).to.equal('noreferrer');
+        //  Return click prototype to original value.
+        HTMLElement.prototype.click = oldClick;
     });
 
 });
