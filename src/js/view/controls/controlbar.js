@@ -8,7 +8,7 @@ import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import ariaLabel from 'utils/aria';
 import Events from 'utils/backbone.events';
-import { prependChild, setAttribute, toggleClass, open } from 'utils/dom';
+import { prependChild, setAttribute, toggleClass, openLink } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
@@ -523,7 +523,7 @@ export default class Controlbar {
             this._model.get('localization').logo,
             () => {
                 if (logo.link) {
-                    open(logo.link, '_blank', { rel: 'noreferrer' });
+                    openLink(logo.link, '_blank', { rel: 'noreferrer' });
                 }
             },
             'logo',
