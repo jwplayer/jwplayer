@@ -75,7 +75,7 @@ export default class RightClick {
     }
 
     getOffset(evt) {
-        const playerBounds = bounds(this.playerElement);
+        const playerBounds = bounds(this.containerElement);
         let x = evt.pageX - playerBounds.left;
         let y = evt.pageY - playerBounds.top;
 
@@ -96,7 +96,7 @@ export default class RightClick {
         this.el.style.top = off.y + 'px';
         this.outCount = 0;
 
-        addClass(this.playerElement, 'jw-flag-rightclick-open');
+        addClass(this.containerElement.parentElement, 'jw-flag-rightclick-open');
         addClass(this.el, 'jw-open');
         clearTimeout(this._menuTimeout);
         this._menuTimeout = setTimeout(() => this.hideMenu(), 3000);
@@ -109,7 +109,7 @@ export default class RightClick {
             return;
         }
 
-        removeClass(this.playerElement, 'jw-flag-rightclick-open');
+        removeClass(this.containerElement.parentElement, 'jw-flag-rightclick-open');
         removeClass(this.el, 'jw-open');
     }
 
@@ -155,22 +155,22 @@ export default class RightClick {
         };
     }
 
-    setup(_model, _playerElement, layer) {
-        this.playerElement = _playerElement;
+    setup(_model, _containerElement, layer) {
+        this.containerElement = _containerElement;
         this.model = _model;
         this.mouseOverContext = false;
         this.layer = layer;
-        this.ui = new UI(_playerElement).on('longPress', this.rightClick, this);
+        this.ui = new UI(_containerElement).on('longPress', this.rightClick, this);
     }
 
     addHideMenuHandlers() {
         this.removeHideMenuHandlers();
 
-        this.playerElement.addEventListener('touchstart', this.hideMenuHandler);
+        this.containerElement.addEventListener('touchstart', this.hideMenuHandler);
         document.addEventListener('touchstart', this.hideMenuHandler);
 
         if (!OS.mobile) {
-            this.playerElement.addEventListener('click', this.hideMenuHandler);
+            this.containerElement.addEventListener('click', this.hideMenuHandler);
             document.addEventListener('click', this.hideMenuHandler);
             // Track if the mouse is above the menu or not
             this.el.addEventListener('mouseover', this.overHandler);
@@ -184,8 +184,8 @@ export default class RightClick {
     }
 
     removeHideMenuHandlers() {
-        if (this.playerElement) {
-            this.playerElement.removeEventListener('click', this.hideMenuHandler);
+        if (this.containerElement) {
+            this.containerElement.removeEventListener('click', this.hideMenuHandler);
         }
         if (this.el) {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
@@ -209,9 +209,9 @@ export default class RightClick {
             this.el = null;
         }
 
-        if (this.playerElement) {
-            this.playerElement.oncontextmenu = null;
-            this.playerElement = null;
+        if (this.containerElement) {
+            this.containerElement.oncontextmenu = null;
+            this.containerElement = null;
         }
 
         if (this.model) {

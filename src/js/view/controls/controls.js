@@ -124,18 +124,18 @@ export default class Controls extends Events {
         });
         //  Add keyboard shortcuts if not on mobi;e
         if (!OS.mobile) {
-            this.shortcutsTooltip = new ShortcutsTooltip(this.playerContainer, api, model);
+            this.shortcutsTooltip = new ShortcutsTooltip(this.wrapperElement, api, model);
         }
         this.rightClickMenu = new RightClick(this.infoOverlay, this.shortcutsTooltip);
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
-            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
+            this.rightClickMenu.setup(model, this.wrapperElement, this.wrapperElement);
         } else {
             model.change('flashBlocked', (modelChanged, isBlocked) => {
                 if (isBlocked) {
                     this.rightClickMenu.destroy();
                 } else {
-                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
+                    this.rightClickMenu.setup(modelChanged, this.wrapperElement, this.wrapperElement);
                 }
             }, this);
         }
