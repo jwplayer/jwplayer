@@ -96,7 +96,7 @@ export default class RightClick {
         this.el.style.top = off.y + 'px';
         this.outCount = 0;
 
-        addClass(this.containerElement.parentElement, 'jw-flag-rightclick-open');
+        addClass(this.player, 'jw-flag-rightclick-open');
         addClass(this.el, 'jw-open');
         clearTimeout(this._menuTimeout);
         this._menuTimeout = setTimeout(() => this.hideMenu(), 3000);
@@ -109,7 +109,7 @@ export default class RightClick {
             return;
         }
 
-        removeClass(this.containerElement.parentElement, 'jw-flag-rightclick-open');
+        removeClass(this.player, 'jw-flag-rightclick-open');
         removeClass(this.el, 'jw-open');
     }
 
@@ -129,7 +129,7 @@ export default class RightClick {
 
         this.html = html;
         this.el = createDomElement(this.html);
-        this.layer.appendChild(this.el);
+        this.containerElement.appendChild(this.el);
 
         this.hideMenuHandler = e => this.hideMenu(e);
         this.overHandler = () => {
@@ -155,11 +155,11 @@ export default class RightClick {
         };
     }
 
-    setup(_model, _containerElement, layer) {
+    setup(_model, _player, _containerElement) {
         this.containerElement = _containerElement;
         this.model = _model;
         this.mouseOverContext = false;
-        this.layer = layer;
+        this.player = _player;
         this.ui = new UI(_containerElement).on('longPress', this.rightClick, this);
     }
 

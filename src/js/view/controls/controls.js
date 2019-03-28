@@ -129,13 +129,13 @@ export default class Controls extends Events {
         this.rightClickMenu = new RightClick(this.infoOverlay, this.shortcutsTooltip);
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
-            this.rightClickMenu.setup(model, this.wrapperElement, this.wrapperElement);
+            this.rightClickMenu.setup(model, this.playerContainer, this.wrapperElement);
         } else {
             model.change('flashBlocked', (modelChanged, isBlocked) => {
                 if (isBlocked) {
                     this.rightClickMenu.destroy();
                 } else {
-                    this.rightClickMenu.setup(modelChanged, this.wrapperElement, this.wrapperElement);
+                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.wrapperElement);
                 }
             }, this);
         }
