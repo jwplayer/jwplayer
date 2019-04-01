@@ -20,7 +20,7 @@
         "cantLoadPlayer": "Desolat, la vidèo a pas pogut se cargar.",
         "cantPlayInBrowser": "Aqueste navigador es pas pres en carga.",
         "cantPlayVideo": "La vidèo pòt pas èsser legida.",
-        "errorCode": "Còdi d'error",
+        "errorCode": "Còdi d’error",
         "liveStreamDown": "Lo streaming en live es en mantenença o es acabat.",
         "protectedContent": "Avèm pas pogut accedir al contengut protegit.",
         "technicalError": "Una error tecnica empacha la lectura de la vidèo."
@@ -34,7 +34,7 @@
     "next": "Seguent",
     "nextUp": "Vidèo venenta",
     "notLive": "Fòra dirècte",
-    "off": "Dsactivar",
+    "off": "Desactivar",
     "pause": "Pausa",
     "play": "Lectura",
     "playback": "Lectura",
