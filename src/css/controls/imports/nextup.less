@@ -13,10 +13,45 @@
     visibility: hidden;
     width: 100%;
 
-    .jw-flag-small-player &,
     .jw-settings-open &,
     .jw-info-open & {
         display: none;
+    }
+
+    .jw-flag-small-player & {
+        padding: 0 12px 0 0;
+
+        .jw-nextup-title,
+        .jw-nextup-duration,
+        .jw-nextup-close {
+            display: none;
+        }
+
+        .jw-nextup-tooltip {
+            height: 30px;
+        }
+
+        .jw-nextup-header {
+            font-size: 12px;
+        }
+
+        .jw-nextup-body {
+            justify-content: center;
+            align-items: center;
+            padding: 0.75em 0.3em;
+        }
+
+        .jw-nextup-thumbnail {
+            width: 50%;
+        }
+
+        .jw-nextup {
+            max-width: 65px;
+
+            &.jw-nextup-thumbnail-visible {
+                max-width: 120px;
+            }
+        }
     }
 }
 
