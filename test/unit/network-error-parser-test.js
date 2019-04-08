@@ -20,6 +20,12 @@ describe('network error parser', function () {
         expect(key).to.equal('cantPlayVideo');
     });
 
+    it('appends a code of 11 if the status code is falsy with default message key', function () {
+        const { code, key } = parseNetworkError(900000, undefined);
+        expect(code).to.equal(901011);
+        expect(key).to.equal('cantPlayVideo');
+    });
+
     it('checks for access control errors insecure content with default message key', function () {
         const { code, key } = parseNetworkError(900000, 0, 'https:');
         // location.protocol cannot be stubbed so for now only only assert +12 when tests are run over https

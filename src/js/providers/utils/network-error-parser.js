@@ -12,7 +12,8 @@ export default function parseNetworkError(baseCode, statusCode, url) {
         code += clampStatus(statusCode);
     } else if (('' + url).substring(0, 5) === 'http:' && document.location.protocol === 'https:') {
         code += 12;
-    } else if (statusCode === 0) {
+    } else if (!statusCode) {
+        // XHR returns a code of 0 for CORS errors; fetch returns a code of undefined
         code += 11;
     }
 
