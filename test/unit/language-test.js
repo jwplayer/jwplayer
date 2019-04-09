@@ -257,25 +257,28 @@ describe('languageUtils', function() {
             expect(languageCodes).to.deep.equal(translatedLanguageCodes);
         });
 
-        it('should have same structure as localization default', function() {
-           function compareNestedKeys(originalObj, customObj) {
-               expect(customObj).to.have.all.keys(originalObj);
-               Object.keys(originalObj).forEach(key => {
-                   const customProperty = customObj[key];
-                   const originalProperty = originalObj[key];
-                   const originalPropertyType = typeof originalProperty;
 
-                   expect(customProperty).to.be.a(originalPropertyType);
-                   if (originalPropertyType === 'object') {
-                       compareNestedKeys(originalProperty, customProperty);
-                   }
-               });
-           }
+        function compareNestedKeys(originalObj, customObj) {
+            expect(customObj).to.have.all.keys(originalObj);
+            Object.keys(originalObj).forEach(key => {
+                const customProperty = customObj[key];
+                const originalProperty = originalObj[key];
+                const originalPropertyType = typeof originalProperty;
 
-           languageCodes.forEach(languageCode => {
-               const translation = require('../../src/assets/translations/' + languageCode + '.json');
-               compareNestedKeys(en, translation);
-           });
+                expect(customProperty).to.be.a(originalPropertyType);
+                if (originalPropertyType === 'object') {
+                    compareNestedKeys(originalProperty, customProperty);
+                }
+            });
+        }
+
+        languageCodes.forEach(languageCode => {
+            describe(languageCode + '.json', function () {
+                it('should have same structure as localization default', function() {
+                    const translation = require('../../src/assets/translations/' + languageCode + '.json');
+                    compareNestedKeys(en, translation);
+                });
+            });
         });
     });
 
