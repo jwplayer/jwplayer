@@ -258,8 +258,24 @@ describe('languageUtils', function() {
         });
 
         it('should have same structure as localization default', function() {
-            // TODO: add test that compares the structure of all the translation jsons to that of the default localization block to ensure consistency.
-            // Limitation: require('../../src/assets/translations/fr.json') returns '264cfd10c44360a54a0772a576aa3dfd.json'
+           function compareNestedKeys(originalObj, customObj) {
+               expect(customObj).to.have.all.keys(originalObj);
+               Object.keys(originalObj).forEach(key => {
+                   const customProperty = customObj[key];
+                   const originalProperty = originalObj[key];
+                   const originalPropertyType = typeof originalProperty;
+
+                   expect(customProperty).to.be.a(originalPropertyType);
+                   if (originalPropertyType === 'object') {
+                       compareNestedKeys(originalProperty, customProperty);
+                   }
+               });
+           }
+
+           languageCodes.forEach(languageCode => {
+               const translation = require('../../src/assets/translations/' + languageCode + '.json');
+               compareNestedKeys(en, translation);
+           });
         });
     });
 
