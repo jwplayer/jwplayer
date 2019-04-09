@@ -503,8 +503,10 @@ Object.assign(Controller.prototype, {
                     mediaPool.prime();
                 }
 
-                if (playReason === 'playlist') {
-                    _checkPauseOnViewable(_model, _model.get('viewable'));
+                if (playReason === 'playlist' || playReason === 'autostart') {
+                    if (_model.get('autoPause').viewability) {
+                        _checkPauseOnViewable(_model, _model.get('viewable'));
+                    }
                 }
 
                 if (_interruptPlay) {
