@@ -345,19 +345,10 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        function _checkPlayOnViewable(model, viewable) {
-            if (model.get('playOnViewable')) {
-                if (viewable) {
-                    const reason = 'viewable';
-                    if (model.get('state') === STATE_IDLE) {
-                        _autoStart(reason);
-                    } else {
-                        _play({ reason });
-                    }
-                } else if (OS.mobile && !_getAdState()) {
-                    _this.pause({ reason: 'autostart' });
-                    _model.set('playOnViewable', true);
-                }
+        function _pauseAfterAd(viewable) {
+            _this._instreamAdapter.noResume = !viewable;
+            if (!viewable) {
+                _updatePauseReason({ reason: 'viewable' });
             }
         }
 
@@ -368,16 +359,36 @@ Object.assign(Controller.prototype, {
             }
         }
 
+        function _checkPlayOnViewable(model, viewable) {
+            const adState = _getAdState();
+            if (model.get('playOnViewable')) {
+                if (viewable) {
+                    const reason = 'viewable';
+                    if (model.get('state') === STATE_IDLE) {
+                        _autoStart(reason);
+                    } else {
+                        _play({ reason });
+                    }
+                } else if (OS.mobile && !adState) {
+                    _this.pause({ reason: 'autostart' });
+                    _model.set('playOnViewable', true);
+                }
+
+                if (OS.mobile && adState) {
+                    // If during an ad on mobile, we should always be paused after the ad,
+                    // if not viewable, regardless of autoPause setting.
+                    _pauseAfterAd(viewable);
+                }
+            }
+        }
+
         function _checkPauseOnViewable(model, viewable) {
             const playerState = model.get('state');
             const adState = _getAdState();
             const playReason = model.get('playReason');
 
             if (adState) {
-                _this._instreamAdapter.noResume = !viewable;
-                if (!viewable) {
-                    _updatePauseReason({ reason: 'viewable' });
-                }
+                _pauseAfterAd(viewable);
             } else if (playerState === STATE_PLAYING || playerState === STATE_BUFFERING) {
                 _pauseWhenNotViewable(viewable);
             } else if (playerState === STATE_IDLE && playReason === 'playlist') {
