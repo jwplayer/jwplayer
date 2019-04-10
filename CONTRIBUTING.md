@@ -2,9 +2,9 @@
 Thanks for considering contributing to our repo! We appreciate all contributions to the player, large or small. Please take the time to read through this document before making a contribution to ensure a fun and effective process for everyone involved.
 
 ## General Guidelines
-Are you having trouble getting started with JW Player, configuration, or customization? If so, please check the [support docs](https://support.jwplayer.com/) before submitting an issue here. 
+Are you having trouble getting started with JW Player, configuration, or customization? If so, please check the [developer docs](https://developer.jwplayer.com/jw-player/docs/developer-guide/) before submitting an issue here.
 
-As contributors and maintainers of this repo, we'll do our best to help you out as soon as we can - however, we ask you to be respectful of our time. Our team is based in NYC and works in EST time, Monday - Friday. If your issue has been around for a while and hasn't been responded to, feel free to ping @johnBartos in the comment of your issue.
+As contributors and maintainers of this repo, we'll do our best to help you out as soon as we can - however, we ask you to be respectful of our time. Our team is based in NYC and works in EST time, Monday - Friday.
 
 ## Official Support
 This guide is focused specifically for developers contributing towards this open-source project. If you pay for JW Player, you're entitled to direct help from our support team [here](https://support.jwplayer.com/customer/portal/emails/new).
@@ -43,8 +43,8 @@ Before submitting an issue, please do your best to confirm that your issue is *r
     - Are you using the [API](https://developer.jwplayer.com/jw-player/docs/developer-guide/api/javascript_api_reference/) correctly?
 6. Check through our [issues](https://github.com/jwplayer/jwplayer/issues)
  and make sure your's isn't already reported or resolved.
- 
- 
+
+
 #### You've Found an Issue
 Great! Please [create an issue](https://github.com/jwplayer/jwplayer/issues/new) and follow the guidelines as best as you can - each ask gives us information necessary to solve your problem. If submitting a playback issue, make sure we can access your video at all times. If live, ensure that you provide us with the failing segments. And if you're able to, please isolate your issue by creating a standalone test page.
 
@@ -67,17 +67,26 @@ Great! Please [create an issue](https://github.com/jwplayer/jwplayer/issues/new)
 ## Pull Requests
 Pull requests are a great way to help out and improve JW Player. Before embarking on a large PR, please ask us first - we may not need your changes in the repo and don't want you to waste your energy.
 
-To get your repo up and running, please refer to BUILDING.md.
+### More open-development than open-source
+
+While open-source is in the DNA of JW Player, due to our growth as a business, changes to the `jwplayer` repository affect millions of video consumers every day. As a result, our governance of this repository needs to reflect that reality.
+
+In the repository's current state certain changes are not compatible with our responsibility to both developers and our customers. Each change requires, at a minimum, product review and QA resource to test that it does not impact anything unexpectedly. Given we have our own roadmap and changes in the pipeline, divying out resources to check larger external changes is not something that's possible at this point in time. That said, there are certain types of contributions that we are more than happy to review and integrate.
+
+#### Current Acceptable Contributions
+* Bugfixes
+* Typos/Clarity improvements
+* Localization additions
+* Enhancement _suggestions_
 
 #### First Timers
-If you've never contributed before, don't worry - we'll do the best we can to help you throughout the process. Unsure of where to begin? Check out our [beginner bugs](https://github.com/jwplayer/jwplayer/labels/beginner), or refer to the Questions/Discussions section and drop us a line. 
+If you've never contributed before, don't worry - we'll do the best we can to help you throughout the process. Unsure of where to begin? Check out our [beginner bugs](https://github.com/jwplayer/jwplayer/labels/beginner), or refer to the Questions/Discussions section and drop us a line.
 
 #### General Guidelines
 While far from comprehensive, following these guidelines will get the easy stuff out of the way and speed the process along. In addition, please include a good description of what you've changed and why you've changed it.
 
 ##### Branch Naming
 - Bugfixes: `bugfix/your-branch`
-- Features: `feature/your-branch`
 - Hotfixes: `hotfix/your-branch`
 
 ##### Style
@@ -103,7 +112,37 @@ While far from comprehensive, following these guidelines will get the easy stuff
 ## Feature Requests
 Feature requests are also welcome, but may not fit within the scope of the player. It's up to you to make the case for your feature and convince us that it's worth implementing. We encourage you to try and solve your problem using the [API](https://developer.jwplayer.com/jw-player/docs/developer-guide/api/javascript_api_reference/) or [Configuration](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/)  first. As always, you're free to fork the player and implement what you want - feel free to ask questions by following our Questions/Discussions guidelines.
 
+### How Do I Submit A (Good) Feature Request?
+
+Feature suggestions are initially tracked as [GitHub issues](https://guides.github.com/features/issues/). Once the finer details of the feature are finalized, it is marked as `answered` and subsequently transferred to our internal backlog. Any additional updates to the request will be communicated via the initial issue and the issue may be reopened as needed.
+
+* **Use a clear and descriptive title** for the issue to identify the suggestion.
+* **Provide a step-by-step description of the suggested feature** in as many details as possible.
+* **Provide specific examples to demonstrate the steps**. Include copy/pasteable snippets which you use in those examples, as [Markdown code blocks](https://help.github.com/articles/markdown-basics/#multiple-lines).
+* **Describe the current behavior** and **explain which behavior you expected to see instead** and why.
+* **Explain why this feature would be useful** to most JW Player users and isn't something that can or should be implemented in a fork or using the API.
+* **List some other video players or applications where this feature exists.**
+
 ## Questions/Discussions
 We love to answer questions and talk with developers! Feel free to ask questions via [gitter](https://gitter.im/jwplayer/jwplayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge), the [video-dev-slack](https://video-dev.slack.com/messages/general/whats_new/), or by [creating an issue](https://github.com/jwplayer/jwplayer/issues/new) . And if you're in the NYC area, you can come and meet us and other video devs in the flesh  at the [Video Tech NYC Meetup](https://www.meetup.com/Video-Tech-NYC/).
-    
-    
+
+## Additional Notes
+
+### Issue and Pull Request Labels
+
+This section lists the labels we use to help us track and manage issues and pull requests. Please open an issue on `jwplayer/jwplayer` if you have suggestions for new labels.
+
+#### Type of Issue and Issue State
+
+| Label name | Description |
+| --- | --- |
+| `stale` | Issues without activity in an abnormally long time or ones where the creator has not responded to the latest comment from a JW representative in 2 weeks time. Automatically closed in 1 week from label addition. |
+| `invalid` | Issues that are opened that are not related to the open-source repository and would be better serviced by out support staff. Automatically closed after label addition. |
+| `answered` | Issues deemed answered/completed by a JW representative. Automatically closed in 1 week from label addition. |
+| `bug` | Confirmed bugs or reports that are very likely to be bugs. |
+| `feature-request` | Feature requests. |
+| `question` | Questions more than bug reports or feature requests (e.g. how do I do X). |
+
+### Attribution
+
+Parts of this Code of Conduct have been adapted from the contribution guidelines found in the [atom/atom repository](https://github.com/atom/atom/blob/master/CONTRIBUTING.md)
