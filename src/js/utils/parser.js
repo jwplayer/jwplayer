@@ -1,5 +1,5 @@
 import { exists } from 'utils/validator';
-import { any, isNaN } from 'utils/underscore';
+import { isNaN } from 'utils/underscore';
 
 // Returns the absolute file path based on a relative filepath, and optional base path
 export function getAbsolutePath(path, base) {
@@ -43,20 +43,13 @@ export function isAbsolutePath(path) {
     return /^(?:(?:https?|file):)?\/\//.test(path);
 }
 
-function containsParserErrors(childNodes) {
-    return any(childNodes, function(node) {
-        return node.nodeName === 'parsererror';
-    });
-}
-
 // Returns an XML object for the given XML string, or null if the input cannot be parsed.
 export function parseXML(input) {
     let parsedXML = null;
     try {
         parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
         // In Firefox the XML doc may contain the parsererror, other browsers it's further down
-        if (containsParserErrors(parsedXML.childNodes) ||
-            (parsedXML.childNodes && containsParserErrors(parsedXML.childNodes[0].childNodes))) {
+        if (parsedXML.querySelector('parsererror')) {
             parsedXML = null;
         }
     } catch (e) {/* Expected when content is not XML */}
