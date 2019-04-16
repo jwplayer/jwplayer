@@ -179,9 +179,9 @@ export default class NextUpTooltip {
             } else {
                 offset = configOffset;
             }
+            //  If offset is hh:mm:ss at this point, make sure to convert to seconds.
+            offset = seconds(offset); 
         }
-        //  If offset is hh:mm:ss at this point, make sure to convert to seconds.
-        offset = seconds(offset); 
 
         if (!isPercentage && offset < 0) {
             offset += duration;
