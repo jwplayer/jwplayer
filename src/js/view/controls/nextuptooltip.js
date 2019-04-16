@@ -164,25 +164,29 @@ export default class NextUpTooltip {
             return;
         }
 
-        let offset;
+        const configOffset = model.get('nextupoffset');
+        let offset = -10;
         let isPercentage;
-        let configOffset = model.get('nextupoffset');
 
         if (configOffset) {
             isPercentage = configOffset[configOffset.length - 1] === '%';
             if (isPercentage) {
-                //  if it's a percentage, normalize the value and create offset.
-                offset = seconds((parseInt(configOffset) / 100) * duration);
+                let offsetAmount = parseFloat(configOffset);
+                //  Only overwrite default with percentage if positive.
+                if (offsetAmount > 0) {
+                    offset = (offsetAmount / 100) * duration;
+                }
             } else {
-                offset = seconds(model.get('nextupoffset'));
+                offset = configOffset;
             }
-        } else {
-            offset = seconds(-10);
         }
-        if (!isPercentage) {
+        //  If offset is hh:mm:ss at this point, make sure to convert to seconds.
+        offset = seconds(offset); 
+
+        if (!isPercentage && offset < 0) {
             offset += duration;
         }
-
+        
         this.offset = offset;
     }
 
