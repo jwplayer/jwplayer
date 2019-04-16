@@ -171,10 +171,10 @@ export default class NextUpTooltip {
         if (configOffset) {
             isPercentage = configOffset[configOffset.length - 1] === '%';
             if (isPercentage) {
-                let offsetAmount = parseFloat(configOffset);
+                let percentOffset = parseFloat(configOffset);
                 //  Only overwrite default with percentage if positive.
-                if (offsetAmount > 0) {
-                    offset = (offsetAmount / 100) * duration;
+                if (percentOffset > 0) {
+                    offset = (percentOffset / 100) * duration;
                 }
             } else {
                 offset = configOffset;
