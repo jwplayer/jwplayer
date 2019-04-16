@@ -164,10 +164,22 @@ export default class NextUpTooltip {
             return;
         }
 
-        // Use nextupoffset if set or default to 10 seconds from the end of playback
-        let offset = seconds(model.get('nextupoffset') || -10);
-        if (offset < 0) {
-            // Determine offset from the end. Duration may change.
+        let offset;
+        let isPercentage;
+        let configOffset = model.get('nextupoffset');
+
+        if (configOffset) {
+            isPercentage = configOffset[configOffset.length - 1] === '%';
+            if (isPercentage) {
+                //  if it's a percentage, normalize the value and create offset.
+                offset = seconds((parseInt(configOffset) / 100) * duration);
+            } else {
+                offset = seconds(model.get('nextupoffset'));
+            }
+        } else {
+            offset = seconds(-10);
+        }
+        if (!isPercentage) {
             offset += duration;
         }
 
