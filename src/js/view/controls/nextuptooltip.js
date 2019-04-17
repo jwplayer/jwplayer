@@ -184,6 +184,7 @@ export default class NextUpTooltip {
         }
 
         if (offset < 0) {
+            //  Determine offset from the end. Duration may change.
             offset += duration;
         }
 
