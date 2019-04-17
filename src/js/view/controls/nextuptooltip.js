@@ -186,7 +186,7 @@ export default class NextUpTooltip {
         if (offset < 0) {
             offset += duration;
         }
-        
+
         this.offset = offset;
     }
 
