@@ -183,7 +183,7 @@ export default class NextUpTooltip {
             offset = seconds(offset); 
         }
 
-        if (!isPercentage && offset < 0) {
+        if (offset < 0) {
             offset += duration;
         }
         
