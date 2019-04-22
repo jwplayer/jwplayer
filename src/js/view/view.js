@@ -240,6 +240,16 @@ function View(_api, _model) {
             toggleClass(_playerElement, 'jw-flag-play-rejected', val);
         });
 
+        if (_model.get('motionThumbnails')) {
+            //  when becomes viewable, wait 1 second and then display the image.
+            this.model.on('change:viewable', function(model) {
+                const playlistItem = model.get('playlistItem');
+                if (playlistItem.motionThumbnail) {
+                    _preview.setupMotionPreview(_preview.el, playlistItem.motionThumbnail);
+                }
+            });
+        }
+
         // Native fullscreen (coming through from the provider)
         _model.on(NATIVE_FULLSCREEN, _fullscreenChangeHandler);
 
@@ -297,6 +307,11 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
         }
         _model.set('inDom', inDOM);
+
+        //  if model get motion thumbnail
+        //  model on visibility setTimeout 1s show thumbnail
+        //  Loop if gif, don't if mp4
+        
     };
 
     function updateVisibility() {

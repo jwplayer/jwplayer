@@ -36,6 +36,7 @@ export default class RightClick {
             {
                 title: isRtl(poweredBy) ? `${versionSpan} ${poweredBy}` : `${poweredBy} ${versionSpan}`,
                 type: 'link',
+                test: 'hello',
                 featured: true,
                 showLogo: true,
                 link: 'https://jwplayer.com/learn-more'

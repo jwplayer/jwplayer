@@ -1,4 +1,6 @@
 import { style } from 'utils/css';
+import { createElement } from 'utils/dom';
+import motionThumbnailTemplate from '../view/motion-thumbnail';
 
 const Preview = function(_model) {
     this.model = _model;
@@ -12,6 +14,7 @@ function validState(state) {
 Object.assign(Preview.prototype, {
     setup: function(element) {
         this.el = element;
+        this.hasPlayedPreview = false;
     },
     setImage: function(img) {
         // Remove onload function from previous image
@@ -29,6 +32,18 @@ Object.assign(Preview.prototype, {
         style(this.el, {
             backgroundImage: backgroundImage
         });
+    },
+    setupMotionPreview: function(container, img) {
+        const onMotionThumbnail = () => {
+            let motionThumbnail = container.querySelector('.jw-motion-thumbnail');
+            if (!motionThumbnail) {
+                motionThumbnail = createElement(motionThumbnailTemplate(img));
+                container.append(motionThumbnail);
+            }
+            motionThumbnail.src = img;
+            motionThumbnail.style = 'opacity: 1';
+        };
+        onMotionThumbnail();
     },
     resize: function(width, height, stretching) {
         if (stretching === 'uniform') {
