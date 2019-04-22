@@ -33,9 +33,12 @@ Object.assign(Preview.prototype, {
             backgroundImage: backgroundImage
         });
     },
-    setupMotionPreview: function(container, img) {
+    setupMotionPreview: function(container, img, isViewable) {
         const onMotionThumbnail = () => {
             let motionThumbnail = container.querySelector('.jw-motion-thumbnail');
+            if (!isViewable) {
+                motionThumbnail.style = 'opacity: 0';
+            }
             if (!motionThumbnail) {
                 motionThumbnail = createElement(motionThumbnailTemplate(img));
                 container.append(motionThumbnail);

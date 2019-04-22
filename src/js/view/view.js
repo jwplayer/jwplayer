@@ -245,7 +245,7 @@ function View(_api, _model) {
             this.model.on('change:viewable', function(model) {
                 const playlistItem = model.get('playlistItem');
                 if (playlistItem.motionThumbnail) {
-                    _preview.setupMotionPreview(_preview.el, playlistItem.motionThumbnail);
+                    _preview.setupMotionPreview(_preview.el, playlistItem.motionThumbnail, model.viewable);
                 }
             });
         }
