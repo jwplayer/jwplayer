@@ -57,7 +57,6 @@ export default class AdProgramController extends ProgramController {
             skipButton: false
         });
 
-        model.on('fullscreenchange', this._nativeFullscreenHandler);
         model.on('change:state', changeStateEvent, this);
         model.on(ERROR, function(data) {
             this.trigger(ERROR, data);
@@ -114,6 +113,7 @@ export default class AdProgramController extends ProgramController {
             event.oldstate = model.get(PLAYER_STATE);
             adMediaModelContext.set('mediaState', event.newstate);
         });
+        this.on('fullscreenchange', this._nativeFullscreenHandler, this);
         adMediaModelContext.on('change:mediaState', (changeAdModel, state) => {
             this._stateHandler(state);
         });
