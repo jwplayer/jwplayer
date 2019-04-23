@@ -137,7 +137,7 @@ This section lists the labels we use to help us track and manage issues and pull
 | Label name | Description |
 | --- | --- |
 | `stale` | Issues without activity in an abnormally long time or ones where the creator has not responded to the latest comment from a JW representative in 2 weeks time. Automatically closed in 1 week from label addition. |
-| `invalid` | Issues that are opened that are not related to the open-source repository and would be better serviced by out support staff. Automatically closed after label addition. |
+| `invalid` | Issues that are opened that are not related to the open-source repository and would be better serviced by our support staff. Automatically closed after label addition. |
 | `answered` | Issues deemed answered/completed by a JW representative. Automatically closed in 1 week from label addition. |
 | `bug` | Confirmed bugs or reports that are very likely to be bugs. |
 | `feature-request` | Feature requests. |
