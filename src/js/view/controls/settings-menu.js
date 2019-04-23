@@ -203,7 +203,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         }
     }, settingsMenu);
 
-    model.change('playbackRateControls', () => {
+    model.on('change:playbackRateControls', () => {
         setupPlaybackRatesMenu(model, model.get('playbackRates'));
     });
 
