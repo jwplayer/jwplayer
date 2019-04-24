@@ -3,6 +3,7 @@ import ProgramController from 'program/program-controller';
 import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
 import SharedMediaPool from 'program/shared-media-pool';
+import { NATIVE_FULLSCREEN } from "../events/events";
 
 export default class AdProgramController extends ProgramController {
     constructor(model, mediaPool) {
@@ -113,8 +114,9 @@ export default class AdProgramController extends ProgramController {
             event.oldstate = model.get(PLAYER_STATE);
             adMediaModelContext.set('mediaState', event.newstate);
         });
-        this.off();
-        this.on('fullscreenchange', this._nativeFullscreenHandler, this);
+        provider.on(NATIVE_FULLSCREEN, (event) => {
+            this._nativeFullscreenHandler(Object.assign({}, event, { type: NATIVE_FULLSCREEN }));
+        });
         adMediaModelContext.on('change:mediaState', (changeAdModel, state) => {
             this._stateHandler(state);
         });
@@ -144,7 +146,6 @@ export default class AdProgramController extends ProgramController {
     destroy() {
         const { model, mediaPool, playerModel } = this;
         model.off();
-        this.off();
 
         // We only use one media element from ads; getPrimedElement will return it
         const mediaElement = mediaPool.getPrimedElement();
