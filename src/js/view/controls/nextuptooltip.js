@@ -168,7 +168,7 @@ export default class NextUpTooltip {
         let offset = -10;
 
         if (configOffset) {
-            offsetToSeconds(offset, duration);
+            offset = offsetToSeconds(configOffset, duration);
         }
 
         if (offset < 0) {
