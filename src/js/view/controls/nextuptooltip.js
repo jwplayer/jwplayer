@@ -4,7 +4,7 @@ import { createElement, toggleClass } from 'utils/dom';
 import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import { cloneIcon } from 'view/controls/icons';
-import { seconds } from 'utils/strings';
+import { offsetToSeconds } from 'utils/strings';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 import { timeFormat } from 'utils/parser';
 
@@ -166,21 +166,9 @@ export default class NextUpTooltip {
 
         const configOffset = model.get('nextupoffset');
         let offset = -10;
-        let isPercentage;
 
         if (configOffset) {
-            isPercentage = configOffset[configOffset.length - 1] === '%';
-            if (isPercentage) {
-                const percentOffset = parseFloat(configOffset);
-                //  Only overwrite default with percentage if positive.
-                if (percentOffset > 0) {
-                    offset = (percentOffset / 100) * duration;
-                }
-            } else {
-                offset = configOffset;
-            }
-            //  If offset is hh:mm:ss at this point, make sure to convert to seconds.
-            offset = seconds(offset); 
+            offsetToSeconds(offset, duration);
         }
 
         if (offset < 0) {
