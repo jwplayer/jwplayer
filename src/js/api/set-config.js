@@ -4,7 +4,9 @@ const supportedFields = [
     'repeat',
     'volume',
     'mute',
-    'autostart'
+    'autostart',
+    'playbackRates',
+    'playbackRateControls'
 ];
 
 function setAutoStart(model, controller, autoStart) {
