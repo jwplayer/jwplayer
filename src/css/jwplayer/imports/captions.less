@@ -62,12 +62,6 @@
             justify-content: flex-start;
         }
 
-        /* captions styles code specific to native text track rendering */
-        &::-webkit-media-text-track-container {
-            max-height: calc(100% - 60px);
-            line-height: normal;
-        }
-
         /* Ensure captions aren't cropped when the pseudo element's width cannot accommodate all the text */
         &::-webkit-media-text-track-display {
             min-width: -webkit-min-content;
@@ -82,4 +76,9 @@
             display: none;
         }
     }
+}
+
+.jwplayer:not(.jw-flag-ios-fullscreen) video::-webkit-media-text-track-container {
+    /* captions styles code specific to native text track rendering */
+    max-height: calc(100% - 60px);
 }

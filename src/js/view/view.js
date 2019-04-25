@@ -558,6 +558,7 @@ function View(_api, _model) {
             const provider = model.getVideo() || instreamProvider;
             if (provider && provider.setFullscreen) {
                 provider.setFullscreen(state);
+                toggleClass(_playerElement, 'jw-flag-ios-fullscreen', state);
             }
         }
     };
