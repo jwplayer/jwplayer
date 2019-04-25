@@ -114,9 +114,7 @@ export default class AdProgramController extends ProgramController {
             event.oldstate = model.get(PLAYER_STATE);
             adMediaModelContext.set('mediaState', event.newstate);
         });
-        provider.on(NATIVE_FULLSCREEN, (event) => {
-            this._nativeFullscreenHandler(Object.assign({}, event, { type: NATIVE_FULLSCREEN }));
-        });
+        provider.on(NATIVE_FULLSCREEN, this._nativeFullscreenHandler, this);
         adMediaModelContext.on('change:mediaState', (changeAdModel, state) => {
             this._stateHandler(state);
         });
@@ -180,8 +178,7 @@ export default class AdProgramController extends ProgramController {
     }
 
     _nativeFullscreenHandler(evt) {
-        const { model } = this;
-        model.trigger(evt.type, evt);
+        this.model.trigger(NATIVE_FULLSCREEN, evt);
         this.trigger(FULLSCREEN, {
             fullscreen: evt.jwstate
         });
