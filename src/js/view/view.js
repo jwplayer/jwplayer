@@ -241,7 +241,7 @@ function View(_api, _model) {
         });
 
         // Native fullscreen (coming through from the provider)
-        _model.on(NATIVE_FULLSCREEN, _fullscreenChangeHandler);
+        _model.on(NATIVE_FULLSCREEN, _nativeFullscreenChangeHandler);
 
         _model.on(`change:${MEDIA_VISUAL_QUALITY}`, () => {
             _resizeMedia();
@@ -558,7 +558,6 @@ function View(_api, _model) {
             const provider = model.getVideo() || instreamProvider;
             if (provider && provider.setFullscreen) {
                 provider.setFullscreen(state);
-                toggleClass(_playerElement, 'jw-flag-ios-fullscreen', state);
             }
         }
     };
@@ -637,6 +636,10 @@ function View(_api, _model) {
         return provider.getFullScreen();
     }
 
+    function _nativeFullscreenChangeHandler(event) {
+        toggleClass(_playerElement, 'jw-flag-ios-fullscreen', event.jwstate);
+        _fullscreenChangeHandler(event);
+    }
 
     function _fullscreenChangeHandler(event) {
         const modelState = _model.get('fullscreen');

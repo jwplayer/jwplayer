@@ -1,4 +1,4 @@
-import { ERROR, FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import { ERROR, FULLSCREEN, NATIVE_FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import ProgramController from 'program/program-controller';
 import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
@@ -57,7 +57,7 @@ export default class AdProgramController extends ProgramController {
             skipButton: false
         });
 
-        model.on('fullscreenchange', this._nativeFullscreenHandler);
+        model.on(NATIVE_FULLSCREEN, this._nativeFullscreenHandler);
         model.on('change:state', changeStateEvent, this);
         model.on(ERROR, function(data) {
             this.trigger(ERROR, data);
