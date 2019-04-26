@@ -7,6 +7,20 @@ import { OS } from 'environment/environment';
 import UI from 'utils/ui';
 import { isRtl } from 'utils/language';
 
+const EDITION_MAP = {
+    free: 0,
+    pro: 1,
+    premium: 2,
+    ads: 3,
+    invalid: 4,
+    enterprise: 6,
+    trial: 7,
+    platinum: 8,
+    starter: 9,
+    business: 10,
+    developer: 11
+};
+
 function createDomElement(html) {
     const element = createElement(html);
     const logoContainer = element.querySelector('.jw-rightclick-logo');
@@ -26,6 +40,7 @@ export default class RightClick {
         const semverParts = version.split('+');
         const majorMinorPatchPre = semverParts[0];
         const model = this.model;
+        const edition = model.get('edition');
         const poweredBy = model.get('localization').poweredBy;
         const versionSpan = `<span class="jw-reset">JW Player ${majorMinorPatchPre}</span>`;
 
@@ -38,7 +53,7 @@ export default class RightClick {
                 type: 'link',
                 featured: true,
                 showLogo: true,
-                link: 'https://jwplayer.com/learn-more'
+                link: `https://jwplayer.com/learn-more?e=${EDITION_MAP[edition]}`
             }]
         };
 
