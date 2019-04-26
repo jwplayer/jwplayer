@@ -36,15 +36,22 @@ Object.assign(Preview.prototype, {
     setupMotionPreview: function(container, img, isViewable) {
         const onMotionThumbnail = () => {
             let motionThumbnail = container.querySelector('.jw-motion-thumbnail');
-            if (!isViewable) {
-                motionThumbnail.style = 'opacity: 0';
-            }
             if (!motionThumbnail) {
                 motionThumbnail = createElement(motionThumbnailTemplate(img));
                 container.append(motionThumbnail);
             }
-            motionThumbnail.src = img;
-            motionThumbnail.style = 'opacity: 1';
+            if (!isViewable) {
+                motionThumbnail.style = 'opacity: 0';
+            } else {
+                if (motionThumbnail.src !== img) {
+                    motionThumbnail.src = img;
+                }
+                motionThumbnail.style = 'opacity: 1';
+            }
+            if (motionThumbnail.tagName === 'VIDEO' && motionThumbnail.parentElement.classList.contains('jw-preview')) {
+                motionThumbnail.setAttribute('loop', '');
+                motionThumbnail.play();
+            }
         };
         onMotionThumbnail();
     },
