@@ -5,15 +5,6 @@
     &.jw-state-playing {
         .jwplayer.jw-flag-controls-hidden;
 
-        .jw-captions {
-            max-height: none;
-        }
-
-        /* captions styles code specific to native text track rendering */
-        video::-webkit-media-text-track-container {
-            max-height: none;
-        }
-
         &:not(.jw-flag-controls-hidden) .jw-media {
             cursor: none;
             /* cursor hiding on media elements for Safari */

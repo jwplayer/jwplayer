@@ -1,9 +1,8 @@
-import { ERROR, FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import { ERROR, FULLSCREEN, NATIVE_FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import ProgramController from 'program/program-controller';
 import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
 import SharedMediaPool from 'program/shared-media-pool';
-import { NATIVE_FULLSCREEN } from "../events/events";
 
 export default class AdProgramController extends ProgramController {
     constructor(model, mediaPool) {
