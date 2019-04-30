@@ -112,3 +112,7 @@ export function prefix(arr, add) {
 export function suffix(arr, add) {
     return arr.map(val => val + add);
 }
+
+export function isPercentage(value) {
+    return typeof value === 'string' && value.slice(-1) === '%';
+}
