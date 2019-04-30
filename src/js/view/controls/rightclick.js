@@ -119,7 +119,7 @@ export default class RightClick {
     }
 
     hideMenu(evt) {
-        if (evt && this.el.contains(evt.target)) {
+        if (evt && this.el && this.el.contains(evt.target)) {
             // Do not hide menu when clicking inside menu
             return;
         }
