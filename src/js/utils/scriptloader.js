@@ -18,20 +18,19 @@ function makeStyleLink(styleUrl) {
     return link;
 }
 
-function makeScriptTag(scriptUrl) {
+function makeScriptTag(scriptUrl, timeout) {
     const scriptTag = document.createElement('script');
     scriptTag.type = 'text/javascript';
     scriptTag.charset = 'utf-8';
     scriptTag.async = true;
-    scriptTag.timeout = SCRIPT_LOAD_TIMEOUT;
+    scriptTag.timeout = timeout || SCRIPT_LOAD_TIMEOUT;
     scriptTag.src = scriptUrl;
     return scriptTag;
 }
 
-const ScriptLoader = function (url, isStyle) {
+const ScriptLoader = function (url, isStyle, scriptLoadTimeout) {
     const _this = this;
     let status = SCRIPT_LOAD_STATUS_NEW;
-
 
     function onError(evt) {
         status = SCRIPT_LOAD_STATUS_ERROR;
@@ -64,7 +63,7 @@ const ScriptLoader = function (url, isStyle) {
 
         promise = new Promise((resolve, reject) => {
             const makeTag = (isStyle ? makeStyleLink : makeScriptTag);
-            const scriptTag = makeTag(url);
+            const scriptTag = makeTag(url, scriptLoadTimeout);
             const doneLoading = function() {
                 // Handle memory leak in IE
                 scriptTag.onerror = scriptTag.onload = null;
