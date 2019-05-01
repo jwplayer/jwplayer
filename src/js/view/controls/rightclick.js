@@ -201,6 +201,7 @@ export default class RightClick {
     removeHideMenuHandlers() {
         if (this.wrapperElement) {
             this.wrapperElement.removeEventListener('click', this.hideMenuHandler);
+            this.wrapperElement.removeEventListener('touchstart', this.hideMenuHandler);
         }
         if (this.el) {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
