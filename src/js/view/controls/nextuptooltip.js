@@ -4,7 +4,7 @@ import { createElement, toggleClass } from 'utils/dom';
 import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import { cloneIcon } from 'view/controls/icons';
-import { offsetToSeconds } from 'utils/strings';
+import { offsetToSeconds, isPercentage } from 'utils/strings';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 import { timeFormat } from 'utils/parser';
 
@@ -174,6 +174,11 @@ export default class NextUpTooltip {
         if (offset < 0) {
             // Determine offset from the end. Duration may change.
             offset += duration;
+        }
+
+        // If config offset is percentage, make sure it's at least 5 seconds from end of video.
+        if (isPercentage(configOffset) && duration - 5 < offset) {
+            offset = duration - 5;
         }
 
         this.offset = offset;
