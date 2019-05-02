@@ -12,11 +12,10 @@ import {
 
 export function createSettingsMenu(controlbar, onVisibility, localization) {
     const settingsButton = controlbar.elements.settingsButton;
-    const onMenuEmpty = () => {
-        settingsButton.hide();
-    };
-
-    const settingsMenu = SettingsMenu(onVisibility, onMenuEmpty, localization);
+    const settingsMenu = SettingsMenu(onVisibility, {
+        hide: () => settingsButton.hide(),
+        show: () => settingsButton.show()
+    }, localization);
 
     controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
@@ -204,6 +203,10 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         }
     }, settingsMenu);
 
+    model.on('change:playbackRateControls', () => {
+        setupPlaybackRatesMenu(model, model.get('playbackRates'));
+    });
+
     // Visual Quality
     model.on('change:visualQuality', (changedModel, quality) => {
         const qualitySubMenu = settingsMenu.getSubmenu('quality');
@@ -232,5 +235,4 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     model.on('change:streamType', () => {
         setupPlaybackRatesMenu(model, model.get('playbackRates'));
     }, settingsMenu);
-
 }

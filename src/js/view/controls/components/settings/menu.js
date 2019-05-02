@@ -16,7 +16,7 @@ function focusSettingsElement(direction) {
     }
 }
 
-export function SettingsMenu(onVisibility, onMenuEmpty, localization) {
+export function SettingsMenu(onVisibility, buttonVisibilityChanges, localization) {
     const documentClickHandler = (e) => {
         // Close if anything other than the settings menu has been clicked
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
@@ -149,8 +149,8 @@ export function SettingsMenu(onVisibility, onMenuEmpty, localization) {
                     sharingButton || closeButton.element()
                 );
             }
-
             settingsMenuElement.appendChild(submenu.element());
+            buttonVisibilityChanges.show();
         },
         getSubmenu(name) {
             return submenus[name];
@@ -170,7 +170,7 @@ export function SettingsMenu(onVisibility, onMenuEmpty, localization) {
 
             if (!Object.keys(submenus).length) {
                 this.close();
-                onMenuEmpty();
+                buttonVisibilityChanges.hide();
             }
         },
         activateSubmenu(name, focusOnLast) {

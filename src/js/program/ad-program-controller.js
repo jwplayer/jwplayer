@@ -1,4 +1,4 @@
-import { ERROR, FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import { ERROR, FULLSCREEN, NATIVE_FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import ProgramController from 'program/program-controller';
 import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
@@ -57,7 +57,6 @@ export default class AdProgramController extends ProgramController {
             skipButton: false
         });
 
-        model.on('fullscreenchange', this._nativeFullscreenHandler);
         model.on('change:state', changeStateEvent, this);
         model.on(ERROR, function(data) {
             this.trigger(ERROR, data);
@@ -114,6 +113,7 @@ export default class AdProgramController extends ProgramController {
             event.oldstate = model.get(PLAYER_STATE);
             adMediaModelContext.set('mediaState', event.newstate);
         });
+        provider.on(NATIVE_FULLSCREEN, this._nativeFullscreenHandler, this);
         adMediaModelContext.on('change:mediaState', (changeAdModel, state) => {
             this._stateHandler(state);
         });
@@ -177,8 +177,7 @@ export default class AdProgramController extends ProgramController {
     }
 
     _nativeFullscreenHandler(evt) {
-        const { model } = this;
-        model.trigger(evt.type, evt);
+        this.model.trigger(NATIVE_FULLSCREEN, evt);
         this.trigger(FULLSCREEN, {
             fullscreen: evt.jwstate
         });

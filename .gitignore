@@ -8,4 +8,5 @@ bin-release
 built
 reports
 package-lock.json
+yarn-error.log
 *.DS_Store
