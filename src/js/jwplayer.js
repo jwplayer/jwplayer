@@ -62,27 +62,31 @@ function playerById(id) {
     return null;
 }
 
-Object.defineProperties(jwplayer, {
-    api: {
-        get() {
-            return GlobalApi;
+export function assignLibraryProperties(jwplayerLib) {
+    Object.defineProperties(jwplayerLib, {
+        api: {
+            get() {
+                return GlobalApi;
+            },
+            set() {}
         },
-        set() {}
-    },
-    version: {
-        get() {
-            return version;
+        version: {
+            get() {
+                return version;
+            },
+            set() {}
         },
-        set() {}
-    },
-    debug: {
-        get() {
-            return ApiSettings.debug;
-        },
-        set(value) {
-            ApiSettings.debug = !!value;
+        debug: {
+            get() {
+                return ApiSettings.debug;
+            },
+            set(value) {
+                ApiSettings.debug = !!value;
+            }
         }
-    }
-});
+    });
+}
+
+assignLibraryProperties(jwplayer);
 
 export default jwplayer;
