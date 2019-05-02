@@ -2,6 +2,7 @@
 
 .jw-icon-tooltip.jw-open .jw-overlay {
     opacity: 1;
+    pointer-events: all;
     transition-delay: 0s;
 
     &:focus {
@@ -64,6 +65,7 @@
         min-height: @mobile-touch-target;
         min-width: @mobile-touch-target;
         opacity: 0;
+        pointer-events: none;
         transition: 150ms @default-timing-function;
         transition-property: opacity, visibility;
         transition-delay: 0s, 150ms;
