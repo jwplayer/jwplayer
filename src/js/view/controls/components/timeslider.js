@@ -177,6 +177,12 @@ class TimeSlider extends Slider {
     onPlaylistItem(model, playlistItem) {
         this.reset();
 
+        //  If cues have been cleared from slider but exist on model, update cues.
+        const cues = model.get('cues');
+        if (!this.cues.length && cues.length) {
+            this.updateCues(null, cues);
+        }
+
         const tracks = playlistItem.tracks;
         each(tracks, function (track) {
             if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
