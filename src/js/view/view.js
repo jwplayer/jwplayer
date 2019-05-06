@@ -38,6 +38,7 @@ import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
 import FloatingDragUI from 'view/floating-drag-ui';
+import ResizeListener from 'view/utils/resize-listener';
 
 
 require('css/jwplayer.less');
@@ -100,6 +101,7 @@ function View(_api, _model) {
         cancelAnimationFrame(_resizeContainerRequestId);
         const currentElement = _getCurrentElement();
         const inDOM = document.body.contains(currentElement);
+
         const rect = bounds(currentElement);
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
@@ -297,6 +299,10 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
         }
         _model.set('inDom', inDOM);
+
+        if (!this.resizeListener) {
+            this.resizeListener = new ResizeListener(_playerElement, () => _responsiveListener());
+        }
     };
 
     function updateVisibility() {
@@ -1001,6 +1007,9 @@ function View(_api, _model) {
             _logo = null;
         }
         clearCss(_model.get('id'));
+        if (this.resizeListener) {
+            this.resizeListener.destroy();
+        }
     };
 }
 

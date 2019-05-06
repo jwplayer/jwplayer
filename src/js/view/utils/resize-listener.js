@@ -1,6 +1,6 @@
-import { requestAnimationFrame, cancelAnimationFrame } from 'os/utils/request-animation-frame';
-import { createElement } from 'os/utils/dom';
-import { css, style } from 'os/utils/css';
+import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import { createElement } from 'utils/dom';
+import { css, style } from 'utils/css';
 
 export default class ResizeListener {
 
