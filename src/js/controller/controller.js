@@ -1057,6 +1057,9 @@ Object.assign(Controller.prototype, {
         this.createInstream = function() {
             this.instreamDestroy();
             this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
+            this._instreamAdapter.on('buffer', function (evt) {
+                _this.trigger(evt.type, evt);
+            });
             return this._instreamAdapter;
         };
 

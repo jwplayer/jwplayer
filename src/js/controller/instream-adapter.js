@@ -104,7 +104,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         // This enters the player into instream mode
         _model.set('instream', _adProgram);
-        _adProgram.model.set('state', STATE_BUFFERING);
+        _adProgram.model.set(PLAYER_STATE, STATE_BUFFERING);
 
         // don't trigger api play/pause on display click
         const clickHandler = _view.clickHandler();
