@@ -17,6 +17,7 @@ import { AUTOPLAY_DISABLED, AUTOPLAY_MUTED, canAutoplay, startPlayback } from 'u
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import cancelable from 'utils/cancelable';
+import { inInteraction } from 'utils/in-interaction-event';
 import { isUndefined, isBoolean } from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
@@ -411,7 +412,7 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable = cancelable(_checkAutoStart);
             updatePlaylistCancelable.cancel();
 
-            if (_inInteraction(window.event)) {
+            if (inInteraction()) {
                 mediaPool.prime();
             }
 
@@ -510,7 +511,7 @@ Object.assign(Controller.prototype, {
                 });
                 _beforePlay = false;
 
-                if (_inInteraction(window.event) && !mediaPool.primed()) {
+                if (inInteraction() && !mediaPool.primed()) {
                     mediaPool.prime();
                 }
 
@@ -521,7 +522,7 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     // Force tags to prime if we're about to play an ad
                     // Resetting the source in order to prime is OK since we'll be switching it anyway
-                    if (_inInteraction(window.event) && !_backgroundLoading) {
+                    if (inInteraction() && !_backgroundLoading) {
                         _model.get('mediaElement').load();
                     }
                     _interruptPlay = false;
@@ -540,10 +541,7 @@ Object.assign(Controller.prototype, {
             if (meta && meta.reason) {
                 return meta.reason;
             }
-            if (_inInteraction(window.event)) {
-                return 'interaction';
-            }
-            return 'external';
+            return 'unknown';
         }
 
         function _autoStart(reason) {
@@ -1117,10 +1115,5 @@ Object.assign(Controller.prototype, {
         this.trigger(ERROR, evt);
     }
 });
-
-
-function _inInteraction(event) {
-    return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
-}
 
 export default Controller;
