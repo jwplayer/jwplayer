@@ -825,8 +825,9 @@ Object.assign(Controller.prototype, {
             }
 
             _model.set('fullscreen', state);
-            if (_this._instreamAdapter && _this._instreamAdapter._adModel) {
-                _this._instreamAdapter._adModel.set('fullscreen', state);
+            const instream = _this._instreamAdapter;
+            if (instream && instream._adModel) {
+                instream._adModel.set('fullscreen', state);
             }
         }
 
@@ -1056,11 +1057,11 @@ Object.assign(Controller.prototype, {
 
         this.createInstream = function() {
             this.instreamDestroy();
-            this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
-            this._instreamAdapter.on('buffer', function (evt) {
+            const instream = this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
+            instream.on('buffer', function (evt) {
                 _this.trigger(evt.type, evt);
             });
-            return this._instreamAdapter;
+            return instream;
         };
 
         this.skipAd = function() {
