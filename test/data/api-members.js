@@ -8,5 +8,6 @@ export default {
     _events: {},
     Events: function() {},
     utils: {},
-    _: _
+    _: _,
+    plugins: {}
 };

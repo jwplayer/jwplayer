@@ -98,6 +98,7 @@ export default function Api(element) {
          * @readonly
          */
         id: {
+            enumerable: true,
             get() {
                 return playerId;
             }
@@ -108,6 +109,7 @@ export default function Api(element) {
          * @readonly
          */
         uniqueId: {
+            enumerable: true,
             get() {
                 return uniqueId;
             }
@@ -118,6 +120,7 @@ export default function Api(element) {
          * @readonly
          */
         plugins: {
+            enumerable: true,
             get() {
                 return pluginsMap;
             }
@@ -128,6 +131,7 @@ export default function Api(element) {
          * @readonly
          */
         _qoe: {
+            enumerable: true,
             get() {
                 return qoeTimer;
             }
@@ -139,6 +143,7 @@ export default function Api(element) {
          * @readonly
          */
         version: {
+            enumerable: true,
             get() {
                 return version;
             }
@@ -151,6 +156,7 @@ export default function Api(element) {
          * @readonly
          */
         Events: {
+            enumerable: true,
             get() {
                 return Events;
             }
@@ -163,6 +169,7 @@ export default function Api(element) {
          * @readonly
          */
         utils: {
+            enumerable: true,
             get() {
                 return utils;
             }
@@ -175,6 +182,7 @@ export default function Api(element) {
          * @readonly
          */
         _: {
+            enumerable: true,
             get() {
                 return _;
             }

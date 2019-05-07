@@ -207,7 +207,7 @@ describe('Api', function() {
             if (isApiMethod) {
                 expect(api, property).to.have.property(property).which.is.a('function');
             } else if (isApiMember) {
-                expect(api, property).to.have.property(property).which.is.not.a('function');
+                expect(api, property).to.have.property(property).which.is.a(typeof apiMembers[property]);
             } else {
                 const expectedMessage = 'api.' + property + ' is undefined';
                 const actualdMessage = 'api.' + property + ' is a ' + (typeof api[property]);
