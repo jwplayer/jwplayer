@@ -75,6 +75,8 @@ function View(_api, _model) {
     let _lastHeight;
     let _currentlyFloating;
 
+    let _responsiveResizeCallback;
+
     let _resizeMediaTimeout = -1;
     let _resizeContainerRequestId = -1;
     let _stateClassRequestId = -1;
@@ -299,10 +301,7 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
         }
         _model.set('inDom', inDOM);
-
-        if (!this.resizeListener) {
-            this.resizeListener = new ResizeListener(_playerElement, () => _responsiveListener());
-        }
+        this.resizeListener = new ResizeListener(_playerElement, _responsiveResizeCallback);
     };
 
     function updateVisibility() {
@@ -619,6 +618,7 @@ function View(_api, _model) {
         const styles = getPlayerSizeStyles(playerWidth, playerHeight, true);
         const widthSet = playerWidth !== undefined;
         const heightSet = playerHeight !== undefined;
+
         if (widthSet && heightSet) {
             _model.set('width', playerWidth);
             _model.set('height', playerHeight);
@@ -940,6 +940,10 @@ function View(_api, _model) {
 
         style(_wrapperElement, styles);
     }
+
+    this.setResponsiveResizeCallback = function(callback) {
+        _responsiveResizeCallback = callback;
+    };
 
     this.stopFloating = function(forever) {
         if (forever) {

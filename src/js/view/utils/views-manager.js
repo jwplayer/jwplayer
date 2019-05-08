@@ -93,7 +93,6 @@ function removeFromGroup(view, group) {
 
 document.addEventListener('visibilitychange', onVisibilityChange);
 document.addEventListener('webkitvisibilitychange', onVisibilityChange);
-window.addEventListener('orientationchange', scheduleResponsiveRedraw);
 
 if (isAndroidChrome && hasOrientation) {
     window.screen.orientation.addEventListener('change', onOrientationChange);
@@ -102,7 +101,6 @@ if (isAndroidChrome && hasOrientation) {
 window.addEventListener('beforeunload', () => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
     document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
-    window.removeEventListener('orientationchange', scheduleResponsiveRedraw);
 
     if (isAndroidChrome && hasOrientation) {
         window.screen.orientation.removeEventListener('change', onOrientationChange);
@@ -111,6 +109,7 @@ window.addEventListener('beforeunload', () => {
 
 export default {
     add: function(view) {
+        view.setResponsiveResizeCallback(scheduleResponsiveRedraw);
         views.push(view);
     },
     remove: function(view) {

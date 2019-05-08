@@ -51,7 +51,6 @@ export default class ResizeListener {
         this.resizeRaf = -1;
         this.lastWidth = 0;
         this.currentWidth = element.offsetWidth;
-
         this.scrollListener = (e) => {
             let resizeRaf = this.resizeRaf;
             if (resizeRaf) {
