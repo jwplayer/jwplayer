@@ -58,7 +58,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     this.seeking = false;
 
     // Value of mediaElement.currentTime on last "timeupdate" used for decode error retry workaround
-    this.currentTime = 0;
+    this.currentTime = -1;
 
     // Always render natively in iOS and Safari, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
@@ -191,10 +191,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             const error = video.error;
             const errorCode = (error && error.code) || -1;
 
-            if (errorCode === 3 && _this.currentTime && OS.iOS) {
+            if (errorCode === 3 && _this.currentTime !== -1 && OS.iOS) {
                 // Workaround iOS bug https://bugs.webkit.org/show_bug.cgi?id=195452
-                _videotag.src = '';
-                _completeLoad(_this.currentTime);
+                _videotag.load();
+                _this.seek(_this.currentTime);
+                _this.currentTime = -1;
                 return;
             }
             // Error code 2 from the video element is a network error
@@ -404,7 +405,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function setPlaylistItem(item) {
-        _this.currentTime = 0;
+        _this.currentTime = -1;
         minDvrWindow = item.minDvrWindow;
         _levels = item.sources;
         _currentQuality = _pickInitialQuality(_levels);
@@ -442,7 +443,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _completeLoad(startTime) {
-        _this.currentTime = 0;
+        _this.currentTime = -1;
         _delayedSeek = 0;
         clearTimeouts();
 
