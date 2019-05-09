@@ -12,6 +12,7 @@ describe('ViewsManager', function() {
             ViewsManager.add(view);
             expect(funcMock.called).to.be.true;
             expect(typeof funcMock.getCall(0).args[0]).to.eq('function');
+            ViewsManager.remove(view);
         });
     });
 });
