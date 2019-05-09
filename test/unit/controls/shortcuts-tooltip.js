@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import MockModel from 'mock/mock-model';
 import MockApi from 'mock/mock-api';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
-import { STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import { STATE_PLAYING } from 'events/events';
 
 require('css/controls/imports/shortcuts-tooltip.less');
 

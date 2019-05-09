@@ -13,19 +13,12 @@ const webpackTestConfig = merge(webpackConfig, {
     output: null,
     devtool: false,
     externals: {
-        $: {
-            commonjs: 'jquery',
-            amd: 'jquery',
-            root: '$'
-        },
         sinon: 'sinon'
     },
     resolve: {
         alias: {
             'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
             'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
-            // Tests using jQuery: api-test, jwplayer-selectplayer-test, setup-test
-            jquery: path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
             sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
             data: path.resolve(__dirname + '/test/data'),
             mock: path.resolve(__dirname + '/test/mock')
@@ -43,8 +36,7 @@ const webpackTestConfig = merge(webpackConfig, {
             }
         ],
         noParse: [
-            /node_modules\/sinon\//,
-            /node_modules\/jquery\//
+            /node_modules\/sinon\//
         ]
     }
 });

@@ -1,6 +1,6 @@
 import Providers, { Loaders } from 'providers/providers';
 import Source from 'playlist/source';
-import _ from 'underscore/underscore';
+import _ from 'utils/underscore';
 
 describe('Providers', function() {
 
