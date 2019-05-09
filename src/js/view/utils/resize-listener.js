@@ -1,6 +1,6 @@
-import { requestAnimationFrame, cancelAnimationFrame } from 'os/utils/request-animation-frame';
-import { createElement } from 'os/utils/dom';
-import { css, style } from 'os/utils/css';
+import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import { createElement } from 'utils/dom';
+import { css, style } from 'utils/css';
 
 export default class ResizeListener {
 
@@ -51,7 +51,6 @@ export default class ResizeListener {
         this.resizeRaf = -1;
         this.lastWidth = 0;
         this.currentWidth = element.offsetWidth;
-
         this.scrollListener = (e) => {
             let resizeRaf = this.resizeRaf;
             if (resizeRaf) {
