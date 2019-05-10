@@ -68,11 +68,6 @@ export default class ResizeListener {
         };
 
         requestAnimationFrame(() => {
-            // TODO: this should be moved to the widget. The player element is always relative.
-            if (getComputedStyle(element).position === 'static') {
-                style(element, { position: 'relative' });
-            }
-
             this.currentWidth = element.offsetWidth;
             this.resetTriggers();
             element.addEventListener('scroll', this.scrollListener, true);

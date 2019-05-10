@@ -1009,6 +1009,7 @@ function View(_api, _model) {
         clearCss(_model.get('id'));
         if (this.resizeListener) {
             this.resizeListener.destroy();
+            delete this.resizeListener;
         }
     };
 }
