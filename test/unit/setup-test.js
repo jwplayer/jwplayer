@@ -15,6 +15,8 @@ describe('api.setup', function() {
 
     const errorMessage = 'This video file cannot be played.';
 
+    let api = null;
+
     beforeEach(function () {
         ApiSettings.debug = true;
         // add fixture
@@ -31,6 +33,9 @@ describe('api.setup', function() {
         ApiSettings.debug = false;
         // remove fixture and player instances
         const fixture = document.querySelector('#test-fixture');
+        if (api) {
+            api.remove();
+        }
         if (fixture.parentNode) {
             fixture.parentNode.removeChild(fixture);
         }
@@ -38,11 +43,15 @@ describe('api.setup', function() {
             instances[i].remove();
         }
         sandbox.restore();
+        api = null;
     });
 
     function expectReady(model) {
+        if (api) {
+            api.remove();
+        }
         const container = document.querySelector('#player');
-        const api = new Api(container);
+        api = new Api(container);
 
         return new Promise((resolve, reject) => {
             api.setup(model);
@@ -61,7 +70,7 @@ describe('api.setup', function() {
 
     function expectSetupError(model) {
         const container = document.querySelector('#player');
-        const api = new Api(container);
+        api = new Api(container);
 
         return new Promise((resolve, reject) => {
             api.setup(model);
@@ -178,7 +187,7 @@ describe('api.setup', function() {
         const removeSpy2 = sinon.spy();
 
         const container = document.querySelector('#player');
-        const api = new Api(container);
+        api = new Api(container);
 
         return new Promise((resolve, reject) => {
             api.setup({

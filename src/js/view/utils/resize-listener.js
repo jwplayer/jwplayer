@@ -2,27 +2,36 @@ import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-anima
 import { createElement } from 'utils/dom';
 import { css, style } from 'utils/css';
 
-export default class ResizeListener {
+const topLeft = {
+    display: 'block',
+    position: 'absolute',
+    top: 0,
+    left: 0
+};
 
-    constructor(element, callback) {
-        const topLeft = {
-            display: 'block',
-            position: 'absolute',
-            top: 0,
-            left: 0
-        };
+const stretch = {
+    width: '100%',
+    height: '100%'
+};
 
-        const stretch = {
-            width: '100%',
-            height: '100%'
-        };
+let contractTriggerCssAdded = false;
 
+const lazyAddCss = function() {
+    if (!contractTriggerCssAdded) {
+        contractTriggerCssAdded = true;
         css('.jw-contract-trigger::before', Object.assign({
             content: '',
             overflow: 'hidden',
             width: '200%',
             height: '200%'
         }, topLeft));
+    }
+};
+
+export default class ResizeListener {
+
+    constructor(element, callback) {
+        lazyAddCss();
 
         const hiddenHtml = '<div style="opacity:0;visibility:hidden;overflow:hidden;">' + // resizeElement
             '<div>' + // expandElement
@@ -35,10 +44,6 @@ export default class ResizeListener {
         const expandChild = expandElement.firstChild;
         const contractElement = expandElement.nextSibling;
 
-        if (getComputedStyle(element).position === 'static') {
-            style(element, { position: 'relative' });
-        }
-
         style([expandElement, contractElement], Object.assign({ overflow: 'auto' }, topLeft, stretch));
         style(resizeElement, Object.assign({}, topLeft, stretch));
 
@@ -49,26 +54,24 @@ export default class ResizeListener {
         this.element = element;
         this.callback = callback;
         this.resizeRaf = -1;
-        this.lastWidth = 0;
-        this.currentWidth = element.offsetWidth;
+        this.lastWidth = this.currentWidth = 0;
         this.scrollListener = (e) => {
-            let resizeRaf = this.resizeRaf;
-            if (resizeRaf) {
-                cancelAnimationFrame(resizeRaf);
-            }
-            resizeRaf = requestAnimationFrame(() => {
+            cancelAnimationFrame(this.resizeRaf);
+            this.resizeRaf = requestAnimationFrame(() => {
                 const currentWidth = this.currentWidth = element.offsetWidth;
                 if (this.lastWidth === currentWidth) {
                     return;
                 }
                 this.callback(e, currentWidth);
             });
-            this.resizeRaf = resizeRaf;
             this.resetTriggers();
         };
 
-        element.addEventListener('scroll', this.scrollListener, true);
-        this.resetTriggers();
+        requestAnimationFrame(() => {
+            this.currentWidth = element.offsetWidth;
+            this.resetTriggers();
+            element.addEventListener('scroll', this.scrollListener, true);
+        });
     }
 
     resetTriggers() {

@@ -109,7 +109,6 @@ window.addEventListener('beforeunload', () => {
 
 export default {
     add: function(view) {
-        view.setResponsiveResizeCallback(scheduleResponsiveRedraw);
         views.push(view);
     },
     remove: function(view) {
@@ -124,6 +123,7 @@ export default {
     size: function() {
         return views.length;
     },
+    scheduleResponsiveRedraw,
     observe(container) {
         lazyInitIntersectionObserver();
 
