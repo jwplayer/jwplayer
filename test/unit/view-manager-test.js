@@ -1,18 +1,17 @@
-import sinon from 'sinon';
 import ViewsManager from 'view/utils/views-manager';
 
 describe('ViewsManager', function() {
-    describe('#add', () => {
-        it('sets the responsive sizing function of the passed in view', () => {
-            let funcMock = sinon.spy();
-            let view = {
-                setResponsiveResizeCallback: funcMock
-            };
-
+    describe('#size', () => {
+        it('returns the number of views added', () => {
+            const view = {};
+            expect(ViewsManager.size()).to.equal(0);
             ViewsManager.add(view);
-            expect(funcMock.called).to.be.true;
-            expect(typeof funcMock.getCall(0).args[0]).to.eq('function');
+            ViewsManager.add(view);
+            expect(ViewsManager.size()).to.equal(2);
             ViewsManager.remove(view);
+            expect(ViewsManager.size()).to.equal(1);
+            ViewsManager.remove(view);
+            expect(ViewsManager.size()).to.equal(0);
         });
     });
 });
