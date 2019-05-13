@@ -912,9 +912,6 @@ function View(_api, _model) {
                 if (!_model.get('instreamMode')) {
                     _floatingUI.enable();
                 }
-
-                // Perform resize and trigger "float" event responsively to prevent layout thrashing
-                _responsiveListener();
             }
         } else {
             _this.stopFloating();
@@ -967,9 +964,6 @@ function View(_api, _model) {
                 margin: null
             });
             _floatingUI.disable();
-
-            // Perform resize and trigger "float" event responsively to prevent layout thrashing
-            _responsiveListener();
         }
     };
 
