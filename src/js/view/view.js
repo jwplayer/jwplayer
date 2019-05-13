@@ -658,7 +658,6 @@ function View(_api, _model) {
             _model.set('fullscreen', newState);
         }
 
-        _responsiveListener();
         clearTimeout(_resizeMediaTimeout);
         _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
     }
@@ -673,7 +672,6 @@ function View(_api, _model) {
         }
 
         _resizeMedia();
-        _responsiveListener();
     }
 
     function _setLiveMode(model, streamType) {
