@@ -1,44 +1,56 @@
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 import { createElement } from 'utils/dom';
-import { css, style } from 'utils/css';
+import { style } from 'utils/css';
 
-const topLeft = {
-    display: 'block',
-    position: 'absolute',
-    top: 0,
-    left: 0
-};
+const instances = [];
+let resizeRaf = -1;
 
-const stretch = {
-    width: '100%',
-    height: '100%'
-};
-
-let contractTriggerCssAdded = false;
-
-const lazyAddCss = function() {
-    if (!contractTriggerCssAdded) {
-        contractTriggerCssAdded = true;
-        css('.jw-contract-trigger::before', Object.assign({
-            content: '',
-            overflow: 'hidden',
-            width: '200%',
-            height: '200%'
-        }, topLeft));
-    }
-};
+function scrollListener() {
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(() => {
+        instances.forEach(resizeListener => {
+            resizeListener.updateBounds();
+        });
+        instances.forEach(resizeListener => {
+            resizeListener.contractElement.scrollLeft = resizeListener.width * 2;
+        });
+        instances.forEach(resizeListener => {
+            style(resizeListener.expandChild, { width: resizeListener.width + 1 });
+        });
+        instances.forEach(resizeListener => {
+            resizeListener.expandElement.scrollLeft = resizeListener.width + 1;
+        });
+        instances.forEach(resizeListener => {
+            resizeListener.checkResize();
+        });
+    });
+}
 
 export default class ResizeListener {
 
-    constructor(element, callback) {
-        lazyAddCss();
-
+    constructor(element, callback, initialWidth) {
+        if (!initialWidth) {
+            initialWidth = element.offsetWidth;
+        }
         const hiddenHtml = '<div style="opacity:0;visibility:hidden;overflow:hidden;">' + // resizeElement
             '<div>' + // expandElement
             '<div style="height:1px;">' + // expandChild
             '</div></div>' +
             '<div class="jw-contract-trigger">' + // contractElement
             '</div></div>';
+
+        const topLeft = {
+            display: 'block',
+            position: 'absolute',
+            top: 0,
+            left: 0
+        };
+
+        const stretch = {
+            width: '100%',
+            height: '100%'
+        };
+
         const resizeElement = createElement(hiddenHtml);
         const expandElement = resizeElement.firstChild;
         const expandChild = expandElement.firstChild;
@@ -50,40 +62,39 @@ export default class ResizeListener {
         this.expandElement = expandElement;
         this.expandChild = expandChild;
         this.contractElement = contractElement;
-        this.hiddenElement = element.appendChild(resizeElement);
+        this.hiddenElement = resizeElement;
         this.element = element;
         this.callback = callback;
-        this.resizeRaf = -1;
-        this.lastWidth = this.currentWidth = 0;
-        this.scrollListener = (e) => {
-            cancelAnimationFrame(this.resizeRaf);
-            this.resizeRaf = requestAnimationFrame(() => {
-                const currentWidth = this.currentWidth = element.offsetWidth;
-                if (this.lastWidth === currentWidth) {
-                    return;
-                }
-                this.callback(e, currentWidth);
-            });
-            this.resetTriggers();
-        };
-
-        requestAnimationFrame(() => {
-            this.currentWidth = element.offsetWidth;
-            this.resetTriggers();
-            element.addEventListener('scroll', this.scrollListener, true);
-        });
+        this.width = initialWidth;
+        this.lastWidth = initialWidth;
+        if (element.firstChild) {
+            element.insertBefore(resizeElement, element.firstChild);
+        } else {
+            element.appendChild(resizeElement);
+        }
+        element.addEventListener('scroll', scrollListener, true);
+        instances.push(this);
+        scrollListener();
     }
 
-    resetTriggers() {
-        const currentWidth = this.currentWidth;
-        this.contractElement.scrollLeft = currentWidth * 2;
-        style(this.expandChild, { width: currentWidth + 1 });
-        this.expandElement.scrollLeft = currentWidth + 1;
-        this.lastWidth = currentWidth;
+    updateBounds() {
+        this.width = this.element.offsetWidth;
+    }
+
+    checkResize() {
+        const currentWidth = this.width;
+        if (this.lastWidth !== currentWidth && this.callback) {
+            this.callback(currentWidth);
+            this.lastWidth = currentWidth;
+        }
     }
 
     destroy() {
         if (this.callback) {
+            const index = instances.indexOf(this);
+            if (index !== -1) {
+                instances.splice(index, 1);
+            }
             this.element.removeEventListener('scroll', this.scrollListener, true);
             this.element.removeChild(this.hiddenElement);
             this.scrollListener =
