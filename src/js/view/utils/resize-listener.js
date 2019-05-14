@@ -89,12 +89,10 @@ export default class ResizeListener {
             if (index !== -1) {
                 instances.splice(index, 1);
             }
-            this.element.removeEventListener('scroll', this.scrollListener, true);
+            this.element.removeEventListener('scroll', scrollListener, true);
             this.element.removeChild(this.hiddenElement);
-            this.scrollListener =
-                this.view =
+            this.view =
                 this.model = null;
-
         }
     }
 }

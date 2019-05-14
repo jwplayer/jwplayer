@@ -158,8 +158,7 @@ function View(_api, _model) {
         const floating = _model.get('isFloating');
         if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
             if (!this.resizeListener) {
-                this.resizeListener =
-                    new ResizeListener(_wrapperElement, this, _model);
+                this.resizeListener = new ResizeListener(_wrapperElement, this, _model);
             }
             _lastWidth = containerWidth;
             _lastHeight = containerHeight;
@@ -658,6 +657,7 @@ function View(_api, _model) {
             _model.set('fullscreen', newState);
         }
 
+        _responsiveListener();
         clearTimeout(_resizeMediaTimeout);
         _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
     }
@@ -672,6 +672,7 @@ function View(_api, _model) {
         }
 
         _resizeMedia();
+        _responsiveListener();
     }
 
     function _setLiveMode(model, streamType) {
@@ -910,6 +911,9 @@ function View(_api, _model) {
                 if (!_model.get('instreamMode')) {
                     _floatingUI.enable();
                 }
+
+                // Perform resize and trigger "float" event responsively to prevent layout thrashing
+                _responsiveListener();
             }
         } else {
             _this.stopFloating();
@@ -962,6 +966,9 @@ function View(_api, _model) {
                 margin: null
             });
             _floatingUI.disable();
+
+            // Perform resize and trigger "float" event responsively to prevent layout thrashing
+            _responsiveListener();
         }
     };
 
