@@ -1,5 +1,4 @@
 import activeTab from 'utils/active-tab';
-import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 import { Browser, OS } from 'environment/environment';
 
 const views = [];
@@ -9,7 +8,6 @@ const hasOrientation = 'screen' in window && 'orientation' in window.screen;
 const isAndroidChrome = OS.android && Browser.chrome;
 
 let intersectionObserver;
-let responsiveRepaintRequestId = -1;
 
 function lazyInitIntersectionObserver() {
     const IntersectionObserver = window.IntersectionObserver;
@@ -35,27 +33,6 @@ function matchIntersection(entry, group) {
             break;
         }
     }
-}
-
-function scheduleResponsiveRedraw() {
-    cancelAnimationFrame(responsiveRepaintRequestId);
-    // Batch DOM changes on animation frame
-    responsiveRepaintRequestId = requestAnimationFrame(function responsiveRepaint() {
-        // First read all DOM bounds (compute player size)
-        views.forEach(view => {
-            view.updateBounds();
-        });
-        // Then write all DOM changes (apply styles and classes based on player size)
-        views.forEach(view => {
-            if (view.model.get('visibility')) {
-                view.updateStyles();
-            }
-        });
-        // Finally dispatch events for any changes
-        views.forEach(view => {
-            view.checkResized();
-        });
-    });
 }
 
 function onOrientationChange() {
@@ -123,7 +100,6 @@ export default {
     size: function() {
         return views.length;
     },
-    scheduleResponsiveRedraw,
     observe(container) {
         lazyInitIntersectionObserver();
 

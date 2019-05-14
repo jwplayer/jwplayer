@@ -159,7 +159,7 @@ function View(_api, _model) {
         if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
             if (!this.resizeListener) {
                 this.resizeListener =
-                    new ResizeListener(_wrapperElement, viewsManager.scheduleResponsiveRedraw, containerWidth);
+                    new ResizeListener(_wrapperElement, this, _model);
             }
             _lastWidth = containerWidth;
             _lastHeight = containerHeight;

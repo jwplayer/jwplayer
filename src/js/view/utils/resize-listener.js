@@ -9,29 +9,34 @@ function scrollListener() {
     cancelAnimationFrame(resizeRaf);
     resizeRaf = requestAnimationFrame(() => {
         instances.forEach(resizeListener => {
-            resizeListener.updateBounds();
+            resizeListener.view.updateBounds();
+            const width = resizeListener.view.model.get('containerWidth');
+            resizeListener.resized = resizeListener.width !== width;
+            resizeListener.width = width;
         });
         instances.forEach(resizeListener => {
             resizeListener.contractElement.scrollLeft = resizeListener.width * 2;
         });
         instances.forEach(resizeListener => {
             style(resizeListener.expandChild, { width: resizeListener.width + 1 });
+            if (resizeListener.resized && resizeListener.view.model.get('visibility')) {
+                resizeListener.view.updateStyles();
+            }
         });
         instances.forEach(resizeListener => {
             resizeListener.expandElement.scrollLeft = resizeListener.width + 1;
         });
         instances.forEach(resizeListener => {
-            resizeListener.checkResize();
+            if (resizeListener.resized) {
+                resizeListener.view.checkResized();
+            }
         });
     });
 }
 
 export default class ResizeListener {
 
-    constructor(element, callback, initialWidth) {
-        if (!initialWidth) {
-            initialWidth = element.offsetWidth;
-        }
+    constructor(element, view, model) {
         const hiddenHtml = '<div style="opacity:0;visibility:hidden;overflow:hidden;">' + // resizeElement
             '<div>' + // expandElement
             '<div style="height:1px;">' + // expandChild
@@ -64,9 +69,10 @@ export default class ResizeListener {
         this.contractElement = contractElement;
         this.hiddenElement = resizeElement;
         this.element = element;
-        this.callback = callback;
-        this.width = initialWidth;
-        this.lastWidth = initialWidth;
+        this.view = view;
+        this.model = model;
+        this.width = 0;
+        this.resized = false;
         if (element.firstChild) {
             element.insertBefore(resizeElement, element.firstChild);
         } else {
@@ -77,20 +83,8 @@ export default class ResizeListener {
         scrollListener();
     }
 
-    updateBounds() {
-        this.width = this.element.offsetWidth;
-    }
-
-    checkResize() {
-        const currentWidth = this.width;
-        if (this.lastWidth !== currentWidth && this.callback) {
-            this.callback(currentWidth);
-            this.lastWidth = currentWidth;
-        }
-    }
-
     destroy() {
-        if (this.callback) {
+        if (this.view) {
             const index = instances.indexOf(this);
             if (index !== -1) {
                 instances.splice(index, 1);
@@ -98,7 +92,9 @@ export default class ResizeListener {
             this.element.removeEventListener('scroll', this.scrollListener, true);
             this.element.removeChild(this.hiddenElement);
             this.scrollListener =
-                this.callback = null;
+                this.view =
+                this.model = null;
+
         }
     }
 }
