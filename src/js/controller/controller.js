@@ -711,7 +711,8 @@ Object.assign(Controller.prototype, {
             _actionOnAttach = _completeHandler;
 
             const idx = _model.get('item');
-            if (idx === _model.get('playlist').length - 1) {
+            let overrideAutoplay = _model.get('__autoplayOverride');
+            if (overrideAutoplay || idx === _model.get('playlist').length - 1) {
                 // If it's the last item in the playlist
                 if (_model.get('repeat')) {
                     _next({ reason: 'repeat' });
