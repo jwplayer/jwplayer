@@ -122,7 +122,7 @@ export default class NextUpTooltip {
 
             // Set header
             this.header = this.content.querySelector('.jw-nextup-header');
-            this.header.textContent = this.localization.nextUp;
+            this.header.textContent = createElement(this.localization.nextUp).textContent;
 
             // Set title
             this.title = this.content.querySelector('.jw-nextup-title');
