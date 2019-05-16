@@ -118,3 +118,24 @@
     }
 }
 // stylelint-enable indentation
+.jwplayer.jw-breakpoint--1 {
+    .jw-icon-cc,
+    .jw-icon-settings,
+    .jw-icon-audio-tracks,
+    .jw-icon-hd,
+    .jw-settings-sharing,
+    .jw-icon-fullscreen,
+    &.jw-flag-cast-available .jw-icon-airplay,
+    &.jw-flag-cast-available .jw-icon-cast {
+        display: none;
+    }
+
+    .jw-icon-volume,
+    .jw-text-live {
+        bottom: 6px;
+    }
+
+    .jw-icon-volume::after {
+        display: none;
+    }
+}
