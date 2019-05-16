@@ -157,6 +157,9 @@ function View(_api, _model) {
         const containerHeight = _model.get('containerHeight');
         const floating = _model.get('isFloating');
         if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
+            if (!this.resizeListener) {
+                this.resizeListener = new ResizeListener(_wrapperElement, this, _model);
+            }
             _lastWidth = containerWidth;
             _lastHeight = containerHeight;
             _this.trigger(RESIZE, {
@@ -338,9 +341,6 @@ function View(_api, _model) {
         // Triggering 'resize' resulting in player 'ready'
         _lastWidth = _lastHeight = null;
         this.checkResized();
-        if (!this.resizeListener) {
-            this.resizeListener = new ResizeListener(_playerElement, viewsManager.scheduleResponsiveRedraw);
-        }
     };
 
     function changeControls(model, enable) {

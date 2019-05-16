@@ -15,6 +15,9 @@ import UI, { getElementWindow } from 'utils/ui';
 import { PlayerError, composePlayerError, convertToPlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_PROMISE_API_CONFLICT, SETUP_ERROR_UNKNOWN,
     MSG_TECHNICAL_ERROR } from 'api/errors';
+// Import modules used by core and related (TODO: move related loading into core/controls)
+import 'view/utils/views-manager';
+import 'view/utils/resize-listener';
 
 const CoreShim = function(originalContainer) {
     this._events = {};
