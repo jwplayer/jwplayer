@@ -698,22 +698,32 @@ Object.assign(Controller.prototype, {
             _item(_model.get('item') + 1, meta);
         }
 
-        function _completeHandler() {
+        function _completeCancelled() {
             if (!_isIdle()) {
                 // Something has made an API call before the complete handler has fired.
-                return;
+                return true;
             } else if (_stopPlaylist) {
                 // Stop called in onComplete event listener
                 _stopPlaylist = false;
+                return true;
+            }
+
+            return false;
+        }
+
+        function _shouldAutoAdvance() {
+            // If it's the last item in the playlist
+            const idx = _model.get('item');
+            return idx !== _model.get('playlist').length - 1;
+        }
+        function _completeHandler() {
+            if (_this.completeCancelled()) {
                 return;
             }
 
-            _actionOnAttach = _completeHandler;
+            _actionOnAttach = _this.completeHandler;
 
-            const idx = _model.get('item');
-            let overrideAutoplay = _model.get('__autoplayOverride');
-            if (overrideAutoplay || idx === _model.get('playlist').length - 1) {
-                // If it's the last item in the playlist
+            if (!_this.shouldAutoAdvance()) {
                 if (_model.get('repeat')) {
                     _next({ reason: 'repeat' });
                 } else {
@@ -880,6 +890,9 @@ Object.assign(Controller.prototype, {
         this.getConfig = _getConfig;
         this.getState = _getState;
         this.next = noop;
+        this.completeHandler = _completeHandler;
+        this.completeCancelled = _completeCancelled;
+        this.shouldAutoAdvance = _shouldAutoAdvance;
         this.nextItem = () => {
             _next({ reason: 'playlist' });
         };
