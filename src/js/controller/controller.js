@@ -278,12 +278,13 @@ Object.assign(Controller.prototype, {
 
             _model.change('viewable', viewableChange);
             _model.change('viewable', _checkPlayOnViewable);
-            _model.once('change:autostartFailed change:mute', function(model) {
-                model.off('change:viewable', _checkPlayOnViewable);
-            });
 
             if (_model.get('autoPause').viewability) {
                 _model.change('viewable', _checkPauseOnViewable);
+            } else {
+                _model.once('change:autostartFailed change:mute', function(model) {
+                    model.off('change:viewable', _checkPlayOnViewable);
+                });
             }
 
             // Run _checkAutoStart() last
