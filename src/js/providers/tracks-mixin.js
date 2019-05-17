@@ -33,11 +33,20 @@ const Tracks = {
     addTrackHandler: null,
     addCuesToTrack,
     addCaptionsCue,
+    createCue,
     addVTTCue,
     addVTTCuesToTrack,
     triggerActiveCues,
     renderNatively: false
 };
+
+function createCue(start, end, content) {
+    const MetaCue = window.VTTCue || window.TextTrackCue;
+    // Set a minimum duration for the cue
+    // VTTCues must have a duration for "cuechange" to be dispatched
+    const cueEnd = Math.max(end || 0, start + 0.25);
+    return new MetaCue(start, cueEnd, content);
+}
 
 function setTextTracks(tracks) {
     this._currentTextTrackIndex = -1;
