@@ -3,7 +3,7 @@ import { STATE_BUFFERING, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK,
-    AD_PLAY, AD_PAUSE, AD_TIME, AD_CLICK, AD_SKIPPED } from 'events/events';
+    AD_PLAY, AD_PAUSE, AD_BUFFER, AD_TIME, AD_CLICK, AD_SKIPPED } from 'events/events';
 import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
 import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
@@ -89,6 +89,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.setup();
 
         _adProgram.on('all', _instreamForward, this);
+        _adProgram.on('buffer', triggerAdBuffer, this);
         _adProgram.on(MEDIA_PLAY_ATTEMPT_FAILED, triggerPlayRejected, this);
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
         _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
@@ -415,6 +416,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (evt.width && evt.height) {
             _view.resizeMedia();
         }
+    }
+
+    function triggerAdBuffer(evt) {
+        _controller.trigger(AD_BUFFER, evt);
     }
 
     /**

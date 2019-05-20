@@ -1057,11 +1057,8 @@ Object.assign(Controller.prototype, {
 
         this.createInstream = function() {
             this.instreamDestroy();
-            const instream = this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
-            instream.on('buffer', function (evt) {
-                _this.trigger(evt.type, evt);
-            });
-            return instream;
+            this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
+            return this._instreamAdapter;
         };
 
         this.skipAd = function() {
