@@ -573,8 +573,12 @@ function _removeCues(renderNatively, tracks) {
             // Cues are inaccessible if the track is disabled. While hidden,
             // we can remove cues while the track is in a non-visible state
             // Set to disabled before hidden to ensure active cues disappear
-            track.mode = 'disabled';
-            track.mode = 'hidden';
+            if (track.mode !== 'disabled') {
+                // Avoid setting the track to disabled if it is already so. This prevents an exception when trying
+                // to set the mode on Edge
+                track.mode = 'disabled';
+                track.mode = 'hidden';
+            }
             for (let i = track.cues.length; i--;) {
                 track.removeCue(track.cues[i]);
             }
