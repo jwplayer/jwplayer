@@ -19,6 +19,51 @@
     transition-property: opacity, visibility;
     transition-delay: 0s;
 
+    .jw-breakpoint-7 & {
+        max-height: 140px;
+
+        .jw-button-container {
+            padding: 0 48px 20px 48px;
+
+            .jw-tooltip {
+                margin-bottom: -7px;
+            }
+
+            .jw-icon-volume {
+                .jw-overlay {
+                    padding-bottom: 40%;
+                }
+            }
+
+            .jw-text {
+                font-size: 1em;
+
+                &.jw-text-elapsed {
+                    justify-content: flex-end;
+                }
+            }
+
+            .jw-icon-inline,
+            .jw-icon-volume {
+                width: 60px;
+                height: 60px;
+
+                .jw-svg-icon {
+                    width: 30px;
+                    height: 30px;
+                }
+            }
+        }
+
+        .jw-slider-time {
+            padding: 0 60px;
+            height: 34px;
+
+            .jw-slider-container {
+                height: 10px;
+            }
+        }
+    }
     .jw-button-image {
         background: no-repeat 50% 50%;
         background-size: contain;

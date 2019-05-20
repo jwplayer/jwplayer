@@ -13,7 +13,33 @@
         display: flex;
     }
 
-    .jw-breakpoint-7 &,
+    .jw-breakpoint-7 & {
+        bottom: 130px;
+        right: 60px;
+        max-height: none;
+        max-width: none;
+        height: 35%;
+        width: 25%;
+
+        .jw-settings-topbar {
+            .jw-icon-inline {
+                width: 60px;
+                height: 60px;
+                
+                .jw-svg-icon {
+                    width: 30px;
+                    height: 30px;
+                }
+                
+                .jw-tooltip {
+                    .jw-text {
+                        font-size: 1em;
+                    }
+                }
+            }
+        }
+    }
+
     .jw-breakpoint-6 &,
     .jw-breakpoint-5 & {
         .rect(284px, 232px);
@@ -78,6 +104,22 @@
 
     &.jw-settings-submenu-active {
         display: block;
+    }
+
+    .jw-breakpoint-7 & {
+        .jw-settings-content-item {
+            font-size: 1em;
+            padding: 11px 0 11px 30px;
+
+            .jw-settings-item-active::before {
+                justify-content: flex-end;
+            }
+            
+            .jw-auto-label {
+                font-size: .85em;
+                padding-left: 10px;
+            }
+        }     
     }
 
     .jw-flag-touch & {
