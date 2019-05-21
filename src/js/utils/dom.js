@@ -215,5 +215,5 @@ export function openLink(link, target, additionalOptions = {}) {
     a.href = link;
     a.target = target;
     a = Object.assign(a, additionalOptions);
-    a.click();
+    a.dispatchEvent(new MouseEvent(`click`, { bubbles: true, cancelable: true, view: window }));
 }
