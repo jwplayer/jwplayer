@@ -66,8 +66,13 @@ display icons
     }
 }
 
-// hide next and rewind buttons on extra small player
-.jw-breakpoint-0 {
+.jw-breakpoint--1 .jw-nextup-container {
+    display: none;
+}
+
+// hide next and rewind buttons along with nextup on extra small player
+.jw-breakpoint-0,
+.jw-breakpoint--1 {
     .jw-display-icon-next,
     .jw-display-icon-rewind {
         display: none;
