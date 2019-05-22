@@ -395,27 +395,25 @@ describe('dom', function() {
     });
 
     it('opens a link', function() {
-        const oldClick = HTMLElement.prototype.click;
-        const clickSpy = sinon.spy();
+        const _createElement = document.createElement;
+        let result;
 
-        HTMLElement.prototype.click = clickSpy;
-        sinon.spy(document, 'createElement');
-        openLink('http://localhost/', '_blank', { rel: 'noreferrer' });
+        // Wrapper required to test result, it's never appended to document.
+        document.createElement = (args) => {
+            result = _createElement.apply(document, [...args]);
+            result.onclick = sinon.spy();
+            return result;
+        };
 
-        const clickedElement = clickSpy.thisValues[0];
+        openLink('http://localhost/', '_blank', { rel: 'noreferrer', id: 'testLink' });
 
-        //  Anchor is created.
-        expect(document.createElement.calledWith('a'));
-        //  Element is clicked.
-        expect(clickSpy.calledOnce).to.be.true;
-        //  Element has expected href.
-        expect(clickedElement.href).to.equal('http://localhost/');
-        //  Element has expected target.
-        expect(clickedElement.target).to.equal('_blank');
-        //  Element has expected options
-        expect(clickedElement.rel).to.equal('noreferrer');
-        //  Return click prototype to original value.
-        HTMLElement.prototype.click = oldClick;
+        expect(result.tagName).to.equal('A');
+        expect(result.href).to.equal('http://localhost/');
+        expect(result.target).to.equal('_blank');
+        expect(result.rel).to.equal('noreferrer');
+        expect(result.id).to.equal('testLink');
+        expect(result.onclick.calledOnce).to.be.true;
+
+        document.createElement = _createElement;
     });
-
 });
