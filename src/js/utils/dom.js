@@ -1,5 +1,6 @@
 import { trim } from 'utils/strings';
 import { isString, contains, difference, isBoolean } from 'utils/underscore';
+import { Browser } from '../environment/environment';
 
 let parser;
 
@@ -217,9 +218,9 @@ export function openLink(link, target, additionalOptions = {}) {
     a = Object.assign(a, additionalOptions);
 
     // Must support all browsers.
-    try {
+    if (Browser.firefox) {
         a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-    } catch (e) {
+    } else {
         a.click();
     }
 }
