@@ -1,8 +1,9 @@
-import { ERROR, FULLSCREEN, NATIVE_FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import { ERROR, FULLSCREEN, NATIVE_FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED, STATE_BUFFERING } from 'events/events';
 import ProgramController from 'program/program-controller';
 import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
 import SharedMediaPool from 'program/shared-media-pool';
+import { normalizeState } from 'utils/eventNormalizer';
 
 export default class AdProgramController extends ProgramController {
     constructor(model, mediaPool) {
@@ -56,7 +57,6 @@ export default class AdProgramController extends ProgramController {
             sdkplatform: playerAttributes.sdkplatform,
             skipButton: false
         });
-
         model.on('change:state', changeStateEvent, this);
         model.on(ERROR, function(data) {
             this.trigger(ERROR, data);
@@ -99,7 +99,6 @@ export default class AdProgramController extends ProgramController {
 
         const { model, playerModel } = this;
         const isVpaidProvider = provider.type === 'vpaid';
-
         provider.off();
         provider.on('all', function(type, data) {
             if (isVpaidProvider && (type === MEDIA_COMPLETE)) {
@@ -185,9 +184,11 @@ export default class AdProgramController extends ProgramController {
 
     _stateHandler(state) {
         const { model } = this;
+        state = normalizeState(state);
         switch (state) {
             case STATE_PLAYING:
             case STATE_PAUSED:
+            case STATE_BUFFERING:
                 model.set(PLAYER_STATE, state);
                 break;
             default:

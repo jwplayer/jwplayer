@@ -1,4 +1,4 @@
-import { STATE_BUFFERING, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
+import { STATE_BUFFERING, STATE_LOADING, STATE_STALLED, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
     PLAYER_STATE,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
@@ -8,6 +8,7 @@ import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/p
 import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
 import AdProgramController from 'program/ad-program-controller';
+import { normalizeReason, normalizeState } from 'utils/eventNormalizer';
 
 const _defaultOptions = {
     skipoffset: null,
@@ -89,7 +90,6 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.setup();
 
         _adProgram.on('all', _instreamForward, this);
-        _adProgram.on('buffer', triggerAdBuffer, this);
         _adProgram.on(MEDIA_PLAY_ATTEMPT_FAILED, triggerPlayRejected, this);
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
         _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
@@ -202,17 +202,38 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const oldstate = event.oldstate || _adProgram.model.get('state');
 
         if (oldstate !== newstate) {
-            _triggerAdPlayPause(Object.assign({ oldstate }, _data, event));
+            _triggerAdEvent(Object.assign({ oldstate }, _data, event));
         }
     }
 
-    function _triggerAdPlayPause(event) {
+    function _triggerAdEvent(event) {
         const { newstate } = event;
-        if (newstate === STATE_PLAYING) {
-            _controller.trigger(AD_PLAY, event);
-        } else if (newstate === STATE_PAUSED) {
-            _controller.trigger(AD_PAUSE, event);
+        let type;
+
+        switch (newstate) {
+            case STATE_PLAYING:
+                type = AD_PLAY;
+                break;
+            case STATE_PAUSED:
+                type = AD_PAUSE;
+                break;
+            case STATE_LOADING:
+            case STATE_STALLED:
+            case STATE_BUFFERING:
+                type = AD_BUFFER;
+                event.newstate = normalizeState(newstate);
+                event.reason = normalizeReason(STATE_BUFFERING, newstate);
+                if (event.oldstate === STATE_BUFFERING) {
+                    // The adModel's initial state is always buffering, therefore we use the player's state
+                    // A state change from Buffering to Buffering would be confusing to developers and does not accurately
+                    // represent the player's change of state.
+                    event.oldstate = _model.get(PLAYER_STATE);
+                }
+                break;
+            default:
+                return;
         }
+        _controller.trigger(type, event);
     }
 
     this.setEventData = function(data) {
@@ -233,7 +254,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         adModel.set('state', newstate);
 
-        _triggerAdPlayPause(event);
+        _triggerAdEvent(event);
     };
 
     /**
@@ -416,10 +437,6 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (evt.width && evt.height) {
             _view.resizeMedia();
         }
-    }
-
-    function triggerAdBuffer(evt) {
-        _controller.trigger(AD_BUFFER, evt);
     }
 
     /**
