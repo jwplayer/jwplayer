@@ -1,4 +1,5 @@
-import { STATE_IDLE, STATE_LOADING, STATE_STALLED, STATE_BUFFERING, STATE_COMPLETE, STATE_ERROR } from 'events/events';
+import { STATE_IDLE, STATE_COMPLETE, STATE_ERROR } from 'events/events';
+import { normalizeReason } from 'utils/eventNormalizer';
 
 // The api should dispatch an idle event when the model's state changes to complete
 // This is to avoid conflicts with the complete event and to maintain legacy event flow
@@ -7,13 +8,6 @@ function normalizeApiState(newstate) {
         return STATE_IDLE;
     }
     return newstate;
-}
-
-function normalizeReason(newstate, reason) {
-    if (newstate === STATE_BUFFERING) {
-        return reason === STATE_STALLED ? reason : STATE_LOADING;
-    }
-    return reason;
 }
 
 export default function ChangeStateEvent(model, newstate, oldstate) {
