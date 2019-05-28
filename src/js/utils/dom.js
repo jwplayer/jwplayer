@@ -217,7 +217,7 @@ export function openLink(link, target, additionalOptions = {}) {
     a.target = target;
     a = Object.assign(a, additionalOptions);
 
-    // Must support all browsers.
+    // Firefox is the only modern browser that doesn't support clicking orphaned anchors.
     if (Browser.firefox) {
         a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
     } else {
