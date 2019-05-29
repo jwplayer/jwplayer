@@ -63,6 +63,9 @@ function formatSources(item, model) {
         copyAttribute(originalSource, attributes, 'androidhls');
         copyAttribute(originalSource, attributes, 'hlsjsdefault');
         copyAttribute(originalSource, attributes, 'safarihlsjs');
+        // Set in order to force the progressive Hls.js provider; used for A/B testing
+        // TODO: Remove after A/B testing concludes
+        copyAttribute(originalSource, attributes, '_hlsjsProgressive');
 
         originalSource.preload = getPreload(originalSource.preload, preload);
 
