@@ -174,7 +174,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     function _loadNextItem() {
         _arrayIndex++;
-        _this.loadItem(_array);
+        _this.loadItem(_array).catch(function() { });
     }
 
     function _instreamForward(type, data) {
