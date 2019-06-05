@@ -2,7 +2,7 @@ import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import {
-    STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META_CUE_PARSED, MEDIA_META, MEDIA_ERROR,
+    STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META_CUE_PARSED, MEDIA_META, MEDIA_ERROR, WARNING,
     MEDIA_VISUAL_QUALITY, MEDIA_TYPE, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, NATIVE_FULLSCREEN, STATE_LOADING
 } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
@@ -34,6 +34,10 @@ const HTML5_SRC_RESET = 224005;
  @enum {ErrorCode} - The HTML5 media element encountered a network error.
  */
 const HTML5_NETWORK_ERROR = 221000;
+/**
+ @enum {ErrorCode} - The HTML5 media element encountered an error, resulting in an attempt to recover.
+ */
+const HTML5_BASE_WARNING = 324000;
 
 const clearTimeout = window.clearTimeout;
 const _name = 'html5';
@@ -62,6 +66,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     // Value of mediaElement.currentTime on last "timeupdate" used for decode error retry workaround
     this.currentTime = -1;
 
+    // Attempt to reload video on error
+    this.retries = 0;
+
     // Always render natively in iOS and Safari, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
     // FF, IE & Edge are excluded due to styling/positioning drawbacks.
@@ -86,6 +93,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         timeupdate() {
+            if (_this.currentTime) {
+                // Reset error retries after concurrent timeupdate events
+                _this.retries = 0;
+            }
             _this.currentTime = _videotag.currentTime;
             // Keep track of position before seek in iOS fullscreen
             if (_iosFullscreenState && _timeBeforeSeek !== _videotag.currentTime) {
@@ -194,14 +205,19 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             const error = video.error;
             const errorCode = (error && error.code) || -1;
 
-            if (errorCode === 3 && _this.currentTime !== -1 && OS.iOS) {
-                // Workaround iOS bug https://bugs.webkit.org/show_bug.cgi?id=195452
+            if ((errorCode === 3 || errorCode === 4) && _this.retries < 3) {
+                // Workaround Safari bug https://bugs.webkit.org/show_bug.cgi?id=195452
+                //  and stale manifests
+                _this.trigger(WARNING, new PlayerError(null, HTML5_BASE_WARNING + errorCode - 1, error));
+                _this.retries++;
                 _videotag.load();
-                _this.seek(_this.currentTime);
-                _this.currentTime = -1;
+                if (_this.currentTime !== -1) {
+                    _canSeek = false;
+                    _this.seek(_this.currentTime);
+                    _this.currentTime = -1;
+                }
                 return;
             }
-            // Error code 2 from the video element is a network error
             let code = HTML5_BASE_MEDIA_ERROR;
             let key = MSG_CANT_PLAY_VIDEO;
 
@@ -598,6 +614,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.init = function(item) {
+        _this.retries = 0;
         setPlaylistItem(item);
         const source = _levels[_currentQuality];
         _androidHls = isAndroidHls(source);
