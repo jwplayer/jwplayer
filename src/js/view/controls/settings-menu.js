@@ -144,7 +144,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         );
     };
 
-    const changeAutoLabel = function (quality, qualitySubMenu, currentQuality) {
+    const changeAutoLabel = function (qualityLevel, qualitySubMenu, currentIndex) {
         const levels = model.get('levels');
         // Return early if the label isn't "Auto" (html5 provider with multiple mp4 sources)
         if (!levels || levels[0].label !== 'Auto') {
@@ -152,19 +152,20 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         }
         const items = qualitySubMenu.getItems();
         const item = items[0].element().querySelector('.jw-auto-label');
+        const level = levels[qualityLevel.index] || { label: '' };
 
-        item.textContent = currentQuality ? '' : levels[quality.level.index].label;
+        item.textContent = currentIndex ? '' : level.label;
     };
 
     // Quality Levels
     model.change('levels', onQualitiesChanged, settingsMenu);
-    model.on('change:currentLevel', (changedModel, currentQuality) => {
+    model.on('change:currentLevel', (changedModel, currentIndex) => {
         const qualitySubMenu = settingsMenu.getSubmenu('quality');
         const visualQuality = model.get('visualQuality');
         if (visualQuality && qualitySubMenu) {
-            changeAutoLabel(visualQuality, qualitySubMenu, currentQuality);
+            changeAutoLabel(visualQuality.level, qualitySubMenu, currentIndex);
         }
-        activateSubmenuItem('quality', currentQuality);
+        activateSubmenuItem('quality', currentIndex);
     }, settingsMenu);
 
     // Audio Tracks
@@ -211,7 +212,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     model.on('change:visualQuality', (changedModel, quality) => {
         const qualitySubMenu = settingsMenu.getSubmenu('quality');
         if (qualitySubMenu) {
-            changeAutoLabel(quality, qualitySubMenu, model.get('currentLevel'));
+            changeAutoLabel(quality.level, qualitySubMenu, model.get('currentLevel'));
         }
     });
 
