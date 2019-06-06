@@ -68,6 +68,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     // Attempt to reload video on error
     this.retries = 0;
+    this.maxRetries = 3;
 
     // Always render natively in iOS and Safari, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
@@ -205,7 +206,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             const error = video.error;
             const errorCode = (error && error.code) || -1;
 
-            if ((errorCode === 3 || errorCode === 4) && _this.retries < 3) {
+            if ((errorCode === 3 || errorCode === 4) && _this.retries < _this.maxRetries) {
                 // Workaround Safari bug https://bugs.webkit.org/show_bug.cgi?id=195452
                 //  and stale manifests
                 _this.trigger(WARNING, new PlayerError(null, HTML5_BASE_WARNING + errorCode - 1, error));
@@ -614,7 +615,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.init = function(item) {
-        _this.retries = 0;
+        _this.maxRetries = item.adType ? 0 : 3;
         setPlaylistItem(item);
         const source = _levels[_currentQuality];
         _androidHls = isAndroidHls(source);
