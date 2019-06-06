@@ -93,7 +93,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         timeupdate() {
-            if (_this.currentTime) {
+            if (_this.currentTime >= 0) {
                 // Reset error retries after concurrent timeupdate events
                 _this.retries = 0;
             }
