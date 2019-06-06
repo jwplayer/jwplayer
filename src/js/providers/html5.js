@@ -615,6 +615,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.init = function(item) {
+        _this.retries = 0;
         _this.maxRetries = item.adType ? 0 : 3;
         setPlaylistItem(item);
         const source = _levels[_currentQuality];
