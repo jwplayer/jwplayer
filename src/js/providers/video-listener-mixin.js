@@ -54,6 +54,7 @@ const VideoListenerMixin = {
             this.trigger(PROVIDER_FIRST_FRAME);
         }
 
+
         const timeEventObject = {
             position,
             duration,
@@ -68,6 +69,11 @@ const VideoListenerMixin = {
             if (ptsOffset >= 0) {
                 timeEventObject.metadata.mpegts = ptsOffset + position;
             }
+        }
+
+        const latency = this.getLiveLatency();
+        if (latency !== null) {
+            timeEventObject.latency = latency;
         }
 
         // only emit time events when playing or seeking
