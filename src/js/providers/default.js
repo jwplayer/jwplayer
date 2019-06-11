@@ -78,6 +78,9 @@ const DefaultProvider = {
     getBandwidthEstimate() {
         return null;
     },
+    getLiveLatency() {
+        return null;
+    },
 
     // TODO: Deprecate provider.setControls(bool) with Flash. It's used to toggle the cursor when the swf is in focus.
     setControls: noop,
