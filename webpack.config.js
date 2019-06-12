@@ -77,6 +77,7 @@ const webpackConfig = {
                         babelrc: false,
                         presets: ['@babel/preset-env'],
                         plugins: [
+                            '@babel/plugin-transform-runtime',
                             {
                                 visitor: {
                                     CallExpression: function(path) {
