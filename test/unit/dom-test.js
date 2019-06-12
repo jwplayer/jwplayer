@@ -18,6 +18,8 @@ import {
     sanitizeElementAttributes,
     openLink,
 } from 'utils/dom';
+import { Browser } from 'environment/environment';
+import sinon from 'sinon';
 
 describe('dom', function() {
 
@@ -395,12 +397,17 @@ describe('dom', function() {
     });
 
     it('opens a link', function() {
+        // Skip this test in IE (onclick is not called)
+        if (Browser.ie) {
+            return;
+        }
+
         const _createElement = document.createElement;
         let result;
 
         // Wrapper required to test result, it's never appended to document.
-        document.createElement = (args) => {
-            result = _createElement.apply(document, [...args]);
+        document.createElement = function() {
+            result = _createElement.apply(document, Array.prototype.slice.call(arguments, 0));
             result.onclick = sinon.spy();
             return result;
         };
@@ -412,7 +419,7 @@ describe('dom', function() {
         expect(result.target).to.equal('_blank');
         expect(result.rel).to.equal('noreferrer');
         expect(result.id).to.equal('testLink');
-        expect(result.onclick.calledOnce).to.be.true;
+        expect(result.onclick).to.have.been.calledOnce;
 
         document.createElement = _createElement;
     });
