@@ -1,3 +1,4 @@
+import { debounce } from '../../utils/underscore';
 import { SettingsMenu } from 'view/controls/components/settings/menu';
 import {
     addCaptionsSubmenu,
@@ -20,6 +21,8 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
     controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
         const nonKeyboardInteraction = event && event.type !== 'enter';
+        const delayedOpen = debounce(settingsMenu.open, 10);
+
         if (!submenu && !isDefault) {
             // Do nothing if activating an invalid submenu
             // An invalid submenu is one which does not exist
@@ -43,7 +46,8 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
                 // Activate the first submenu if clicking the default button
                 settingsMenu.activateFirstSubmenu(nonKeyboardInteraction);
             }
-            settingsMenu.open(isDefault, event);
+        
+            delayedOpen(isDefault, event);
         }
     });
 

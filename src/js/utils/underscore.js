@@ -753,6 +753,16 @@ const result = function (object, prop) {
 
 export const isValidNumber = (val) => isNumber(val) && !isNaN(val);
 
+export const debounce = (func, wait = 100) => {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(this, args);
+        }, wait);
+    };
+};
+
 export default {
     after,
     all,
@@ -764,6 +774,7 @@ export default {
     compact,
     constant,
     contains,
+    debounce,
     defaults,
     defer,
     delay,
