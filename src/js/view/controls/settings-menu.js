@@ -46,7 +46,7 @@ export function createSettingsMenu(controlbar, onVisibility, localization) {
                 // Activate the first submenu if clicking the default button
                 settingsMenu.activateFirstSubmenu(nonKeyboardInteraction);
             }
-        
+
             delayedOpen(isDefault, event);
         }
     });
@@ -215,7 +215,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     // Visual Quality
     model.on('change:visualQuality', (changedModel, quality) => {
         const qualitySubMenu = settingsMenu.getSubmenu('quality');
-        if (qualitySubMenu) {
+        if (quality && qualitySubMenu) {
             changeAutoLabel(quality.level, qualitySubMenu, model.get('currentLevel'));
         }
     });
