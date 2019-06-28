@@ -15,12 +15,6 @@ export default class Whoament {
         element.style.width = `${width}%`;
         element.style.left = `${left}%`;
         element.style.visibility = 'visible';
-
-        // const tip = SimpleTooltip(element, 'whoament', 'Hot! 🌶', () => {}, () => {});
-        // tip.open();
-
-        // const minVal = Math.min.apply(null, whoamentSlice);
-        // const maxVal = Math.max.apply(null, whoamentSlice);
     }
 
     destroy () {

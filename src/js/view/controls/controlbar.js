@@ -12,6 +12,7 @@ import { prependChild, setAttribute, toggleClass, openLink } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
+import WhoamentGraph from 'view/controls/components/whoament-graph';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -169,6 +170,8 @@ export default class Controlbar {
         }, localization.liveBroadcast);
         liveButton.element().textContent = localization.liveBroadcast;
 
+        const whoamentGraph = new WhoamentGraph();
+
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
@@ -195,7 +198,8 @@ export default class Controlbar {
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
-            captionsButton
+            captionsButton,
+            whoamentGraph
         };
 
         // Add text tooltips
@@ -432,6 +436,13 @@ export default class Controlbar {
 
     onDuration(model, val) {
         this.elements.duration.textContent = timeFormat(Math.abs(val));
+
+        const item = model.get('playlistItem');
+        if (item.whoament) {
+            const whoamentGraph = this.elements.whoamentGraph;
+            prependChild(this.el, whoamentGraph.element());
+            whoamentGraph.render(item.whoament.map, val);
+        }
     }
 
     onAudioMode(model, val) {
