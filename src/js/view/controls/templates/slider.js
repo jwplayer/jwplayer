@@ -5,8 +5,9 @@ export default (className = '', orientation = '') => {
                 `<div class="jw-rail jw-reset"></div>` +
                 `<div class="jw-buffer jw-reset"></div>` +
                 `<div class="jw-progress jw-reset"></div>` +
+                `<div class="jw-whoament jw-reset"></div>` +
                 `<div class="jw-knob jw-reset"></div>` +
-            `</div>` +
+        `</div>` +
         `</div>`
     );
 };

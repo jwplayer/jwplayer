@@ -45,6 +45,9 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
             if (instance.opened) {
                 redraw(true);
             }
+        },
+        setOffset (offset) {
+            tooltipElement.style.left = offset;
         }
     };
 

@@ -8,6 +8,8 @@ import Slider from 'view/controls/components/slider';
 import TooltipIcon from 'view/controls/components/tooltipicon';
 import ChaptersMixin from 'view/controls/components/chapters.mixin';
 import ThumbnailsMixin from 'view/controls/components/thumbnails.mixin';
+import Whoament from 'view/controls/components/whoament';
+import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 
 class TimeTipIcon extends TooltipIcon {
 
@@ -115,6 +117,7 @@ class TimeSlider extends Slider {
         sliderElement.removeAttribute('aria-hidden');
         this.elementRail.appendChild(this.timeTip.element());
 
+
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
         this.ui = (this.ui || new UI(sliderElement))
             .on('move drag', this.showTimeTooltip, this)
@@ -152,6 +155,11 @@ class TimeSlider extends Slider {
         setAttribute(this.el, 'aria-valuemin', 0);
         setAttribute(this.el, 'aria-valuemax', duration);
         this.drawCues();
+
+        const whoament = model.get('playlistItem').whoament;
+        if (whoament) {
+            this.createWhoament(whoament);
+        }
     }
 
     onStreamType(model, streamType) {
@@ -192,6 +200,7 @@ class TimeSlider extends Slider {
             }
         }, this);
     }
+
 
     performSeek() {
         const percent = this.seekTo;
@@ -314,10 +323,26 @@ class TimeSlider extends Slider {
         setAttribute(sliderElement, 'aria-valuetext', ariaText);
     }
 
+    createWhoament (whoament) {
+        const position = whoament.position;
+        const duration = this._model.get('duration');
+        this.whoamentUI = new Whoament(this.el.querySelector('.jw-whoament'));
+        this.whoamentUI.create(position, duration, whoament.map);
+        const tip = SimpleTooltip(this.el.querySelector('.jw-slider-container'), 'whoament', 'Hot! 🌶', () => {}, () => {});
+        tip.setOffset(`${(position / duration) * 100}%`);
+        tip.open();
+        setTimeout(() => {
+            tip.close();
+        }, 3500);
+    }
+
     reset() {
         this.resetThumbnails();
         this.timeTip.resetWidth();
         this.textLength = 0;
+        if (this.whoamentUI) {
+            this.whoamentUI.destroy();
+        }
     }
 }
 
