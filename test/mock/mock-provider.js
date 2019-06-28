@@ -7,7 +7,7 @@ import sinon from 'sinon';
 
 
 class MockDefault {}
-MockDefault.prototype = Object.assign({}, ProviderDefaults, BackboneEvents, VideoAction, VideoAttached, Tracks);
+Object.assign(MockDefault.prototype, ProviderDefaults, BackboneEvents, VideoAction, VideoAttached, Tracks);
 
 export default class MockProvider extends MockDefault {
     constructor(playerId, playerConfig, mediaElement) {

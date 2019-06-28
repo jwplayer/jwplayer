@@ -1,9 +1,3 @@
-@rightclick-primary-text: #fff;
-@rightclick-secondary-text: #d2d2d2;
-@rightclick-bg: fade(@black, 80%);
-@rightclick-light-bg: @black;
-@rightclick-border: #444;
-
 .jwplayer .jw-rightclick {
     display: none;
     position: absolute;
@@ -37,7 +31,7 @@
 
             .jw-rightclick-link {
                 border: none;
-                color: @rightclick-primary-text;
+                color: var(--jw-rightclick-primary-text);
                 display: block;
                 font-size: 11px;
                 line-height: 1em;
@@ -60,10 +54,9 @@
             vertical-align: middle;
 
             .jw-rightclick-link {
-                color: @rightclick-primary-text;
-
-                span {
-                    color: @rightclick-primary-text;
+                &,
+                & span {
+                    color: var(--jw-rightclick-primary-text);
                 }
             }
         }

@@ -2,7 +2,7 @@
 @import "icons.less";
 
 .jw-nextup-container {
-    .bottomleft((@mobile-touch-target * 1.5), 0);
+    .bottomleft(calc(var(--jw-mobile-touch-target) * 1.5), 0);
     background-color: transparent;
     cursor: pointer;
     margin: 0 auto;
@@ -60,10 +60,10 @@
 }
 
 .jw-nextup {
-    background: @nextup-body-background;
-    border-radius: @nextup-border-radius;
+    background: var(--jw-nextup-body-background);
+    border-radius: var(--jw-nextup-border-radius);
     box-shadow: 0 0 10px fade(@black, 50%);
-    color: @inactive-color;
+    color: var(--jw-inactive-color);
     display: inline-block;
     max-width: 280px;
     overflow: hidden;
@@ -72,12 +72,12 @@
     width: 64%;
     pointer-events: all;
     transform: translate(0, -5px);
-    transition: 150ms @default-timing-function;
+    transition: 150ms var(--jw-default-timing-function);
     transition-property: opacity, transform;
     transition-delay: 0s;
 
     &:hover .jw-nextup-tooltip {
-        color: @active-color;
+        color: var(--jw-active-color);
     }
 
     &.jw-nextup-thumbnail-visible {
@@ -154,7 +154,7 @@
     visibility: hidden;
 
     &:hover {
-        color: @active-color;
+        color: var(--jw-active-color);
     }
 }
 

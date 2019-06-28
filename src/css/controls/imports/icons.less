@@ -11,7 +11,7 @@
 }
 
 .jw-icon.jw-tab-focus:focus {
-    border: @ui-focus;
+    border: var(--jw-ui-focus-border);
 }
 
 .jw-icon-airplay {
@@ -104,7 +104,7 @@
         box-shadow: inset 0 -3px 0 -1px currentColor;
         margin: auto;
         opacity: 0;
-        transition: opacity 150ms @default-timing-function;
+        transition: opacity 150ms var(--jw-default-timing-function);
     }
 }
 

@@ -5,19 +5,16 @@
     @rightclick-primary-text: #fefefe;
     @rightclick-secondary-text: #333;
     @rightclick-bg: #333;
-    @rightclick-secondary-bg: #fefefe;
-    @ui-padding: 0.5em;
-    @ui-margin: 20px;
 
     .topleft(50%, 50%);
-    background: @menu-background-color;
-    transform: translate(-50%, -50%);
+    background: var(--jw-menu-background-color);
+    color: var(--jw-active-color);
     display: none;
-    color: @active-color;
-    pointer-events: all;
-    user-select: text;
-    overflow: hidden;
     flex-direction: column;
+    overflow: hidden;
+    pointer-events: all;
+    transform: translate(-50%, -50%);
+    user-select: text;
 
     &.jw-open {
         display: flex;
@@ -67,8 +64,8 @@
             padding-top: 5px;
 
             .jw-hotkey {
-                color: @rightclick-secondary-text;
-                background: @rightclick-secondary-bg;
+                color: var(--jw-rightclick-secondary-text);
+                background: var(--jw-rightclick-secondary-background);
                 padding: 7px 10px;
             }
         }

@@ -11,7 +11,7 @@
     &:extend(._stretch, ._topleft);
     display: block;
     background: linear-gradient(to bottom, transparent, fade(@black, 40%) 77%, fade(@black, 40%) 100%) 100% 100% / 100% 240px no-repeat transparent;
-    transition: opacity 250ms @default-timing-function, background-size 250ms @default-timing-function;
+    transition: opacity 250ms var(--jw-default-timing-function), background-size 250ms var(--jw-default-timing-function);
     pointer-events: none;
 }
 
@@ -30,10 +30,10 @@
 .jw-text {
     height: 1em;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: @font-size;
+    font-size: var(--jw-font-size);
     font-style: normal;
     font-weight: normal;
-    color: @white;
+    color: var(--jw-font-color);
     text-align: center;
     font-variant: normal;
     font-stretch: normal;

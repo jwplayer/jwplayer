@@ -1,9 +1,9 @@
 @import "../../shared-imports/vars.less";
 
 .jw-settings-menu {
-    .bottomright(@controlbar-height, 12px);
+    .bottomright(var(--jw-controlbar-height), 12px);
     align-items: flex-start;
-    background-color: @menu-background-color;
+    background-color: var(--jw-menu-background-color);
     display: none;
     flex-flow: column nowrap;
     max-width: 284px;
@@ -67,7 +67,7 @@
             box-shadow: inset 0 -3px 0 -1px currentColor;
             margin: auto;
             opacity: 0;
-            transition: opacity 150ms @default-timing-function;
+            transition: opacity 150ms var(--jw-default-timing-function);
         }
 
         &[aria-checked="true"] {
@@ -80,10 +80,10 @@
 
 .jw-settings-topbar {
     align-items: center;
-    background-color: @controlbar-background;
+    background-color: var(--jw-controlbar-background);
     display: flex;
     flex: 0 0 auto;
-    padding: @dismiss-top-padding @dismiss-right-padding 0;
+    padding: var(--jw-dismiss-top-padding) var(--jw-dismiss-right-padding) 0;
     width: 100%;
 
     .jw-settings-close {
@@ -135,7 +135,7 @@
 
 .jw-settings-content-item {
     position: relative;
-    color: @inactive-color;
+    color: var(--jw-inactive-color);
     cursor: pointer;
     font-size: 12px;
     line-height: 1;
@@ -145,7 +145,7 @@
     outline: none;
 
     &:hover {
-        color: @hover-color;
+        color: var(--jw-hover-color);
     }
 
     &:focus {
@@ -158,7 +158,7 @@
 }
 
 .jw-settings-content-item.jw-tab-focus:focus {
-    border: @ui-focus;
+    border: var(--jw-ui-focus-border);
 }
 
 .jw-settings-item-active {

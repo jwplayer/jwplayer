@@ -2,8 +2,7 @@ Chrome >= 55
 ChromeAndroid >= 55
 Firefox >= 51
 FirefoxAndroid >= 54
-Safari >= 9
-Edge >= 12
-IE 11
-iOS >= 9.2
-Android >= 4.4
+Safari >= 9.1
+Edge >= 16
+iOS >= 9.3
+Android >= 5

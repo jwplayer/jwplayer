@@ -15,7 +15,7 @@
     background-size: auto;
     box-shadow: none;
     max-height: 72px;
-    transition: 250ms @default-timing-function;
+    transition: 250ms var(--jw-default-timing-function);
     transition-property: opacity, visibility;
     transition-delay: 0s;
 
@@ -76,7 +76,7 @@
 
     .jw-icon.jw-button-color {
         &:hover {
-            color: @hover-color;
+            color: var(--jw-hover-color);
         }
     }
 }
@@ -129,7 +129,7 @@
 .jw-icon-display,
 .jw-option:before {
     &:hover {
-        color: @hover-color;
+        color: var(--jw-hover-color);
     }
 }
 

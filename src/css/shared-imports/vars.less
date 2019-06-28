@@ -2,26 +2,6 @@
 
 // mobile touch target size (iOS standard)
 @mobile-touch-target: 44px;
-@icon-size: 24px;
-
-// breakpoint width references
-@min-breakpoint-7-width: 1280px;
-@max-breakpoint-6-width: 1279px;
-@min-breakpoint-6-width: 960px;
-@max-breakpoint-5-width: 959px;
-@min-breakpoint-5-width: 800px;
-@max-breakpoint-4-width: 799px;
-@min-breakpoint-4-width: 640px;
-@max-breakpoint-3-width: 639px;
-@min-breakpoint-3-width: 540px;
-@max-breakpoint-2-width: 539px;
-@min-breakpoint-2-width: 420px;
-@max-breakpoint-1-width: 419px;
-@min-breakpoint-1-width: 320px;
-@max-breakpoint-0-width: 319px;
-@min-breakpoint-0-width: 250px;
-@max-breakpoint--1-width: 249px;
-@min-breakpoint--1-width: 0;
 
 // Colors
 @black: #000;
@@ -30,29 +10,12 @@
 @active-color: @white;
 @inactive-color: fade(@white, 80%);
 @background-color: rgba(33, 33, 33, 0.8);
-@accent-color: rgba(11, 126, 244, 1);
-@option-inactive-color: @inactive-color;
-@option-active-color: @active-color;
-@option-active-bg-color: fade(@white, 10%);
 
-@rail-color: fade(@white, 30%);
-@buffer-color: fade(@white, 30%);
-@progress-color: darken(@white, 5%);
 
 @hover-color: @active-color;
 @controlbar-background: fade(@black, 40%);
 
-@toggle-inactive: @inactive-color;
-@toggle-active: @accent-color;
-
-// Display icon is the big play button shown before playback
-@display-icon-color: @inactive-color;
-@display-icon-hover-color: @active-color;
-@display-icon-container-size: 3.75em;
-
 // Fonts
-@text-transform: normal;
-@font-weight: normal;
 @font-size: 0.75em;
 @font-color: @active-color;
 
@@ -64,7 +27,6 @@
 
 // Controlbar
 // The controlbar height flexes to the height of the buttons (defined by the touch height) plus the height of the slider (defined by the knob height)
-@controlbar-height: (@mobile-touch-target + @slider-fixed-knob-height);
 @controlbar-icon-size: 0.5em;
 
 // Rails and sliders
@@ -97,9 +59,6 @@
 @tooltip-popup-delay: 500ms;
 
 // Next up display
-@nextup-border-radius: 0;
-@nextup-header-background: @controlbar-background;
-@nextup-body-background: @menu-background-color;
 @nextup-text-color: @white;
 
 // Settings Menu
@@ -114,3 +73,9 @@
 // Settings menu and floating player close buttons
 @dismiss-top-padding: 3px;
 @dismiss-right-padding: 5px;
+
+@rightclick-primary-text: #fff;
+@rightclick-secondary-text: #d2d2d2;
+@rightclick-bg: fade(@black, 80%);
+@rightclick-light-bg: @black;
+@rightclick-border: #444;

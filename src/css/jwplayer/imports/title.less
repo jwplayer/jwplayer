@@ -1,7 +1,7 @@
 .jw-title {
     &:extend(._top);
     display: none;
-    padding-top: @ui-margin;
+    padding-top: var(--jw-ui-margin);
     width: 100%;
     z-index: 1;
 }
@@ -11,8 +11,8 @@
 .jw-title-secondary {
     color: @white;
     // ensure there's padding even when the logo is positioned in the top-left
-    padding-left: @ui-margin;
-    padding-right: @ui-margin;
+    padding-left: var(--jw-ui-margin);
+    padding-right: var(--jw-ui-margin);
     padding-bottom: 0.5em;
     overflow: hidden;
     text-overflow: ellipsis;

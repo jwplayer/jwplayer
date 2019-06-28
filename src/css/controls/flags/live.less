@@ -23,7 +23,7 @@
     }
 
     .jw-nextup-container {
-        bottom: @mobile-touch-target;
+        bottom: var(--jw-mobile-touch-target);
     }
 
     .jw-text-elapsed,
@@ -35,7 +35,7 @@
         cursor: default;
 
         &:hover {
-            color: @inactive-color;
+            color: var(--jw-inactive-color);
         }
     }
 
@@ -54,10 +54,10 @@
 }
 
 .jw-text-live {
-    .rect(auto, @icon-size);
+    .rect(auto, var(--jw-icon-size));
     align-items: center;
     border-radius: 1px;
-    color: @inactive-color;
+    color: var(--jw-inactive-color);
     display: flex;
     font-size: 12px;
     font-weight: bold;
@@ -65,7 +65,7 @@
     padding: 0 1ch;
     text-rendering: geometricPrecision;
     text-transform: uppercase;
-    transition: @default-transition;
+    transition: var(--jw-default-transition);
     transition-property: box-shadow, color;
 
     &::before {
@@ -75,7 +75,7 @@
         border-radius: 50%;
         margin-right: 6px;
         opacity: 1;
-        transition: opacity @default-transition;
+        transition: opacity var(--jw-default-transition);
     }
 
     &.jw-dvr-live {
@@ -86,7 +86,7 @@
         }
 
         &:hover {
-            color: @active-color;
+            color: var(--jw-active-color);
         }
     }
 }

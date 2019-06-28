@@ -186,9 +186,9 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-buffer',
         ], 'background-color', getRgba(config.progress, 50));
 
-        addStyle([
-            '.jw-rail'
-        ], 'background-color', config.rail);
+        // addStyle([
+        //     '.jw-rail'
+        // ], 'background-color', config.rail);
 
         addStyle([
             '.jw-background-color.jw-slider-time',

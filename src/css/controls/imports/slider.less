@@ -15,27 +15,27 @@
 }
 
 .jw-progress {
-    background-color: @progress-color;
+    background-color: var(--jw-progress-color);
 }
 
 .jw-rail {
-    background-color: @rail-color;
+    background-color: var(--jw-rail-color);
 }
 
 .jw-buffer {
-    background-color: @buffer-color;
+    background-color: var(--jw-buffer-color);
 }
 
 .jw-knob {
-    .square(@slider-fixed-knob-height);
-    background-color: @white;
-    border-radius: @slider-fixed-knob-border-radius;
+    .square(var(--jw-slider-fixed-knob-height));
+    background-color: var(--jw-knob-background-color);
+    border-radius: var(--jw-slider-fixed-knob-border-radius);
     box-shadow: 0 0 10px fade(@black, 40%);
     opacity: 1;
     pointer-events: none;
     position: absolute;
     transform: translate(-50%, -50%) scale(0);
-    transition: 150ms @default-timing-function;
+    transition: 150ms var(--jw-default-timing-function);
     transition-property: opacity, transform;
 
     .jw-flag-dragging .jw-slider-time &,

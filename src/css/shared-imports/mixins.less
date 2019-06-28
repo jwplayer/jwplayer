@@ -1,4 +1,5 @@
 @import "vars.less";
+@import "css-vars.less";
 @import (reference) "mixins/rect.less";
 @import (reference) "mixins/position.less";
 @import (reference) "mixins/pseudo.less";
@@ -11,7 +12,7 @@
 
     &::-webkit-scrollbar-thumb {
         background-color: @white;
-        border: 1px solid @menu-background-color;
+        border: 1px solid var(--jw-menu-background-color);
         border-radius: 6px;
     }
 }
@@ -24,37 +25,34 @@
     @import "vars.less";
     .basic-skin-styles() {
         .jw-background-color {
-            background: @controlbar-background;
+            background: var(--jw-controlbar-background);
         }
 
-        .jw-text {
-            color: @inactive-color;
+        .jw-text,
+        .jw-knob,
+        .jw-button-color {
+            color: var(--jw-inactive-color);
         }
 
         .jw-knob {
-            color: @inactive-color;
-            background-color: @active-color;
-        }
-
-        .jw-button-color {
-            color: @inactive-color;
+            background-color: var(--jw-active-color);
         }
 
         &:not(.jw-flag-touch) .jw-button-color:not(.jw-logo-button) {
             &:focus,
             &:hover {
-                color: @hover-color;
+                color: var(--jw-hover-color);
             }
         }
 
         .jw-toggle {
-            color: @hover-color;
+            color: var(--jw-hover-color);
 
             &.jw-off {
-                color: @inactive-color;
+                color: var(--jw-inactive-color);
 
                 &:focus {
-                    color: @hover-color;
+                    color: var(--jw-hover-color);
                 }
             }
 
@@ -64,26 +62,26 @@
         }
 
         &:not(.jw-flag-touch) .jw-toggle.jw-off:hover {
-            color: @hover-color;
+            color: var(--jw-hover-color);
         }
 
         /* Slider colors */
         .jw-rail {
-            background: @rail-color;
+            background: var(--jw-rail-color);
         }
 
         .jw-buffer {
-            background: @buffer-color;
+            background: var(--jw-buffer-color);
         }
 
         .jw-progress {
-            background: @progress-color;
+            background: var(--jw-progress-color);
         }
 
         /* Styles for menu elements, volume, slider thumbnail */
         .jw-time-tip,
         .jw-volume-tip {
-            border: @volume-border;
+            border: var(--jw-volume-border);
         }
 
         .jw-slider-volume.jw-volume-tip.jw-background-color.jw-slider-vertical {
@@ -91,18 +89,18 @@
         }
 
         .jw-skip {
-            padding: @ui-padding;
+            padding: var(--jw-ui-padding);
             outline: none;
 
             .jw-skiptext,
             .jw-skip-icon {
-                color: @inactive-color;
+                color: var(--jw-inactive-color);
             }
 
             &.jw-skippable:hover,
             &.jw-skippable:focus {
                 .jw-skip-icon {
-                    color: @active-color;
+                    color: var(--jw-active-color);
                 }
             }
         }
@@ -113,82 +111,82 @@
 
         .jw-icon-cast {
             google-cast-launcher {
-                --connected-color: @active-color;
-                --disconnected-color: @inactive-color;
+                --connected-color: var(--jw-active-color);
+                --disconnected-color: var(--jw-inactive-color);
 
                 &:focus {
                     outline: none;
                 }
 
                 &.jw-off {
-                    --connected-color: @inactive-color;
+                    --connected-color: var(--jw-inactive-color);
                 }
             }
 
             &:focus google-cast-launcher {
-                --connected-color: @active-color;
-                --disconnected-color: @hover-color;
+                --connected-color: var(--jw-active-color);
+                --disconnected-color: var(--jw-hover-color);
             }
 
             &:hover google-cast-launcher {
-                --connected-color: @hover-color;
-                --disconnected-color: @hover-color;
+                --connected-color: var(--jw-hover-color);
+                --disconnected-color: var(--jw-hover-color);
             }
         }
 
         /* Next up display */
         .jw-nextup-container {
-            bottom: @controlbar-height;
-            padding: 5px @ui-padding;
+            bottom: var(--jw-controlbar-height);
+            padding: 5px var(--jw-ui-padding);
         }
 
         .jw-nextup {
-            border-radius: @nextup-border-radius;
+            border-radius: var(--jw-nextup-border-radius);
         }
     }
 
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
         .jw-color-active {
-            color: @active-color;
-            stroke: @active-color;
-            border-color: @active-color;
+            color: var(--jw-active-color);
+            stroke: var(--jw-active-color);
+            border-color: var(--jw-active-color);
         }
 
         &:not(.jw-flag-touch) .jw-color-active-hover {
             &:hover,
             &:focus {
-                color: @active-color;
-                stroke: @active-color;
-                border-color: @active-color;
+                color: var(--jw-active-color);
+                stroke: var(--jw-active-color);
+                border-color: var(--jw-active-color);
             }
         }
 
         .jw-color-inactive {
-            color: @inactive-color;
-            stroke: @inactive-color;
-            border-color: @inactive-color;
+            color: var(--jw-inactive-color);
+            stroke: var(--jw-inactive-color);
+            border-color: var(--jw-inactive-color);
         }
 
         &:not(.jw-flag-touch) .jw-color-inactive-hover {
             &:hover {
-                color: @inactive-color;
-                stroke: @inactive-color;
-                border-color: @inactive-color;
+                color: var(--jw-inactive-color);
+                stroke: var(--jw-inactive-color);
+                border-color: var(--jw-inactive-color);
             }
         }
         /* Color for list item text in menu lists */
         .jw-option {
-            color: @option-inactive-color;
+            color: var(--jw-option-inactive-color);
 
             &.jw-active-option {
-                color: @option-active-color;
-                background-color: @option-active-bg-color;
+                color: var(--jw-option-active-color);
+                background-color: var(--jw-option-active-bg-color);
             }
         }
 
         &:not(.jw-flag-touch) .jw-option:hover {
-            color: @hover-color;
+            color: var(--jw-hover-color);
         }
     }
 }
