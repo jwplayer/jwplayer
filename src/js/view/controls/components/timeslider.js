@@ -157,7 +157,7 @@ class TimeSlider extends Slider {
         this.drawCues();
 
         const whoament = model.get('playlistItem').whoament;
-        if (whoament) {
+        if (whoament && whoament.mode === 'simple') {
             this.createWhoament(whoament);
         }
     }

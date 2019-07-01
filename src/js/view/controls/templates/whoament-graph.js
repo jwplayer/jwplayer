@@ -13,3 +13,13 @@ export function whoamentGraphBar () {
         `
     )
 }
+
+export function whoamentCanvas () {
+    return (
+        `
+        <div class="jw-whoament-canvas-container">
+            <canvas id="jw-whoament-canvas"></canvas>
+        </div>
+        `
+    )
+}

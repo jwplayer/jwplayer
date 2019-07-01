@@ -432,16 +432,22 @@ export default class Controlbar {
         }
         this.elements.elapsed.textContent = elapsedTime;
         this.elements.countdown.textContent = countdownTime;
+
+        const whoamentGraph = this.elements.whoamentGraph;
+        if (whoamentGraph.element()) {
+            whoamentGraph.updateTime(position);
+        }
     }
 
     onDuration(model, val) {
         this.elements.duration.textContent = timeFormat(Math.abs(val));
 
         const item = model.get('playlistItem');
-        if (item.whoament) {
+        if (item.whoament && item.whoament.mode === 'graph') {
             const whoamentGraph = this.elements.whoamentGraph;
             prependChild(this.el, whoamentGraph.element());
-            whoamentGraph.render(item.whoament.map, val);
+            whoamentGraph.renderChart(item.whoament.map, item.whoament.position, val);
+            this.elements.time.element().style.opacity = 0;
         }
     }
 

@@ -6,7 +6,6 @@
   "homepage": "https://github.com/jwplayer/jwplayer",
   "license": "CC-BY-NC-SA-3.0",
   "private": true,
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "7.2.2",
     "@babel/helper-module-imports": "7.0.0",
