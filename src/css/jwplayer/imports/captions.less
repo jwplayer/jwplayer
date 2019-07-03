@@ -80,7 +80,11 @@
 .jwplayer:not(.jw-state-playing),
 .jwplayer.jw-flag-media-audio.jw-state-playing,
 .jwplayer.jw-state-playing:not(.jw-flag-user-inactive):not(.jw-flag-controls-hidden) {
-    .jw-captions,
+    // Style duplication below prevents compiler bug resulting in lost styles.
+    .jw-captions {
+        max-height: calc(100% - 60px);
+    }
+
     &:not(.jw-flag-ios-fullscreen) video::-webkit-media-text-track-container {
         max-height: calc(100% - 60px);
     }
