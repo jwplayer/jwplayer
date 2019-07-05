@@ -14,9 +14,15 @@
     }
 }
 
-.jw-slider-time .jw-overlay:before {
-    height: 1em;
-    top: auto;
+.jw-slider-time {
+    .jw-overlay:before {
+        height: 1em;
+        top: auto;
+    }
+
+    .jw-icon-tooltip.jw-open .jw-overlay {
+        pointer-events: none;
+    }
 }
 
 .jw-volume-tip {
