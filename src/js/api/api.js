@@ -843,15 +843,6 @@ export default function Api(element) {
         },
 
         /**
-         * Calls `skipAd` on the active instream adapter instance if present.
-         * @returns {Api} The Player API instance.
-         */
-        skipAd() {
-            core.skipAd();
-            return this;
-        },
-
-        /**
          * Stops any active playback.
          * @returns {Api} The Player API instance.
          */
@@ -1053,4 +1044,10 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @returns {void}
      */
     pauseAd(toggle) {}, // eslint-disable-line
+
+    /**
+     * Skips the currently playing ad, if skippable. Implemented by ad plugins.
+     * @returns {Api} The Player API instance.
+     */
+    skipAd() {},
 });
