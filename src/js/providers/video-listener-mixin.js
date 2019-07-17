@@ -160,7 +160,7 @@ const VideoListenerMixin = {
 
     ended() {
         this.videoHeight = 0;
-        this.streamBitrate = 0;
+        this.streamBitrate = -1;
         if (this.state !== STATE_IDLE && this.state !== STATE_COMPLETE) {
             this.trigger(MEDIA_COMPLETE);
         }
