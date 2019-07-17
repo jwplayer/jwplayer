@@ -779,10 +779,10 @@ Object.assign(Controller.prototype, {
             return _programController.audioTracks;
         }
 
-        function _setCurrentCaptions(index) {
+        function _setCurrentCaptions(index, tracks) {
             index = parseInt(index, 10) || 0;
 
-            _model.persistVideoSubtitleTrack(index);
+            _model.persistVideoSubtitleTrack(index, tracks);
             _programController.subtitles = index;
 
             _this.trigger(CAPTIONS_CHANGED, {
@@ -850,7 +850,7 @@ Object.assign(Controller.prototype, {
 
                     // set the current captions if the default index isn't 0 or "Off"
                     if (defaultCaptionsIndex > 0) {
-                        _setCurrentCaptions(defaultCaptionsIndex);
+                        _setCurrentCaptions(defaultCaptionsIndex, e.tracks);
                     }
                 }, _this)
                 .on(MEDIA_COMPLETE, () => {
