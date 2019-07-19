@@ -26,7 +26,7 @@ describe('Api.getConfig', function() {
         sandbox.restore();
     });
 
-    it('has expected model members', function() {
+    it.skip('has expected model members', function() {
         const container = document.querySelector('#player');
         const api = new Api(container);
 
