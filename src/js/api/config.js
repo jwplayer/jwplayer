@@ -10,8 +10,11 @@ import { getLanguage, getCustomLocalization, applyTranslation, normalizeIntl } f
 /* eslint camelcase: 0 */
 // Defaults
 // Alphabetical order
-export const Defaults = {
-    autoPause: { viewability: false },
+const Defaults = {
+    autoPause: {
+        viewability: false,
+        pauseAds: false
+    },
     autostart: false,
     bandwidthEstimate: null,
     bitrateSelection: null,

@@ -364,7 +364,7 @@ Object.assign(Controller.prototype, {
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     const reason = 'viewable';
-                    if (model.get('state') === STATE_IDLE) {
+                    if (model.get('state') === STATE_IDLE && !(model.get('autoPause').pauseAds && adState)) {
                         _autoStart(reason);
                     } else {
                         _play({ reason });
@@ -388,7 +388,11 @@ Object.assign(Controller.prototype, {
             const playReason = model.get('playReason');
 
             if (adState) {
-                _pauseAfterAd(viewable);
+                if (model.get('autoPause').pauseAds) {
+                    _pauseWhenNotViewable(viewable);
+                } else {
+                    _pauseAfterAd(viewable);
+                }
             } else if (playerState === STATE_PLAYING || playerState === STATE_BUFFERING) {
                 _pauseWhenNotViewable(viewable);
             } else if (playerState === STATE_IDLE && playReason === 'playlist') {
@@ -487,7 +491,8 @@ Object.assign(Controller.prototype, {
 
             const adState = _getAdState();
             const pauseReason = _model.get('pauseReason');
-            if (adState && pauseReason === 'viewable' && playReason !== 'interaction') {
+            const autoPauseAds = _model.get('autoPause').pauseAds;
+            if (adState && !autoPauseAds && pauseReason === 'viewable' && playReason !== 'interaction') {
                 return;
             }
 
