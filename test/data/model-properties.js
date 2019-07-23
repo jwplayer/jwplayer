@@ -69,7 +69,10 @@ export const addedProperties = {
 
 export default {
     id: '',
-    autoPause: { viewability: false },
+    autoPause: {
+        viewability: false,
+        pauseAds: false
+    },
     autostart: false,
     base: '',
     controls: true,
