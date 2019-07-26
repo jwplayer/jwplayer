@@ -25,7 +25,7 @@ describe('Sanitize HTML', function () {
             expect(element.firstChild.getAttribute('onerror')).to.equal(null);
         });
 
-        it('should sanitizea and add svg tags', function () {
+        it('should sanitize and add svg tags', function () {
             const svgHtml = '<svg xmlns="http://www.w3.org/2000/svg" onload="console.log(\'baz\')"/>';
             replaceInnerHtml(element, svgHtml);
             expect(console.log).to.have.callCount(0);
@@ -51,6 +51,14 @@ describe('Sanitize HTML', function () {
             expect(console.log).to.have.callCount(0);
             expect(nestedElement.getAttribute('onload')).to.equal(null);
             expect(nestedElement.firstChild).to.equal(null);
+        });
+
+        it('should sanitize any html element', function () {
+            const divHtml = '<div onmouseover=console.log(document.domain)>foo</div>';
+            replaceInnerHtml(element, divHtml);
+            expect(console.log).to.have.callCount(0);
+            expect(element.firstChild.getAttribute('onmouseover')).to.equal(null);
+            expect(element.firstChild.textContent).to.equal('foo');
         });
     });
 
