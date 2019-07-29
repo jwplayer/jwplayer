@@ -364,9 +364,10 @@ Object.assign(Controller.prototype, {
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     const reason = 'viewable';
-                    if (model.get('state') === STATE_IDLE && !(model.get('autoPause').pauseAds && adState)) {
+                    if (model.get('state') === STATE_IDLE) {
                         _autoStart(reason);
-                    } else {
+                    } else if (!adState || model.get('autoPause').pauseAds) {
+                        // resume normal playback or ads if pauseAds is true
                         _play({ reason });
                     }
                 } else if (OS.mobile && !adState) {
