@@ -14,7 +14,7 @@ export function filterPlaylist(playlist, model, feedData) {
     const itemFeedData = Object.assign({}, feedData);
     delete itemFeedData.playlist;
 
-    return playlist.map((item) => normalizePlaylistItem(model, item, feedData)).filter((item) => !!item);
+    return playlist.map((item) => normalizePlaylistItem(model, item, itemFeedData)).filter((item) => !!item);
 
 }
 

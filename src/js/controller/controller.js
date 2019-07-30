@@ -240,9 +240,7 @@ Object.assign(Controller.prototype, {
                     };
                     const feedData = _model.get('feedData');
                     if (feedData) {
-                        const eventFeedData = Object.assign({}, feedData);
-                        delete eventFeedData.playlist;
-                        eventData.feedData = eventFeedData;
+                        eventData.feedData = Object.assign({}, feedData);
                     }
                     _this.trigger(PLAYLIST_LOADED, eventData);
                 }
@@ -1023,7 +1021,10 @@ Object.assign(Controller.prototype, {
                 // Throw exception if playlist is empty
                 validatePlaylist(filteredPlaylist);
 
-                _model.set('feedData', feedData);
+                const sanitizedFeedData = Object.assign({}, feedData);
+                delete sanitizedFeedData.playlist;
+
+                _model.set('feedData', sanitizedFeedData);
                 _model.set('playlist', filteredPlaylist);
             } catch (error) {
                 return Promise.reject(error);
