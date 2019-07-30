@@ -46,7 +46,7 @@ function _deserialize(options) {
     });
 }
 
-function _normalizeSize(val) {
+export function normalizeSize(val) {
     if (val.slice && val.slice(-2) === 'px') {
         val = val.slice(0, -2);
     }
@@ -78,9 +78,9 @@ const Config = function(options, persisted) {
     }
     config.base = (config.base || loadFrom()).replace(/\/?$/, '/');
     __webpack_public_path__ = config.base;
-    config.width = _normalizeSize(config.width);
-    config.height = _normalizeSize(config.height);
-    config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
+    config.width = normalizeSize(config.width);
+    config.height = normalizeSize(config.height);
+    config.aspectratio = normalizeAspectRatio(config.aspectratio, config.width);
     config.volume = isValidNumber(config.volume) ? Math.min(Math.max(0, config.volume), 100) : Defaults.volume;
     config.mute = !!config.mute;
     config.language = language;
@@ -169,7 +169,7 @@ const Config = function(options, persisted) {
     return config;
 };
 
-function _evaluateAspectRatio(ar, width) {
+export function normalizeAspectRatio(ar, width) {
     if (width.toString().indexOf('%') === -1) {
         return 0;
     }
