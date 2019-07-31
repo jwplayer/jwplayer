@@ -1075,12 +1075,6 @@ Object.assign(Controller.prototype, {
             return this._instreamAdapter;
         };
 
-        this.skipAd = function() {
-            if (this._instreamAdapter) {
-                this._instreamAdapter.skipAd();
-            }
-        };
-
         this.instreamDestroy = function() {
             if (_this._instreamAdapter) {
                 _this._instreamAdapter.destroy();
