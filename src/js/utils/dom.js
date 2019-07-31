@@ -25,7 +25,7 @@ function appendHtml(element, html) {
     const fragment = document.createDocumentFragment();
     const nodes = htmlToParentElement(html).childNodes;
     for (let i = 0; i < nodes.length; i++) {
-        fragment.appendChild(nodes[i].cloneNode());
+        fragment.appendChild(nodes[i].cloneNode(true));
     }
     element.appendChild(fragment);
 }
@@ -39,7 +39,7 @@ export function htmlToParentElement(html) {
     // Delete script nodes
     sanitizeScriptNodes(parsedElement);
     // Delete event handler attributes that could execute XSS JavaScript
-    const insecureElements = parsedElement.querySelectorAll('img,svg');
+    const insecureElements = parsedElement.querySelectorAll('*');
 
     for (let i = insecureElements.length; i--;) {
         const element = insecureElements[i];
