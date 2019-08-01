@@ -1,4 +1,4 @@
-import { normalizeAspectRatio, normalizeSize } from 'os/api/config';
+import { normalizeAspectRatio, normalizeSize } from 'api/config';
 
 function setAutoStart(model, controller, autoStart) {
     model.setAutoStart(autoStart);
