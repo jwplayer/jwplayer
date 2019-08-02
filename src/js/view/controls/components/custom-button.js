@@ -4,7 +4,7 @@ import svgParse from 'utils/svgParser';
 
 let collection = {};
 
-function getCachedIcon(svg) {
+export function getCachedIcon(svg) {
     if (!collection[svg]) {
         const icons = Object.keys(collection);
         if (icons.length > 10) {

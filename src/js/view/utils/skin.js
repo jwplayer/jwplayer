@@ -176,15 +176,18 @@ export function handleColorOverrides(playerId, skin) {
     }
 
     function styleTimeslider(config) {
+        const { progress } = config;
 
-        addStyle([
-            '.jw-progress',
-            '.jw-knob'
-        ], 'background-color', config.progress);
+        if (progress !== 'none') {
+            addStyle([
+                '.jw-progress',
+                '.jw-knob'
+            ], 'background-color', progress);
 
-        addStyle([
-            '.jw-buffer',
-        ], 'background-color', getRgba(config.progress, 50));
+            addStyle([
+                '.jw-buffer',
+            ], 'background-color', getRgba(progress, 50));
+        }
 
         addStyle([
             '.jw-rail'
