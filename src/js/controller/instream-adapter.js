@@ -469,7 +469,9 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // when instream was inited and the player was not destroyed\
         _controller.attachMedia();
 
-        if (this.noResume) {
+        const autoPauseAds = _model.get('autoPause').pauseAds;
+        const playerState = _model.get('state');
+        if (this.noResume || (playerState === STATE_PAUSED) && autoPauseAds) {
             return;
         }
 
