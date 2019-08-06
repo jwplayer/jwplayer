@@ -6,7 +6,9 @@ import { cloneIcon } from 'view/controls/icons';
 import { timeFormat } from 'utils/parser';
 
 export default function (container, model, api, onVisibility) {
-    const template = createElement(InfoOverlayTemplate());
+    const analytics = api.getPlugin('jwpsrv');
+    const shouldTrackUser = analytics && !analytics.doNotTrackUser();
+    const template = createElement(InfoOverlayTemplate(shouldTrackUser));
     const infoOverlayInteraction = 'infoOverlayInteraction';
     let appended = false;
     let lastState = null;
@@ -57,7 +59,10 @@ export default function (container, model, api, onVisibility) {
             }
             durationContainer.textContent = durationText;
         }, instance);
-        clientIdContainer.textContent = `Client ID: ${getClientId()}`;
+
+        if (clientIdContainer) {
+            clientIdContainer.textContent = `Client ID: ${getClientId()}`;
+        }
     }
 
     const instance = {
