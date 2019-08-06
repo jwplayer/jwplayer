@@ -11,7 +11,10 @@ import { getLanguage, getCustomLocalization, applyTranslation, normalizeIntl } f
 // Defaults
 // Alphabetical order
 export const Defaults = {
-    autoPause: { viewability: false },
+    autoPause: {
+        viewability: false,
+        pauseAds: false
+    },
     autostart: false,
     bandwidthEstimate: null,
     bitrateSelection: null,

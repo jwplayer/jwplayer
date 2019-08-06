@@ -364,9 +364,12 @@ Object.assign(Controller.prototype, {
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     const reason = 'viewable';
-                    if (model.get('state') === STATE_IDLE) {
+                    const autoPauseAds = model.get('autoPause').pauseAds;
+                    const pauseReason = model.get('pauseReason');
+                    if (_getState() === STATE_IDLE) {
                         _autoStart(reason);
-                    } else {
+                    } else if ((!adState || autoPauseAds) && pauseReason !== 'interaction') {
+                        // resume normal playback or ads if pauseAds is true
                         _play({ reason });
                     }
                 } else if (OS.mobile && !adState) {
@@ -388,7 +391,11 @@ Object.assign(Controller.prototype, {
             const playReason = model.get('playReason');
 
             if (adState) {
-                _pauseAfterAd(viewable);
+                if (model.get('autoPause').pauseAds) {
+                    _pauseWhenNotViewable(viewable);
+                } else {
+                    _pauseAfterAd(viewable);
+                }
             } else if (playerState === STATE_PLAYING || playerState === STATE_BUFFERING) {
                 _pauseWhenNotViewable(viewable);
             } else if (playerState === STATE_IDLE && playReason === 'playlist') {
@@ -486,10 +493,6 @@ Object.assign(Controller.prototype, {
             _model.set('playReason', playReason);
 
             const adState = _getAdState();
-            const pauseReason = _model.get('pauseReason');
-            if (adState && pauseReason === 'viewable' && playReason !== 'interaction') {
-                return;
-            }
 
             if (adState) {
                 // this will resume the ad. _api.playAd would load a new ad
