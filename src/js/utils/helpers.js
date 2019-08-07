@@ -27,6 +27,7 @@ import {
     addStyleSheet,
     bounds,
     openLink,
+    replaceInnerHtml
 } from 'utils/dom';
 import {
     css,
@@ -77,6 +78,7 @@ const helpers = Object.assign({}, parser, validator, playerutils, {
     addStyleSheet,
     bounds,
     openLink,
+    replaceInnerHtml,
     css,
     clearCss,
     style,
