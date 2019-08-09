@@ -481,7 +481,7 @@ function View(_api, _model) {
         style(aspectRatioContainer, {
             paddingTop: aspectratio || null
         });
-        if (_this.isSetup && aspectratio) {
+        if (_this.isSetup && aspectratio && !_model.get('isFloating')) {
             style(_playerElement, getPlayerSizeStyles(model.get('width')));
             _responsiveUpdate();
         }
