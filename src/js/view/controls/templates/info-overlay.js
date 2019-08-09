@@ -8,5 +8,3 @@ export default (shouldTrackUser) => (
         `${shouldTrackUser ? '<div class="jw-reset jw-info-clientid"></div>' : ''}` +
     `</div>`
 );
-
-
