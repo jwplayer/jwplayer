@@ -33,10 +33,10 @@ export default function (container, model, api, onVisibility) {
         const analytics = api.getPlugin('jwpsrv');
 
         if (analytics && typeof analytics.doNotTrackUser === 'function') {
-            return analytics.doNotTrackUser();
+            return !analytics.doNotTrackUser();
         }
 
-        // Always track user if doNotTrackUser isnt available on the ping plugin.
+        // Always track user if "doNotTrackUser" isnt available on the ping plugin.
         return true;
     }
 
