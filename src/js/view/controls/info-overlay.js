@@ -6,9 +6,7 @@ import { cloneIcon } from 'view/controls/icons';
 import { timeFormat } from 'utils/parser';
 
 export default function (container, model, api, onVisibility) {
-    const analytics = api.getPlugin('jwpsrv');
-    const shouldTrackUser = analytics && !analytics.doNotTrackUser();
-    const template = createElement(InfoOverlayTemplate(shouldTrackUser));
+    const template = createElement(InfoOverlayTemplate(shouldTrackUser()));
     const infoOverlayInteraction = 'infoOverlayInteraction';
     let appended = false;
     let lastState = null;
@@ -30,6 +28,17 @@ export default function (container, model, api, onVisibility) {
         container.appendChild(template);
         appended = true;
     };
+
+    function shouldTrackUser() {
+        const analytics = api.getPlugin('jwpsrv');
+
+        if (analytics && typeof analytics.doNotTrackUser === 'function') {
+            return analytics.doNotTrackUser();
+        }
+
+        // Always track user if doNotTrackUser isnt available on the ping plugin.
+        return true;
+    }
 
     function attachListeners() {
         const titleContainer = template.querySelector('.jw-info-title');
