@@ -408,7 +408,8 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const viewable = _model.get('viewable');
         if (autoPauseAds && didNotAutostart && !viewable) {
             // If autoPause.pauseAds is enabled and player is not viewable
-            // when skipAd() is called, do not resume playback
+            // when skipAd() is called, do not resume playback unless player
+            // was autostarted out of view and never came in to view
             this.noResume = true;
         }
 
