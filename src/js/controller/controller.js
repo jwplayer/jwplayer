@@ -346,7 +346,6 @@ Object.assign(Controller.prototype, {
         }
 
         function _pauseAfterAd(viewable) {
-            _this._instreamAdapter.noResume = !viewable;
             if (!viewable) {
                 _updatePauseReason({ reason: 'viewable' });
             }
@@ -389,9 +388,10 @@ Object.assign(Controller.prototype, {
             const playerState = model.get('state');
             const adState = _getAdState();
             const playReason = model.get('playReason');
+            const autoPauseAds = model.get('autoPause').pauseAds;
 
             if (adState) {
-                if (model.get('autoPause').pauseAds) {
+                if (autoPauseAds) {
                     _pauseWhenNotViewable(viewable);
                 } else {
                     _pauseAfterAd(viewable);
@@ -403,6 +403,10 @@ Object.assign(Controller.prototype, {
                 model.once('change:state', () => {
                     _pauseWhenNotViewable(viewable);
                 });
+            } else if (autoPauseAds && playerState === STATE_IDLE && !viewable) {
+                // When autostarting ads, instream may not be initialized
+                // so we need to check if we should pause for pauseAds
+                _pauseWhenNotViewable(viewable);
             }
         }
 
