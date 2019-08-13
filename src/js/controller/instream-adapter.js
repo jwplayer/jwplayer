@@ -403,6 +403,15 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * @return {void}
      */
     this.skipAd = function(event) {
+        const autoPauseAds = _model.get('autoPause').pauseAds;
+        const didNotAutostart = _model.get('playReason') !== 'autostart';
+        const viewable = _model.get('viewable');
+        if (autoPauseAds && didNotAutostart && !viewable) {
+            // If autoPause.pauseAds is enabled and player is not viewable
+            // when skipAd() is called, do not resume playback
+            this.noResume = true;
+        }
+
         const skipAdType = AD_SKIPPED;
         this.trigger(skipAdType, event);
         _skipAd.call(this, {
@@ -469,9 +478,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // when instream was inited and the player was not destroyed\
         _controller.attachMedia();
 
-        const autoPauseAds = _model.get('autoPause').pauseAds;
-        const playerState = _model.get('state');
-        if (this.noResume || (playerState === STATE_PAUSED) && autoPauseAds) {
+        if (this.noResume) {
             return;
         }
 
