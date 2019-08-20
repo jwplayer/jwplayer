@@ -61,5 +61,18 @@
     "unmute": "Sesi Aç",
     "videoInfo": "Bu Video Hakkında",
     "volume": "Ses",
-    "volumeSlider": "Ses Çubuğu"
+    "volumeSlider": "Ses Çubuğu",
+    "shortcuts": {
+        "playPause": "Oynat/Duraklat",
+        "volumeToggle": "Sesi Kapat/Sesi Aç",
+        "fullscreenToggle": "Tam Ekran/Tam Ekrandan Çık",
+        "seekPercent": "Sar %",
+        "keyboardShortcuts": "Canli Degil",
+        "increaseVolume": "Sesi Yükselt",
+        "decreaseVolume": "Sesi Alçalt",
+        "seekForward": "Ileri Sar",
+        "seekBackward": "Geri Sar",
+        "spacebar": "Aralık Tuşu",
+        "captionsToggle": "Alt Yazı Açık/Kapalı"
+    }
 }

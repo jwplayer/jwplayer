@@ -61,5 +61,18 @@
     "unmute": "음소거 해제",
     "videoInfo": "해당 비디오 정보",
     "volume": "음량",
-    "volumeSlider": "음량"
+    "volumeSlider": "음량",
+    "shortcuts": {
+        "playPause": "재생/정지",
+        "volumeToggle": "무음/음소거 해제",
+        "fullscreenToggle": "전체 화면/전체 화면 종료",
+        "seekPercent": "영상 앞으로 %",
+        "keyboardShortcuts": "단축키",
+        "increaseVolume": "소리 크게",
+        "decreaseVolume": "소리 작게",
+        "seekForward": "영상 앞으로",
+        "seekBackward": "영상 되돌리기",
+        "spacebar": "공백키",
+        "captionsToggle": "자막 켜기/끄기"
+    }
 }

@@ -61,5 +61,18 @@
     "unmute": "取消静音",
     "videoInfo": "关于该视频",
     "volume": "音量",
-    "volumeSlider": "音量滑块"
+    "volumeSlider": "音量滑块",
+    "shortcuts": {
+        "playPause": "播放/暂停",
+        "volumeToggle": "静音/取消静音",
+        "fullscreenToggle": "全屏/離開全螢幕",
+        "seekPercent": "跳转至%",
+        "keyboardShortcuts": "键盘快捷键",
+        "increaseVolume": "增大音量",
+        "decreaseVolume": "减小音量",
+        "seekForward": "快进5秒",
+        "seekBackward": "快退5秒",
+        "spacebar": "空格键",
+        "captionsToggle": "打开/关闭字幕"
+    }
 }

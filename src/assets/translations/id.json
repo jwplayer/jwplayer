@@ -61,5 +61,18 @@
     "unmute": "Bunyikan",
     "videoInfo": "Tentang Video Ini",
     "volume": "Volume",
-    "volumeSlider": "Volume"
+    "volumeSlider": "Volume",
+    "shortcuts": {
+        "playPause": "Putar/Jeda",
+        "volumeToggle": "Bisu/Bunyikan",
+        "fullscreenToggle": "Layar Penuh/Keluar Layar Penuh",
+        "seekPercent": "Cari %",
+        "keyboardShortcuts": "Pintasan Papan Tombol",
+        "increaseVolume": "Tambah Volume",
+        "decreaseVolume": "Kurangi Volume",
+        "seekForward": "Cari Maju",
+        "seekBackward": "Cari Mundur",
+        "spacebar": "Spasi",
+        "captionsToggle": "Subtitel Nyala/Padam"
+    }
 }

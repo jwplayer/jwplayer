@@ -61,5 +61,18 @@
     "unmute": "Bật tiếng",
     "videoInfo": "Thông tin về video này",
     "volume": "Âm lượng",
-    "volumeSlider": "Âm lượng"
+    "volumeSlider": "Âm lượng",
+    "shortcuts": {
+        "playPause": "Phát/Tạm ngừng",
+        "volumeToggle": "Tắt tiếng/Bật tiếng",
+        "fullscreenToggle": "Toàn màn hình/Thoát khỏi chế độ \"\"Toàn màn hình\"\"",
+        "seekPercent": "Tua %",
+        "keyboardShortcuts": "Phím Tắt",
+        "increaseVolume": "Tăng âm",
+        "decreaseVolume": "Giảm âm",
+        "seekForward": "Tua Tới",
+        "seekBackward": "Tua Lùi",
+        "spacebar": "Phím Cách",
+        "captionsToggle": "Phụ đề Mở/Tắt"
+    }
 }

@@ -61,5 +61,18 @@
     "unmute": "‏הפעל שמע",
     "videoInfo": "‏פרטי התוכן",
     "volume": "‏עוצמת שמע",
-    "volumeSlider": "‏עוצמת שמע"
+    "volumeSlider": "‏עוצמת שמע",
+    "shortcuts": {
+        "playPause": "‏עצור/נגן",
+        "volumeToggle": "‏הפעל שמע/השתק",
+        "fullscreenToggle": "‏יציאה ממסך מלא/מסך מלא",
+        "seekPercent": "‏% העבר קדימה",
+        "keyboardShortcuts": "‏קיצורי מקלדת",
+        "increaseVolume": "‏הגבר עוצמת שמע",
+        "decreaseVolume": "‏הנמך עוצמת שמע",
+        "seekForward": "‏העבר קדימה",
+        "seekBackward": "‏העבר אחורה",
+        "spacebar": "‏מקש רווח",
+        "captionsToggle": "‏הדלק / כבה כתוביות"
+    }
 }

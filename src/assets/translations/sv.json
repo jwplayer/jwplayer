@@ -61,5 +61,18 @@
     "unmute": "Ljud På",
     "videoInfo": "Om Denna Video",
     "volume": "Volym",
-    "volumeSlider": "Ljudvolym"
+    "volumeSlider": "Ljudvolym",
+    "shortcuts": {
+        "playPause": "Spela/Pausa",
+        "volumeToggle": "Ljud Av/Ljud På",
+        "fullscreenToggle": "Fullskärm/Stäng Helskärm",
+        "seekPercent": "Snabbspolning %",
+        "keyboardShortcuts": "Tangentbordsgenvägar",
+        "increaseVolume": "Öka Volym",
+        "decreaseVolume": "Minska Volym",
+        "seekForward": "Snabbspolning Fram",
+        "seekBackward": "Snabbspolning Bak",
+        "spacebar": "Mellanslag",
+        "captionsToggle": "Bildtexter På/Av"
+    }
 }

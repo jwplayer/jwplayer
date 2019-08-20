@@ -61,5 +61,18 @@
     "unmute": "Ääni päälle",
     "videoInfo": "Tästä videosta",
     "volume": "Äänenvoimakkuus",
-    "volumeSlider": "Äänenvoimakkuus"
+    "volumeSlider": "Äänenvoimakkuus",
+    "shortcuts": {
+        "playPause": "Toista/Keskeytä",
+        "volumeToggle": "Mykistä/Ääni päälle",
+        "fullscreenToggle": "Kokonäyttö/Poistu kokonäyttötilasta",
+        "seekPercent": "Etsi %",
+        "keyboardShortcuts": "Pikanäppäimet",
+        "increaseVolume": "Lisää äänenvoimakkuutta",
+        "decreaseVolume": "Laske äänenvoimakkuutta",
+        "seekForward": "Siirry Eteenpäin",
+        "seekBackward": "Siirry Taaksepäin",
+        "spacebar": "Välilyönti",
+        "captionsToggle": "Tekstitys Päällä/Pois"
+    }
 }

@@ -61,5 +61,18 @@
     "unmute": "‏إلغاء كتم الصوت",
     "videoInfo": "‏عن هذا الفيديو",
     "volume": "‏الصوت",
-    "volumeSlider": "‏شريط تمرير مستوى الصوت"
+    "volumeSlider": "‏شريط تمرير مستوى الصوت",
+    "shortcuts": {
+        "playPause": "‏إيقاف مؤقت/تشغيل",
+        "volumeToggle": "‏إلغاء كتم الصوت/كتم الصوت",
+        "fullscreenToggle": "‏الخروج من وضعية ملء الشاشة/شاشة كاملة",
+        "seekPercent": "‏التفدم السريع حتى %",
+        "keyboardShortcuts": "‏اختصارات لوحة المفاتيح",
+        "increaseVolume": "‏رفع الصوت",
+        "decreaseVolume": "‏خفض الصوت",
+        "seekForward": "‏التقدم للأمام",
+        "seekBackward": "‏الرجوع للخلف",
+        "spacebar": "‏مسافة",
+        "captionsToggle": "‏تشغيل/إيقاف الترجمة"
+    }
 }
