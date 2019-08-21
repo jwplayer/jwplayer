@@ -62,8 +62,8 @@ function getShortcuts(shortcuts) {
 export default function (container, api, model) {
     let isOpen = false;
     let lastState = null;
-    const shortcuts = getShortcuts(model.get('localization').shortcuts);
-    const template = createElement(shortcutTooltipTemplate(shortcuts));
+    const shortcuts = model.get('localization').shortcuts;
+    const template = createElement(shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts));
     const settingsInteraction = { reason: 'settingsInteraction' };
 
     const open = () => {
