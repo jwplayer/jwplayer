@@ -4,47 +4,65 @@ import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { STATE_PLAYING } from 'events/events';
 
-const shortcuts = [
-    {
-        key: 'SPACE',
-        description: 'play/pause'
-    },
-    {
-        key: '↑',
-        description: 'increase volume'
-    },
-    {
-        key: '↓',
-        description: 'decrease volume'
-    },
-    {
-        key: '→',
-        description: 'seek forwards'
-    },
-    {
-        key: '←',
-        description: 'seek backwards'
-    },
-    {
-        key: 'c',
-        description: 'toggle captions'
-    },
-    {
-        key: 'f',
-        description: 'toggle fullscreen',
-    },
-    {
-        key: 'm',
-        description: 'mute/unmute'
-    }, {
-        key: '0-9',
-        description: 'seek to %'
-    }
-];
+
+function getShortcuts(shortcuts) {
+    const { 
+        playPause, 
+        volumeToggle, 
+        fullscreenToggle, 
+        seekPercent, 
+        increaseVolume, 
+        decreaseVolume, 
+        seekForward, 
+        seekBackward, 
+        spacebar, 
+        captionsToggle 
+    } = shortcuts;
+
+    return [
+        {
+            key: spacebar,
+            description: playPause
+        },
+        {
+            key: '↑',
+            description: increaseVolume
+        },
+        {
+            key: '↓',
+            description: decreaseVolume
+        },
+        {
+            key: '→',
+            description: seekForward
+        },
+        {
+            key: '←',
+            description: seekBackward
+        },
+        {
+            key: 'c',
+            description: captionsToggle
+        },
+        {
+            key: 'f',
+            description: fullscreenToggle
+        },
+        {
+            key: 'm',
+            description: volumeToggle
+        }, {
+            key: '0-9',
+            description: seekPercent
+        }
+    ];
+}
+
 
 export default function (container, api, model) {
     let isOpen = false;
     let lastState = null;
+    const shortcuts = getShortcuts(model.get('localization').shortcuts);
     const template = createElement(shortcutTooltipTemplate(shortcuts));
     const settingsInteraction = { reason: 'settingsInteraction' };
 
