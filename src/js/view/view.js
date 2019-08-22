@@ -337,7 +337,7 @@ function View(_api, _model) {
         playerViewModel.change('controls', changeControls);
         _model.change('streamType', _setLiveMode);
         _model.change('mediaType', _onMediaTypeChange);
-        playerViewModel.change('playlistItem', onPlaylistItem);
+        playerViewModel.change('playlistItem', onPlaylistItem.bind(this));
         // Triggering 'resize' resulting in player 'ready'
         _lastWidth = _lastHeight = null;
         this.checkResized();
@@ -771,17 +771,17 @@ function View(_api, _model) {
         videotag.setAttribute('title', body.textContent);
     }
 
-    function setPosterImage(item) {
-        _preview.setImage(item && item.image);
-    }
+    this.setPosterImage = function(item, preview) {
+        preview.setImage(item && item.image);
+    };
 
-    function onPlaylistItem(model, item) {
-        setPosterImage(item);
+    const onPlaylistItem = (model, item) => {
+        this.setPosterImage(item, _preview);
         // Set the title attribute of the video tag to display background media information on mobile devices
         if (_isMobile) {
             setMediaTitleAttribute(model, item);
         }
-    }
+    };
 
     const settingsMenuVisible = () => {
         const settingsMenu = _controls && _controls.settingsMenu;
