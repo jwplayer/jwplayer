@@ -331,9 +331,8 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const playPromise = _adProgram.setActiveItem(_arrayIndex);
 
         _backgroundLoadTriggered = false;
-        _skipOffset = item.skipoffset || _options.skipoffset;
-        if (_skipOffset !== undefined) {
-            _this.setupSkipButton(_skipOffset, _options);
+        if (_options.skipoffset !== undefined) {
+            _this.setupSkipButton(_options.skipoffset, _options);
         }
         return playPromise;
     };
