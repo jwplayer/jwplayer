@@ -200,7 +200,7 @@ const CaptionsRenderer = function (viewModel) {
 
         let fontSize;
         if (_model.get('fullscreen') && OS.iOS) {
-            fontSize = 'inherit';
+            fontSize = null;
         } else {
             // round to 1dp to match browser precision
             const containerFontSize = height * _fontScale;
@@ -273,8 +273,16 @@ const CaptionsRenderer = function (viewModel) {
 
     function _setShadowDOMFontSize(playerId, fontSize) {
         // Set Shadow DOM font size (needs to be important to override browser's in line style)
-        _windowStyle.fontSize = fontSize + 'px';
-        css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', _windowStyle, playerId, true);
+        const selector = `#${playerId} .jw-video::-webkit-media-text-track-display`;
+        if (fontSize) {
+            fontSize += 'px';
+            if (OS.iOS) {
+                // Force layout after exiting fullscreen
+                css(selector, { fontSize: 'inherit' }, playerId, true);
+            }
+        }
+        _windowStyle.fontSize = fontSize;
+        css(selector, _windowStyle, playerId, true);
     }
 
     function _addTextStyle(textStyle, options) {
