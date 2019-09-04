@@ -6,7 +6,7 @@ import { cloneIcon } from 'view/controls/icons';
 import { timeFormat } from 'utils/parser';
 
 export default function (container, model, api, onVisibility) {
-    const template = createElement(InfoOverlayTemplate(shouldTrackUser()));
+    const template = createElement(InfoOverlayTemplate());
     const infoOverlayInteraction = 'infoOverlayInteraction';
     let appended = false;
     let lastState = null;
@@ -69,9 +69,8 @@ export default function (container, model, api, onVisibility) {
             durationContainer.textContent = durationText;
         }, instance);
 
-        if (clientIdContainer) {
-            clientIdContainer.textContent = `Client ID: ${getClientId()}`;
-        }
+    
+        clientIdContainer.textContent = shouldTrackUser() ? `Client ID: ${getClientId()}` : '';
     }
 
     const instance = {
