@@ -32,6 +32,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _arrayOptions;
     let _arrayIndex = 0;
     let _data = {};
+    let _destroyPromise = Promise.resolve();
     let _options = {};
     let _skipAd = _instreamItemNext;
     let _backgroundLoadTriggered = false;
@@ -97,6 +98,12 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
+
+        // Shaka cleans the videotag async, so wait until its destroy promise fulfills.
+        const provider = _model.get('provider');
+        if (!_model.get('backgroundLoading') && provider && provider.name === 'shaka') {
+            _destroyPromise = Promise.resolve(_model._provider.destroy());
+        }
 
         const mediaElement = _adProgram.primedElement;
         const mediaContainer = _model.get('mediaContainer');
@@ -328,7 +335,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         adModel.set('skipButton', false);
 
-        const playPromise = _adProgram.setActiveItem(_arrayIndex);
+        const playPromise = _destroyPromise.then(() => _adProgram.setActiveItem(_arrayIndex));
 
         _backgroundLoadTriggered = false;
         _skipOffset = item.skipoffset || _options.skipoffset;
