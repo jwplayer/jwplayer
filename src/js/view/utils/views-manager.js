@@ -3,6 +3,7 @@ import { Browser, OS } from 'environment/environment';
 
 const views = [];
 const widgets = [];
+const scrollHandlers = [];
 const observed = {};
 const hasOrientation = 'screen' in window && 'orientation' in window.screen;
 const isAndroidChrome = OS.android && Browser.chrome;
@@ -68,6 +69,12 @@ function removeFromGroup(view, group) {
     }
 }
 
+function onScroll(e) {
+    scrollHandlers.forEach(handler => {
+        handler(e);
+    });
+}
+
 document.addEventListener('visibilitychange', onVisibilityChange);
 document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 
@@ -78,11 +85,15 @@ if (isAndroidChrome && hasOrientation) {
 window.addEventListener('beforeunload', () => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
     document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
+    document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
+    window.removeEventListener('scroll', onScroll);
 
     if (isAndroidChrome && hasOrientation) {
         window.screen.orientation.removeEventListener('change', onOrientationChange);
     }
 });
+
+window.addEventListener('scroll', onScroll);
 
 export default {
     add: function(view) {
@@ -90,6 +101,12 @@ export default {
     },
     remove: function(view) {
         removeFromGroup(view, views);
+    },
+    addScrollHandler: function(handler) {
+        scrollHandlers.push(handler);
+    },
+    removeScrollHandler: function(handler) {
+        scrollHandlers.splice(scrollHandlers.indexOf(handler), 1);
     },
     addWidget: function(widget) {
         widgets.push(widget);

@@ -340,8 +340,48 @@ function View(_api, _model) {
         playerViewModel.change('playlistItem', onPlaylistItem);
         // Triggering 'resize' resulting in player 'ready'
         _lastWidth = _lastHeight = null;
+
+        // Setup floating scroll handler
+        if (_floatingConfig && OS.mobile) {
+            viewsManager.addScrollHandler(throttledFloatScrollHandler);
+        }
+
         this.checkResized();
     };
+
+    // Functions for handler float on scroll (mobile)
+    const topOffset = 62;
+    let canFire = true;
+    let debounceTO;
+    function checkFloatOnScroll() {
+        const floating = _model.get('isFloating');
+        const hasCrossedThreshold = playerBounds.top < topOffset ?
+            playerBounds.top <= window.scrollY :
+            playerBounds.top <= window.scrollY + topOffset;
+
+        if (!floating && hasCrossedThreshold) {
+            _updateFloating(0);
+        } else if (floating && !hasCrossedThreshold) {
+            _updateFloating(1);
+        }
+    }
+
+    function throttledFloatScrollHandler() {
+        clearTimeout(debounceTO);
+        debounceTO = setTimeout(checkFloatOnScroll, 150);
+
+        if (!canFire) {
+            return;
+        }
+
+        canFire = false;
+        checkFloatOnScroll();
+
+        setTimeout(() => {
+            canFire = true;
+        }, 50);
+    }
+    // End functions for float on scroll (mobile)
 
     function changeControls(model, enable) {
         const controlsEvent = {
@@ -880,7 +920,7 @@ function View(_api, _model) {
         const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
         _model.set('intersectionRatio', intersectionRatio);
 
-        if (_floatingConfig) {
+        if (_floatingConfig && !OS.mobile) {
             // Only start floating if player has been mostly visible at least once.
             _canFloat = _canFloat || intersectionRatio >= 0.5;
             if (_canFloat) {
@@ -1014,6 +1054,9 @@ function View(_api, _model) {
         if (this.resizeListener) {
             this.resizeListener.destroy();
             delete this.resizeListener;
+        }
+        if (_floatingConfig && OS.mobile) {
+            viewsManager.removeScrollHandler(throttledFloatScrollHandler);
         }
     };
 }
