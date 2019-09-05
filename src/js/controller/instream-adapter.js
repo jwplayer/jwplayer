@@ -331,8 +331,9 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const playPromise = _adProgram.setActiveItem(_arrayIndex);
 
         _backgroundLoadTriggered = false;
+        // Need to use item.skipoffset since _options is undefined for subsequent ads in pods
         _skipOffset = item.skipoffset || _options.skipoffset;
-        if (_skipOffset) {
+        if (_skipOffset !== undefined) {
             _this.setupSkipButton(_skipOffset, _options);
         }
         return playPromise;
