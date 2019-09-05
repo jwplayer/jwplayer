@@ -103,7 +103,8 @@ const Captions = function(_model) {
         for (let i = 0; i < _tracks.length; i++) {
             list.push({
                 id: _tracks[i]._id,
-                label: _tracks[i].name || 'Unknown CC'
+                label: _tracks[i].name || 'Unknown CC',
+                language: _tracks[i].language,
             });
         }
         return list;
