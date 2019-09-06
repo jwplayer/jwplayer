@@ -9,6 +9,7 @@ const hasOrientation = 'screen' in window && 'orientation' in window.screen;
 const isAndroidChrome = OS.android && Browser.chrome;
 
 let intersectionObserver;
+let scrollHandlerInitialized = false;
 
 function lazyInitIntersectionObserver() {
     const IntersectionObserver = window.IntersectionObserver;
@@ -85,15 +86,12 @@ if (isAndroidChrome && hasOrientation) {
 window.addEventListener('beforeunload', () => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
     document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
-    document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
     window.removeEventListener('scroll', onScroll);
 
     if (isAndroidChrome && hasOrientation) {
         window.screen.orientation.removeEventListener('change', onOrientationChange);
     }
 });
-
-window.addEventListener('scroll', onScroll);
 
 export default {
     add: function(view) {
@@ -103,6 +101,10 @@ export default {
         removeFromGroup(view, views);
     },
     addScrollHandler: function(handler) {
+        if (!scrollHandlerInitialized) {
+            scrollHandlerInitialized = true;
+            window.addEventListener('scroll', onScroll);
+        }
         scrollHandlers.push(handler);
     },
     removeScrollHandler: function(handler) {
