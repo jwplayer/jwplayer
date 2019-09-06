@@ -1,34 +1,51 @@
-// import InfoOverlay from 'view/controls/info-overlay';
-// import MockModel from 'mock/mock-model';
-// import MockApi from 'mock/mock-api';
-// import { registerPlugin } from 'plugins/plugins';
+import InfoOverlay from 'view/controls/info-overlay';
+import MockModel from 'mock/mock-model';
+import MockApi from 'mock/mock-api';
 
+describe('Info Overlay Client ID', function () {
+    let model = new MockModel();
+    model.setup({});
 
-// describe('Info Overlay Client ID', function () {
-//     let element;
-//     let model;
-//     let api;
-//     let infoOverlay;
+    function noop () {}
 
-//     function noop () {}
+    function createAPI(doNotTrackUser) {
+        let api = new MockApi();
+        let oldGetPlugin = api.getPlugin;
+        api.getPlugin = function(name) {
+            if (name === 'jwpsrv') {
+                return {
+                    doNotTrackUser: () => doNotTrackUser
+                };
+            } else {
+                return oldGetPlugin(name);
+            }
+        };
+        return api;
+    }
 
-//     function PluginClass () {}
+    afterEach(() => {
+        localStorage.removeItem('jwplayerLocalId');
+    });
 
-//     PluginClass.prototype.doNotTrackUser = function () {
-//         return model.get('doNotTrack');
-//     };
-    
-//     beforeEach(function () {
-//         infoOverlay = new InfoOverlay(element, model, api, noop);
-//         api = new MockApi();
-//         model = new MockModel();
-//         element = document.createElement('div');
+    it('should not show client id in the info overlay if doNotTrackUser returns true', function() {
+        let api = createAPI(true);
+        let element = document.createElement('div');
+        let infoOverlay = new InfoOverlay(element, model, api, noop);
+        document.body.appendChild(element);
+        expect(api.getPlugin('jwpsrv').doNotTrackUser()).to.be.true;
+        infoOverlay.open();
+        expect(element.querySelector('.jw-info-clientid').innerText).to.eql('');
 
-//         model.setup({ doNotTrack: true });
-//     });
+    });
+    it('should show client id in the info overlay if doNotTrackUser returns false', function() {
+        localStorage.setItem('jwplayerLocalId', 'test123');
 
-//     it('should not show client id in the info overlay if doNotTrackUser returns true', function() {
-//         registerPlugin('jwpsrv', '8.0', new PluginClass());
-
-//     });
-// });
+        let api = createAPI(false);
+        let element = document.createElement('div');
+        let infoOverlay = new InfoOverlay(element, model, api, noop);
+        document.body.appendChild(element);
+        expect(api.getPlugin('jwpsrv').doNotTrackUser()).to.be.false;
+        infoOverlay.open();
+        expect(element.querySelector('.jw-info-clientid').innerText).to.eql('Client ID: test123');
+    });
+});
