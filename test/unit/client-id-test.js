@@ -3,14 +3,14 @@ import MockModel from 'mock/mock-model';
 import MockApi from 'mock/mock-api';
 
 describe('Info Overlay Client ID', function () {
-    let model = new MockModel();
+    const model = new MockModel();
     model.setup({});
 
     function noop () {}
 
     function createAPI(doNotTrackUser) {
-        let api = new MockApi();
-        let oldGetPlugin = api.getPlugin;
+        const api = new MockApi();
+        const oldGetPlugin = api.getPlugin;
         api.getPlugin = function(name) {
             if (name === 'jwpsrv') {
                 return {
@@ -28,9 +28,9 @@ describe('Info Overlay Client ID', function () {
     });
 
     it('should not show client id in the info overlay if doNotTrackUser returns true', function() {
-        let api = createAPI(true);
-        let element = document.createElement('div');
-        let infoOverlay = new InfoOverlay(element, model, api, noop);
+        const api = createAPI(true);
+        const element = document.createElement('div');
+        const infoOverlay = new InfoOverlay(element, model, api, noop);
         document.body.appendChild(element);
         expect(api.getPlugin('jwpsrv').doNotTrackUser()).to.be.true;
         infoOverlay.open();
@@ -40,9 +40,9 @@ describe('Info Overlay Client ID', function () {
     it('should show client id in the info overlay if doNotTrackUser returns false', function() {
         localStorage.setItem('jwplayerLocalId', 'test123');
 
-        let api = createAPI(false);
-        let element = document.createElement('div');
-        let infoOverlay = new InfoOverlay(element, model, api, noop);
+        const api = createAPI(false);
+        const element = document.createElement('div');
+        const infoOverlay = new InfoOverlay(element, model, api, noop);
         document.body.appendChild(element);
         expect(api.getPlugin('jwpsrv').doNotTrackUser()).to.be.false;
         infoOverlay.open();
