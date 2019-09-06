@@ -29,6 +29,17 @@ export default function (container, model, api, onVisibility) {
         appended = true;
     };
 
+    function shouldTrackUser() {
+        const analytics = api.getPlugin('jwpsrv');
+
+        if (analytics && typeof analytics.doNotTrackUser === 'function') {
+            return !analytics.doNotTrackUser();
+        }
+
+        // Always track user if "doNotTrackUser" isnt available on the ping plugin.
+        return true;
+    }
+
     function attachListeners() {
         const titleContainer = template.querySelector('.jw-info-title');
         const durationContainer = template.querySelector('.jw-info-duration');
@@ -57,7 +68,9 @@ export default function (container, model, api, onVisibility) {
             }
             durationContainer.textContent = durationText;
         }, instance);
-        clientIdContainer.textContent = `Client ID: ${getClientId()}`;
+
+    
+        clientIdContainer.textContent = shouldTrackUser() ? `Client ID: ${getClientId()}` : '';
     }
 
     const instance = {
