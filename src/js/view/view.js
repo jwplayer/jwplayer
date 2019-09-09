@@ -15,7 +15,7 @@ import {
 import Events from 'utils/backbone.events';
 import {
     addClass,
-    browserIsLandscape,
+    deviceIsLandscape,
     hasClass,
     removeClass,
     replaceClass,
@@ -98,7 +98,7 @@ function View(_api, _model) {
     }
 
     function fosMobileBehavior() {
-        return OS.mobile && !browserIsLandscape();
+        return OS.mobile && !deviceIsLandscape();
     }
 
     // Compute player size, handle DOM removal/insertion, add to views-manager

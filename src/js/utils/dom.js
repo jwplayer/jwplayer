@@ -225,6 +225,11 @@ export function openLink(link, target, additionalOptions = {}) {
     }
 }
 
-export function browserIsLandscape() {
-    return window.innerWidth > window.innerHeight;
+export function deviceIsLandscape() {
+    const ort = window.screen.orientation;
+    const isLandscape = ort ?
+        ort.type === 'landscape-primary' || ort.type === 'landscape-secondary'
+        : false;
+
+    return isLandscape || (window.orientation === 90 || window.orientation === -90);
 }

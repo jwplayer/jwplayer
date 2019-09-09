@@ -1,5 +1,6 @@
 import activeTab from 'utils/active-tab';
 import { Browser, OS } from 'environment/environment';
+import { deviceIsLandscape } from 'utils/dom';
 
 const views = [];
 const widgets = [];
@@ -46,8 +47,7 @@ function onOrientationChange() {
         }
 
         const state = model.get('state');
-        const orientation = window.screen.orientation.type;
-        const isLandscape = orientation === 'landscape-primary' || orientation === 'landscape-secondary';
+        const isLandscape = deviceIsLandscape();
 
         if (!isLandscape && state === 'paused' && view.api.getFullscreen()) {
             view.api.setFullscreen(false);
