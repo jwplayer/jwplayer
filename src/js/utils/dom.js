@@ -224,3 +224,7 @@ export function openLink(link, target, additionalOptions = {}) {
         a.click();
     }
 }
+
+export function browserIsLandscape() {
+    return window.innerWidth > window.innerHeight;
+}

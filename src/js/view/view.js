@@ -15,6 +15,7 @@ import {
 import Events from 'utils/backbone.events';
 import {
     addClass,
+    browserIsLandscape,
     hasClass,
     removeClass,
     replaceClass,
@@ -96,6 +97,10 @@ function View(_api, _model) {
         return { reason: 'interaction' };
     }
 
+    function fosMobileBehavior() {
+        return OS.mobile && !browserIsLandscape();
+    }
+
     // Compute player size, handle DOM removal/insertion, add to views-manager
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
@@ -149,6 +154,11 @@ function View(_api, _model) {
 
         _resizeMedia(containerWidth, containerHeight);
         _captionsRenderer.resize();
+
+
+        if (_floatingConfig) {
+            throttledMobileFloatScrollHandler();
+        }
     };
 
     // Dispatch UI events for changes in player size
@@ -343,7 +353,13 @@ function View(_api, _model) {
 
         // Setup floating scroll handler
         if (_floatingConfig && OS.mobile) {
-            viewsManager.addScrollHandler(throttledFloatScrollHandler);
+            _model.change('inDom', (model, val) => {
+                if (val) {
+                    viewsManager.addScrollHandler(throttledMobileFloatScrollHandler);
+                } else {
+                    viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
+                }
+            });
         }
 
         this.checkResized();
@@ -367,7 +383,10 @@ function View(_api, _model) {
         }
     }
 
-    function throttledFloatScrollHandler() {
+    function throttledMobileFloatScrollHandler() {
+        if (!fosMobileBehavior()) {
+            return;
+        }
         clearTimeout(debounceTO);
         debounceTO = setTimeout(checkFloatOnScroll, 150);
 
@@ -921,7 +940,7 @@ function View(_api, _model) {
         const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
         _model.set('intersectionRatio', intersectionRatio);
 
-        if (_floatingConfig && !OS.mobile) {
+        if (_floatingConfig && !fosMobileBehavior()) {
             // Only start floating if player has been mostly visible at least once.
             _canFloat = _canFloat || intersectionRatio >= 0.5;
             if (_canFloat) {
@@ -1093,7 +1112,7 @@ function View(_api, _model) {
             delete this.resizeListener;
         }
         if (_floatingConfig && OS.mobile) {
-            viewsManager.removeScrollHandler(throttledFloatScrollHandler);
+            viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
         }
     };
 }

@@ -20,14 +20,28 @@ describe('ViewsManager', function() {
         it('initializes the scroll handler and calls the added handler', () => {
             mock = sinon.spy();
             ViewsManager.addScrollHandler(mock);
-            
+
             var event = document.createEvent('Event');
             event.initEvent('scroll', true, true);
             window.dispatchEvent(event);
 
             expect(mock.called).to.be.true;
         });
-        after(() => {
+        it('only adds a scrolling function one time', () => {
+            mock = sinon.spy();
+            ViewsManager.addScrollHandler(mock);
+            ViewsManager.addScrollHandler(mock);
+            ViewsManager.addScrollHandler(mock);
+            ViewsManager.addScrollHandler(mock);
+            ViewsManager.addScrollHandler(mock);
+
+            var event = document.createEvent('Event');
+            event.initEvent('scroll', true, true);
+            window.dispatchEvent(event);
+
+            expect(mock.callCount).to.eql(1);;
+        });
+        afterEach(() => {
             ViewsManager.removeScrollHandler(mock);
         })
     });
@@ -36,7 +50,7 @@ describe('ViewsManager', function() {
         it('removes the expected handler', () => {
             mock = sinon.spy();
             ViewsManager.addScrollHandler(mock);
-            
+
             var event = document.createEvent('Event');
             event.initEvent('scroll', true, true);
             window.dispatchEvent(event);

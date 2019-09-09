@@ -105,7 +105,9 @@ export default {
             scrollHandlerInitialized = true;
             window.addEventListener('scroll', onScroll);
         }
-        scrollHandlers.push(handler);
+        if (scrollHandlers.indexOf(handler) === -1) {
+            scrollHandlers.push(handler);
+        }
     },
     removeScrollHandler: function(handler) {
         scrollHandlers.splice(scrollHandlers.indexOf(handler), 1);
