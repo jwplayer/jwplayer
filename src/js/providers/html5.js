@@ -524,7 +524,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             });
         }
         if (_levels.length && _levels[0].type !== 'hls') {
-            _this.sendMediaType(_levels);
+            _setMediaType();
         }
     }
 
@@ -897,11 +897,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _setMediaType() {
-        // Send mediaType when format is HLS. Other types are handled earlier by default.js.
-        if (_levels[0].type === 'hls') {
-            const mediaType = isAudioStream() ? 'audio' : 'video';
-            _this.trigger(MEDIA_TYPE, { mediaType });
-        }
+        const mediaType = isAudioStream() ? 'audio' : 'video';
+        _this.trigger(MEDIA_TYPE, { mediaType });
     }
 
     // If we're live and the buffer end has remained the same for some time, mark the stream as stale and check if the stream is over
