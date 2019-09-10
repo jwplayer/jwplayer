@@ -5,7 +5,7 @@ export default (shortcuts, title) => {
         return (
             `<div class="jw-shortcuts-row">` +
                 `<span class="jw-shortcuts-description">${shortcut.description}</span>` +
-                `<span class="jw-shortcuts-key jw-hotkey">${shortcut.key}</span>` +
+                `<span class="jw-shortcuts-key">${shortcut.key}</span>` +
             `</div>`
         );
     }).join('');
