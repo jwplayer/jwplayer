@@ -27,23 +27,6 @@ describe('ViewsManager', function() {
 
             expect(mock.called).to.be.true;
         });
-        it('only adds a scrolling function one time', () => {
-            mock = sinon.spy();
-            ViewsManager.addScrollHandler(mock);
-            ViewsManager.addScrollHandler(mock);
-            ViewsManager.addScrollHandler(mock);
-            ViewsManager.addScrollHandler(mock);
-            ViewsManager.addScrollHandler(mock);
-
-            var event = document.createEvent('Event');
-            event.initEvent('scroll', true, true);
-            window.dispatchEvent(event);
-
-            expect(mock.callCount).to.eql(1);;
-        });
-        afterEach(() => {
-            ViewsManager.removeScrollHandler(mock);
-        })
     });
     describe('#removeScrollHandler', () => {
         let mock;
@@ -62,6 +45,16 @@ describe('ViewsManager', function() {
             window.dispatchEvent(event);
 
             expect(mock.callCount).to.eql(1);
+        });
+        it('does not break if the handler doesnt exist', () => {
+            mock = sinon.spy();
+            ViewsManager.removeScrollHandler(mock);
+            var event = document.createEvent('Event');
+            event.initEvent('scroll', true, true);
+            window.dispatchEvent(event);
+            window.dispatchEvent(event);
+
+            expect(mock.callCount).to.eql(0);
         });
         after(() => {
             // In case the test case breaks out, clean up

@@ -353,13 +353,7 @@ function View(_api, _model) {
 
         // Setup floating scroll handler
         if (_floatingConfig && OS.mobile) {
-            _model.change('inDom', (model, val) => {
-                if (val) {
-                    viewsManager.addScrollHandler(throttledMobileFloatScrollHandler);
-                } else {
-                    viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
-                }
-            });
+            viewsManager.addScrollHandler(throttledMobileFloatScrollHandler);
         }
 
         this.checkResized();
@@ -384,7 +378,7 @@ function View(_api, _model) {
     }
 
     function throttledMobileFloatScrollHandler() {
-        if (!fosMobileBehavior()) {
+        if (!fosMobileBehavior() || !_model.get('inDom')) {
             return;
         }
         clearTimeout(debounceTO);

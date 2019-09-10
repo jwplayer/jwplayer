@@ -105,12 +105,14 @@ export default {
             scrollHandlerInitialized = true;
             window.addEventListener('scroll', onScroll);
         }
-        if (scrollHandlers.indexOf(handler) === -1) {
-            scrollHandlers.push(handler);
-        }
+
+        scrollHandlers.push(handler);
     },
     removeScrollHandler: function(handler) {
-        scrollHandlers.splice(scrollHandlers.indexOf(handler), 1);
+        let idx = scrollHandlers.indexOf(handler);
+        if (idx !== -1) {
+            scrollHandlers.splice(idx, 1);
+        }
     },
     addWidget: function(widget) {
         widgets.push(widget);
