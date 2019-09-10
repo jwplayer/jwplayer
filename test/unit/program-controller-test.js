@@ -165,7 +165,7 @@ describe('ProgramController', function () {
             .then(function () {
                 const provider = programController.mediaController.provider;
 
-                programController.attached = false;
+                programController.setAttached(false);
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
@@ -215,12 +215,12 @@ describe('ProgramController', function () {
             .then(function () {
                 const provider = programController.mediaController.provider;
 
-                programController.attached = false;
+                programController.setAttached(false);
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
                 expect(callback).to.have.callCount(0);
-                programController.attached = true;
+                programController.setAttached(true);
                 expectAllEventsTriggered(callback);
             });
     });
@@ -318,7 +318,7 @@ describe('ProgramController', function () {
             .then(function () {
                 const provider = programController.mediaController.provider;
 
-                programController.attached = false;
+                programController.setAttached(false);
                 sandbox.spy(model, 'set');
                 sandbox.spy(model, 'trigger');
                 sandbox.spy(model, 'persistQualityLevel');
@@ -366,7 +366,7 @@ describe('ProgramController', function () {
             .then(function () {
                 const provider = programController.mediaController.provider;
 
-                programController.attached = false;
+                programController.setAttached(false);
                 sandbox.spy(model, 'set');
                 sandbox.spy(model, 'trigger');
                 sandbox.spy(model, 'persistQualityLevel');
@@ -378,7 +378,7 @@ describe('ProgramController', function () {
                 expect(model.trigger).to.have.callCount(0);
                 expect(model.persistQualityLevel).to.have.callCount(0);
                 expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
-                programController.attached = true;
+                programController.setAttached(true);
                 expect(model.set).to.have.callCount(5);
                 expect(model.trigger).to.have.callCount(6);
                 expect(model.persistQualityLevel).to.have.callCount(1);

@@ -6,9 +6,7 @@ const VideoAttachedMixin = {
     },
 
     detachMedia() {
-        this.eventsOff_();
-
-        return this.video;
+        return this.eventsOff_();
     }
 };
 

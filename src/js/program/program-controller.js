@@ -98,6 +98,38 @@ class ProgramController extends Events {
         return this.loadPromise;
     }
 
+
+    /**
+     * Attaches or detaches the current media
+     * @param {boolean} shouldAttach - Attach or detach?
+     * @returns {Promise|void} A detach promise. Resolves when media is detached.
+     */
+    setAttached(shouldAttach) {
+        const { mediaController } = this;
+
+        this.attached = shouldAttach;
+
+        if (!mediaController) {
+            return;
+        }
+
+        if (shouldAttach) {
+            mediaController.attach();
+        } else {
+            const result = mediaController.detach();
+
+            const { item, mediaModel } = mediaController;
+
+            // If detaching to play a midroll (pos > 0), ensure that the player resumes at the detached time by setting starttime
+            // We don't need to do this for prerolls because the player re-attaches at time 0 by default
+            const pos = mediaModel.get('position');
+            if (pos) {
+                item.starttime = pos;
+            }
+            return result;
+        }
+    }
+
     /**
      * Plays the active item.
      * Will wait for the Provider promise to resolve before any play attempt.
@@ -562,34 +594,6 @@ class ProgramController extends Events {
         }
 
         return mediaController.qualities;
-    }
-
-    /**
-     * Attaches or detaches the current media
-     * @param {boolean} shouldAttach - Attach or detach?
-     * @returns {void}
-     */
-    set attached(shouldAttach) {
-        const { mediaController } = this;
-
-        if (!mediaController) {
-            return;
-        }
-
-        if (shouldAttach) {
-            mediaController.attach();
-        } else {
-            mediaController.detach();
-
-            const { item, mediaModel } = mediaController;
-
-            // If detaching to play a midroll (pos > 0), ensure that the player resumes at the detached time by setting starttime
-            // We don't need to do this for prerolls because the player re-attaches at time 0 by default
-            const pos = mediaModel.get('position');
-            if (pos) {
-                item.starttime = pos;
-            }
-        }
     }
 
     /**

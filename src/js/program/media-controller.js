@@ -106,8 +106,9 @@ export default class MediaController extends Events {
     detach() {
         const { provider } = this;
         this.thenPlayPromise.cancel();
-        provider.detachMedia();
+        const result = provider.detachMedia();
         this.attached = false;
+        return result;
     }
 
     // Extends the playPromise

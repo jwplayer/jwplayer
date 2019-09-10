@@ -813,7 +813,7 @@ Object.assign(Controller.prototype, {
             if (_backgroundLoading) {
                 _programController.backgroundActiveMedia();
             } else {
-                _programController.attached = false;
+                return _programController.setAttached(false);
             }
         }
 
@@ -823,7 +823,7 @@ Object.assign(Controller.prototype, {
             if (_backgroundLoading) {
                 _programController.restoreBackgroundMedia();
             } else {
-                _programController.attached = true;
+                _programController.setAttached(true);
             }
 
             if (typeof _actionOnAttach === 'function') {

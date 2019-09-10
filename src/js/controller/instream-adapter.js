@@ -32,6 +32,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _arrayOptions;
     let _arrayIndex = 0;
     let _data = {};
+    let _detachPromise = null;
     let _options = {};
     let _skipAd = _instreamItemNext;
     let _backgroundLoadTriggered = false;
@@ -96,7 +97,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.on(PLAYER_STATE, _handleStateChange, this);
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
-        _controller.detachMedia();
+        _detachPromise = _controller.detachMedia();
 
         const mediaElement = _adProgram.primedElement;
         const mediaContainer = _model.get('mediaContainer');
@@ -328,7 +329,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         adModel.set('skipButton', false);
 
-        const playPromise = _adProgram.setActiveItem(_arrayIndex);
+        // Await detachment if video tag is shared.
+        const playPromise = !_model.get('backgroundLoading') && _detachPromise
+            ? _detachPromise.then(() => _adProgram.setActiveItem(_arrayIndex))
+            : _adProgram.setActiveItem(_arrayIndex);
 
         _backgroundLoadTriggered = false;
         // Need to use item.skipoffset since _options is undefined for subsequent ads in pods
@@ -471,6 +475,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         _adProgram = null;
         _data = { };
+        _detachPromise = null;
 
         if (!_inited || _model.attributes._destroyed) {
             return;
