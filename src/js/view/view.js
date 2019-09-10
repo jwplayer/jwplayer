@@ -63,7 +63,7 @@ function View(_api, _model) {
     const _videoLayer = _playerElement.querySelector('.jw-media');
     const _floatingUI = new FloatingDragUI(_wrapperElement);
 
-    const _preview = new Preview(_model);
+    const _preview = new Preview(_model, _api);
     const _title = new Title(_model);
 
     const _captionsRenderer = new CaptionsRenderer(_model);
