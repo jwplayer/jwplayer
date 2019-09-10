@@ -50,10 +50,10 @@
 
     .jw-shortcuts-tooltip-list {
         display: flex;
+        max-width: 340px;
         font-size: 12px;
         margin-left: 10px;
         margin-right: 10px;
-        max-width: 340px;
 
         .jw-shortcuts-row {
             display: flex;
@@ -72,6 +72,7 @@
                     color: @rightclick-secondary-text;
                     overflow: hidden;
                     padding: 7px 10px;
+                    text-overflow: ellipsis;
                     white-space: nowrap;
                 }
             }
