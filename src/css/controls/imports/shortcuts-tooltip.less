@@ -50,35 +50,30 @@
 
     .jw-shortcuts-tooltip-list {
         display: flex;
+        font-size: 12px;
+        margin-left: 10px;
+        margin-right: 10px;
         max-width: 340px;
 
-        .jw-shortcuts-tooltip-descriptions {
-            list-style: none;
-            padding-left: 0;
-            font-size: 12px;
-            margin-right: 20px;
-            margin-left: 10px;
-            padding-top: 5px;
-            white-space: nowrap;
-            overflow: auto;
-        }
+        .jw-shortcuts-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
 
-        .jw-shortcuts-tooltip-keys {
-            list-style: none;
-            font-size: 12px;
-            padding-top: 5px;
-
-            .jw-hotkey {
-                color: @rightclick-secondary-text;
-                background: @rightclick-secondary-bg;
-                padding: 7px 10px;
+            .jw-shortcuts-description {
+                margin-right: 10px;
+                max-width: 70%;
             }
-        }
 
-        .jw-shortcuts-tooltip-keys,
-        .jw-shortcuts-tooltip-descriptions {
-            div {
-                line-height: 34px;
+            .jw-shortcuts-key {
+                &.jw-hotkey {
+                    background: @rightclick-secondary-bg;
+                    color: @rightclick-secondary-text;
+                    overflow: hidden;
+                    padding: 7px 10px;
+                    white-space: nowrap;
+                }
             }
         }
     }
