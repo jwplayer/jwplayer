@@ -15,6 +15,7 @@ import {
 import Events from 'utils/backbone.events';
 import {
     addClass,
+    deviceIsLandscape,
     hasClass,
     removeClass,
     replaceClass,
@@ -96,6 +97,10 @@ function View(_api, _model) {
         return { reason: 'interaction' };
     }
 
+    function fosMobileBehavior() {
+        return OS.mobile && !deviceIsLandscape();
+    }
+
     // Compute player size, handle DOM removal/insertion, add to views-manager
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
@@ -149,6 +154,11 @@ function View(_api, _model) {
 
         _resizeMedia(containerWidth, containerHeight);
         _captionsRenderer.resize();
+
+
+        if (_floatingConfig) {
+            throttledMobileFloatScrollHandler();
+        }
     };
 
     // Dispatch UI events for changes in player size
@@ -340,8 +350,52 @@ function View(_api, _model) {
         playerViewModel.change('playlistItem', onPlaylistItem);
         // Triggering 'resize' resulting in player 'ready'
         _lastWidth = _lastHeight = null;
+
+        // Setup floating scroll handler
+        if (_floatingConfig && OS.mobile) {
+            viewsManager.addScrollHandler(throttledMobileFloatScrollHandler);
+        }
+
         this.checkResized();
     };
+
+    // Functions for handler float on scroll (mobile)
+    const FLOATING_TOP_OFFSET = 62;
+    let canFire = true;
+    let debounceTO;
+    function checkFloatOnScroll() {
+        const floating = _model.get('isFloating');
+        const enoughRoomForFloat = playerBounds.top < FLOATING_TOP_OFFSET;
+        const hasCrossedThreshold = enoughRoomForFloat ?
+            playerBounds.top <= window.scrollY :
+            playerBounds.top <= window.scrollY + FLOATING_TOP_OFFSET;
+
+        if (!floating && hasCrossedThreshold) {
+            _updateFloating(0, enoughRoomForFloat);
+        } else if (floating && !hasCrossedThreshold) {
+            _updateFloating(1, enoughRoomForFloat);
+        }
+    }
+
+    function throttledMobileFloatScrollHandler() {
+        if (!fosMobileBehavior() || !_model.get('inDom')) {
+            return;
+        }
+        clearTimeout(debounceTO);
+        debounceTO = setTimeout(checkFloatOnScroll, 150);
+
+        if (!canFire) {
+            return;
+        }
+
+        canFire = false;
+        checkFloatOnScroll();
+
+        setTimeout(() => {
+            canFire = true;
+        }, 50);
+    }
+    // End functions for float on scroll (mobile)
 
     function changeControls(model, enable) {
         const controlsEvent = {
@@ -880,7 +934,7 @@ function View(_api, _model) {
         const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
         _model.set('intersectionRatio', intersectionRatio);
 
-        if (_floatingConfig) {
+        if (_floatingConfig && !fosMobileBehavior()) {
             // Only start floating if player has been mostly visible at least once.
             _canFloat = _canFloat || intersectionRatio >= 0.5;
             if (_canFloat) {
@@ -893,7 +947,7 @@ function View(_api, _model) {
         return _model.get('isFloating') ? _wrapperElement : _playerElement;
     }
 
-    function _updateFloating(intersectionRatio) {
+    function _updateFloating(intersectionRatio, mobileFloatIntoPlace) {
         // Player is 50% visible or less and no floating player already in the DOM. Player is not in iframe
         const shouldFloat = intersectionRatio < 0.5 && !isIframe();
         if (shouldFloat) {
@@ -904,6 +958,22 @@ function View(_api, _model) {
                 _model.set('isFloating', true);
 
                 addClass(_playerElement, 'jw-flag-floating');
+
+                if (mobileFloatIntoPlace) {
+                    // Creates a dynamic animation where the top of the current player
+                    // Smoothly transitions into the expected floating space in the event
+                    // we can't start floating at 62px
+                    style(_wrapperElement, {
+                        transform: `translateY(-${FLOATING_TOP_OFFSET - playerBounds.top}px)`
+                    });
+
+                    setTimeout(() => {
+                        style(_wrapperElement, {
+                            transform: 'translateY(0)',
+                            transition: 'transform 150ms cubic-bezier(0, 0.25, 0.25, 1)'
+                        });
+                    });
+                }
 
                 // Copy background from preview element, fallback to image config.
                 style(_playerElement, {
@@ -920,7 +990,7 @@ function View(_api, _model) {
                 _responsiveListener();
             }
         } else {
-            _this.stopFloating();
+            _this.stopFloating(false, mobileFloatIntoPlace);
         }
     }
 
@@ -945,30 +1015,50 @@ function View(_api, _model) {
         style(_wrapperElement, styles);
     }
 
-    this.stopFloating = function(forever) {
+    this.stopFloating = function(forever, mobileFloatIntoPlace) {
         if (forever) {
             _floatingConfig = null;
         }
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
-
             _model.set('isFloating', false);
 
-            removeClass(_playerElement, 'jw-flag-floating');
-            onAspectRatioChange(_model, _model.get('aspectratio'));
+            const resetFloatingStyles = () => {
+                removeClass(_playerElement, 'jw-flag-floating');
+                onAspectRatioChange(_model, _model.get('aspectratio'));
 
-            // Wrapper should inherit from parent unless floating.
-            style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
-            style(_wrapperElement, {
-                maxWidth: null,
-                width: null,
-                height: null,
-                left: null,
-                right: null,
-                top: null,
-                bottom: null,
-                margin: null
-            });
+                // Wrapper should inherit from parent unless floating.
+                style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
+
+                style(_wrapperElement, {
+                    maxWidth: null,
+                    width: null,
+                    height: null,
+                    left: null,
+                    right: null,
+                    top: null,
+                    bottom: null,
+                    margin: null,
+                    transform: null,
+                    transition: null,
+                    'transition-timing-function': null
+                });
+            };
+
+            if (mobileFloatIntoPlace) {
+                // Reverses a dynamic animation where the top of the current player
+                // Smoothly transitions into the expected static space in the event
+                // we didn't start floating at 62px
+                style(_wrapperElement, {
+                    transform: `translateY(-${FLOATING_TOP_OFFSET - playerBounds.top}px)`,
+                    'transition-timing-function': 'ease-out'
+                });
+
+                setTimeout(resetFloatingStyles, 150);
+            } else {
+                resetFloatingStyles();
+            }
+
             _floatingUI.disable();
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
@@ -1014,6 +1104,9 @@ function View(_api, _model) {
         if (this.resizeListener) {
             this.resizeListener.destroy();
             delete this.resizeListener;
+        }
+        if (_floatingConfig && OS.mobile) {
+            viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
         }
     };
 }

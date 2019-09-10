@@ -1,13 +1,16 @@
 import activeTab from 'utils/active-tab';
 import { Browser, OS } from 'environment/environment';
+import { deviceIsLandscape } from 'utils/dom';
 
 const views = [];
 const widgets = [];
+const scrollHandlers = [];
 const observed = {};
 const hasOrientation = 'screen' in window && 'orientation' in window.screen;
 const isAndroidChrome = OS.android && Browser.chrome;
 
 let intersectionObserver;
+let scrollHandlerInitialized = false;
 
 function lazyInitIntersectionObserver() {
     const IntersectionObserver = window.IntersectionObserver;
@@ -44,8 +47,7 @@ function onOrientationChange() {
         }
 
         const state = model.get('state');
-        const orientation = window.screen.orientation.type;
-        const isLandscape = orientation === 'landscape-primary' || orientation === 'landscape-secondary';
+        const isLandscape = deviceIsLandscape();
 
         if (!isLandscape && state === 'paused' && view.api.getFullscreen()) {
             view.api.setFullscreen(false);
@@ -68,6 +70,12 @@ function removeFromGroup(view, group) {
     }
 }
 
+function onScroll(e) {
+    scrollHandlers.forEach(handler => {
+        handler(e);
+    });
+}
+
 document.addEventListener('visibilitychange', onVisibilityChange);
 document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 
@@ -78,6 +86,7 @@ if (isAndroidChrome && hasOrientation) {
 window.addEventListener('beforeunload', () => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
     document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
+    window.removeEventListener('scroll', onScroll);
 
     if (isAndroidChrome && hasOrientation) {
         window.screen.orientation.removeEventListener('change', onOrientationChange);
@@ -90,6 +99,20 @@ export default {
     },
     remove: function(view) {
         removeFromGroup(view, views);
+    },
+    addScrollHandler: function(handler) {
+        if (!scrollHandlerInitialized) {
+            scrollHandlerInitialized = true;
+            window.addEventListener('scroll', onScroll);
+        }
+
+        scrollHandlers.push(handler);
+    },
+    removeScrollHandler: function(handler) {
+        let idx = scrollHandlers.indexOf(handler);
+        if (idx !== -1) {
+            scrollHandlers.splice(idx, 1);
+        }
     },
     addWidget: function(widget) {
         widgets.push(widget);
