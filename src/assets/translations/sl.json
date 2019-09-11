@@ -61,5 +61,18 @@
     "unmute": "vklopi zvok",
     "videoInfo": "O tem videu",
     "volume": "Glasnost",
-    "volumeSlider": "Glasnost"
+    "volumeSlider": "Glasnost",
+    "shortcuts": {
+        "playPause": "Predvajaj/Premor",
+        "volumeToggle": "Utišaj/vklopi zvok",
+        "fullscreenToggle": "Celozaslonski pogled/Izhod iz celozaslonskega pogleda",
+        "seekPercent": "Išči %",
+        "keyboardShortcuts": "Bližnjice na Tipkovnici",
+        "increaseVolume": "Povečaj Glasnost",
+        "decreaseVolume": "Zmanjšaj Glasnost",
+        "seekForward": "Išči Naprej",
+        "seekBackward": "Išči Nazaj",
+        "spacebar": "Presledek",
+        "captionsToggle": "Podnapisi Vklop/Izklop"
+    }
 }

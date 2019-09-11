@@ -61,5 +61,18 @@
     "unmute": "เปิดเสียง",
     "videoInfo": "เกี่ยวกับวิดีโอนี้",
     "volume": "ระดับเสียง",
-    "volumeSlider": "ระดับเสียง"
+    "volumeSlider": "ระดับเสียง",
+    "shortcuts": {
+        "playPause": "เล่น/หยุดชั่วครู่",
+        "volumeToggle": "ปิดเสียง/เปิดเสียง",
+        "fullscreenToggle": "หน้าจอเต็ม/ออกจากหน้าจอเต็ม",
+        "seekPercent": "ค้นหา %",
+        "keyboardShortcuts": "คำสั่งลับของคีย์บอร์ด",
+        "increaseVolume": "เพิ่มเสียง",
+        "decreaseVolume": "ลดเสียง",
+        "seekForward": "ค้นหาข้างหน้า",
+        "seekBackward": "ค้นหาย้อนหลัง",
+        "spacebar": "เว้นวรรค",
+        "captionsToggle": "เปิด / ปิด คำบรรยาย"
+    }
 }

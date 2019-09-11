@@ -61,5 +61,18 @@
     "unmute": "Stummschaltung Deaktivieren",
     "videoInfo": "Über Dieses Video",
     "volume": "Lautstärke",
-    "volumeSlider": "Lautstärkeregler"
+    "volumeSlider": "Lautstärkeregler",
+    "shortcuts": {
+        "playPause": "Spielen/Pause",
+        "volumeToggle": "Summ Schalten/Stummschaltung Deaktivieren",
+        "fullscreenToggle": "Vollbild/Vollbild Beenden",
+        "seekPercent": "Gehe zu %",
+        "keyboardShortcuts": "Tastaturkürzel",
+        "increaseVolume": "Lautstärke Erhöhen",
+        "decreaseVolume": "Lautstärke Verringern",
+        "seekForward": "Vorwärts Springen",
+        "seekBackward": "Rückwärts Springen",
+        "spacebar": "Leertaste",
+        "captionsToggle": "Untertitel An/Aus"
+    }
 }

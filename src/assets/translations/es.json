@@ -61,5 +61,18 @@
     "unmute": "Activar Sonido",
     "videoInfo": "Acerca de Este Video",
     "volume": "Volumen",
-    "volumeSlider": "Control de Volumen"
+    "volumeSlider": "Control de Volumen",
+    "shortcuts": {
+        "playPause": "Reproducir/Pausa",
+        "volumeToggle": "Silenciar/Activar Sonido",
+        "fullscreenToggle": "Pantalla Completa/Salir de la Pantalla Completa",
+        "seekPercent": "Adelantar %",
+        "keyboardShortcuts": "Atajos de Teclado",
+        "increaseVolume": "Subir el Volumen",
+        "decreaseVolume": "Bajar el Volumen",
+        "seekForward": "Adelantar",
+        "seekBackward": "Retroceder",
+        "spacebar": "Espaciadora",
+        "captionsToggle": "Activar/Ocultar Subtítulos"
+    }
 }

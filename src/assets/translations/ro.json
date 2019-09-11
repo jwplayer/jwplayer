@@ -61,5 +61,18 @@
     "unmute": "Activare Sunet",
     "videoInfo": "Despre Acest Fișier",
     "volume": "Bară volum",
-    "volumeSlider": "Bară volum"
+    "volumeSlider": "Bară volum",
+    "shortcuts": {
+        "playPause": "Redare/Pauză",
+        "volumeToggle": "Suprimare Sunet/Activare Sunet",
+        "fullscreenToggle": "Ecran complet/Ieși din modul Ecran complet",
+        "seekPercent": "Caută %",
+        "keyboardShortcuts": "Scurtături Tastatură",
+        "increaseVolume": "Mărește Volumul",
+        "decreaseVolume": "Micșorează Volumul",
+        "seekForward": "Caută înainte",
+        "seekBackward": "Caută înapoi",
+        "spacebar": "Spațiu",
+        "captionsToggle": "Subtitrare Pornită/Oprită"
+    }
 }

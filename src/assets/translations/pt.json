@@ -61,5 +61,18 @@
     "unmute": "Ativar Som",
     "videoInfo": "Sobre Este Vídeo",
     "volume": "Volume",
-    "volumeSlider": "Controle de Volume"
+    "volumeSlider": "Controle de Volume",
+    "shortcuts": {
+        "playPause": "Reproduzir/Pausar",
+        "volumeToggle": "Desativar Som/Ativar Som",
+        "fullscreenToggle": "Tela Cheia/Sair da Tela Cheia",
+        "seekPercent": "Adiantar %",
+        "keyboardShortcuts": "Atalhos de Teclado",
+        "increaseVolume": "Aumentar o Volume",
+        "decreaseVolume": "Diminuir o Volume",
+        "seekForward": "Adiantar",
+        "seekBackward": "Retroceder",
+        "spacebar": "Espaço",
+        "captionsToggle": "Legendas Ativar/Desativar"
+    }
 }

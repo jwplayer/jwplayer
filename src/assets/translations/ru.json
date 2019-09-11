@@ -61,5 +61,18 @@
     "unmute": "Включить звук",
     "videoInfo": "Об этом видео",
     "volume": "Громкость",
-    "volumeSlider": "Громкость"
+    "volumeSlider": "Громкость",
+    "shortcuts": {
+        "playPause": "Воспроизвести/Пауза",
+        "volumeToggle": "Без звука/Включить звук",
+        "fullscreenToggle": "Полноэкранный режим/Выйти из полноэкранного режима",
+        "seekPercent": "Перемотать %",
+        "keyboardShortcuts": "Горячие Клавиши",
+        "increaseVolume": "Увеличить Гормкость",
+        "decreaseVolume": "Уменьшить Гормкость",
+        "seekForward": "Перемотать Вперёд",
+        "seekBackward": "Перемотать Назад",
+        "spacebar": "Пробел",
+        "captionsToggle": "Субтитры Вкл/Выкл"
+    }
 }

@@ -61,5 +61,18 @@
     "unmute": "ミュート解除",
     "videoInfo": "この動画について",
     "volume": "音量",
-    "volumeSlider": "音量スライダー"
+    "volumeSlider": "音量スライダー",
+    "shortcuts": {
+        "playPause": "再生/一時停止",
+        "volumeToggle": "ミュート/ミュート解除",
+        "fullscreenToggle": "全画面/全画面を閉じる",
+        "seekPercent": "早送り %",
+        "keyboardShortcuts": "キーボードショートカット",
+        "increaseVolume": "音量を上げる",
+        "decreaseVolume": "音量を下げる",
+        "seekForward": "早送り",
+        "seekBackward": "巻き戻す",
+        "spacebar": "スペースキー",
+        "captionsToggle": "字幕のオン / オフ"
+    }
 }

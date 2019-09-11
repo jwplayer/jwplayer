@@ -25,15 +25,15 @@
         "protectedContent": "Der opstod et problem med at give adgang til beskyttet indhold.",
         "technicalError": "Denne video kan ikke afspilles på grund af en teknisk fejl."
     },
-    "exitFullscreen": "Luk fuld skærm",
-    "fullscreen": "Fuld skærm",
+    "exitFullscreen": "Luk Fuld Skærm",
+    "fullscreen": "Fuld Skærm",
     "hd": "Kvalitet",
     "liveBroadcast": "Live",
     "logo": "Logo",
-    "mute": "Lyd fra",
+    "mute": "Lyd Fra",
     "next": "Næste",
-    "nextUp": "Se næste",
-    "notLive": "Ikke live",
+    "nextUp": "Se Næste",
+    "notLive": "Ikke Live",
     "off": "Fra",
     "pause": "Pause",
     "play": "Afspil",
@@ -47,7 +47,7 @@
         "heading": "Flere Videoer"
     },
     "replay": "Gentag",
-    "rewind": "Spol 10 sekunder tilbage",
+    "rewind": "Spol 10 Sekunder Tilbage",
     "settings": "Indstillinger",
     "sharing": {
         "copied": "Kopieret",
@@ -59,7 +59,20 @@
     "slider": "Positionsskyder",
     "stop": "Stop",
     "unmute": "Lyd På",
-    "videoInfo": "Om denne video",
+    "videoInfo": "Om Denne Video",
     "volume": "Lydstyrke",
-    "volumeSlider": "Juster lydstyrke"
+    "volumeSlider": "Juster Lydstyrke",
+    "shortcuts": {
+        "playPause": "Afspil/Pause",
+        "volumeToggle": "Lyd Fra/Lyd På",
+        "fullscreenToggle": "Fuld Skærm/Luk Fuld Skærm",
+        "seekPercent": "Gå til %",
+        "keyboardShortcuts": "Tastaturgenveje",
+        "increaseVolume": "Øg Lydstyrke",
+        "decreaseVolume": "Sænk Lydstyrke",
+        "seekForward": "Søg Frem",
+        "seekBackward": "Søg Tilbage",
+        "spacebar": "Mellemrum",
+        "captionsToggle": "Undertekster Til/Fra"
+    }
 }

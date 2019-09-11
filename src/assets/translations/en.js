@@ -62,5 +62,18 @@ export default {
     "unmute": "Unmute",
     "videoInfo": "About This Video",
     "volume": "Volume",
-    "volumeSlider": "Volume"
+    "volumeSlider": "Volume",
+    "shortcuts": {
+        "playPause": "Play/Pause",
+        "volumeToggle": "Mute/Unmute",
+        "fullscreenToggle": "Fullscreen/Exit Fullscreen",
+        "seekPercent": "Seek %",
+        "keyboardShortcuts": "Keyboard Shortcuts",
+        "increaseVolume": "Increase Volume",
+        "decreaseVolume": "Decrease Volume",
+        "seekForward": "Seek Forward",
+        "seekBackward": "Seek Backward",
+        "spacebar": "SPACE",
+        "captionsToggle": "Captions On/Off"
+    }
 };

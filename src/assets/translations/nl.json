@@ -61,5 +61,18 @@
     "unmute": "Geluid Terug Aanzetten",
     "videoInfo": "Over Deze Video",
     "volume": "Volume",
-    "volumeSlider": "Volume Niveau"
+    "volumeSlider": "Volume Niveau",
+    "shortcuts": {
+        "playPause": "Start/Pause",
+        "volumeToggle": "Geluid Dempen/Geluid Terug Aanzetten",
+        "fullscreenToggle": "Fullscreen/Volledig Scherm Verlaten",
+        "seekPercent": "Vooruitspoelen %",
+        "keyboardShortcuts": "Sneltoetsen",
+        "increaseVolume": "Volume Verhogen",
+        "decreaseVolume": "Volume Verlagen",
+        "seekForward": "Vooruitspoelen",
+        "seekBackward": "Terugspoelen",
+        "spacebar": "Spatiebalk",
+        "captionsToggle": "Ondertiteling Aan/Uit"
+    }
 }

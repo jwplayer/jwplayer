@@ -61,5 +61,18 @@
     "unmute": "Skru På Lyd",
     "videoInfo": "Om Denne Videoen",
     "volume": "Volum",
-    "volumeSlider": "Volumkontroll"
+    "volumeSlider": "Volumkontroll",
+    "shortcuts": {
+        "playPause": "Spill av/Pause",
+        "volumeToggle": "Skru av Lyd/Skru På Lyd",
+        "fullscreenToggle": "Full skjerm/Avslutt fullskjerm",
+        "seekPercent": "Søk %",
+        "keyboardShortcuts": "Tastatur-snarveier",
+        "increaseVolume": "Øk Volum",
+        "decreaseVolume": "Senk Volum",
+        "seekForward": "Søk Fremover",
+        "seekBackward": "Søk Bakover",
+        "spacebar": "Mellomrom",
+        "captionsToggle": "Undertekster På/Av"
+    }
 }

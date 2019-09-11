@@ -61,5 +61,18 @@
     "unmute": "Riattiva Audio",
     "videoInfo": "Info Su Questo Video",
     "volume": "Volume",
-    "volumeSlider": "Cursore del Volume"
+    "volumeSlider": "Cursore del Volume",
+    "shortcuts": {
+        "playPause": "Play/Pausa",
+        "volumeToggle": "Disattiva Audio/Riattiva Audio",
+        "fullscreenToggle": "Schermo Intero/Esci da Modalità Schermo Intero",
+        "seekPercent": "Scorri %",
+        "keyboardShortcuts": "Comandi Rapidi",
+        "increaseVolume": "Aumenta Volume",
+        "decreaseVolume": "Diminuisci Volume",
+        "seekForward": "Scorri Avanti",
+        "seekBackward": "Scorri Dietro",
+        "spacebar": "Spaziatrice",
+        "captionsToggle": "Sottotitoli On/Off"
+    }
 }

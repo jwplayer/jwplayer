@@ -1,6 +1,6 @@
 {
     "advertising": {
-        "admessage": "La publicitat s’acaba dins xx",
+        "admessage": "La publicitat s'acaba dins xx",
         "cuetext": "Publicitat",
         "displayHeading": "Publicitat",
         "loadingAd": "Cargament de la publicitat",
@@ -59,7 +59,20 @@
     "slider": "Barra de Lectura",
     "stop": "Arrestar",
     "unmute": "Activar lo Son",
-    "videoInfo": "A prepaus d’aquesta vidèo",
+    "videoInfo": "A prepaus d'aquesta vidèo",
     "volume": "Volum",
-    "volumeSlider": "Barra de Volum"
+    "volumeSlider": "Barra de Volum",
+    "shortcuts": {
+        "playPause": "Lectura/Pausa",
+        "volumeToggle": "Copar lo Son/Activar lo Son",
+        "fullscreenToggle": "Ecran complèt/Sortir del Mòde Ecran complèt",
+        "seekPercent": "Avançar de %",
+        "keyboardShortcuts": "Acorchis Clavièr",
+        "increaseVolume": "Montar lo Volum",
+        "decreaseVolume": "Reduire lo Volum",
+        "seekForward": "Avançar",
+        "seekBackward": "Recular",
+        "spacebar": "Espaci",
+        "captionsToggle": "Legenda Act/Des"
+    }
 }
