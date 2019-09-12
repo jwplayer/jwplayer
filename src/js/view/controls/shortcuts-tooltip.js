@@ -65,8 +65,12 @@ export default function (container, api, model) {
     const shortcuts = model.get('localization').shortcuts;
     const template = createElement(shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts));
     const settingsInteraction = { reason: 'settingsInteraction' };
+    const checkBox = template.querySelector('#jw-enable-shortcuts');
 
     const open = () => {
+        checkBox.checked = model.get('enableShortcuts');
+        checkBox.addEventListener('change', checkboxChangeHandler);
+
         addClass(template, 'jw-open');
         lastState = model.get('state');
         template.querySelector('.jw-shortcuts-close').focus();
@@ -75,6 +79,7 @@ export default function (container, api, model) {
         api.pause(settingsInteraction);
     };
     const close = () => {
+        checkBox.removeEventListener('change', checkboxChangeHandler);
         removeClass(template, 'jw-open');     
         document.removeEventListener('click', documentClickHandler);
         container.focus();
@@ -87,6 +92,9 @@ export default function (container, api, model) {
         if (!/jw-shortcuts/.test(e.target.className)) {
             close();
         }
+    };
+    const checkboxChangeHandler = (e) => {
+        model.set('enableShortcuts', e.target.checked);
     };
     const toggleVisibility = () => {
         if (isOpen) {

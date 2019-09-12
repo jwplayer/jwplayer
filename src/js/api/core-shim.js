@@ -76,7 +76,8 @@ Object.assign(CoreShim.prototype, {
             'captionLabel',
             'bandwidthEstimate',
             'bitrateSelection',
-            'qualityLabel'
+            'qualityLabel',
+            'enableShortcuts'
         ]);
         const persisted = storage && storage.getAllItems();
         model.attributes = model.attributes || {};
