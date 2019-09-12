@@ -69,7 +69,7 @@ export default function (container, api, model) {
 
     const open = () => {
         const shortcutsEnabled = model.get('enableShortcuts');
-        checkBox.checked = shortcutsEnabled === undefined ? true : shortcutsEnabled;
+        checkBox.checked = shortcutsEnabled === undefined || shortcutsEnabled;
         checkBox.addEventListener('change', checkboxChangeHandler);
 
         addClass(template, 'jw-open');
@@ -90,9 +90,9 @@ export default function (container, api, model) {
         }
     };
     const documentClickHandler = (e) => {
-        // if (!/jw-shortcuts/.test(e.target.className)) {
-        //     close();
-        // }
+        if (!/jw-shortcuts/.test(e.target.className) && !checkBox.contains(e.target)) {
+            close();
+        }
     };
     const checkboxChangeHandler = (e) => {
         console.log('fired');
