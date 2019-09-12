@@ -304,6 +304,10 @@ export default class Controls extends Events {
                     break;
                 case 13: // enter
                 case 32: // space
+                    if (document.activeElement.id === 'jw-enable-shortcuts') {
+                        // Let event bubble up if focused on checbox in shortcuts menu
+                        return true;
+                    }
                     if (shortcutsEnabled) {
                         api.playToggle(reasonInteraction());
                     }
