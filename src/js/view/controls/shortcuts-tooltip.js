@@ -68,7 +68,8 @@ export default function (container, api, model) {
     const checkBox = template.querySelector('#jw-enable-shortcuts');
 
     const open = () => {
-        checkBox.checked = model.get('enableShortcuts');
+        const shortcutsEnabled = model.get('enableShortcuts');
+        checkBox.checked = shortcutsEnabled === undefined ? true : shortcutsEnabled;
         checkBox.addEventListener('change', checkboxChangeHandler);
 
         addClass(template, 'jw-open');
@@ -89,11 +90,12 @@ export default function (container, api, model) {
         }
     };
     const documentClickHandler = (e) => {
-        if (!/jw-shortcuts/.test(e.target.className)) {
-            close();
-        }
+        // if (!/jw-shortcuts/.test(e.target.className)) {
+        //     close();
+        // }
     };
     const checkboxChangeHandler = (e) => {
+        console.log('fired');
         model.set('enableShortcuts', e.target.checked);
     };
     const toggleVisibility = () => {
