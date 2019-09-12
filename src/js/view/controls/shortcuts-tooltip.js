@@ -94,7 +94,6 @@ export default function (container, api, model) {
         }
     };
     const checkboxChangeHandler = (e) => {
-        console.log('fired');
         model.set('enableShortcuts', e.target.checked);
     };
     const toggleVisibility = () => {
