@@ -304,8 +304,8 @@ export default class Controls extends Events {
                     break;
                 case 13: // enter
                 case 32: // space
-                    if (document.activeElement.id === 'jw-enable-shortcuts') {
-                        // Let event bubble up if focused on checbox in shortcuts menu
+                    if (document.activeElement.id === 'jw-enable-shortcuts' && evt.keyCode === 32) {
+                        // Let event bubble up so spacebar can control checkbox if focused on checbox in shortcuts menu
                         return true;
                     }
                     if (shortcutsEnabled) {
