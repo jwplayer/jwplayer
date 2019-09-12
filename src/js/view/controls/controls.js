@@ -276,6 +276,7 @@ export default class Controls extends Events {
                 return true;
             }
             const menuHidden = !this.settingsMenu.visible;
+            const shortcutsEnabled = model.get('enableShortcuts');
             const adMode = this.instreamState;
             switch (evt.keyCode) {
                 case 27: // Esc
@@ -303,30 +304,32 @@ export default class Controls extends Events {
                     break;
                 case 13: // enter
                 case 32: // space
-                    api.playToggle(reasonInteraction());
+                    if (shortcutsEnabled) {
+                        api.playToggle(reasonInteraction());
+                    }
                     break;
-                case 37: // left-arrow, if not adMode and settings menu is hidden
-                    if (!adMode && menuHidden) {
+                case 37: // left-arrow, if shortcuts are enabled, not adMode, and settings menu is hidden
+                    if (shortcutsEnabled && !adMode && menuHidden) {
                         adjustSeek(-5);
                     }
                     break;
-                case 39: // right-arrow, if not adMode and settings menu is hidden
-                    if (!adMode && menuHidden) {
+                case 39: // right-arrow, if shortcuts are enabled, not adMode, and settings menu is hidden
+                    if (shortcutsEnabled && !adMode && menuHidden) {
                         adjustSeek(5);
                     }
                     break;
-                case 38: // up-arrow, if settings menu is hidden
-                    if (menuHidden) {
+                case 38: // up-arrow, if shortcuts are enabled and settings menu is hidden
+                    if (shortcutsEnabled && menuHidden) {
                         adjustVolume(10);
                     }
                     break;
-                case 40: // down-arrow, if settings menu is hidden
-                    if (menuHidden) {
+                case 40: // down-arrow, if shortcuts are enabled and settings menu is hidden
+                    if (shortcutsEnabled && menuHidden) {
                         adjustVolume(-10);
                     }
                     break;
-                case 67: // c-key
-                    {
+                case 67: // c-key, if shortcuts are enabled
+                    if (shortcutsEnabled) {
                         const captionsList = api.getCaptionsList();
                         const listLength = captionsList.length;
                         if (listLength) {
@@ -334,12 +337,17 @@ export default class Controls extends Events {
                             api.setCurrentCaptions(nextIndex);
                         }
                     }
+
                     break;
-                case 77: // m-key
-                    api.setMute();
+                case 77: // m-key, if shortcuts are enabled
+                    if (shortcutsEnabled) {
+                        api.setMute();
+                    }
                     break;
-                case 70: // f-key
-                    api.setFullscreen();
+                case 70: // f-key, if shortcuts are enabled
+                    if (shortcutsEnabled) {
+                        api.setFullscreen();
+                    }
                     break;
                 case 191: // ? key
                     if (this.shortcutsTooltip) {
@@ -347,8 +355,8 @@ export default class Controls extends Events {
                     }
                     break;
                 default:
-                    if (evt.keyCode >= 48 && evt.keyCode <= 59) {
-                        // if 0-9 number key, move to n/10 of the percentage of the video
+                    if (evt.keyCode >= 48 && evt.keyCode <= 59 && shortcutsEnabled) {
+                        // if 0-9 number key and shortcuts are enabled, move to n/10 of the percentage of the video
                         const number = evt.keyCode - 48;
                         const newSeek = (number / 10) * model.get('duration');
                         api.seek(newSeek, reasonInteraction());

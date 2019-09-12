@@ -83,6 +83,7 @@ export default {
     displaytitle: true,
     displaydescription: true,
     displayPlaybackLabel: false,
+    enableShortcuts: true,
     playbackRateControls: true,
     playbackRates: [1.0],
     playbackRate: 1,

@@ -68,8 +68,7 @@ export default function (container, api, model) {
     const checkBox = template.querySelector('#jw-enable-shortcuts');
 
     const open = () => {
-        const shortcutsEnabled = model.get('enableShortcuts');
-        checkBox.checked = shortcutsEnabled === undefined || shortcutsEnabled;
+        checkBox.checked = model.get('enableShortcuts');
         checkBox.addEventListener('change', checkboxChangeHandler);
 
         addClass(template, 'jw-open');
