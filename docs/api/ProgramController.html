@@ -208,63 +208,6 @@
 
         
             
-<h4 class="name" id="attached"><span class="type-signature"></span>attached<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Attaches or detaches the current media</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
 <h4 class="name" id="audioTrack"><span class="type-signature"></span>audioTrack<span class="type-signature"></span></h4>
 
 
@@ -787,7 +730,7 @@ ALso set the item's starttime so that if we seek before loading, we load and beg
 
 
 <div class="description">
-    <p>Sets the current quality level.</p>
+    <p>Returns the active quality index.</p>
 </div>
 
 
@@ -844,7 +787,7 @@ ALso set the item's starttime so that if we seek before loading, we load and beg
 
 
 <div class="description">
-    <p>Returns the active quality index.</p>
+    <p>Sets the current quality level.</p>
 </div>
 
 
@@ -2495,6 +2438,161 @@ This method will either load a new Provider or reuse the active one.</p>
     <dd>
         
 <span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setAttached"><span class="type-signature"></span>setAttached<span class="signature">(shouldAttach)</span><span class="type-signature"> &rarr; {Promise|void}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Attaches or detaches the current media</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>shouldAttach</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Attach or detach?</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A detach promise. Resolves when media is detached.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+|
+
+<span class="param-type">void</span>
 
 
     </dd>
