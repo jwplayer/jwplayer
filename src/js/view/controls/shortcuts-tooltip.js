@@ -65,11 +65,11 @@ export default function (container, api, model) {
     const shortcuts = model.get('localization').shortcuts;
     const template = createElement(shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts));
     const settingsInteraction = { reason: 'settingsInteraction' };
-    const checkBox = template.querySelector('#jw-enable-shortcuts');
+    const shortcutToggle = template.querySelector('.jw-shortcuts-switch');
 
     const open = () => {
-        checkBox.checked = model.get('enableShortcuts');
-        checkBox.addEventListener('change', checkboxChangeHandler);
+        shortcutToggle.setAttribute('aria-checked', model.get('enableShortcuts'));
+        shortcutToggle.addEventListener('click', toggleClickHandler);
 
         addClass(template, 'jw-open');
         lastState = model.get('state');
@@ -79,7 +79,7 @@ export default function (container, api, model) {
         api.pause(settingsInteraction);
     };
     const close = () => {
-        checkBox.removeEventListener('change', checkboxChangeHandler);
+        shortcutToggle.removeEventListener('click', toggleClickHandler);
         removeClass(template, 'jw-open');     
         document.removeEventListener('click', documentClickHandler);
         container.focus();
@@ -89,12 +89,14 @@ export default function (container, api, model) {
         }
     };
     const documentClickHandler = (e) => {
-        if (!/jw-shortcuts/.test(e.target.className) && !checkBox.contains(e.target)) {
+        if (!/jw-shortcuts/.test(e.target.className)) {
             close();
         }
     };
-    const checkboxChangeHandler = (e) => {
-        model.set('enableShortcuts', e.target.checked);
+    const toggleClickHandler = (e) => {
+        const toggle = e.currentTarget;
+        toggle.setAttribute('aria-checked', toggle.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+        model.set('enableShortcuts', toggle.getAttribute('aria-checked'));
     };
     const toggleVisibility = () => {
         if (isOpen) {

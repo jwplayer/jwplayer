@@ -25,7 +25,7 @@ export const Defaults = {
     displaydescription: true,
     displaytitle: true,
     displayPlaybackLabel: false,
-    enableShortcuts: true,
+    enableShortcuts: 'true',
     height: 360,
     intl: {},
     language: 'en',

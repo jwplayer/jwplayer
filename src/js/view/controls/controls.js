@@ -276,7 +276,7 @@ export default class Controls extends Events {
                 return true;
             }
             const menuHidden = !this.settingsMenu.visible;
-            const shortcutsEnabled = model.get('enableShortcuts');
+            const shortcutsEnabled = model.get('enableShortcuts') === 'true';
             const adMode = this.instreamState;
             switch (evt.keyCode) {
                 case 27: // Esc
@@ -304,8 +304,8 @@ export default class Controls extends Events {
                     break;
                 case 13: // enter
                 case 32: // space
-                    if (document.activeElement.id === 'jw-enable-shortcuts' && evt.keyCode === 32) {
-                        // Let event bubble up so spacebar can control checkbox if focused on checbox in shortcuts menu
+                    if (document.activeElement.className === 'jw-shortcuts-switch' && evt.keyCode === 32) {
+                        // Let event bubble up so the spacebar can control the toggle if focused on
                         return true;
                     }
                     if (shortcutsEnabled) {

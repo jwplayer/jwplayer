@@ -18,10 +18,9 @@ export default (shortcuts, title) => {
             `<div class="jw-reset jw-shortcuts-container">` +
                 `<div class="jw-shortcuts-header">` +
                     `<span class="jw-reset jw-shortcuts-title">${title}</span>` +
-                    '<span class="jw-shortcuts-checkbox">' +
-                        `<input type="checkbox" id="jw-enable-shortcuts" name="jw-enable-shortcuts">` +
-                        `<label for="jw-enable-shortcuts">enabled</label>` +
-                    `</span>` +
+                    `<button role="switch" class="jw-shortcuts-switch" data-jw-shortcuts-enabled="Enabled" data-jw-shortcuts-disabled="Disabled">` +
+                        `<span class="jw-shortcuts-switch-knob"></span>` +
+                    `</button>` +
                 `</div>` +
                 `<div class="jw-reset jw-shortcuts-tooltip-list">` +
                     `<div class="jw-shortcuts-tooltip-descriptions jw-reset">` +
