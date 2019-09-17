@@ -1,11 +1,11 @@
 export default (shortcuts, title) => {
-    //  Iterate all shortcuts to create list of them. 
+    //  Iterate all shortcuts to create list of them.
 
     const list = shortcuts.map((shortcut) => {
         return (
-            `<div class="jw-shortcuts-row">` +
-                `<span class="jw-shortcuts-description">${shortcut.description}</span>` +
-                `<span class="jw-shortcuts-key">${shortcut.key}</span>` +
+            `<div class="jw-shortcuts-row jw-reset">` +
+                `<span class="jw-shortcuts-description jw-reset">${shortcut.description}</span>` +
+                `<span class="jw-shortcuts-key jw-reset">${shortcut.key}</span>` +
             `</div>`
         );
     }).join('');
