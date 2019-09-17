@@ -892,13 +892,19 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function isAudioStream() {
-        // Safari will report videoHeight as 0 for HLS streams until readyState indicates that the browser has data
-        return _videotag.videoHeight === 0 && !((OS.iOS || Browser.safari) && _videotag.readyState < 2);
+        if (_videotag.readyState < 2) {
+            return;
+        }
+
+        return _videotag.videoHeight === 0;
     }
 
     function _setMediaType() {
-        const mediaType = isAudioStream() ? 'audio' : 'video';
-        _this.trigger(MEDIA_TYPE, { mediaType });
+        let isAudio = isAudioStream();
+        if (typeof isAudio !== 'undefined') {
+            const mediaType = isAudio ? 'audio' : 'video';
+            _this.trigger(MEDIA_TYPE, { mediaType });
+        }
     }
 
     // If we're live and the buffer end has remained the same for some time, mark the stream as stale and check if the stream is over
