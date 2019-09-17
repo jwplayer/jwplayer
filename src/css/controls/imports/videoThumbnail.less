@@ -1,0 +1,51 @@
+.jw-video-thumbnail-container {
+    &:hover,
+    .jw-related-item-content:hover &,
+    .jw-related-shelf-item:hover & {
+        cursor: pointer;
+
+        .jw-video-thumbnail:not(.jw-video-thumbnail-completed) {
+            opacity: 1;
+        }
+        overflow: hidden;
+    }
+
+    .jw-video-thumbnail {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        bottom: unset;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: auto;
+        min-width: 100%;
+        min-height: 100%;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+
+        .jw-related-item-next-up & {
+            height: 100%;
+            width: auto;
+        }
+
+        &.jw-video-thumbnail-visible:not(.jw-video-thumbnail-completed) {
+            opacity: 1;
+        }
+
+        &.jw-video-thumbnail-completed {
+            opacity: 0;
+        }
+
+        ~ .jw-svg-icon-play {
+            display: none;
+        }
+
+        + .jw-related-shelf-item-aspect {
+            pointer-events: none;
+        }
+
+        + .jw-related-item-poster-content {
+            pointer-events: none;
+        }
+    }
+}
