@@ -38,8 +38,6 @@ const DefaultProvider = {
     resize: noop,
     remove: noop, // removes from page
     destroy: noop, // frees memory
-    eventsOn_: noop,
-    eventsOff_: noop,
 
     setVisibility: noop,
     setFullscreen: noop,

@@ -1,6 +1,9 @@
 
 const VideoAttachedMixin = {
 
+    eventsOn_() {},
+    eventsOff_() {},
+
     attachMedia() {
         this.eventsOn_();
     },
