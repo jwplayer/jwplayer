@@ -262,9 +262,7 @@ Object.assign(CoreShim.prototype, {
     },
     skipAd() {},
     attachMedia() {},
-    detachMedia() {
-        return null; // video tag;
-    }
+    detachMedia() {}
 });
 
 function setupError(core, api, error) {
