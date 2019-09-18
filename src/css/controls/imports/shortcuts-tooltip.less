@@ -18,6 +18,7 @@
     user-select: text;
     overflow: hidden;
     flex-direction: column;
+    z-index: 1;
 
     &.jw-open {
         display: flex;
@@ -26,11 +27,6 @@
     .jw-shortcuts-close {
         flex: 0 0 auto;
         margin: 5px 5px 5px auto;
-
-        &:focus {
-            border: none;
-            outline: none;
-        }
     }
 
     .jw-shortcuts-container {
@@ -59,6 +55,7 @@
             align-items: center;
             justify-content: space-between;
             margin: 10px 0;
+            min-width: 170px;
 
             .jw-shortcuts-description {
                 margin-right: 10px;
