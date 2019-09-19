@@ -10,3 +10,6 @@
 
 JW8-###
 
+### Checklist
+- [ ] Jenkins builds and unit tests are passing
+- [ ] I have reviewed the automated results
