@@ -340,7 +340,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     function checkStartDateTime() {
         if (_videotag.getStartDate) {
             const startDate = _videotag.getStartDate();
-            const startDateTime = startDate.getTime();
+            const startDateTime = !isNaN(startDate) ? startDate.getTime() : NaN;
             if (startDateTime !== _this.startDateTime && !isNaN(startDateTime)) {
                 _this.startDateTime = startDateTime;
                 const programDateTime = startDate.toISOString();
