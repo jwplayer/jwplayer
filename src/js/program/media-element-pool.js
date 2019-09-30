@@ -84,7 +84,7 @@ function primeMediaElementForPlayback(mediaElement) {
     }
 }
 
-function createMediaElement() {
+export function createMediaElement(options) {
     const mediaElement = document.createElement('video');
 
     mediaElement.className = 'jw-video jw-reset';
@@ -92,6 +92,12 @@ function createMediaElement() {
     mediaElement.setAttribute('disableRemotePlayback', '');
     mediaElement.setAttribute('webkit-playsinline', '');
     mediaElement.setAttribute('playsinline', '');
+
+    if (options) {
+        Object.keys(options).forEach(option => {
+            mediaElement.setAttribute(option, options[option]);
+        });
+    }
 
     return mediaElement;
 }
