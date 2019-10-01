@@ -30,7 +30,9 @@ export default function(elementContext, documentContext, changeCallback) {
             return supportsDomFullscreen;
         },
         requestFullscreen: function() {
-            requestFullscreen.apply(elementContext);
+            requestFullscreen.call(elementContext, {
+                navigationUI: 'hide'
+            });
         },
         exitFullscreen: function() {
             if (this.fullscreenElement() !== null) {
