@@ -20,7 +20,7 @@ describe('playlist/loader', function() {
     });
 
     it('loads a valid XML feed', function () {
-        const mediaid = 'TQjoCPTk';
+        const mediaid = '1CshXyp0';
         return expectPlaylistLoad('/base/test/files/playlist.xml')
             .then(function (data) {
                 expect(data.playlist.length > 0, 'Playlist has at least 1 item.').to.be.true;
