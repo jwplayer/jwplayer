@@ -52,7 +52,7 @@
 }
 
 .jw-flag-floating.jw-floating-dismissible {
-    .jw-float-icon {
+    &.jw-flag-ads .jw-float-icon {
         display: flex;
     }
 
@@ -60,6 +60,9 @@
     &:not(.jw-flag-user-inactive) {
         .jw-logo {
             display: none;
+        }
+        .jw-float-icon {
+            display: flex;
         }
     }
 }
