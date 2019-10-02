@@ -1,5 +1,4 @@
 import { createElement } from 'utils/dom';
-import UI from 'utils/ui';
 import floatingCloseButton from 'templates/floating-close-button';
 import { cloneIcon } from 'view/controls/icons';
 import Events from 'utils/backbone.events';
@@ -11,16 +10,24 @@ export default class FloatingCloseButton extends Events {
         this.element = createElement(floatingCloseButton(ariaLabel));
 
         this.element.appendChild(cloneIcon('close'));
-        this.ui = new UI(this.element).on('click tap enter', () => {
-            this.trigger(USER_ACTION);
-        });
+
+        this.interactionHandler = this.userActionHandler.bind(this);
+        this.element.addEventListener('click', this.interactionHandler);
+        this.element.addEventListener('tap', this.interactionHandler);
+        this.element.addEventListener('enter', this.interactionHandler);
 
         container.appendChild(this.element);
     }
 
+    userActionHandler() {
+        this.trigger(USER_ACTION);
+    }
+
     destroy() {
         if (this.element) {
-            this.ui.destroy();
+            this.element.removeEventListener('click', this.interactionHandler);
+            this.element.removeEventListener('tap', this.interactionHandler);
+            this.element.removeEventListener('enter', this.interactionHandler);
             this.element.parentNode.removeChild(this.element);
             this.element = null;
         }
