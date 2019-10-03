@@ -347,7 +347,7 @@ function View(_api, _model) {
         playerViewModel.change('controls', changeControls);
         _model.change('streamType', _setLiveMode);
         _model.change('mediaType', _onMediaTypeChange);
-        playerViewModel.change('playlistItem', (model, item) => { 
+        playerViewModel.change('playlistItem', (model, item) => {
             onPlaylistItem(model, item);
         });
         // Triggering 'resize' resulting in player 'ready'
@@ -1020,6 +1020,7 @@ function View(_api, _model) {
     this.stopFloating = function(forever, mobileFloatIntoPlace) {
         if (forever) {
             _floatingConfig = null;
+            viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
         }
         if (floatingPlayer === _playerElement) {
             floatingPlayer = null;
