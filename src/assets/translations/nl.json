@@ -1,11 +1,11 @@
 {
     "advertising": {
-        "admessage": "Reclame klaar in xx",
+        "admessage": "Reclame klaar over xx",
         "cuetext": "Advertentie",
         "displayHeading": "Advertentie",
         "loadingAd": "Reclame laden",
         "podmessage": "Reclame __AD_POD_CURRENT__ van __AD_POD_LENGTH__.",
-        "skipmessage": "Reclame overslaan in xx",
+        "skipmessage": "Reclame overslaan over xx",
         "skiptext": "Overslaan"
     },
     "airplay": "AirPlay",
@@ -25,29 +25,29 @@
         "protectedContent": "Deze beschermde video kan niet worden afgespeeld.",
         "technicalError": "Deze video kan niet worden afgespeeld door een technisch probleem."
     },
-    "exitFullscreen": "Volledig Scherm Verlaten",
+    "exitFullscreen": "Volledig Scherm verlaten",
     "fullscreen": "Fullscreen",
     "hd": "Kwaliteit",
     "liveBroadcast": "Live",
     "logo": "Logo",
-    "mute": "Geluid Dempen",
+    "mute": "Geluid dempen",
     "next": "Volgende",
-    "nextUp": "Volgende Video",
+    "nextUp": "Volgende video",
     "notLive": "Niet live",
     "off": "Uit",
     "pause": "Pause",
     "play": "Start",
     "playback": "Start",
     "playbackRates": "Snelheid",
-    "player": "Video Speler",
+    "player": "Video speler",
     "poweredBy": "Ondersteund door",
     "prev": "Vorige",
     "related": {
-        "autoplaymessage": "Volgende Video in xx",
-        "heading": "Meer Video's"
+        "autoplaymessage": "Volgende video over xx",
+        "heading": "Meer video's"
     },
     "replay": "Opnieuw",
-    "rewind": "10 Seconden Terug",
+    "rewind": "10 Seconden terug",
     "settings": "Opties",
     "sharing": {
         "copied": "Gekopiëerd",
@@ -58,21 +58,21 @@
     },
     "slider": "Zoeken",
     "stop": "Stop",
-    "unmute": "Geluid Terug Aanzetten",
-    "videoInfo": "Over Deze Video",
+    "unmute": "Geluid aanzetten",
+    "videoInfo": "Over deze video",
     "volume": "Volume",
-    "volumeSlider": "Volume Niveau",
+    "volumeSlider": "Volume niveau",
     "shortcuts": {
         "playPause": "Start/Pause",
-        "volumeToggle": "Geluid Dempen/Geluid Terug Aanzetten",
-        "fullscreenToggle": "Fullscreen/Volledig Scherm Verlaten",
+        "volumeToggle": "Geluid dempen/aanzetten",
+        "fullscreenToggle": "Volledig scherm inschakelen/verlaten",
         "seekPercent": "Vooruitspoelen %",
         "keyboardShortcuts": "Sneltoetsen",
-        "increaseVolume": "Volume Verhogen",
-        "decreaseVolume": "Volume Verlagen",
+        "increaseVolume": "Volume verhogen",
+        "decreaseVolume": "Volume verlagen",
         "seekForward": "Vooruitspoelen",
         "seekBackward": "Terugspoelen",
         "spacebar": "Spatiebalk",
-        "captionsToggle": "Ondertiteling Aan/Uit"
+        "captionsToggle": "Ondertiteling aan/uit"
     }
 }
