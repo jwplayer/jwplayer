@@ -108,6 +108,7 @@ export default class Controls extends Events {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
                 api.playToggle(reasonInteraction());
+                this.playerContainer.focus();
             });
 
             this.div.appendChild(displayContainer.element());
