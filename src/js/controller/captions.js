@@ -62,6 +62,8 @@ const Captions = function(_model) {
         }
         if (!tracks.length) {
             _tracks = [];
+            _tracksById = {};
+            _unknownCount = 0;
         } else {
             for (let i = 0; i < tracks.length; i++) {
                 _addTrack(tracks[i]);
