@@ -11,7 +11,7 @@ export default class FloatingCloseButton extends Events {
         this.element = createElement(floatingCloseButton(ariaLabel));
 
         this.element.appendChild(cloneIcon('close'));
-        this.ui = new UI(this.element).on('click tap enter', () => {
+        this.ui = new UI(this.element, { directSelect: true }).on('click tap enter', () => {
             this.trigger(USER_ACTION);
         });
 
