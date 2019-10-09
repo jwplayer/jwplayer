@@ -2,10 +2,6 @@
 @import "../../shared-imports/mixins.less";
 
 .jwplayer .jw-shortcuts-tooltip {
-    @rightclick-primary-text: #fefefe;
-    @rightclick-secondary-text: #333;
-    @rightclick-bg: #333;
-    @rightclick-secondary-bg: #fefefe;
     @ui-padding: 0.5em;
     @ui-margin: 20px;
 
@@ -34,41 +30,51 @@
         display: flex;
         flex: 1 1 auto;
         flex-flow: column;
+        font-size: 12px;
         margin: 0 20px 20px;
         overflow-y: auto;
         padding: 5px;
-    }
 
-    .jw-shortcuts-title {
-        font-size: 12px;
-        font-weight: bold;
-    }
+        .jw-shortcuts-title {
+            font-weight: bold;
+        }
 
-    .jw-shortcuts-tooltip-list {
-        display: flex;
-        max-width: 340px;
-        font-size: 12px;
-        margin: 0 10px;
-
-        .jw-shortcuts-row {
-            display: flex;
+        .jw-shortcuts-header {
             align-items: center;
+            display: flex;
             justify-content: space-between;
-            margin: 10px 0;
-            min-width: 170px;
+            margin-bottom: 10px;
+        }
 
-            .jw-shortcuts-description {
-                margin-right: 10px;
-                max-width: 70%;
+        .jw-shortcuts-tooltip-list {
+            display: flex;
+            max-width: 340px;
+            margin: 0 10px;
+
+            .jw-shortcuts-tooltip-descriptions {
+                width: 100%;
             }
 
-            .jw-shortcuts-key {
-                background: @rightclick-secondary-bg;
-                color: @rightclick-secondary-text;
-                overflow: hidden;
-                padding: 7px 10px;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+            .jw-shortcuts-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin: 10px 0;
+                width: 100%;
+
+                .jw-shortcuts-description {
+                    margin-right: 10px;
+                    max-width: 70%;
+                }
+
+                .jw-shortcuts-key {
+                    background: @rightclick-shortcuts-secondary-bg;
+                    color: @rightclick-shortcuts-secondary-text;
+                    overflow: hidden;
+                    padding: 7px 10px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
             }
         }
     }

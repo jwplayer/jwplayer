@@ -16,7 +16,12 @@ export default (shortcuts, title) => {
                 `Press shift question mark to access a list of keyboard shortcuts` +
             `</span>` +
             `<div class="jw-reset jw-shortcuts-container">` +
-                `<div class="jw-reset jw-shortcuts-title">${title}</div>` +
+                `<div class="jw-shortcuts-header">` +
+                    `<span class="jw-reset jw-shortcuts-title">${title}</span>` +
+                    `<button role="switch" class="jw-switch" data-jw-switch-enabled="Enabled" data-jw-switch-disabled="Disabled">` +
+                        `<span class="jw-switch-knob"></span>` +
+                    `</button>` +
+                `</div>` +
                 `<div class="jw-reset jw-shortcuts-tooltip-list">` +
                     `<div class="jw-shortcuts-tooltip-descriptions jw-reset">` +
                         `${list}` +

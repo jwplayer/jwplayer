@@ -21,6 +21,8 @@ import FloatingCloseButton from 'view/floating-close-button';
 require('css/controls.less');
 
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
+// Keys which bypass keyboard shortcuts being off
+const ALWAYS_ALLOWED_KEYS = [27];
 
 ErrorContainer.cloneIcon = cloneIcon;
 instances.forEach(api => {
@@ -276,7 +278,13 @@ export default class Controls extends Events {
                 return true;
             }
             const menuHidden = !this.settingsMenu.visible;
+            const shortcutsEnabled = model.get('enableShortcuts') === true;
             const adMode = this.instreamState;
+
+            if (!shortcutsEnabled && ALWAYS_ALLOWED_KEYS.indexOf(evt.keyCode) === -1) {
+                return;
+            }
+
             switch (evt.keyCode) {
                 case 27: // Esc
                     if (model.get('fullscreen')) {
@@ -303,42 +311,46 @@ export default class Controls extends Events {
                     break;
                 case 13: // enter
                 case 32: // space
+                    if (document.activeElement.className === 'jw-switch' && evt.keyCode === 32) {
+                        // Let event bubble up so the spacebar can control the toggle if focused on
+                        return true;
+                    }
                     api.playToggle(reasonInteraction());
                     break;
-                case 37: // left-arrow, if not adMode and settings menu is hidden
+                case 37: // left-arrow, if shortcuts are enabled, not adMode, and settings menu is hidden
                     if (!adMode && menuHidden) {
                         adjustSeek(-5);
                     }
                     break;
-                case 39: // right-arrow, if not adMode and settings menu is hidden
+                case 39: // right-arrow, if shortcuts are enabled, not adMode, and settings menu is hidden
                     if (!adMode && menuHidden) {
                         adjustSeek(5);
                     }
                     break;
-                case 38: // up-arrow, if settings menu is hidden
+                case 38: // up-arrow, if shortcuts are enabled and settings menu is hidden
                     if (menuHidden) {
                         adjustVolume(10);
                     }
                     break;
-                case 40: // down-arrow, if settings menu is hidden
+                case 40: // down-arrow, if shortcuts are enabled and settings menu is hidden
                     if (menuHidden) {
                         adjustVolume(-10);
                     }
                     break;
-                case 67: // c-key
-                    {
-                        const captionsList = api.getCaptionsList();
-                        const listLength = captionsList.length;
-                        if (listLength) {
-                            const nextIndex = (api.getCurrentCaptions() + 1) % listLength;
-                            api.setCurrentCaptions(nextIndex);
-                        }
+                case 67: {
+                    // c-key, if shortcuts are enabled
+                    const captionsList = api.getCaptionsList();
+                    const listLength = captionsList.length;
+                    if (listLength) {
+                        const nextIndex = (api.getCurrentCaptions() + 1) % listLength;
+                        api.setCurrentCaptions(nextIndex);
                     }
                     break;
-                case 77: // m-key
+                }
+                case 77: // m-key, if shortcuts are enabled
                     api.setMute();
                     break;
-                case 70: // f-key
+                case 70: // f-key, if shortcuts are enabled
                     api.setFullscreen();
                     break;
                 case 191: // ? key
