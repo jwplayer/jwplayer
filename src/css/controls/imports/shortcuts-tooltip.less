@@ -2,10 +2,6 @@
 @import "../../shared-imports/mixins.less";
 
 .jwplayer .jw-shortcuts-tooltip {
-    @rightclick-primary-text: #fefefe;
-    @rightclick-secondary-text: #333;
-    @rightclick-bg: #333;
-    @rightclick-secondary-bg: #fefefe;
     @ui-padding: 0.5em;
     @ui-margin: 20px;
 
@@ -43,67 +39,11 @@
             font-weight: bold;
         }
 
-        .jw-shortcuts-switch {
-            position: relative;
-            left: 25px;
-            display: inline-block;
-            transition: ease-out 0.15s;
-            transition-property: opacity, background;
-            border-radius: 18px;
-            width: 80px;
-            height: 20px;
-            padding: 10px;
-            background: fade(@rightclick-secondary-bg, 80%);
-            cursor: pointer;
-            font-size: inherit;
-            vertical-align: middle;
-
-            .jw-shortcuts-switch-knob {
-                position: absolute;
-                top: 2px;
-                left: 1px;
-                transition: ease-out 0.15s;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-                border-radius: 13px;
-                width: 15px;
-                height: 15px;
-                background: @rightclick-secondary-bg;
-            }
-
-            &:before,
-            &:after {
-                position: absolute;
-                top: 3px;
-                transition: inherit;
-                color: @rightclick-primary-text;
-            }
-
-            &:before {
-                content: attr(data-jw-shortcuts-disabled);
-                right: 8px;
-            }
-
-            &:after {
-                content: attr(data-jw-shortcuts-enabled);
-                left: 8px;
-                opacity: 0;
-            }
-
-            &[aria-checked="true"] {
-                background: @rightclick-bg;
-
-                &:before {
-                    opacity: 0;
-                }
-
-                &:after {
-                    opacity: 1;
-                }
-
-                .jw-shortcuts-switch-knob {
-                    left: 60px;
-                }
-            }
+        .jw-shortcuts-header {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
         }
 
         .jw-shortcuts-tooltip-list {
@@ -111,11 +51,16 @@
             max-width: 340px;
             margin: 0 10px;
 
+            .jw-shortcuts-tooltip-descriptions {
+                width: 100%;
+            }
+
             .jw-shortcuts-row {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
                 margin: 10px 0;
+                width: 100%;
 
                 .jw-shortcuts-description {
                     margin-right: 10px;
@@ -123,8 +68,8 @@
                 }
 
                 .jw-shortcuts-key {
-                    background: @rightclick-secondary-bg;
-                    color: @rightclick-secondary-text;
+                    background: @rightclick-shortcuts-secondary-bg;
+                    color: @rightclick-shortcuts-secondary-text;
                     overflow: hidden;
                     padding: 7px 10px;
                     text-overflow: ellipsis;

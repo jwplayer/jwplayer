@@ -18,8 +18,8 @@ export default (shortcuts, title) => {
             `<div class="jw-reset jw-shortcuts-container">` +
                 `<div class="jw-shortcuts-header">` +
                     `<span class="jw-reset jw-shortcuts-title">${title}</span>` +
-                    `<button role="switch" class="jw-shortcuts-switch" data-jw-shortcuts-enabled="Enabled" data-jw-shortcuts-disabled="Disabled">` +
-                        `<span class="jw-shortcuts-switch-knob"></span>` +
+                    `<button role="switch" class="jw-switch" data-jw-switch-enabled="Enabled" data-jw-switch-disabled="Disabled">` +
+                        `<span class="jw-switch-knob"></span>` +
                     `</button>` +
                 `</div>` +
                 `<div class="jw-reset jw-shortcuts-tooltip-list">` +

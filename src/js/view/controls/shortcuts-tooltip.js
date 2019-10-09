@@ -6,17 +6,17 @@ import { STATE_PLAYING } from 'events/events';
 
 
 function getShortcuts(shortcuts) {
-    const { 
-        playPause, 
-        volumeToggle, 
-        fullscreenToggle, 
-        seekPercent, 
-        increaseVolume, 
-        decreaseVolume, 
-        seekForward, 
-        seekBackward, 
-        spacebar, 
-        captionsToggle 
+    const {
+        playPause,
+        volumeToggle,
+        fullscreenToggle,
+        seekPercent,
+        increaseVolume,
+        decreaseVolume,
+        seekForward,
+        seekBackward,
+        spacebar,
+        captionsToggle
     } = shortcuts;
 
     return [
@@ -63,9 +63,11 @@ export default function (container, api, model) {
     let isOpen = false;
     let lastState = null;
     const shortcuts = model.get('localization').shortcuts;
-    const template = createElement(shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts));
+    const template = createElement(
+        shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts)
+    );
     const settingsInteraction = { reason: 'settingsInteraction' };
-    const shortcutToggle = template.querySelector('.jw-shortcuts-switch');
+    const shortcutToggle = template.querySelector('.jw-switch');
 
     const open = () => {
         shortcutToggle.setAttribute('aria-checked', model.get('enableShortcuts'));
@@ -80,7 +82,7 @@ export default function (container, api, model) {
     };
     const close = () => {
         shortcutToggle.removeEventListener('click', toggleClickHandler);
-        removeClass(template, 'jw-open');     
+        removeClass(template, 'jw-open');
         document.removeEventListener('click', documentClickHandler);
         container.focus();
         isOpen = false;
@@ -89,14 +91,15 @@ export default function (container, api, model) {
         }
     };
     const documentClickHandler = (e) => {
-        if (!/jw-shortcuts/.test(e.target.className)) {
+        if (!/jw-shortcuts|jw-switch/.test(e.target.className)) {
             close();
         }
     };
     const toggleClickHandler = (e) => {
         const toggle = e.currentTarget;
-        toggle.setAttribute('aria-checked', toggle.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
-        model.set('enableShortcuts', toggle.getAttribute('aria-checked'));
+        const isChecked = toggle.getAttribute('aria-checked') === 'true' ? false : true;
+        toggle.setAttribute('aria-checked', isChecked);
+        model.set('enableShortcuts', isChecked);
     };
     const toggleVisibility = () => {
         if (isOpen) {
@@ -113,7 +116,7 @@ export default function (container, api, model) {
         //  Append close button to modal.
         prependChild(template, closeButton.element());
         closeButton.show();
-        
+
         //  Append modal to container
         container.appendChild(template);
     };

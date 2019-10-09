@@ -1,0 +1,63 @@
+.jw-shortcuts-container {
+    .jw-switch {
+        position: relative;
+        display: inline-block;
+        transition: ease-out 0.15s;
+        transition-property: opacity, background;
+        border-radius: 18px;
+        width: 80px;
+        height: 20px;
+        padding: 10px;
+        background: fade(#505050, 80%);
+        cursor: pointer;
+        font-size: inherit;
+        vertical-align: middle;
+
+        .jw-switch-knob {
+            position: absolute;
+            top: 2px;
+            left: 1px;
+            transition: ease-out 0.15s;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+            border-radius: 13px;
+            width: 15px;
+            height: 15px;
+            background: @rightclick-shortcuts-secondary-bg;
+        }
+
+        &:before,
+        &:after {
+            position: absolute;
+            top: 3px;
+            transition: inherit;
+            color: @rightclick-shortcuts-primary-text;
+        }
+
+        &:before {
+            content: attr(data-jw-switch-disabled);
+            right: 8px;
+        }
+
+        &:after {
+            content: attr(data-jw-switch-enabled);
+            left: 8px;
+            opacity: 0;
+        }
+
+        &[aria-checked="true"] {
+            background: #475470;
+
+            &:before {
+                opacity: 0;
+            }
+
+            &:after {
+                opacity: 1;
+            }
+
+            .jw-switch-knob {
+                left: 60px;
+            }
+        }
+    }
+}
