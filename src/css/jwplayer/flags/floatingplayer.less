@@ -52,14 +52,18 @@
 }
 
 .jw-flag-floating.jw-floating-dismissible {
+    &.jw-flag-ads .jw-float-icon {
+        display: flex;
+    }
+
     &.jw-state-paused,
     &:not(.jw-flag-user-inactive) {
-        .jw-float-icon {
-            display: flex;
-        }
-
         .jw-logo {
             display: none;
+        }
+
+        .jw-float-icon {
+            display: flex;
         }
     }
 }
