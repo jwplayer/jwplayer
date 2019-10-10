@@ -131,6 +131,7 @@ const Config = function(options, persisted) {
             'type',
             'mediaid',
             'image',
+            'images',
             'file',
             'sources',
             'tracks',
