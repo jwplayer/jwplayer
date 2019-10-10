@@ -57,16 +57,21 @@ const Captions = function(_model) {
     }, this);
 
     function _setSubtitlesTracks(tracks) {
-        if (!tracks.length) {
+        if (!Array.isArray(tracks)) {
             return;
         }
+        if (!tracks.length) {
+            _tracks = [];
+            _tracksById = {};
+            _unknownCount = 0;
+        } else {
+            for (let i = 0; i < tracks.length; i++) {
+                _addTrack(tracks[i]);
+            }
 
-        for (let i = 0; i < tracks.length; i++) {
-            _addTrack(tracks[i]);
+            // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
+            _tracks = Object.keys(_tracksById).map(id => _tracksById[id]);
         }
-
-        // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
-        _tracks = Object.keys(_tracksById).map(id => _tracksById[id]);
 
         _setCaptionsList();
     }
