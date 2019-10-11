@@ -381,12 +381,14 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     function getPosition(currentTime) {
         const seekRange = _this.getSeekRange();
-        if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
+        if (_this.isLive()) {
             const rangeUpdated = !dvrPosition || Math.abs(dvrEnd - seekRange.end) > 1;
             if (rangeUpdated) {
                 updateDvrPosition(seekRange);
             }
-            return dvrPosition;
+            if (isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
+                return dvrPosition;
+            }
         }
         return currentTime;
     }
@@ -428,6 +430,15 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
 
         return seekRange;
+    };
+
+    _this.getLiveLatency = function() {
+        let latency = null;
+        const end = _getSeekableEnd();
+        if (_this.isLive() && end) {
+            latency = end + (now() - dvrUpdatedTime) / 1000 - _videotag.currentTime;
+        }
+        return latency;
     };
 
     function _checkDelayedSeek(duration) {
