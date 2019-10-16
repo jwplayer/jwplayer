@@ -538,7 +538,11 @@ function _addCueToTrack(renderNatively, track, vttCue) {
         }
         insertCueInOrder(track, cue);
     } else {
-        track.addCue(vttCue);
+        try {
+            track.addCue(vttCue);
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
 
@@ -556,8 +560,12 @@ function insertCueInOrder(track, vttCue) {
             break;
         }
     }
-    track.addCue(vttCue);
-    temp.forEach(cue => track.addCue(cue));
+    try {
+        track.addCue(vttCue);
+        temp.forEach(cue => track.addCue(cue));
+    } catch (error) {
+        console.error(error);
+    }
     // Restore the original track state
     track.mode = mode;
 }
