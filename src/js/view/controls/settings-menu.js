@@ -130,7 +130,6 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     const setupPlaybackRatesMenu = (changedModel, playbackRates) => {
         const showPlaybackRateControls =
             model.get('supportsPlaybackRate') &&
-            model.get('streamType') !== 'LIVE' &&
             model.get('playbackRateControls') &&
             playbackRates.length > 1;
 

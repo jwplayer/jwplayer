@@ -145,9 +145,6 @@ class Model extends SimpleModel {
         // Clamp the rate between 0.25x and 4x
         playbackRate = Math.max(Math.min(playbackRate, 4), 0.25);
 
-        if (this.get('streamType') === 'LIVE') {
-            playbackRate = 1;
-        }
 
         this.set('defaultPlaybackRate', playbackRate);
 
