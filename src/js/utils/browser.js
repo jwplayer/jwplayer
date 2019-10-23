@@ -19,7 +19,9 @@ export const isFF = lazyUserAgentMatch(/gecko\//i);
 export const isIETrident = lazyUserAgentMatch(/trident\/.+rv:\s*11/i);
 export const isIPod = lazyUserAgentMatch(/iP(hone|od)/i);
 // Second check is for iPadOS 13, which uses desktop UA
-export const isIPad = lazyUserAgentMatch(/iPad/i) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+export const isIPad = () => function () {
+    return (userAgentMatch(/iPad/i) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+};
 export const isOSX = lazyUserAgentMatch(/Macintosh/i);
 // Check for Facebook App Version to see if it's Facebook
 export const isFacebook = lazyUserAgentMatch(/FBAV/i);
