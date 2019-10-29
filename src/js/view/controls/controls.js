@@ -202,8 +202,13 @@ export default class Controls extends Events {
             lastState = state;
 
             const settingsButton = this.controlbar.elements.settingsButton;
-            if (!visible && isKeyEvent && settingsButton) {
-                settingsButton.element().focus();
+
+            if (!visible && settingsButton) {
+                if (isKeyEvent) {
+                    settingsButton.element().focus();
+                } else {
+                    this.playerContainer.focus();
+                }   
             }
         };
         const settingsMenu = this.settingsMenu = createSettingsMenu(
