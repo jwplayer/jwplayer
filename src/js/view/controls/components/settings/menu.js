@@ -40,7 +40,7 @@ export function SettingsMenu(onVisibility, buttonVisibilityChanges, localization
 
         switch (key) {
             case 'Esc':
-                instance.close();
+                instance.close(e);
                 break;
             case 'Left':
                 if (prev) {
@@ -63,15 +63,15 @@ export function SettingsMenu(onVisibility, buttonVisibilityChanges, localization
                 break;
         }
         sourceEvent.stopPropagation();
-        if (/13|32|37|38|39|40/.test(sourceEvent.keyCode)) {
+        if (/13|27|32|37|38|39|40/.test(sourceEvent.keyCode)) {
             // Prevent keypresses from scrolling the screen
             sourceEvent.preventDefault();
             return false;
         }
     });
 
-    const closeButton = button('jw-settings-close', () => {
-        instance.close();
+    const closeButton = button('jw-settings-close', (evt) => {
+        instance.close(evt);
     }, localization.close, [cloneIcon('close')]);
 
     closeButton.ui.on('keydown', function(e) {

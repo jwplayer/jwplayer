@@ -206,8 +206,9 @@ export default class Controls extends Events {
             if (!visible && settingsButton) {
                 if (isKeyEvent) {
                     settingsButton.element().focus();
-                } else {
-                    this.playerContainer.focus();
+                } else if (evt) {
+                    const focusElement = model.get('isFloating') ? this.wrapperElement : this.playerContainer; 
+                    focusElement.focus();
                 }   
             }
         };
