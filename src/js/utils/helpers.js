@@ -11,6 +11,7 @@ import {
     suffix,
 } from 'utils/strings';
 import Timer from 'api/timer';
+import activeTab from 'utils/active-tab';
 import { tryCatch, JwError as Error } from 'utils/trycatch';
 import { indexOf } from 'utils/underscore';
 import { isIframe, flashVersion } from 'utils/browser';
@@ -66,6 +67,7 @@ const foreach = function (aData, fnEach) {
 const noop = function () {};
 
 const helpers = Object.assign({}, parser, validator, playerutils, {
+    activeTab,
     addClass,
     hasClass,
     removeClass,
