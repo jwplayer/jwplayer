@@ -47,7 +47,7 @@ function createCastButton(castToggle, localization) {
         SimpleTooltip(airplayButton.element(), 'airplay', localization.airplay);
 
         return airplayButton;
-    } else if (Browser.chrome || OS.iOS) {
+    } else if (Browser.chrome && window.chrome) {
         const castLauncher = document.createElement('google-cast-launcher');
         setAttribute(castLauncher, 'tabindex', '-1');
         castLauncher.className += ' jw-reset';
