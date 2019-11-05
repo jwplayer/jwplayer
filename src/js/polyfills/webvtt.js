@@ -635,6 +635,7 @@ BoxPosition.prototype.intersectPercentage = function (b2) {
 // the reference container's positions. This has to be done because this
 // box's positions are in reference to the viewport origin, whereas, CSS
 // values are in reference to their respective edges.
+console.log('fkjdhasfl');
 BoxPosition.prototype.toCSSCompatValues = function (reference) {
     return {
         top: this.top - reference.top,
