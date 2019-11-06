@@ -110,7 +110,7 @@ export default class AdProgramController extends ProgramController {
 
         const adMediaModelContext = model.mediaModel;
         provider.on(PLAYER_STATE, (event) => {
-            event.oldstate = model.get(PLAYER_STATE);
+            event.oldstate = event.oldstate || model.get(PLAYER_STATE);
             adMediaModelContext.set('mediaState', event.newstate);
         });
         provider.on(NATIVE_FULLSCREEN, this._nativeFullscreenHandler, this);
