@@ -640,30 +640,35 @@ BoxPosition.prototype.toCSSCompatValues = function (reference) {
         bottom: reference.bottom - this.bottom,
         left: this.left - reference.left,
         paddingRight: reference.right - this.right,
-        height: this.height
+        height: this.height,
+        width: this.width
     };
 };
 
 // Get an object that represents the box's position without anything extra.
 // Can pass a StyleBox, HTMLElement, or another BoxPositon.
-BoxPosition.getSimpleBoxPosition = function (obj) {
+BoxPosition.getSimpleBoxPosition = function (obj, pctMargin = 0) {
     const height = obj.div ? obj.div.offsetHeight : obj.tagName ? obj.offsetHeight : 0;
     const width = obj.div ? obj.div.offsetWidth : obj.tagName ? obj.offsetWidth : 0;
     const top = obj.div ? obj.div.offsetTop : obj.tagName ? obj.offsetTop : 0;
 
     obj = obj.div ? obj.div.getBoundingClientRect() :
         obj.tagName ? obj.getBoundingClientRect() : obj;
+
+    const trueHeight = obj.height || height;
+    // Some box positions need margin taken into account for proper calculation
+    const mrnOffset = Math.ceil(trueHeight * (pctMargin / 100) * 2);
+
     const ret = {
         left: obj.left,
         right: obj.right,
-        top: obj.top || top,
-        height: obj.height || height,
-        bottom: obj.bottom || (top + (obj.height || height)),
+        top: (obj.top || top) + mrnOffset,
+        height: trueHeight,
+        bottom: obj.bottom || (top + trueHeight - mrnOffset),
         width: obj.width || width
     };
     return ret;
 };
-
 // Move a StyleBox to its specified, or next best, position. The containerBox
 // is the box that contains the StyleBox, such as a div. boxPositions are
 // a list of other boxes that the styleBox can't overlap with.
@@ -679,7 +684,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
     function findBestPosition(b, axis) {
         let bestPosition;
         const specifiedPosition = new BoxPosition(b);
-        let percentage = 0; // Highest possible so the first thing we get is better.
+        let percentage = 0; // Lowest possible so the first thing we get is better.
 
         for (let i = 0; i < axis.length; i++) {
             while (b.overlapsOppositeAxis(containerBox, axis[i]) ||
@@ -899,7 +904,8 @@ WebVTT.processCues = function (window, cues, overlay, updateBoxPosition) {
     }
 
     const boxPositions = [];
-    const containerBox = BoxPosition.getSimpleBoxPosition(paddedOverlay);
+    const containerMrgn = parseFloat(CUE_BACKGROUND_PADDING.split('%')[0])
+    const containerBox = BoxPosition.getSimpleBoxPosition(paddedOverlay, containerMrgn);
     let currentNumOfLines = cues.reduce(function(totalLines, cue) {
         return totalLines + cue.text.split('\n').length;
     }, 0);
