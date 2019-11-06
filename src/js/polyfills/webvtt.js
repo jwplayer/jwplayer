@@ -420,6 +420,7 @@ function CueStyleBox(window, cue) {
         top: 0,
         bottom: 0,
         display: 'inline',
+        'white-space': 'pre',
         writingMode,
         unicodeBidi: 'plaintext',
     };
@@ -480,8 +481,7 @@ function CueStyleBox(window, cue) {
     // the right from there.
     if (!cue.vertical) {
         this.applyStyles({
-            left: this.formatStyle(textPos, '%'),
-            width: this.formatStyle(cue.size, '%')
+            left: this.formatStyle(textPos, '%')
         });
         // Vertical box orientation; textPos is the distance from the top edge of the
         // area to the top edge of the box and cue.size is the height extending
@@ -499,8 +499,7 @@ function CueStyleBox(window, cue) {
             bottom: this.formatStyle(box.bottom, 'px'),
             left: this.formatStyle(box.left, 'px'),
             paddingRight: this.formatStyle(box.right, 'px'),
-            height: 'auto',
-            width: this.formatStyle(box.width, 'px')
+            height: 'auto'
         });
     };
 }
@@ -641,8 +640,7 @@ BoxPosition.prototype.toCSSCompatValues = function (reference) {
         bottom: reference.bottom - this.bottom,
         left: this.left - reference.left,
         paddingRight: reference.right - this.right,
-        height: this.height,
-        width: this.width
+        height: this.height
     };
 };
 
@@ -681,13 +679,14 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
     function findBestPosition(b, axis) {
         let bestPosition;
         const specifiedPosition = new BoxPosition(b);
-        let percentage = 1; // Highest possible so the first thing we get is better.
+        let percentage = 0; // Highest possible so the first thing we get is better.
 
         for (let i = 0; i < axis.length; i++) {
             while (b.overlapsOppositeAxis(containerBox, axis[i]) ||
             (b.within(containerBox) && b.overlapsAny(boxPositions))) {
                 b.move(axis[i]);
             }
+
             // We found a spot where we aren't overlapping anything. This is our
             // best position.
             if (b.within(containerBox)) {
@@ -696,7 +695,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
             const p = b.intersectPercentage(containerBox);
             // If we're outside the container box less then we were on our last try
             // then remember this position as the best position.
-            if (percentage > p) {
+            if (percentage <= p) {
                 bestPosition = new BoxPosition(b);
                 percentage = p;
             }
@@ -775,9 +774,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
         // position.
         boxPosition.move(initialAxis, position);
     } else {
-        // If we have a percentage line value for the cue.
         const calculatedPercentage = (boxPosition.lineHeight / containerBox.height) * 100;
-
         switch (cue.lineAlign) {
             case 'middle':
                 linePos -= (calculatedPercentage / 2);
