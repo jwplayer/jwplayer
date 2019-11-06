@@ -458,15 +458,13 @@ function CueStyleBox(window, cue) {
     switch (cue.align) {
         case 'start':
         case 'left':
+        case 'end':
+        case 'right':
             textPos = cue.position;
             break;
         case 'middle':
         case 'center':
-            textPos = (cue.position === 'auto' ? 50 : cue.position) - (cue.size / 2);
-            break;
-        case 'end':
-        case 'right':
-            textPos = cue.position - cue.size;
+            textPos = (cue.position === 'auto' ? 0 : cue.position);
             break;
         default:
             break;
@@ -499,14 +497,14 @@ function CueStyleBox(window, cue) {
             bottom: this.formatStyle(box.bottom, 'px'),
             left: this.formatStyle(box.left, 'px'),
             paddingRight: this.formatStyle(box.right, 'px'),
-            height: 'auto'
+            height: this.formatStyle(box.height, 'px')
         });
     };
+
 }
 
 CueStyleBox.prototype = Object.create(StyleBox.prototype);
 CueStyleBox.prototype.constructor = CueStyleBox;
-
 // Represents the co-ordinates of an Element in a way that we can easily
 // compute things with such as if it overlaps or intersects with another Element.
 // Can initialize it with either a StyleBox or another BoxPosition.
@@ -647,7 +645,7 @@ BoxPosition.prototype.toCSSCompatValues = function (reference) {
 
 // Get an object that represents the box's position without anything extra.
 // Can pass a StyleBox, HTMLElement, or another BoxPositon.
-BoxPosition.getSimpleBoxPosition = function (obj, pctMargin = 0) {
+BoxPosition.getSimpleBoxPosition = function (obj) {
     const height = obj.div ? obj.div.offsetHeight : obj.tagName ? obj.offsetHeight : 0;
     const width = obj.div ? obj.div.offsetWidth : obj.tagName ? obj.offsetWidth : 0;
     const top = obj.div ? obj.div.offsetTop : obj.tagName ? obj.offsetTop : 0;
@@ -656,19 +654,35 @@ BoxPosition.getSimpleBoxPosition = function (obj, pctMargin = 0) {
         obj.tagName ? obj.getBoundingClientRect() : obj;
 
     const trueHeight = obj.height || height;
-    // Some box positions need margin taken into account for proper calculation
-    const mrnOffset = Math.ceil(trueHeight * (pctMargin / 100) * 2);
 
     const ret = {
         left: obj.left,
         right: obj.right,
-        top: (obj.top || top) + mrnOffset,
+        top: obj.top || top,
         height: trueHeight,
-        bottom: obj.bottom || (top + trueHeight - mrnOffset),
+        bottom: obj.bottom || (top + trueHeight),
         width: obj.width || width
     };
     return ret;
 };
+
+// Helper function for visualizing box position
+// Helpful when debugging
+function drawBox(b, container, color) { // eslint-disable-line no-unused-vars
+    let pos = b.toCSSCompatValues(container);
+    let el = document.createElement('div');
+    el.style.top = pos.top + 'px';
+    el.style.bottom = pos.bottom + 'px';
+    el.style.left = pos.left + 'px';
+    el.style.right = pos.right + 'px';
+    el.style.width = pos.width + 'px';
+    el.style.height = pos.height + 'px';
+    el.style.border = '2px solid ' + color;
+    el.style.position = 'absolute';
+    document.querySelector('.jw-text-track-container').appendChild(el);
+}
+
+
 // Move a StyleBox to its specified, or next best, position. The containerBox
 // is the box that contains the StyleBox, such as a div. boxPositions are
 // a list of other boxes that the styleBox can't overlap with.
@@ -681,10 +695,11 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
     // Passing ["+x", "-x"] will move the box first along the x axis in the positive
     // direction. If it doesn't find a good position for it there it will then move
     // it along the x axis in the negative direction.
-    function findBestPosition(b, axis) {
+    function findBestPosition(b, axis, posFindRecursiveCount = 0) {
         let bestPosition;
         const specifiedPosition = new BoxPosition(b);
         let percentage = 0; // Lowest possible so the first thing we get is better.
+        let bestAxis;
 
         for (let i = 0; i < axis.length; i++) {
             while (b.overlapsOppositeAxis(containerBox, axis[i]) ||
@@ -703,13 +718,23 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
             if (percentage <= p) {
                 bestPosition = new BoxPosition(b);
                 percentage = p;
+                bestAxis = axis[i];
             }
             // Reset the box position to the specified position.
             b = new BoxPosition(specifiedPosition);
         }
-        return bestPosition || specifiedPosition;
-    }
 
+        let finalPos = bestPosition || specifiedPosition;
+        // If we detect a best position based on one axis, oftentimes combining with the other axis
+        // results in a much better position.
+        // TODO: Make more performant by checking axis permutations above
+        if (posFindRecursiveCount === 0) {
+            let otherAxis = bestAxis.indexOf('y') === -1 ? ['-y', '+y'] : ['-x', '+x'];
+            return findBestPosition(finalPos, otherAxis, posFindRecursiveCount+1);
+        }
+
+        return finalPos;
+    }
     let boxPosition = new BoxPosition(styleBox);
     const cue = styleBox.cue;
     let linePos = computeLinePos(cue);
@@ -904,8 +929,7 @@ WebVTT.processCues = function (window, cues, overlay, updateBoxPosition) {
     }
 
     const boxPositions = [];
-    const containerMrgn = parseFloat(CUE_BACKGROUND_PADDING.split('%')[0])
-    const containerBox = BoxPosition.getSimpleBoxPosition(paddedOverlay, containerMrgn);
+    const containerBox = BoxPosition.getSimpleBoxPosition(paddedOverlay);
     let currentNumOfLines = cues.reduce(function(totalLines, cue) {
         return totalLines + cue.text.split('\n').length;
     }, 0);
