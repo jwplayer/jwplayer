@@ -455,16 +455,21 @@ function CueStyleBox(window, cue) {
     // https://w3c.github.io/webvtt/#ref-for-enumdef-positionalignsetting-1
     // The cue.align property is settable and other browsers use it as the offset from which the cue.position
     // value is applied.
+    let transform = '';
     switch (cue.align) {
         case 'start':
         case 'left':
-        case 'end':
-        case 'right':
             textPos = cue.position;
             break;
         case 'middle':
         case 'center':
-            textPos = (cue.position === 'auto' ? 0 : cue.position);
+            textPos = (cue.position === 'auto' ? 50 : cue.position);
+            transform = cue.vertical ? 'translateY(-50%)' : 'translateX(-50%)';
+            break;
+        case 'end':
+        case 'right':
+            textPos = (cue.position === 'auto' ? 100 : cue.position);
+            transform = cue.vertical ? 'translateY(-100%)' : 'translateX(-100%)';
             break;
         default:
             break;
@@ -479,7 +484,8 @@ function CueStyleBox(window, cue) {
     // the right from there.
     if (!cue.vertical) {
         this.applyStyles({
-            left: this.formatStyle(textPos, '%')
+            left: this.formatStyle(textPos, '%'),
+            transform
         });
         // Vertical box orientation; textPos is the distance from the top edge of the
         // area to the top edge of the box and cue.size is the height extending
@@ -487,7 +493,8 @@ function CueStyleBox(window, cue) {
     } else {
         this.applyStyles({
             top: this.formatStyle(textPos, '%'),
-            height: this.formatStyle(cue.size, '%')
+            height: this.formatStyle(cue.size, '%'),
+            transform
         });
     }
 
@@ -497,7 +504,8 @@ function CueStyleBox(window, cue) {
             bottom: this.formatStyle(box.bottom, 'px'),
             left: this.formatStyle(box.left, 'px'),
             paddingRight: this.formatStyle(box.right, 'px'),
-            height: this.formatStyle(box.height, 'px')
+            height: this.formatStyle(box.height, 'px'),
+            transform: ''
         });
     };
 
