@@ -674,23 +674,6 @@ BoxPosition.getSimpleBoxPosition = function (obj) {
     return ret;
 };
 
-// Helper function for visualizing box position
-// Helpful when debugging
-function drawBox(b, container, color) { // eslint-disable-line no-unused-vars
-    let pos = b.toCSSCompatValues(container);
-    let el = document.createElement('div');
-    el.style.top = pos.top + 'px';
-    el.style.bottom = pos.bottom + 'px';
-    el.style.left = pos.left + 'px';
-    el.style.right = pos.right + 'px';
-    el.style.width = pos.width + 'px';
-    el.style.height = pos.height + 'px';
-    el.style.border = '2px solid ' + color;
-    el.style.position = 'absolute';
-    document.querySelector('.jw-text-track-container').appendChild(el);
-}
-
-
 // Move a StyleBox to its specified, or next best, position. The containerBox
 // is the box that contains the StyleBox, such as a div. boxPositions are
 // a list of other boxes that the styleBox can't overlap with.
@@ -740,7 +723,6 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
             let otherAxis = bestAxis.indexOf('y') === -1 ? ['-y', '+y'] : ['-x', '+x'];
             return findBestPosition(finalPos, otherAxis, posFindRecursiveCount+1);
         }
-
         return finalPos;
     }
     let boxPosition = new BoxPosition(styleBox);
