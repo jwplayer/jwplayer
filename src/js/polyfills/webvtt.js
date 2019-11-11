@@ -719,7 +719,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
         // If we detect a best position based on one axis, oftentimes combining with the other axis
         // results in a much better position.
         // TODO: Make more performant by checking axis permutations above
-        if (posFindRecursiveCount === 0) {
+        if (bestAxis && posFindRecursiveCount === 0) {
             let otherAxis = bestAxis.indexOf('y') === -1 ? ['-y', '+y'] : ['-x', '+x'];
             return findBestPosition(finalPos, otherAxis, posFindRecursiveCount+1);
         }
