@@ -34,7 +34,7 @@ instances.forEach(api => {
     }
 });
 
-const reasonInteraction = function() {
+const reasonInteraction = function () {
     return { reason: 'interaction' };
 };
 export default class Controls extends Events {
@@ -110,7 +110,11 @@ export default class Controls extends Events {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
                 api.playToggle(reasonInteraction());
-                model.get('isFloating') ? this.wrapperElement.focus() : this.playerContainer.focus();
+                if (model.get('isFloating')) {
+                    this.wrapperElement.focus();
+                } else {
+                    this.playerContainer.focus();
+                }
             });
 
             this.div.appendChild(displayContainer.element());
