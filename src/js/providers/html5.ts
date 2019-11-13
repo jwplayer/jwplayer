@@ -535,8 +535,15 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
                     currentQuality = i;
                 }
                 if (label && levels[i].label === label) {
-                    return i;
+                    currentQuality = i;
+                    break;
                 }
+            }
+            if (!currentQuality) {
+                // Choose the highest quality
+                const sorted = levels.map((level, index) => Object.assign({ index, height: 0 }, level))
+                    .sort((a, b) => b.height - a.height);
+                currentQuality = sorted[0].index;
             }
         }
         visualQuality.reason = 'initial choice';
