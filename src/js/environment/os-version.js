@@ -31,6 +31,8 @@ export function osVersion(osEnvironment, agent) {
         version = execResult(/OS ([._\d]+)/.exec(agent), 1);
     } else if (osEnvironment.mac) {
         version = execResult(/Mac OS X (10[._\d]+)/.exec(agent), 1);
+    } else if (osEnvironment.tizen) {
+        version = execResult(/Tizen ([._\d]+)/.exec(agent), 1);
     }
 
     if (version) {

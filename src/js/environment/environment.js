@@ -16,6 +16,7 @@ import {
     isFlashSupported,
     flashVersion,
     isIframe,
+    isTizen,
 } from 'utils/browser';
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
@@ -151,6 +152,10 @@ Object.defineProperties(OS, {
         get: memoize(isWindows),
         enumerable: true
     },
+    tizen: {
+        get: memoize(isTizen),
+        enumerable: true
+    },
     version: {
         get: memoize(osVersion.bind(this, OS, userAgent)),
         enumerable: true
@@ -175,7 +180,7 @@ Object.defineProperties(Features, {
         enumerable: true
     },
     backgroundLoading: {
-        get: memoize(() => !(OS.iOS || Browser.safari)),
+        get: memoize(() => !(OS.iOS || Browser.safari || OS.tizen)),
         enumerable: true
     }
 });

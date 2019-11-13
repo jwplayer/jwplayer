@@ -82,6 +82,7 @@
 }
 
 .jw-button-container {
+    display: block;
     display: flex;
     flex-flow: row nowrap;
     flex: 1 1 auto;
@@ -89,6 +90,15 @@
     justify-content: center;
     width: 100%;
     padding: 0 12px;
+
+    div {
+        float: left;
+        line-height: 21px;
+    }
+
+    .jw-spacer ~ div {
+        float: right;
+    }
 }
 
 .jw-slider-horizontal {
