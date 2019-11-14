@@ -206,8 +206,14 @@ export default class Controls extends Events {
             lastState = state;
 
             const settingsButton = this.controlbar.elements.settingsButton;
-            if (!visible && isKeyEvent && settingsButton) {
-                settingsButton.element().focus();
+
+            if (!visible && settingsButton) {
+                if (isKeyEvent) {
+                    settingsButton.element().focus();
+                } else if (evt) {
+                    const focusElement = model.get('isFloating') ? this.wrapperElement : this.playerContainer;
+                    focusElement.focus();
+                }
             }
         };
         const settingsMenu = this.settingsMenu = createSettingsMenu(
@@ -315,7 +321,7 @@ export default class Controls extends Events {
                     break;
                 case 13: // enter
                 case 32: // space
-                    if (document.activeElement.className === 'jw-switch' && evt.keyCode === 32) {
+                    if (document.activeElement.classList.contains('jw-switch') && evt.keyCode === 32) {
                         // Let event bubble up so the spacebar can control the toggle if focused on
                         return true;
                     }

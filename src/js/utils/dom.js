@@ -65,6 +65,12 @@ export function sanitizeElementAttributes(element) {
         if (/^on/.test(name)) {
             element.removeAttribute(name);
         }
+        if (/href/.test(name)) {
+            const link = attributes[i].value;
+            if (/javascript:|javascript&colon;/.test(link)) {
+                element.removeAttribute(name);
+            }
+        }
     }
     return element;
 }

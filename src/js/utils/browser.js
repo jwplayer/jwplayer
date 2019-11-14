@@ -18,8 +18,9 @@ export function isFlashSupported() {
 export const isFF = lazyUserAgentMatch(/gecko\//i);
 export const isIETrident = lazyUserAgentMatch(/trident\/.+rv:\s*11/i);
 export const isIPod = lazyUserAgentMatch(/iP(hone|od)/i);
-export const isIPad = lazyUserAgentMatch(/iPad/i);
-export const isOSX = lazyUserAgentMatch(/Macintosh/i);
+export const isIPadOS13 = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+export const isIPad = () => userAgentMatch(/iPad/i) || isIPadOS13;
+export const isOSX = () => userAgentMatch(/Macintosh/i) && !isIPadOS13;
 // Check for Facebook App Version to see if it's Facebook
 export const isFacebook = lazyUserAgentMatch(/FBAV/i);
 
@@ -44,7 +45,7 @@ export function isSafari() {
 }
 
 export function isIOS() {
-    return userAgentMatch(/iP(hone|ad|od)/i);
+    return userAgentMatch(/iP(hone|ad|od)/i) || isIPadOS13;
 }
 
 export function isAndroidNative() {

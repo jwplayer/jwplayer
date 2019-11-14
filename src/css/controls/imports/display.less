@@ -42,6 +42,11 @@ display icons
     display: inline-block;
 }
 
+.jwplayer .jw-display-icon-container {
+    // float in case custom skin tries to override inline-block
+    float: left;
+}
+
 .jw-display-icon-container {
     display: inline-block;
     padding: (@mobile-touch-target * 0.125);

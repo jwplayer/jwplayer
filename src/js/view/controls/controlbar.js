@@ -6,7 +6,6 @@ import TimeSlider from 'view/controls/components/timeslider';
 import VolumeTooltipIcon from 'view/controls/components/volumetooltipicon';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
-import ariaLabel from 'utils/aria';
 import Events from 'utils/backbone.events';
 import { prependChild, setAttribute, toggleClass, openLink } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
@@ -38,7 +37,6 @@ function div(classes) {
 }
 
 function createCastButton(castToggle, localization) {
-
     if (Browser.safari) {
         const airplayButton = button(
             'jw-icon-airplay jw-off',
@@ -49,45 +47,24 @@ function createCastButton(castToggle, localization) {
         SimpleTooltip(airplayButton.element(), 'airplay', localization.airplay);
 
         return airplayButton;
+    } else if (Browser.chrome && window.chrome) {
+        const castLauncher = document.createElement('google-cast-launcher');
+        setAttribute(castLauncher, 'tabindex', '-1');
+        castLauncher.className += ' jw-reset';
+        const castButton = button(
+            'jw-icon-cast',
+            null,
+            localization.cast);
+        castButton.ui.off();
+        const element = castButton.element();
+        element.style.cursor = 'pointer';
+        element.appendChild(castLauncher);
+        castButton.button = castLauncher;
+
+        SimpleTooltip(element, 'chromecast', localization.cast);
+
+        return castButton;
     }
-
-    if (!Browser.chrome || OS.iOS) {
-        return;
-    }
-
-
-    const castButton = document.createElement('google-cast-launcher');
-    setAttribute(castButton, 'tabindex', '-1');
-    castButton.className += ' jw-reset';
-
-    const element = document.createElement('div');
-    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
-    element.style.display = 'none';
-    element.style.cursor = 'pointer';
-    element.appendChild(castButton);
-    ariaLabel(element, localization.cast);
-
-    SimpleTooltip(element, 'chromecast', localization.cast);
-
-    return {
-        element: function() {
-            return element;
-        },
-        toggle: function(m) {
-            if (m) {
-                this.show();
-            } else {
-                this.hide();
-            }
-        },
-        show: function() {
-            element.style.display = '';
-        },
-        hide: function() {
-            element.style.display = 'none';
-        },
-        button: castButton
-    };
 }
 
 function reasonInteraction() {
@@ -338,7 +315,7 @@ export default class Controlbar {
         }
 
         if (elements.cast && elements.cast.button) {
-            const castUi = new UI(elements.cast.element()).on('click tap enter', function(evt) {
+            const castUi = elements.cast.ui.on('click tap enter', function(evt) {
                 // controlbar cast button needs to manually trigger a click
                 // on the native cast button for taps and enter key
                 if (evt.type !== 'click') {

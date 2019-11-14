@@ -420,6 +420,7 @@ function CueStyleBox(window, cue) {
         top: 0,
         bottom: 0,
         display: 'inline',
+        'white-space': 'pre',
         writingMode,
         unicodeBidi: 'plaintext',
     };
@@ -454,6 +455,7 @@ function CueStyleBox(window, cue) {
     // https://w3c.github.io/webvtt/#ref-for-enumdef-positionalignsetting-1
     // The cue.align property is settable and other browsers use it as the offset from which the cue.position
     // value is applied.
+    let transform = '';
     switch (cue.align) {
         case 'start':
         case 'left':
@@ -461,11 +463,13 @@ function CueStyleBox(window, cue) {
             break;
         case 'middle':
         case 'center':
-            textPos = (cue.position === 'auto' ? 50 : cue.position) - (cue.size / 2);
+            textPos = (cue.position === 'auto' ? 50 : cue.position);
+            transform = cue.vertical ? 'translateY(-50%)' : 'translateX(-50%)';
             break;
         case 'end':
         case 'right':
-            textPos = cue.position - cue.size;
+            textPos = (cue.position === 'auto' ? 100 : cue.position);
+            transform = cue.vertical ? 'translateY(-100%)' : 'translateX(-100%)';
             break;
         default:
             break;
@@ -481,7 +485,7 @@ function CueStyleBox(window, cue) {
     if (!cue.vertical) {
         this.applyStyles({
             left: this.formatStyle(textPos, '%'),
-            width: this.formatStyle(cue.size, '%')
+            transform
         });
         // Vertical box orientation; textPos is the distance from the top edge of the
         // area to the top edge of the box and cue.size is the height extending
@@ -489,7 +493,8 @@ function CueStyleBox(window, cue) {
     } else {
         this.applyStyles({
             top: this.formatStyle(textPos, '%'),
-            height: this.formatStyle(cue.size, '%')
+            height: this.formatStyle(cue.size, '%'),
+            transform
         });
     }
 
@@ -499,15 +504,15 @@ function CueStyleBox(window, cue) {
             bottom: this.formatStyle(box.bottom, 'px'),
             left: this.formatStyle(box.left, 'px'),
             paddingRight: this.formatStyle(box.right, 'px'),
-            height: 'auto',
-            width: this.formatStyle(box.width, 'px')
+            height: this.formatStyle(box.height, 'px'),
+            transform: ''
         });
     };
+
 }
 
 CueStyleBox.prototype = Object.create(StyleBox.prototype);
 CueStyleBox.prototype.constructor = CueStyleBox;
-
 // Represents the co-ordinates of an Element in a way that we can easily
 // compute things with such as if it overlaps or intersects with another Element.
 // Can initialize it with either a StyleBox or another BoxPosition.
@@ -655,12 +660,15 @@ BoxPosition.getSimpleBoxPosition = function (obj) {
 
     obj = obj.div ? obj.div.getBoundingClientRect() :
         obj.tagName ? obj.getBoundingClientRect() : obj;
+
+    const trueHeight = obj.height || height;
+
     const ret = {
         left: obj.left,
         right: obj.right,
         top: obj.top || top,
-        height: obj.height || height,
-        bottom: obj.bottom || (top + (obj.height || height)),
+        height: trueHeight,
+        bottom: obj.bottom || (top + trueHeight),
         width: obj.width || width
     };
     return ret;
@@ -678,16 +686,18 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
     // Passing ["+x", "-x"] will move the box first along the x axis in the positive
     // direction. If it doesn't find a good position for it there it will then move
     // it along the x axis in the negative direction.
-    function findBestPosition(b, axis) {
+    function findBestPosition(b, axis, posFindRecursiveCount = 0) {
         let bestPosition;
         const specifiedPosition = new BoxPosition(b);
-        let percentage = 1; // Highest possible so the first thing we get is better.
+        let percentage = 0; // Lowest possible so the first thing we get is better.
+        let bestAxis;
 
         for (let i = 0; i < axis.length; i++) {
             while (b.overlapsOppositeAxis(containerBox, axis[i]) ||
             (b.within(containerBox) && b.overlapsAny(boxPositions))) {
                 b.move(axis[i]);
             }
+
             // We found a spot where we aren't overlapping anything. This is our
             // best position.
             if (b.within(containerBox)) {
@@ -696,16 +706,25 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
             const p = b.intersectPercentage(containerBox);
             // If we're outside the container box less then we were on our last try
             // then remember this position as the best position.
-            if (percentage > p) {
+            if (percentage <= p) {
                 bestPosition = new BoxPosition(b);
                 percentage = p;
+                bestAxis = axis[i];
             }
             // Reset the box position to the specified position.
             b = new BoxPosition(specifiedPosition);
         }
-        return bestPosition || specifiedPosition;
-    }
 
+        let finalPos = bestPosition || specifiedPosition;
+        // If we detect a best position based on one axis, oftentimes combining with the other axis
+        // results in a much better position.
+        // TODO: Make more performant by checking axis permutations above
+        if (bestAxis && posFindRecursiveCount === 0) {
+            let otherAxis = bestAxis.indexOf('y') === -1 ? ['-y', '+y'] : ['-x', '+x'];
+            return findBestPosition(finalPos, otherAxis, posFindRecursiveCount+1);
+        }
+        return finalPos;
+    }
     let boxPosition = new BoxPosition(styleBox);
     const cue = styleBox.cue;
     let linePos = computeLinePos(cue);
@@ -775,9 +794,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
         // position.
         boxPosition.move(initialAxis, position);
     } else {
-        // If we have a percentage line value for the cue.
         const calculatedPercentage = (boxPosition.lineHeight / containerBox.height) * 100;
-
         switch (cue.lineAlign) {
             case 'middle':
                 linePos -= (calculatedPercentage / 2);
