@@ -1,5 +1,6 @@
 import shortcutTooltipTemplate from 'view/controls/templates/shortcuts-tooltip';
 import { createElement, removeClass, addClass, prependChild } from 'utils/dom';
+import UI from 'utils/ui';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { STATE_PLAYING } from 'events/events';
@@ -67,11 +68,11 @@ export default function (container, api, model) {
         shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts)
     );
     const settingsInteraction = { reason: 'settingsInteraction' };
-    const shortcutToggle = template.querySelector('.jw-switch');
+    const shortcutToggleUi = new UI(template.querySelector('.jw-switch'));
 
     const open = () => {
-        shortcutToggle.setAttribute('aria-checked', model.get('enableShortcuts'));
-        shortcutToggle.addEventListener('click', toggleClickHandler);
+        shortcutToggleUi.el.setAttribute('aria-checked', model.get('enableShortcuts'));
+        shortcutToggleUi.on('click tap enter', toggleClickHandler);
 
         addClass(template, 'jw-open');
         lastState = model.get('state');
@@ -81,7 +82,7 @@ export default function (container, api, model) {
         api.pause(settingsInteraction);
     };
     const close = () => {
-        shortcutToggle.removeEventListener('click', toggleClickHandler);
+        shortcutToggleUi.off('click tap enter', toggleClickHandler);
         removeClass(template, 'jw-open');
         document.removeEventListener('click', documentClickHandler);
         container.focus();
@@ -109,9 +110,7 @@ export default function (container, api, model) {
         }
     };
     const render = () => {
-        const closeButton = button('jw-shortcuts-close', () => {
-            close();
-        }, model.get('localization').close, [cloneIcon('close')]);
+        const closeButton = button('jw-shortcuts-close', close, model.get('localization').close, [cloneIcon('close')]);
 
         //  Append close button to modal.
         prependChild(template, closeButton.element());
