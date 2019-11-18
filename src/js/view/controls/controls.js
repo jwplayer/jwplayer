@@ -101,7 +101,11 @@ export default class Controls extends Events {
         this.logo = this.playerContainer.querySelector('.jw-logo');
 
         const touchMode = model.get('touchMode');
-        const floatingElement = model.get('isFloating') ? this.wrapperElement : this.playerContainer;
+        
+        const focusFloatingElement = () => {
+            const floatingElement = model.get('isFloating') ? this.wrapperElement : this.playerContainer;
+            floatingElement.focus();
+        };
 
         // Display Buttons
         if (!this.displayContainer) {
@@ -111,7 +115,7 @@ export default class Controls extends Events {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
                 api.playToggle(reasonInteraction());
-                floatingElement.focus();
+                focusFloatingElement();
             });
 
             this.div.appendChild(displayContainer.element());
@@ -208,7 +212,7 @@ export default class Controls extends Events {
                 if (isKeyEvent) {
                     settingsButton.element().focus();
                 } else if (evt) {
-                    floatingElement.focus();
+                    focusFloatingElement();
                 }
             }
         };
