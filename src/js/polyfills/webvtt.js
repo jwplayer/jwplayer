@@ -721,7 +721,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
         // TODO: Make more performant by checking axis permutations above
         if (bestAxis && posFindRecursiveCount === 0) {
             let otherAxis = bestAxis.indexOf('y') === -1 ? ['-y', '+y'] : ['-x', '+x'];
-            return findBestPosition(finalPos, otherAxis, posFindRecursiveCount+1);
+            return findBestPosition(finalPos, otherAxis, posFindRecursiveCount + 1);
         }
         return finalPos;
     }
