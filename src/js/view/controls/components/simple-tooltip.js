@@ -19,6 +19,10 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
             if (instance.touchEvent) {
                 return;
             }
+            if (instance.suppress) {
+                instance.suppress = false;
+                return;
+            }
 
             redraw(true);
 

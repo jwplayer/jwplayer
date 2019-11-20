@@ -9,7 +9,7 @@ import Controlbar from 'view/controls/controlbar';
 import DisplayContainer from 'view/controls/display-container';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
-import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/settings-menu';
+import { SettingsMenu } from 'view/controls/components/menu/menu.js';
 import { getBreakpoint } from 'view/utils/breakpoint';
 import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
@@ -183,14 +183,19 @@ export default class Controls extends Events {
 
         this.div.appendChild(controlbar.element());
 
-        // Settings Menu
+        const localization = model.get('localization');
+        const settingsMenu = this.settingsMenu = SettingsMenu(api, model, this.controlbar, localization);
         let lastState = null;
-        const visibilityChangeHandler = (visible, evt) => {
+
+        this.controlbar.on('menuVisibility', ({ visible, evt }) => {
             const state = model.get('state');
             const settingsInteraction = { reason: 'settingsInteraction' };
+            const settingsButton = this.controlbar.elements.settingsButton;
             const isKeyEvent = (evt && evt.sourceEvent || evt || {}).type === 'keydown';
-
-            toggleClass(this.div, 'jw-settings-open', visible);
+            const activeTimeout = (visible || isKeyEvent) ? 0 : ACTIVE_TIMEOUT;
+            // Trigger userActive so that a dismissive click outside the player can hide the controlbar
+            this.userActive(activeTimeout);
+            lastState = state;
             if (getBreakpoint(model.get('containerWidth')) < 2) {
                 if (visible && state === STATE_PLAYING) {
                     // Pause playback on open if we're currently playing
@@ -200,34 +205,23 @@ export default class Controls extends Events {
                     api.play(settingsInteraction);
                 }
             }
-
-            // Trigger userActive so that a dismissive click outside the player can hide the controlbar
-            const activeTimeout = (visible || isKeyEvent) ? 0 : ACTIVE_TIMEOUT;
-            this.userActive(activeTimeout);
-            lastState = state;
-
-            const settingsButton = this.controlbar.elements.settingsButton;
-
-            if (!visible && settingsButton) {
-                if (isKeyEvent) {
-                    settingsButton.element().focus();
-                } else if (evt) {
-                    focusFloatingElement();
-                }
+            if (!visible && isKeyEvent && settingsButton) {
+                settingsButton.element().focus();
             }
-        };
-        const settingsMenu = this.settingsMenu = createSettingsMenu(
-            controlbar,
-            visibilityChangeHandler,
-            model.get('localization')
-        );
-        setupSubmenuListeners(settingsMenu, controlbar, model, api);
+        });
+        settingsMenu.on('menuVisibility', (menu) => this.controlbar.trigger('menuVisibility', menu));
+        this.controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
+            if (isDefault) {
+                return settingsMenu.defaultChild().toggle(event);
+            }
+            settingsMenu.children[submenuName].toggle(event);
+        });
 
         if (OS.mobile) {
-            this.div.appendChild(settingsMenu.element());
+            this.div.appendChild(settingsMenu.el);
         } else {
             this.playerContainer.setAttribute('aria-describedby', 'jw-shortcuts-tooltip-explanation');
-            this.div.insertBefore(settingsMenu.element(), controlbar.element());
+            this.div.insertBefore(settingsMenu.el, controlbar.element());
         }
 
         // Unmute Autoplay behavior.
@@ -492,7 +486,6 @@ export default class Controls extends Events {
 
         if (settingsMenu) {
             settingsMenu.destroy();
-            div.removeChild(settingsMenu.element());
         }
 
         if (infoOverlay) {
