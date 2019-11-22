@@ -81,8 +81,9 @@ export default function (container, api, model) {
         isOpen = true;
         api.pause(settingsInteraction);
     };
+
     const close = () => {
-        shortcutToggleUi.off('click tap enter', toggleClickHandler);
+        shortcutToggleUi.off();
         removeClass(template, 'jw-open');
         document.removeEventListener('click', documentClickHandler);
         container.focus();
@@ -91,17 +92,24 @@ export default function (container, api, model) {
             api.play(settingsInteraction);
         }
     };
+
+    const destroy = () => {
+        close();
+    };
+
     const documentClickHandler = (e) => {
         if (!/jw-shortcuts|jw-switch/.test(e.target.className)) {
             close();
         }
     };
+
     const toggleClickHandler = (e) => {
         const toggle = e.currentTarget;
         const isChecked = toggle.getAttribute('aria-checked') === 'true' ? false : true;
         toggle.setAttribute('aria-checked', isChecked);
         model.set('enableShortcuts', isChecked);
     };
+
     const toggleVisibility = () => {
         if (isOpen) {
             close();
@@ -109,6 +117,7 @@ export default function (container, api, model) {
             open();
         }
     };
+    
     const render = () => {
         const closeButton = button('jw-shortcuts-close', close, model.get('localization').close, [cloneIcon('close')]);
 
@@ -124,8 +133,9 @@ export default function (container, api, model) {
 
     return {
         el: template,
-        close,
         open,
-        toggleVisibility,
+        close,
+        destroy,
+        toggleVisibility
     };
 }

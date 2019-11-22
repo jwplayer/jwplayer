@@ -446,7 +446,16 @@ export default class Controls extends Events {
     }
 
     disable(model) {
-        const { nextUpToolTip, settingsMenu, infoOverlay, controlbar, rightClickMenu, playerContainer, div } = this;
+        const { 
+            nextUpToolTip,
+            settingsMenu,
+            infoOverlay,
+            controlbar,
+            rightClickMenu,
+            shortcutsTooltip,
+            playerContainer,
+            div
+        } = this;
 
         clearTimeout(this.activeTimeout);
         this.activeTimeout = -1;
@@ -500,6 +509,10 @@ export default class Controls extends Events {
 
         if (infoOverlay) {
             infoOverlay.destroy();
+        }
+
+        if (shortcutsTooltip) {
+            shortcutsTooltip.destroy();
         }
 
         this.removeBackdrop();
