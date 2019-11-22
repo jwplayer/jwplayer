@@ -95,6 +95,7 @@ export default function (container, api, model) {
 
     const destroy = () => {
         close();
+        shortcutToggleUi.destroy();
     };
 
     const documentClickHandler = (e) => {
