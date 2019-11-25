@@ -12,11 +12,11 @@ const categoryButton = (menu, localizedName) => {
         playbackRates: 'playback-rate',
     };
 
-    // Allows override from Commercial Sharing menu
     let icon = icons[name];
-    if (!icon) {
-        icon = icons.quality;
+    if (!icon && !menu.icon) {
+        return;
     }
+
     const menuCategoryButton = button(
         `jw-settings-${name}`, 
         (event) => {

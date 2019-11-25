@@ -102,7 +102,7 @@ export default class Controls extends Events {
 
         const touchMode = model.get('touchMode');
         
-        const focusFloatingElement = () => {
+        const focusPlayerElement = () => {
             const floatingElement = model.get('isFloating') ? this.wrapperElement : this.playerContainer;
             floatingElement.focus();
         };
@@ -115,7 +115,7 @@ export default class Controls extends Events {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
                 api.playToggle(reasonInteraction());
-                focusFloatingElement();
+                focusPlayerElement();
             });
 
             this.div.appendChild(displayContainer.element());
@@ -184,10 +184,11 @@ export default class Controls extends Events {
         this.div.appendChild(controlbar.element());
 
         const localization = model.get('localization');
-        const settingsMenu = this.settingsMenu = SettingsMenu(api, model, this.controlbar, localization);
+        const settingsMenu = this.settingsMenu = SettingsMenu(api, model.player, this.controlbar, localization);
         let lastState = null;
 
         this.controlbar.on('menuVisibility', ({ visible, evt }) => {
+            debugger;
             const state = model.get('state');
             const settingsInteraction = { reason: 'settingsInteraction' };
             const settingsButton = this.controlbar.elements.settingsButton;
@@ -207,6 +208,8 @@ export default class Controls extends Events {
             }
             if (!visible && isKeyEvent && settingsButton) {
                 settingsButton.element().focus();
+            } else if (evt) {
+                focusPlayerElement();
             }
         });
         settingsMenu.on('menuVisibility', (menu) => this.controlbar.trigger('menuVisibility', menu));
