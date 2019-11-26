@@ -72,7 +72,6 @@ export default function (container, api, model) {
 
     const open = () => {
         shortcutToggleUi.el.setAttribute('aria-checked', model.get('enableShortcuts'));
-        shortcutToggleUi.on('click tap enter', toggleClickHandler);
 
         addClass(template, 'jw-open');
         lastState = model.get('state');
@@ -83,7 +82,6 @@ export default function (container, api, model) {
     };
 
     const close = () => {
-        shortcutToggleUi.off();
         removeClass(template, 'jw-open');
         document.removeEventListener('click', documentClickHandler);
         container.focus();
@@ -95,6 +93,7 @@ export default function (container, api, model) {
 
     const destroy = () => {
         close();
+        shortcutToggleUi.off();
         shortcutToggleUi.destroy();
     };
 
@@ -128,6 +127,8 @@ export default function (container, api, model) {
 
         //  Append modal to container
         container.appendChild(template);
+        
+        shortcutToggleUi.on('click tap enter', toggleClickHandler);
     };
 
     render();
