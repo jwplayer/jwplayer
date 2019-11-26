@@ -98,7 +98,7 @@ function View(_api, _model) {
     }
 
     function fosMobileBehavior() {
-        return OS.mobile && !deviceIsLandscape();
+        return _isMobile && !deviceIsLandscape();
     }
 
     // Compute player size, handle DOM removal/insertion, add to views-manager
@@ -354,7 +354,7 @@ function View(_api, _model) {
         _lastWidth = _lastHeight = null;
 
         // Setup floating scroll handler
-        if (_floatingConfig && OS.mobile) {
+        if (_floatingConfig && _isMobile) {
             viewsManager.addScrollHandler(throttledMobileFloatScrollHandler);
         }
 
@@ -460,9 +460,6 @@ function View(_api, _model) {
                 }
             },
             tap: () => {
-                _playerElement.removeEventListener('mousemove', moveHandler);
-                _playerElement.removeEventListener('mouseout', outHandler);
-                _playerElement.removeEventListener('mouseover', overHandler);
                 _this.trigger(DISPLAY_CLICK);
                 if (settingsMenuVisible()) {
                     _controls.settingsMenu.close();
@@ -499,10 +496,12 @@ function View(_api, _model) {
             },
             doubleClick: () => _controls && api.setFullscreen()
         });
-
-        _playerElement.addEventListener('mousemove', moveHandler);
-        _playerElement.addEventListener('mouseover', overHandler);
-        _playerElement.addEventListener('mouseout', outHandler);
+        
+        if (!_isMobile) {
+            _playerElement.addEventListener('mousemove', moveHandler);
+            _playerElement.addEventListener('mouseover', overHandler);
+            _playerElement.addEventListener('mouseout', outHandler);
+        }
 
         return clickHandler;
     }
@@ -1108,7 +1107,7 @@ function View(_api, _model) {
             this.resizeListener.destroy();
             delete this.resizeListener;
         }
-        if (_floatingConfig && OS.mobile) {
+        if (_floatingConfig && _isMobile) {
             viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
         }
     };
