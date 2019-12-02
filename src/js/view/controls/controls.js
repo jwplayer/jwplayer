@@ -188,7 +188,6 @@ export default class Controls extends Events {
         let lastState = null;
 
         this.controlbar.on('menuVisibility', ({ visible, evt }) => {
-            debugger;
             const state = model.get('state');
             const settingsInteraction = { reason: 'settingsInteraction' };
             const settingsButton = this.controlbar.elements.settingsButton;

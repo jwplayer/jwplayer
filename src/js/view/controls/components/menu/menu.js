@@ -82,7 +82,6 @@ export default class Menu extends Events {
     }
     createItems(genericItems, action, options = {}, Item = RadioMenuItem) {
         const itemType = this.name;
-        const categoryButtonElement = this.categoryButton.element();
         const menuItems = genericItems.map((item, index) => {
             let content;
             let argument;
@@ -124,19 +123,22 @@ export default class Menu extends Events {
                     return;
                 }
                 action(argument || index);
-                if (menuItem.activate) {
-                    menuItem.activate();
-                }
                 if (menuItem.deactivate) {  
                     this.items.filter(sibling => sibling.active === true).forEach(activeItem => {
                         activeItem.deactivate();
                     });
                     this.mainMenu.close(evt);
                 }
+                if (menuItem.activate) {
+                    menuItem.activate();
+                }
             };
 
             const menuItem = new Item(content, menuItemClick.bind(this));
-
+            let topbarTarget = 
+                this.categoryButton && this.categoryButton.element() || 
+                this.parentMenu.categoryButton && this.parentMenu.categoryButton.element() ||
+                this.mainMenu.topbar.firstChild;
             menuItem.ui.on('keydown', function(event) {
                 const focusElement = (ele, i) => {
                     if (ele) {
@@ -146,8 +148,8 @@ export default class Menu extends Events {
                     }
                 };
                 const evt = event.sourceEvent;
-                const nextItem = nextSibling(categoryButtonElement);
-                const prevItem = previousSibling(categoryButtonElement);
+                const nextItem = nextSibling(topbarTarget);
+                const prevItem = previousSibling(topbarTarget);
                 const nextSubItem = nextSibling(evt.target);
                 const prevSubItem = previousSibling(evt.target);
                 const key = evt.key.replace(/(Arrow|ape)/, '');
@@ -257,7 +259,7 @@ export default class Menu extends Events {
             this.mainMenu.openMenus.push(this.name);
             if (!this.mainMenu.visible) {
                 this.mainMenu.open(evt);
-                if (this.items && evt.type === 'enter') {
+                if (this.items && evt && evt.type === 'enter') {
                     this.items[0].el.focus();
                 } else {
                     // Don't show tooltip if auto-focusing for navigation's sake.
@@ -288,7 +290,7 @@ export default class Menu extends Events {
         } else {
             this.el.parentNode.classList.remove('jw-settings-open');
             this.trigger('menuVisibility', { visible: false, evt });
-            document.removeEventListener('click', (e) => this.onDocumentClick(e));
+            document.removeEventListener('click', this.onDocumentClick);
             if (this.mainMenu.openMenus.length) {
                 this.mainMenu.closeAll();
             }
@@ -318,6 +320,7 @@ export default class Menu extends Events {
         if (this.isSubmenu) {
             this.parentMenu.topbar.removeChild(this.categoryButton.element());
             this.categoryButton.ui.destroy();
+            delete this.parentMenu;
         } else {
             this.ui.destroy();
         }
@@ -395,7 +398,6 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
 
 export const SettingsMenu = (api, model, controlbar, localization) => {
     const settingsMenu = new Menu('settings', null, localization);
-
     const changeMenuItems = (menuName, items, onItemSelect, defaultItemIndex, itemOptions) => {
         const controlBarButton = controlbar.elements[`${menuName}Button`];
         if (!items || items.length <= 1) {
@@ -417,8 +419,7 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
             controlBarButton.show();
         }
     };
-    
-    model.change('levels', (changedModel, levels) => {
+    const setLevelsMenu = (levels) => {
         const menuItemOptions = { defaultText: localization.auto };
         changeMenuItems(
             'quality', 
@@ -430,6 +431,9 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
         const childMenus = settingsMenu.children;
         const shouldShowGear = !!childMenus.quality || Object.keys(childMenus).length > 1;
         controlbar.elements.settingsButton.toggle(shouldShowGear);
+    };
+    model.change('levels', (changedModel, levels) => {
+        setLevelsMenu(levels);
     }, settingsMenu);
     const changeAutoLabel = function (qualityLevel, qualityMenu, currentIndex) {
         const levels = model.get('levels');
@@ -437,7 +441,7 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
         if (!levels || levels[0].label !== 'Auto') {
             return;
         }
-        const item = qualityMenu.items[0].element().querySelector('.jw-auto-label');
+        const item = qualityMenu.items[0].el.querySelector('.jw-auto-label');
         const level = levels[qualityLevel.index] || { label: '' };
 
         item.textContent = currentIndex ? '' : level.label;
@@ -479,7 +483,7 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
             controlbar.toggleCaptionsButtonState(!!index);
         }
     }, settingsMenu);
-    const setPlaybackRatesMenu = (playbackRates = model.get('playbackRates')) => {
+    const setPlaybackRatesMenu = (playbackRates) => {
         const showPlaybackRateControls =
             model.get('supportsPlaybackRate') &&
             model.get('streamType') !== 'LIVE' &&
@@ -504,13 +508,16 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
     model.on('change:playbackRates', (changedModel, playbackRates) => {
         setPlaybackRatesMenu(playbackRates);
     }, settingsMenu);
-    model.on('change:audioTracks', (changedModel, audioTracks) => {
+    const setAudioTracksMenu = (audioTracks) => {
         changeMenuItems(
             'audioTracks', 
             audioTracks, 
             (index) => api.setCurrentAudioTrack(index), 
             model.get('currentAudioTrack')
         );
+    };
+    model.on('change:audioTracks', (changedModel, audioTracks) => {
+        setAudioTracksMenu(audioTracks);
     }, settingsMenu);
     model.on('change:playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
@@ -535,7 +542,7 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
         }
     }, settingsMenu);
     model.on('change:playbackRateControls', () => {
-        setPlaybackRatesMenu();
+        setPlaybackRatesMenu(model.get('playbackRates'));
     });
     model.on('change:castActive', (changedModel, active, previousState) => {
         if (active === previousState) {
@@ -547,13 +554,13 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
             settingsMenu.removeMenu('quality');
             settingsMenu.removeMenu('playbackRates');
         } else {
-            model.trigger('change:audioTracks', null, model.get('audioTracks'));
-            model.trigger('change:levels', null, model.get('levels'));
-            model.trigger('change:playbackRates', null, model.get('playbackRates'));
+            setAudioTracksMenu(model.get('audioTracks'));
+            setLevelsMenu(model.get('levels'));
+            setPlaybackRatesMenu(model.get('playbackRates'));
         }
     }, settingsMenu);
     model.on('change:streamType', () => {
-        model.trigger('change:playbackRates', null, model.get('playbackRates'));
+        setPlaybackRatesMenu(model.get('playbackRates'));
     }, settingsMenu);
 
     return settingsMenu;
