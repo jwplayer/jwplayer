@@ -116,5 +116,6 @@ export default {
     setupConfig: {},
     bandwidthEstimate: null,
     bitrateSelection: null,
-    backgroundLoading: Features.backgroundLoading
+    backgroundLoading: Features.backgroundLoading,
+    liveSyncDuration: 25
 };

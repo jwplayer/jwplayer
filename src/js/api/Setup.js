@@ -28,8 +28,6 @@ const Setup = function(_model) {
      */
     this.start = function (api) {
 
-        setStreamProperties(_model);
-
         const pluginsPromise = loadPlugins(_model, api);
 
         const setup = Promise.all([
@@ -99,26 +97,6 @@ export function setupResult(allPromises) {
         core: allPromises[0],
         warnings
     };
-}
-
-function setStreamProperties(model) {
-    const modelLiveSyncDuration = model.attributes.liveSyncDuration;
-    let liveSyncDuration = modelLiveSyncDuration;
-    if (!model.attributes.liveSyncDuration) {
-        return;
-    }
-
-    if (modelLiveSyncDuration < 5) {
-        liveSyncDuration = 5;
-        model.set("liveSyncDuration", 5);
-    } else if (modelLiveSyncDuration > 30) {
-        liveSyncDuration = 30;
-        model.set("liveSyncDuration", 30);
-    }
-
-    model.attributes.playlist.forEach(item => {
-        item.liveSyncDuration = liveSyncDuration;
-    });
 }
 
 export default Setup;

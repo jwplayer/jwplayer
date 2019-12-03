@@ -3,10 +3,12 @@ import PlaylistItem from 'playlist/item';
 import Source from 'playlist/source';
 import Providers from 'providers/providers';
 import { PlayerError, MSG_CANT_PLAY_VIDEO } from 'api/errors';
+import { isObject } from 'utils/underscore';
 
-const Playlist = function(playlist) {
+const Playlist = function(playlist, model) {
     // Can be either an array of items or a single item.
-    return (Array.isArray(playlist) ? playlist : [playlist]).map(PlaylistItem);
+    playlist = Array.isArray(playlist) ? playlist : [playlist];
+    return formatItems(playlist, model).map(PlaylistItem);
 };
 
 // Go through the playlist and choose a single playable type to play; remove sources of a different type
@@ -17,7 +19,6 @@ export function filterPlaylist(playlist, model, feedData) {
     return playlist.map((item) => normalizePlaylistItem(model, item, itemFeedData)).filter((item) => !!item);
 
 }
-
 
 export function validatePlaylist(playlist) {
     if (!Array.isArray(playlist) || playlist.length === 0) {
@@ -49,6 +50,16 @@ export function normalizePlaylistItem(model, item, feedData) {
 }
 
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
+
+export function formatItems(playlist, model) {
+    playlist.forEach(item => {
+        if (isObject(item)) {
+            copyAttribute(item, model.attributes, 'liveSyncDuration');
+        }
+    });
+
+    return playlist;
+}
 
 function formatSources(item, model) {
     const { attributes } = model;

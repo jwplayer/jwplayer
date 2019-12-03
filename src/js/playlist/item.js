@@ -30,7 +30,7 @@ const Item = function(config) {
         liveSyncDuration: 25
     }, config);
 
-    if (playlistItem.liveSyncDuration !== 25) {
+    if (playlistItem.dvrSeekLimit !== playlistItem.liveSyncDuration) {
         playlistItem.dvrSeekLimit = playlistItem.liveSyncDuration;
     }
 

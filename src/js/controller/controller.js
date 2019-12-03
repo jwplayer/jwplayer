@@ -430,7 +430,7 @@ Object.assign(Controller.prototype, {
                     _model.attributes.itemReady = false;
                     updatePlaylistCancelable = cancelable((data) => {
                         if (data) {
-                            return _this.updatePlaylist(Playlist(data.playlist), data);
+                            return _this.updatePlaylist(Playlist(data.playlist, _model), data);
                         }
                     });
                     loadPromise = _loadPlaylist(item).then(updatePlaylistCancelable.async);
@@ -438,7 +438,7 @@ Object.assign(Controller.prototype, {
                 }
                 case 'object':
                     _model.attributes.item = 0;
-                    loadPromise = _this.updatePlaylist(Playlist(item), feedData || {});
+                    loadPromise = _this.updatePlaylist(Playlist(item, _model), feedData || {});
                     break;
                 case 'number':
                     loadPromise = _this.setItemIndex(item);
