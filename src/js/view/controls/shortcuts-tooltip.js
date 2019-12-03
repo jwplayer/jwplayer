@@ -93,7 +93,6 @@ export default function (container, api, model) {
 
     const destroy = () => {
         close();
-        shortcutToggleUi.off();
         shortcutToggleUi.destroy();
     };
 
