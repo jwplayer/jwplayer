@@ -1,10 +1,12 @@
 export const MenuTemplate = (isSubmenu, name) => {
     return isSubmenu ? (
         `<div class="jw-reset jw-settings-submenu jw-settings-submenu-${name}" role="menu" aria-expanded="false">` +
+            `<div class="jw-settings-submenu-items"></div>` +
         `</div>`
     ) : (
         `<div class="jw-reset jw-settings-menu" role="menu" aria-expanded="false">` +
             `<div class="jw-reset jw-settings-topbar" role="menubar">` +
+                `<div class="jw-reset jw-settings-topbar-text"></div>` +
             `</div>` +
         `</div>`
     );
