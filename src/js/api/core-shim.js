@@ -94,7 +94,6 @@ Object.assign(CoreShim.prototype, {
             return new Providers(configuration);
         };
         model.setProvider = function() {};
-        setLiveSyncDurationAttribute(model);
 
         // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
         let mediaPool = MediaElementPool();
@@ -313,17 +312,6 @@ function logWarning(warning) {
         return;
     }
     console.warn(PlayerError.logMessage(warning.code));
-}
-
-function setLiveSyncDurationAttribute(model) {
-    const liveSyncDuration = model.get('liveSyncDuration');
-    if (!liveSyncDuration) {
-        model.set('liveSyncDuration', 25);
-    } else if (liveSyncDuration < 5) {
-        model.set('liveSyncDuration', 5);
-    } else if (liveSyncDuration > 30) {
-        model.set('liveSyncDuration', 30);
-    }
 }
 
 export function showView(core, viewElement) {
