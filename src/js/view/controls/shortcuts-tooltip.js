@@ -1,5 +1,6 @@
 import shortcutTooltipTemplate from 'view/controls/templates/shortcuts-tooltip';
 import { createElement, removeClass, addClass, prependChild } from 'utils/dom';
+import UI from 'utils/ui';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { STATE_PLAYING } from 'events/events';
@@ -67,11 +68,10 @@ export default function (container, api, model) {
         shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts)
     );
     const settingsInteraction = { reason: 'settingsInteraction' };
-    const shortcutToggle = template.querySelector('.jw-switch');
+    const shortcutToggleUi = new UI(template.querySelector('.jw-switch'));
 
     const open = () => {
-        shortcutToggle.setAttribute('aria-checked', model.get('enableShortcuts'));
-        shortcutToggle.addEventListener('click', toggleClickHandler);
+        shortcutToggleUi.el.setAttribute('aria-checked', model.get('enableShortcuts'));
 
         addClass(template, 'jw-open');
         lastState = model.get('state');
@@ -80,8 +80,8 @@ export default function (container, api, model) {
         isOpen = true;
         api.pause(settingsInteraction);
     };
+
     const close = () => {
-        shortcutToggle.removeEventListener('click', toggleClickHandler);
         removeClass(template, 'jw-open');
         document.removeEventListener('click', documentClickHandler);
         container.focus();
@@ -90,17 +90,25 @@ export default function (container, api, model) {
             api.play(settingsInteraction);
         }
     };
+
+    const destroy = () => {
+        close();
+        shortcutToggleUi.destroy();
+    };
+
     const documentClickHandler = (e) => {
         if (!/jw-shortcuts|jw-switch/.test(e.target.className)) {
             close();
         }
     };
+
     const toggleClickHandler = (e) => {
         const toggle = e.currentTarget;
         const isChecked = toggle.getAttribute('aria-checked') === 'true' ? false : true;
         toggle.setAttribute('aria-checked', isChecked);
         model.set('enableShortcuts', isChecked);
     };
+
     const toggleVisibility = () => {
         if (isOpen) {
             close();
@@ -108,10 +116,9 @@ export default function (container, api, model) {
             open();
         }
     };
+    
     const render = () => {
-        const closeButton = button('jw-shortcuts-close', () => {
-            close();
-        }, model.get('localization').close, [cloneIcon('close')]);
+        const closeButton = button('jw-shortcuts-close', close, model.get('localization').close, [cloneIcon('close')]);
 
         //  Append close button to modal.
         prependChild(template, closeButton.element());
@@ -119,14 +126,17 @@ export default function (container, api, model) {
 
         //  Append modal to container
         container.appendChild(template);
+        
+        shortcutToggleUi.on('click tap enter', toggleClickHandler);
     };
 
     render();
 
     return {
         el: template,
-        close,
         open,
-        toggleVisibility,
+        close,
+        destroy,
+        toggleVisibility
     };
 }

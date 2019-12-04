@@ -321,7 +321,7 @@ export default class Controls extends Events {
                     break;
                 case 13: // enter
                 case 32: // space
-                    if (document.activeElement.classList.contains('jw-switch') && evt.keyCode === 32) {
+                    if (document.activeElement.classList.contains('jw-switch') && evt.keyCode === 13) {
                         // Let event bubble up so the spacebar can control the toggle if focused on
                         return true;
                     }
@@ -386,13 +386,20 @@ export default class Controls extends Events {
         this.playerContainer.addEventListener('keydown', handleKeydown);
         this.keydownCallback = handleKeydown;
 
-        // keep controls active when navigating inside the player
         const handleKeyup = (evt) => {
-            const isTab = evt.keyCode === 9;
-            if (isTab) {
-                const insideContainer = this.playerContainer.contains(evt.target);
-                const activeTimeout = insideContainer ? 0 : ACTIVE_TIMEOUT;
-                this.userActive(activeTimeout);
+            switch (evt.keyCode) {
+                case 9: {
+                    // tab, keep controls active when navigating inside the player
+                    const insideContainer = this.playerContainer.contains(evt.target);
+                    const activeTimeout = insideContainer ? 0 : ACTIVE_TIMEOUT;
+                    this.userActive(activeTimeout);
+                    break;
+                }
+                case 32: // space
+                    evt.preventDefault();
+                    break;
+                default:
+                    break;
             }
         };
         this.playerContainer.addEventListener('keyup', handleKeyup);
@@ -443,7 +450,16 @@ export default class Controls extends Events {
     }
 
     disable(model) {
-        const { nextUpToolTip, settingsMenu, infoOverlay, controlbar, rightClickMenu, playerContainer, div } = this;
+        const { 
+            nextUpToolTip,
+            settingsMenu,
+            infoOverlay,
+            controlbar,
+            rightClickMenu,
+            shortcutsTooltip,
+            playerContainer,
+            div
+        } = this;
 
         clearTimeout(this.activeTimeout);
         this.activeTimeout = -1;
@@ -497,6 +513,10 @@ export default class Controls extends Events {
 
         if (infoOverlay) {
             infoOverlay.destroy();
+        }
+
+        if (shortcutsTooltip) {
+            shortcutsTooltip.destroy();
         }
 
         this.removeBackdrop();
