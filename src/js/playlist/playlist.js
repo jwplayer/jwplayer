@@ -53,7 +53,7 @@ export const fixSources = (item, model) => filterSources(formatSources(item, mod
 
 export function formatItems(playlist, model) {
     playlist.forEach(item => {
-        if (isObject(item)) {
+        if (isObject(item) && !item.liveSyncDuration) {
             copyAttribute(item, model.attributes, 'liveSyncDuration');
         }
     });
