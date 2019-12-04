@@ -86,9 +86,32 @@
     padding: @dismiss-top-padding @dismiss-right-padding 0;
     width: 100%;
 
+    &.jw-nested-menu-open {
+        padding: 0;
+        .jw-icon:not(.jw-settings-close):not(.jw-settings-back) {
+            display: none;
+        }
+        .jw-svg-icon-close {
+            width: 20px;
+        }
+        .jw-svg-icon-arrow-left {
+            height: 12px;
+        }
+        .jw-settings-topbar-text {
+            display: block;
+        }
+    }
+
+    .jw-settings-topbar-text {
+        display: none;
+        color: #fff;
+        font-size: 13px;
+    }
+
     .jw-settings-close {
         margin-left: auto;
     }
+
 }
 
 .jw-settings-submenu {
@@ -97,17 +120,39 @@
     flex: 1 1 auto;
     overflow-y: auto;
     padding: 8px 20px 0 5px;
-
     .scrollbar-style();
-
+    
     &.jw-settings-submenu-active {
         display: block;
+    }
+
+    .jw-submenu-topbar {
+        box-shadow: 0 2px 9px 0 #1d1d1d;
+        background-color: #2f2d2d;
+        margin: -8px -20px 0 -5px;
+        .jw-settings-content-item {
+            cursor: pointer;
+            text-align: right;
+            padding-right: 15px;
+            text-decoration: underline;
+        }
+    }
+
+    .jw-settings-content-value-wrapper {
+        float: right;
+        display: flex;
+        align-items: center;
+        .jw-svg-icon-arrow-right {
+            width: 8px;
+            margin-left: 5px;
+            height: 12px;
+        }
     }
 
     .jw-breakpoint-7 & {
         .jw-settings-content-item {
             font-size: 1em;
-            padding: 11px 0 11px 30px;
+            padding: 11px 15px 11px 30px;
 
             .jw-settings-item-active::before {
                 justify-content: flex-end;

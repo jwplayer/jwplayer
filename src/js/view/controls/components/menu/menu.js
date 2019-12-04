@@ -11,12 +11,18 @@ import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { MenuItem, RadioMenuItem } from 'view/controls/components/menu/menu-item';
 import { MenuTemplate } from 'view/controls/templates/menu/menu';
-import categoryButton from 'view/controls/components/menu/category-button';
+import { itemMenuTemplate } from 'view/controls/templates/menu/menu-item';
+import menuCategoryButton from 'view/controls/components/menu/category-button';
 import { isRtl } from 'utils/language';
 
+let backButtonTarget;
 export default class Menu extends Events {
     constructor(_name, _parentMenu, _localization, _template = MenuTemplate) {
         super();
+        this.open = this.open.bind(this);
+        this.close = this.close.bind(this);
+        this.toggle = this.toggle.bind(this);
+        this.onDocumentClick = this.onDocumentClick.bind(this);
         this.name = _name;
         this.isSubmenu = !!_parentMenu;
         this.el = createElement(_template(this.isSubmenu, _name));
@@ -27,22 +33,77 @@ export default class Menu extends Events {
         this.visible = false;
         this.parentMenu = _parentMenu;
         this.mainMenu = !this.parentMenu ? this : this.parentMenu.mainMenu;
-        this.closeButton = (this.parentMenu && this.parentMenu.closeButton) || this.createCloseButton(_localization);
         this.categoryButton = null;
+        this.closeButton = (this.parentMenu && this.parentMenu.closeButton) || this.createCloseButton(_localization);
         if (this.isSubmenu) {
-            if (this.parentMenu.name === 'settings') {
-                this.createCategoryButton(_localization);
-            }
+            this.categoryButton = this.parentMenu.categoryButton || this.createCategoryButton(_localization);
+            this.itemsContainer = this.createItemsContainer();
             this.parentMenu.appendMenu(this);
+            if (this.parentMenu.parentMenu && !this.mainMenu.backButton) {
+                this.mainMenu.backButton = this.createBackButton(_localization);
+            }
         } else {
             this.ui = addGlobalMenuKeyListener(this);
         }
-        this.open = this.open.bind(this);
-        this.close = this.close.bind(this);
-        this.toggle = this.toggle.bind(this);
+    }
+    createItemsContainer() {
+        const itemsContainerElement = this.el.querySelector('.jw-settings-submenu-items');
+        const onKeydown = function(event) {
+            if (event.target.parentNode !== itemsContainerElement) {
+                return;
+            }
+            const focusElement = (ele, i) => {
+                if (ele) {
+                    ele.focus();
+                } else if (i !== undefined) {
+                    itemsContainerElement.childNodes[i].focus();
+                }
+            };
+            const evt = event.sourceEvent;
+            const nextItem = nextSibling(topbarTarget);
+            const prevItem = previousSibling(topbarTarget);
+            const nextSubItem = nextSibling(evt.target);
+            const prevSubItem = previousSibling(evt.target);
+            const key = evt.key.replace(/(Arrow|ape)/, '');
+
+            switch (key) {
+                case 'Tab':
+                    focusElement(evt.shiftKey ? prevItem : nextItem);
+                    break;
+                case 'Left':
+                    focusElement(prevItem || 
+                        previousSibling(document.getElementsByClassName('jw-icon-settings')[0]));
+                    break;
+                case 'Up':
+                    focusElement(prevSubItem, itemsContainerElement.childNodes.length - 1);
+                    break;
+                case 'Right':
+                    focusElement(nextItem);
+                    break;
+                case 'Down':
+                    focusElement(nextSubItem, 0);
+                    break;
+                default:
+                    break;
+            }
+            evt.preventDefault();
+            if (key !== 'Esc') {
+                // only bubble event if esc key was pressed
+                evt.stopPropagation();
+            }
+            
+        };
+        let topbarTarget = 
+        this.categoryButton && this.categoryButton.element() || 
+        this.parentMenu.categoryButton && this.parentMenu.categoryButton.element() ||
+        this.mainMenu.topbar.firstChild;
+        const itemsContainer = new UI(itemsContainerElement);
+        itemsContainer.on('keydown', onKeydown);
+
+        return itemsContainer;
     }
     createCloseButton(localization) {
-        const closeButton = button('jw-settings-close', (e) => this.close(e), localization.close, [cloneIcon('close')]);
+        const closeButton = button('jw-settings-close', this.close, localization.close, [cloneIcon('close')]);
         this.topbar.appendChild(closeButton.element());
         closeButton.show();
         closeButton.ui.on('keydown', function(e) {
@@ -68,17 +129,29 @@ export default class Menu extends Events {
         if (this.name === 'sharing') {
             localizedName = localization.sharing.heading;
         }
-        this.categoryButton = categoryButton(this, localizedName);
-        this.categoryButton.element().setAttribute('name', this.name);
+        const categoryButtonInstance = menuCategoryButton(this, localizedName);
+        categoryButtonInstance.element().setAttribute('name', this.name);
+
+        return categoryButtonInstance;
     }
     createBackButton(localization) {
-        const backButton = button('jw-settings-close', this.close, localization.close, [cloneIcon('close')]);
+        const backButton = button(
+            'jw-settings-back', 
+            (e) => {
+                if (backButtonTarget) {
+                    backButtonTarget.open(e);
+                }
+            }, 
+            localization.close, 
+            [cloneIcon('arrow-left')]
+        );
+        prependChild(this.mainMenu.topbar, backButton.element());
         return backButton;
     }
     createTopbar() {
         const topbar = createElement(`<div class="jw-submenu-topbar"></div>`);
-        this.topbar = topbar;
-        prependChild(topbar, this.el);
+        prependChild(this.el, topbar);
+        return topbar;
     }
     createItems(genericItems, action, options = {}, Item = RadioMenuItem) {
         const itemType = this.name;
@@ -115,7 +188,9 @@ export default class Menu extends Events {
             // For custom items, allow options to pass through to template.
             if (!content) {
                 content = item;
-                content.options = options;
+                if (typeof item === 'object') {
+                    content.options = options;
+                }
             }
 
             const menuItemClick = (evt) => {
@@ -135,52 +210,6 @@ export default class Menu extends Events {
             };
 
             const menuItem = new Item(content, menuItemClick.bind(this));
-            let topbarTarget = 
-                this.categoryButton && this.categoryButton.element() || 
-                this.parentMenu.categoryButton && this.parentMenu.categoryButton.element() ||
-                this.mainMenu.topbar.firstChild;
-            menuItem.ui.on('keydown', function(event) {
-                const focusElement = (ele, i) => {
-                    if (ele) {
-                        ele.focus();
-                    } else if (i !== undefined) {
-                        menuItems[i].el.focus();
-                    }
-                };
-                const evt = event.sourceEvent;
-                const nextItem = nextSibling(topbarTarget);
-                const prevItem = previousSibling(topbarTarget);
-                const nextSubItem = nextSibling(evt.target);
-                const prevSubItem = previousSibling(evt.target);
-                const key = evt.key.replace(/(Arrow|ape)/, '');
-        
-                switch (key) {
-                    case 'Tab':
-                        focusElement(evt.shiftKey ? prevItem : nextItem);
-                        break;
-                    case 'Left':
-                        focusElement(prevItem || 
-                            previousSibling(document.getElementsByClassName('jw-icon-settings')[0]));
-                        break;
-                    case 'Up':
-                        focusElement(prevSubItem, menuItems.length - 1);
-                        break;
-                    case 'Right':
-                        focusElement(nextItem);
-                        break;
-                    case 'Down':
-                        focusElement(nextSubItem, 0);
-                        break;
-                    default:
-                        break;
-                }
-                evt.preventDefault();
-                if (key !== 'Esc') {
-                    // only bubble event if esc key was pressed
-                    evt.stopPropagation();
-                }
-                
-            });
 
             return menuItem;
         });
@@ -195,10 +224,10 @@ export default class Menu extends Events {
             this.removeMenu();
         } else {
             this.items = [];
-            emptyElement(this.el);
+            emptyElement(this.itemsContainer.el);
             menuItems.forEach(menuItem => {
                 this.items.push(menuItem);
-                this.el.appendChild(menuItem.el);
+                this.itemsContainer.el.appendChild(menuItem.el);
             });
             if (initialSelectionIndex > -1) {
                 menuItems[initialSelectionIndex].activate();
@@ -212,6 +241,7 @@ export default class Menu extends Events {
         }
         // eslint-disable-next-line no-shadow
         const { el, name, categoryButton } = childMenu;
+
         this.children[name] = childMenu;
         if (categoryButton) {
             const topbar = this.mainMenu.topbar;
@@ -222,13 +252,8 @@ export default class Menu extends Events {
                 categoryButton.element(),
                 appendBefore
             );
-        } else if (this.topbar) {
-            const submenuItem = new MenuItem(name, childMenu.open);
-            this.topbar.appendChild(submenuItem.el);
-        } else {
-            this.topbar = this.createTopBar();
         }
-        this.el.appendChild(el);
+        this.mainMenu.el.appendChild(el);
     }
     removeMenu(name) {
         if (!name) {
@@ -244,28 +269,44 @@ export default class Menu extends Events {
     }
     open(evt) {
         // if visible, return
-        if (this.visible) {
+        if (this.visible && !this.openMenus) {
             return;
         }
         if (this.isSubmenu) {
-            if (this.mainMenu.openMenus.length) {
-                this.mainMenu.closeAll();
+            const { mainMenu, parentMenu, categoryButton } = this;
+            if (parentMenu.openMenus.length) {
+                parentMenu.closeChildren();
             }
-            if (this.items) {
-                this.items[0].el.focus();
+            if (categoryButton) {
+                categoryButton.element().setAttribute('aria-checked', 'true');
+            }
+            if (parentMenu.isSubmenu) {
+                parentMenu.el.classList.remove('jw-settings-submenu-active');
+                mainMenu.topbar.classList.add('jw-nested-menu-open');
+                const topbarText = mainMenu.topbar.querySelector('.jw-settings-topbar-text');
+                topbarText.innerText = this.title || this.name;
+                mainMenu.backButton.show();
+                backButtonTarget = this.parentMenu;
+            } else {
+                mainMenu.topbar.classList.remove('jw-nested-menu-open');
+                if (mainMenu.backButton) {
+                    mainMenu.backButton.hide();
+                }
             }
             this.el.classList.add('jw-settings-submenu-active');
-            this.categoryButton.element().setAttribute('aria-checked', 'true');
-            this.mainMenu.openMenus.push(this.name);
-            if (!this.mainMenu.visible) {
-                this.mainMenu.open(evt);
+            parentMenu.openMenus.push(this.name);
+            if (!mainMenu.visible) {
+                mainMenu.open(evt);
                 if (this.items && evt && evt.type === 'enter') {
                     this.items[0].el.focus();
                 } else {
                     // Don't show tooltip if auto-focusing for navigation's sake.
-                    this.categoryButton.tooltip.suppress = true;
-                    this.categoryButton.element().focus();
+                    categoryButton.tooltip.suppress = true;
+                    categoryButton.element().focus();
                 }
+            }
+            if (this.openMenus.length) {
+                this.closeChildren();
             }
         } else {
             this.el.parentNode.classList.add('jw-settings-open');
@@ -273,17 +314,19 @@ export default class Menu extends Events {
             document.addEventListener('click', this.onDocumentClick);
         }
         this.visible = true;
-        this.el.setAttribute('aria-expanded', 'true');        
+        this.el.setAttribute('aria-expanded', 'true');
     }
     close(evt) {
         // if visible, return
         if (!this.visible) {
             return;
         }
+        this.visible = false;
+        this.el.setAttribute('aria-expanded', 'false'); 
         if (this.isSubmenu) {
             this.el.classList.remove('jw-settings-submenu-active');
             this.categoryButton.element().setAttribute('aria-checked', 'false');
-            this.mainMenu.openMenus = this.mainMenu.openMenus.filter(name => name !== this.name);
+            this.parentMenu.openMenus = this.parentMenu.openMenus.filter(name => name !== this.name);
             if (!this.mainMenu.openMenus.length && this.mainMenu.visible) {
                 this.mainMenu.close(evt);
             }
@@ -291,16 +334,17 @@ export default class Menu extends Events {
             this.el.parentNode.classList.remove('jw-settings-open');
             this.trigger('menuVisibility', { visible: false, evt });
             document.removeEventListener('click', this.onDocumentClick);
-            if (this.mainMenu.openMenus.length) {
-                this.mainMenu.closeAll();
-            }
         }
-        this.visible = false;
-        this.el.setAttribute('aria-expanded', 'false');  
+        if (this.openMenus.length) {
+            this.closeChildren();
+        }
     }
-    closeAll() {
+    closeChildren() {
         this.openMenus.forEach(menuName => {
-            this.children[menuName].close();
+            const menu = this.children[menuName];
+            if (menu) {
+                menu.close();
+            }
         });
     }
     toggle(evt) {
@@ -317,9 +361,22 @@ export default class Menu extends Events {
     }
     destroy() {
         document.removeEventListener('click', this.onDocumentClick);
+        Object.keys(this.children).map(menuName => {
+            this.children[menuName].destroy();
+        });
         if (this.isSubmenu) {
-            this.parentMenu.topbar.removeChild(this.categoryButton.element());
-            this.categoryButton.ui.destroy();
+            if (this.parentMenu.name === 'settings' && this.categoryButton) {
+                this.parentMenu.topbar.removeChild(this.categoryButton.element());
+                this.categoryButton.ui.destroy();
+            }
+            if (this.itemsContainer) {
+                this.itemsContainer.destroy();
+            }
+            const openMenus = this.parentMenu.openMenus;
+            const openMenuIndex = openMenus.indexOf(this.name);
+            if (openMenus.length && openMenuIndex > -1) {
+                this.openMenus.splice(openMenuIndex, 1);
+            }
             delete this.parentMenu;
         } else {
             this.ui.destroy();
@@ -328,10 +385,6 @@ export default class Menu extends Events {
         if (this.el.parentNode) {
             this.el.parentNode.removeChild(this.el);
         }
-        
-        Object.keys(this.children).map(menuName => {
-            this.children[menuName].destroy();
-        });
     }
 }
 
@@ -425,7 +478,7 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
             'quality', 
             levels, 
             (index) => api.setCurrentQuality(index), 
-            model.get('currentLevel'), 
+            model.get('currentLevel') || 0, 
             menuItemOptions
         );
         const childMenus = settingsMenu.children;
@@ -470,6 +523,34 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
             initialIndex, 
             menuItemOptions
         );
+        const captionsMenu = settingsMenu.children.captions;
+        if (captionsMenu) {
+            captionsMenu.topbar = captionsMenu.topbar || captionsMenu.createTopbar();
+            const captionsSettingsMenu = new Menu('captionsSettings', captionsMenu, localization);
+            captionsSettingsMenu.title = 'Settings';
+            const captionsSettingsButton = new MenuItem('Settings', captionsSettingsMenu.open);
+            captionsMenu.topbar.appendChild(captionsSettingsButton.el);
+            const captionsSettingsItems = [];
+            captionsOptions.forEach(captionsOption => {
+                const itemMenu = new Menu(captionsOption.name, captionsSettingsMenu, localization);
+                const item = new MenuItem(
+                    { label: captionsOption.name, value: captionsOption.defaultVal }, 
+                    itemMenu.open, 
+                    itemMenuTemplate
+                );
+                itemMenu.setMenuItems(
+                    itemMenu.createItems(
+                        captionsOption.options, (index) => {
+                            item.el.querySelector('.jw-settings-content-item-value').innerText = captionsOption.options[index];
+                        }, 
+                        null
+                    ), 
+                    captionsOption.options.indexOf(captionsOption.defaultVal) || 0
+                );
+                captionsSettingsItems.push(item);
+            });
+            captionsSettingsMenu.setMenuItems(captionsSettingsItems);
+        }
     });
     const onMenuItemSelected = (menu, itemIndex) => {
         if (menu && itemIndex > -1) {
@@ -562,7 +643,71 @@ export const SettingsMenu = (api, model, controlbar, localization) => {
     model.on('change:streamType', () => {
         setPlaybackRatesMenu(model.get('playbackRates'));
     }, settingsMenu);
-
+    window.settingsMenu = settingsMenu;
     return settingsMenu;
 };
+
+
+const captionsOptions = [
+    {
+        name: 'Font Color',
+        options: ['White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'],
+        defaultVal: 'White'
+    },
+    {
+        name: 'Font Opacity',
+        options: ['100%', '75%', '25%'],
+        defaultVal: '100%'
+    },
+    {
+        name: 'Font Size',
+        options: ['200%', '175%', '150%', '125%', '100%', '75%', '50%'],
+        defaultVal: '100%'
+    },
+    {
+        name: 'Font Family',
+        options: [
+            'Arial', 
+            'Courier', 
+            'Georgia', 
+            'Impact', 
+            'Lucida Console', 
+            'Tahoma', 
+            'Times New Roman', 
+            'Trebuchet MS', 
+            'Verdana'
+        ],
+        defaultVal: 'Arial'
+    },
+    {
+        name: 'Character Edge',
+        options: [ 'None', 'Raised', 'Depressed', 'Uniform', 'Drop Shadow'
+        ],
+        defaultVal: 'None'
+    },
+    {
+        name: 'Background Color',
+        options: [
+            'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'
+        ],
+        defaultVal: 'Black'
+    },
+    {
+        name: 'Background Opacity',
+        options: ['100%', '75%', '25%', '0%'],
+        defaultVal: '100%'
+    },
+    {
+        name: 'Window Color',
+        options: [
+            'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'
+        ],
+        defaultVal: 'Black'
+    },
+    {
+        name: 'Window Opacity',
+        options: ['100%', '75%', '25%', '0%'],
+        defaultVal: '0%'
+    },
+];
 
