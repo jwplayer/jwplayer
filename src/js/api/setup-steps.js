@@ -33,7 +33,7 @@ export function loadPlaylist(_model) {
 
 function setPlaylistAttributes(model, playlist, feedData) {
     const attributes = model.attributes;
-    attributes.playlist = Playlist(playlist, model);
+    attributes.playlist = Playlist(playlist);
     attributes.feedData = feedData;
 }
 

@@ -13,7 +13,6 @@ const isArray = Array.isArray;
  * @property {number} [minDvrWindow] - For live streams, the threshold at which the available media should be seekable,
  * and treated as a DVR stream.
  * @property {number} [dvrSeekLimit] - For live streams, the number of seconds away from the live edge the user is allowed to seek to
- * @property {number} [liveSyncDuration] - For live streams, the number of seconds away from the live edge playback will be
  */
 
 const Item = function(config) {
@@ -26,13 +25,8 @@ const Item = function(config) {
         sources: [],
         tracks: [],
         minDvrWindow: 120,
-        dvrSeekLimit: 25,
-        liveSyncDuration: 25
+        dvrSeekLimit: 25
     }, config);
-
-    if (playlistItem.dvrSeekLimit !== playlistItem.liveSyncDuration) {
-        playlistItem.dvrSeekLimit = playlistItem.liveSyncDuration;
-    }
 
     if ((playlistItem.sources === Object(playlistItem.sources)) && !isArray(playlistItem.sources)) {
         playlistItem.sources = [Source(playlistItem.sources)];

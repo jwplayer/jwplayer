@@ -11,12 +11,6 @@ function isValidPlaylistItem(playlistItem) {
     return _.isObject(playlistItem) && _.isArray(playlistItem.sources) && _.isArray(playlistItem.tracks);
 }
 
-function getSetupMockModel() {
-    const model = new MockModel();
-    model.setup({});
-    return model;
-}
-
 describe('playlist', function() {
     it('initializes a valid playlist', function() {
         expect(typeof Item, 'item is defined').to.equal('function');
@@ -26,32 +20,30 @@ describe('playlist', function() {
 
     it('constructs a playlist from a single item', function() {
         let p;
-        const model = getSetupMockModel();
 
-        p = Playlist(mp4.starscape, model);
+        p = Playlist(mp4.starscape);
         expect(isValidPlaylistItem(p[0]), 'Initialize single item').to.be.true;
 
-        p = Playlist(undefined, model);
+        p = Playlist(undefined);
         expect(isValidPlaylistItem(p[0]), 'Initialize with undefined item').to.be.true;
 
         // TODO: this doesn't actually work, shouldn't pass
-        p = Playlist(mp4.starscape.file, model);
+        p = Playlist(mp4.starscape.file);
         expect(isValidPlaylistItem(p[0]), 'Initialize with just file name').to.be.true;
     });
 
     it('constructs a playlist from an arry of items', function() {
         let p;
         const arr = [mp4.starscape, mp4.starscape, mp4.starscape];
-        const model = getSetupMockModel();
 
-        p = Playlist(arr, model);
+        p = Playlist(arr);
         expect(p.length, 'Same number of items initialized').to.equal(arr.length);
 
-        p = Playlist([mp4.starscape], model);
+        p = Playlist([mp4.starscape]);
         expect(isValidPlaylistItem(p[0]), 'Initialize single item array').to.be.true;
 
         // TODO: inconsistent, this is the only case where it returns an empty array
-        p = Playlist([], model);
+        p = Playlist([]);
         expect(_.isArray(p) && p.length === 0, 'Initialize with an empty array as argument').to.be.true;
     });
 
@@ -72,7 +64,8 @@ describe('playlist', function() {
         let item;
         let model;
         beforeEach(function () {
-            model = getSetupMockModel();
+            model = new MockModel();
+            model.setup({});
             item = new Item({
                 sources: [
                     {

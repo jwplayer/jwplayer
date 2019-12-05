@@ -3,12 +3,10 @@ import PlaylistItem from 'playlist/item';
 import Source from 'playlist/source';
 import Providers from 'providers/providers';
 import { PlayerError, MSG_CANT_PLAY_VIDEO } from 'api/errors';
-import { isObject } from 'utils/underscore';
 
-const Playlist = function(playlist, model) {
+const Playlist = function(playlist) {
     // Can be either an array of items or a single item.
-    playlist = Array.isArray(playlist) ? playlist : [playlist];
-    return formatItems(playlist, model).map(PlaylistItem);
+    return (Array.isArray(playlist) ? playlist : [playlist]).map(PlaylistItem);
 };
 
 // Go through the playlist and choose a single playable type to play; remove sources of a different type
@@ -46,19 +44,16 @@ export function normalizePlaylistItem(model, item, feedData) {
     
     playlistItem.feedData = feedData;
 
-    return playlistItem;
+    return formatItem(playlistItem);
 }
 
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
 
-export function formatItems(playlist, model) {
-    playlist.forEach(item => {
-        if (isObject(item) && !item.liveSyncDuration) {
-            copyAttribute(item, model.attributes, 'liveSyncDuration');
-        }
-    });
-
-    return playlist;
+function formatItem(item) {
+    const source = item.sources[0];
+    const liveSyncDuration = source.liveSyncDuration;
+    item.dvrSeekLimit = item.liveSyncDuration = liveSyncDuration;
+    return item;
 }
 
 function formatSources(item, model) {
@@ -74,6 +69,7 @@ function formatSources(item, model) {
         copyAttribute(originalSource, attributes, 'androidhls');
         copyAttribute(originalSource, attributes, 'hlsjsdefault');
         copyAttribute(originalSource, attributes, 'safarihlsjs');
+        copyLiveSyncDurationAttribute(originalSource, item, attributes);
         // Set in order to force the progressive Hls.js provider; used for A/B testing
         // TODO: Remove after A/B testing concludes
         copyAttribute(originalSource, attributes, '_hlsjsProgressive');
@@ -95,6 +91,15 @@ function formatSources(item, model) {
 
         return Source(originalSource);
     }).filter(source => !!source);
+}
+
+function copyLiveSyncDurationAttribute(source, item, attributes) {
+    if (source.liveSyncDuration) {
+        return;
+    }
+
+    const copyFrom = item.liveSyncDuration ? item : attributes;
+    copyAttribute(source, copyFrom, 'liveSyncDuration');
 }
 
 // A playlist item may have multiple different sources, but we want to stick with one.
