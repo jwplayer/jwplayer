@@ -9,7 +9,7 @@ import Controlbar from 'view/controls/controlbar';
 import DisplayContainer from 'view/controls/display-container';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
-import { SettingsMenu } from 'view/controls/components/menu/menu.js';
+import SettingsMenu from 'view/controls/components/menu/settings-menu.js';
 import { getBreakpoint } from 'view/utils/breakpoint';
 import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';

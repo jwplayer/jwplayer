@@ -7,6 +7,7 @@ export const MenuTemplate = (isSubmenu, name) => {
         `<div class="jw-reset jw-settings-menu" role="menu" aria-expanded="false">` +
             `<div class="jw-reset jw-settings-topbar" role="menubar">` +
                 `<div class="jw-reset jw-settings-topbar-text"></div>` +
+                `<div class="jw-reset jw-settings-topbar-buttons"></div>` +
             `</div>` +
         `</div>`
     );

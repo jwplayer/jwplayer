@@ -1,4 +1,5 @@
-import Menu, { SettingsMenu } from 'view/controls/components/menu/menu';
+import Menu from 'view/controls/components/menu/menu';
+import SettingsMenu from 'view/controls/components/menu/settings-menu';
 import SimpleModel from 'model/simplemodel';
 import MockApi from 'mock/mock-api';
 
