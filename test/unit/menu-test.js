@@ -81,7 +81,7 @@ describe('Menu', () => {
     });
 });
 
-describe('Settings Menu', () => {
+describe.only('Settings Menu', () => {
     let viewModel;
     let settingsMenu;
     let api;
@@ -105,6 +105,7 @@ describe('Settings Menu', () => {
                 hide: sinon.spy()
             }
         };
+        controlbar.toggleCaptionsButtonState = sinon.spy();
     });
 
     it('properly toggles visibility of settings button on quality levels', () => {
