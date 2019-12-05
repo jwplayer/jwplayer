@@ -19,7 +19,8 @@ Object.assign(Storage.prototype, {
         return this.items.reduce((memo, key) => {
             const val = storage[`${this.namespace}.${key}`];
             if (val) {
-                memo[key] = serialize(val);
+                // eslint-disable-next-line no-unused-expressions
+                key !== 'captions' ? memo[key] = serialize(val) : memo[key] = JSON.parse(val);
             }
             return memo;
         }, {});
@@ -28,6 +29,9 @@ Object.assign(Storage.prototype, {
         this.items.forEach((key) => {
             model.on(`change:${key}`, (changeModel, value) => {
                 try {
+                    if (key === 'captions') {
+                        value = JSON.stringify(value);
+                    }
                     storage[`${this.namespace}.${key}`] = value;
                 } catch (e) {
                     // ignore QuotaExceededError unless debugging

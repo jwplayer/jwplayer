@@ -9,7 +9,7 @@ import { MEDIA_SEEK, MEDIA_TIME } from 'events/events';
 
 let _WebVTT;
 
-const _defaults = {
+export const _defaults = {
     back: true,
     backgroundOpacity: 50,
     edgeStyle: null,
@@ -128,33 +128,38 @@ const CaptionsRenderer = function (viewModel) {
         _textContainer = document.createElement('span');
         _captionsWindow.className = 'jw-captions-window jw-reset';
         _textContainer.className = 'jw-captions-text jw-reset';
-
         _options = Object.assign({}, _defaults, options);
-
         _fontScale = _defaults.fontScale;
-        _setFontScale(_options.fontSize);
 
-        const windowColor = _options.windowColor;
-        const windowOpacity = _options.windowOpacity;
-        const edgeStyle = _options.edgeStyle;
-        _windowStyle = {};
-        const textStyle = {};
+        const styleCaptions = () => {
+            if (_model.get('renderCaptionsNatively')) {
+                return;
+            }
+            _setFontScale(_options.fontSize);
+    
+            const windowColor = _options.windowColor;
+            const windowOpacity = _options.windowOpacity;
+            const edgeStyle = _options.edgeStyle;
+            _windowStyle = {};
+            const textStyle = {};
+            _addTextStyle(textStyle, _options);
 
-        _addTextStyle(textStyle, _options);
+            if (windowColor || windowOpacity !== _defaults.windowOpacity) {
+                _windowStyle.backgroundColor = getRgba(windowColor || '#000000', windowOpacity);
+            }
+    
+            _addEdgeStyle(edgeStyle, textStyle, _options.fontOpacity);
+    
+            if (!_options.back && edgeStyle === null) {
+                _addEdgeStyle('uniform', textStyle);
+            }
+    
+            style(_captionsWindow, _windowStyle);
+            style(_textContainer, textStyle);
+            _setupCaptionStyles(playerElementId, textStyle);
+        };
 
-        if (windowColor || windowOpacity !== _defaults.windowOpacity) {
-            _windowStyle.backgroundColor = getRgba(windowColor || '#000000', windowOpacity);
-        }
-
-        _addEdgeStyle(edgeStyle, textStyle, _options.fontOpacity);
-
-        if (!_options.back && edgeStyle === null) {
-            _addEdgeStyle('uniform', textStyle);
-        }
-
-        style(_captionsWindow, _windowStyle);
-        style(_textContainer, textStyle);
-        _setupCaptionStyles(playerElementId, textStyle);
+        styleCaptions();
 
         _captionsWindow.appendChild(_textContainer);
         _display.appendChild(_captionsWindow);
@@ -164,6 +169,11 @@ const CaptionsRenderer = function (viewModel) {
         }, this);
 
         _model.set('captions', _options);
+        _model.on('change:captions', (model, newOptions) => {
+            _options = newOptions;
+            styleCaptions();
+        });
+
     };
 
     this.element = function () {
@@ -186,9 +196,8 @@ const CaptionsRenderer = function (viewModel) {
             _model.once('change:containerHeight', _setFontScale, this);
             return;
         }
-
         // Adjust scale based on font size relative to the default
-        _fontScale = _defaults.fontScale * _options.fontSize / _defaults.fontSize;
+        _fontScale = _defaults.fontScale * (_options.userFontScale || 1) * _options.fontSize / _defaults.fontSize;
     }
 
     function _setFontSize() {

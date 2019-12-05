@@ -9,9 +9,8 @@ import {
 } from 'utils/dom';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
-import { MenuItem, RadioMenuItem } from 'view/controls/components/menu/menu-item';
+import { RadioMenuItem } from 'view/controls/components/menu/menu-item';
 import { MenuTemplate } from 'view/controls/templates/menu/menu';
-import { itemMenuTemplate } from 'view/controls/templates/menu/menu-item';
 import menuCategoryButton from 'view/controls/components/menu/category-button';
 import { isRtl } from 'utils/language';
 
@@ -27,6 +26,7 @@ export default class Menu extends Events {
         this.isSubmenu = !!_parentMenu;
         this.el = createElement(_template(this.isSubmenu, _name));
         this.topbar = this.el.querySelector(`.jw-${this.name}-topbar`);
+        this.buttonContainer = this.el.querySelector(`.jw-${this.name}-topbar-buttons`);
         this.children = {};
         this.openMenus = [];
         this.items = [];
@@ -52,7 +52,7 @@ export default class Menu extends Events {
             if (event.target.parentNode !== itemsContainerElement) {
                 return;
             }
-            const focusElement = (ele, i) => {
+            const focusElement = (ele, i) => {  
                 if (ele) {
                     ele.focus();
                 } else if (i !== undefined) {
@@ -94,9 +94,9 @@ export default class Menu extends Events {
             
         };
         let topbarTarget = 
-        this.categoryButton && this.categoryButton.element() || 
-        this.parentMenu.categoryButton && this.parentMenu.categoryButton.element() ||
-        this.mainMenu.topbar.firstChild;
+            this.categoryButton && this.categoryButton.element() || 
+            this.parentMenu.categoryButton && this.parentMenu.categoryButton.element() ||
+            this.mainMenu.buttonContainer.firstChild;
         const itemsContainer = new UI(itemsContainerElement);
         itemsContainer.on('keydown', onKeydown);
 
@@ -106,16 +106,16 @@ export default class Menu extends Events {
         const closeButton = button('jw-settings-close', this.close, localization.close, [cloneIcon('close')]);
         this.topbar.appendChild(closeButton.element());
         closeButton.show();
-        closeButton.ui.on('keydown', function(e) {
-            const sourceEvent = e.sourceEvent;
+        closeButton.ui.on('keydown', function(evt) {
+            const sourceEvent = evt.sourceEvent;
             const key = sourceEvent.key.replace(/(Arrow|ape)/, '');
             // Close settings menu when enter is pressed on the close button
             // or when tab or right arrow key is pressed since it is the last element in topbar
             if (key === 'Enter' || key === 'Right' || (key === 'Tab' && !sourceEvent.shiftKey)) {
-                this.close(e);
+                this.close(evt);
             }
         }, this);
-        this.topbar.appendChild(closeButton.element());
+        this.buttonContainer.appendChild(closeButton.element());
         return closeButton;
     }
     createCategoryButton(localization) {
@@ -137,9 +137,9 @@ export default class Menu extends Events {
     createBackButton(localization) {
         const backButton = button(
             'jw-settings-back', 
-            (e) => {
+            (evt) => {
                 if (backButtonTarget) {
-                    backButtonTarget.open(e);
+                    backButtonTarget.open(evt);
                 }
             }, 
             localization.close, 
@@ -239,16 +239,18 @@ export default class Menu extends Events {
         if (!childMenu) {
             return;
         }
-        // eslint-disable-next-line no-shadow
+
         const { el, name, categoryButton } = childMenu;
 
         this.children[name] = childMenu;
         if (categoryButton) {
-            const topbar = this.mainMenu.topbar;
-            const sharingButton = topbar.querySelector('.jw-settings-sharing');
-            const appendBefore = name === 'quality' ? topbar.firstChild : sharingButton || this.closeButton.element();
+            const buttonContainer = this.mainMenu.buttonContainer;
+            const sharingButton = buttonContainer.querySelector('.jw-settings-sharing');
+            const appendBefore = name === 'quality' ? 
+                buttonContainer.firstChild : 
+                sharingButton || this.closeButton.element();
 
-            topbar.insertBefore(
+            buttonContainer.insertBefore(
                 categoryButton.element(),
                 appendBefore
             );
@@ -272,6 +274,7 @@ export default class Menu extends Events {
         if (this.visible && !this.openMenus) {
             return;
         }
+        let focusEl;
         if (this.isSubmenu) {
             const { mainMenu, parentMenu, categoryButton } = this;
             if (parentMenu.openMenus.length) {
@@ -298,16 +301,20 @@ export default class Menu extends Events {
             if (!mainMenu.visible) {
                 mainMenu.open(evt);
                 if (this.items && evt && evt.type === 'enter') {
-                    this.items[0].el.focus();
+                    focusEl = this.items[0].el;
                 } else {
                     // Don't show tooltip if auto-focusing for navigation's sake.
                     categoryButton.tooltip.suppress = true;
-                    categoryButton.element().focus();
+                    focusEl = categoryButton.element();
                 }
             }
             if (this.openMenus.length) {
                 this.closeChildren();
             }
+            if (focusEl) {
+                focusEl.focus();
+            }
+            this.el.scrollTop = 0;
         } else {
             this.el.parentNode.classList.add('jw-settings-open');
             this.trigger('menuVisibility', { visible: true, evt });
@@ -354,8 +361,8 @@ export default class Menu extends Events {
             this.open(evt);
         }
     }
-    onDocumentClick(e) {
-        if (!/jw-(settings|video|nextup-close|sharing-link|share-item)/.test(e.target.className)) {
+    onDocumentClick(evt) {
+        if (!/jw-(settings|video|nextup-close|sharing-link|share-item)/.test(evt.target.className)) {
             this.close();
         }
     }
@@ -365,8 +372,8 @@ export default class Menu extends Events {
             this.children[menuName].destroy();
         });
         if (this.isSubmenu) {
-            if (this.parentMenu.name === 'settings' && this.categoryButton) {
-                this.parentMenu.topbar.removeChild(this.categoryButton.element());
+            if (this.parentMenu.name === this.mainMenu.name && this.categoryButton) {
+                this.parentMenu.buttonContainer.removeChild(this.categoryButton.element());
                 this.categoryButton.ui.destroy();
             }
             if (this.itemsContainer) {
@@ -448,266 +455,3 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
     });
     return ui;
 };
-
-export const SettingsMenu = (api, model, controlbar, localization) => {
-    const settingsMenu = new Menu('settings', null, localization);
-    const changeMenuItems = (menuName, items, onItemSelect, defaultItemIndex, itemOptions) => {
-        const controlBarButton = controlbar.elements[`${menuName}Button`];
-        if (!items || items.length <= 1) {
-            settingsMenu.removeMenu(menuName);
-            if (controlBarButton) {
-                controlBarButton.hide();
-            }
-            return;
-        }
-        let menu = settingsMenu.children[menuName];
-        if (!menu) {
-            menu = new Menu(menuName, settingsMenu, localization);
-        }
-        menu.setMenuItems(
-            menu.createItems(items, onItemSelect, itemOptions), 
-            defaultItemIndex
-        );
-        if (controlBarButton) {
-            controlBarButton.show();
-        }
-    };
-    const setLevelsMenu = (levels) => {
-        const menuItemOptions = { defaultText: localization.auto };
-        changeMenuItems(
-            'quality', 
-            levels, 
-            (index) => api.setCurrentQuality(index), 
-            model.get('currentLevel') || 0, 
-            menuItemOptions
-        );
-        const childMenus = settingsMenu.children;
-        const shouldShowGear = !!childMenus.quality || Object.keys(childMenus).length > 1;
-        controlbar.elements.settingsButton.toggle(shouldShowGear);
-    };
-    model.change('levels', (changedModel, levels) => {
-        setLevelsMenu(levels);
-    }, settingsMenu);
-    const changeAutoLabel = function (qualityLevel, qualityMenu, currentIndex) {
-        const levels = model.get('levels');
-        // Return early if the label isn't "Auto" (html5 provider with multiple mp4 sources)
-        if (!levels || levels[0].label !== 'Auto') {
-            return;
-        }
-        const item = qualityMenu.items[0].el.querySelector('.jw-auto-label');
-        const level = levels[qualityLevel.index] || { label: '' };
-
-        item.textContent = currentIndex ? '' : level.label;
-    };
-    model.on('change:visualQuality', (changedModel, quality) => {
-        const qualityMenu = settingsMenu.children.quality;
-        if (quality && qualityMenu) {
-            changeAutoLabel(quality.level, qualityMenu, model.get('currentLevel'));
-        }
-    });
-    model.on('change:currentLevel', (changedModel, currentIndex) => {
-        const qualityMenu = settingsMenu.children.quality;
-        const visualQuality = model.get('visualQuality');
-        if (visualQuality && qualityMenu) {
-            changeAutoLabel(visualQuality.level, qualityMenu, currentIndex);
-        }
-        qualityMenu.items[currentIndex].activate();
-    }, settingsMenu);
-    model.change('captionsList', (changedModel, captionsList) => {
-        const menuItemOptions = { defaultText: localization.off };
-        const initialIndex = model.get('captionsIndex');
-        changeMenuItems(
-            'captions', 
-            captionsList, 
-            (index) => api.setCurrentCaptions(index), 
-            initialIndex, 
-            menuItemOptions
-        );
-        const captionsMenu = settingsMenu.children.captions;
-        if (captionsMenu) {
-            captionsMenu.topbar = captionsMenu.topbar || captionsMenu.createTopbar();
-            const captionsSettingsMenu = new Menu('captionsSettings', captionsMenu, localization);
-            captionsSettingsMenu.title = 'Settings';
-            const captionsSettingsButton = new MenuItem('Settings', captionsSettingsMenu.open);
-            captionsMenu.topbar.appendChild(captionsSettingsButton.el);
-            const captionsSettingsItems = [];
-            captionsOptions.forEach(captionsOption => {
-                const itemMenu = new Menu(captionsOption.name, captionsSettingsMenu, localization);
-                const item = new MenuItem(
-                    { label: captionsOption.name, value: captionsOption.defaultVal }, 
-                    itemMenu.open, 
-                    itemMenuTemplate
-                );
-                itemMenu.setMenuItems(
-                    itemMenu.createItems(
-                        captionsOption.options, (index) => {
-                            item.el.querySelector('.jw-settings-content-item-value').innerText = captionsOption.options[index];
-                        }, 
-                        null
-                    ), 
-                    captionsOption.options.indexOf(captionsOption.defaultVal) || 0
-                );
-                captionsSettingsItems.push(item);
-            });
-            captionsSettingsMenu.setMenuItems(captionsSettingsItems);
-        }
-    });
-    const onMenuItemSelected = (menu, itemIndex) => {
-        if (menu && itemIndex > -1) {
-            menu.items[itemIndex].activate();
-        }
-    };
-    model.change('captionsIndex', (changedModel, index) => {
-        const captionsSubmenu = settingsMenu.children.captions;
-        if (captionsSubmenu) {
-            onMenuItemSelected(captionsSubmenu, index);
-            controlbar.toggleCaptionsButtonState(!!index);
-        }
-    }, settingsMenu);
-    const setPlaybackRatesMenu = (playbackRates) => {
-        const showPlaybackRateControls =
-            model.get('supportsPlaybackRate') &&
-            model.get('streamType') !== 'LIVE' &&
-            model.get('playbackRateControls');
-
-        if (!showPlaybackRateControls) {
-            if (settingsMenu.children.playbackRates) {
-                settingsMenu.removeMenu('playbackRates');
-            }
-            return;
-        }
-        const initialSelectionIndex = playbackRates.indexOf(model.get('playbackRate'));
-        const menuItemOptions = { tooltipText: localization.playbackRates };
-        changeMenuItems(
-            'playbackRates', 
-            playbackRates, 
-            (playbackRate) => api.setPlaybackRate(playbackRate), 
-            initialSelectionIndex, 
-            menuItemOptions
-        );
-    };
-    model.on('change:playbackRates', (changedModel, playbackRates) => {
-        setPlaybackRatesMenu(playbackRates);
-    }, settingsMenu);
-    const setAudioTracksMenu = (audioTracks) => {
-        changeMenuItems(
-            'audioTracks', 
-            audioTracks, 
-            (index) => api.setCurrentAudioTrack(index), 
-            model.get('currentAudioTrack')
-        );
-    };
-    model.on('change:audioTracks', (changedModel, audioTracks) => {
-        setAudioTracksMenu(audioTracks);
-    }, settingsMenu);
-    model.on('change:playbackRate', (changedModel, playbackRate) => {
-        const rates = model.get('playbackRates');
-        let index = -1;
-        if (rates) {
-            index = rates.indexOf(playbackRate);
-        }
-        onMenuItemSelected(settingsMenu.children.playbackRates, index);
-    }, settingsMenu);
-    model.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
-        settingsMenu.children.audioTracks.items[currentAudioTrack].activate();
-    }, settingsMenu);
-    model.on('change:playlistItem', () => {
-        // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
-        // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
-        settingsMenu.removeMenu('captions');
-        controlbar.elements.captionsButton.hide();
-
-        // Settings menu should not be visible when switching playlist items via controls or .load()
-        if (settingsMenu.visible) {
-            settingsMenu.close();
-        }
-    }, settingsMenu);
-    model.on('change:playbackRateControls', () => {
-        setPlaybackRatesMenu(model.get('playbackRates'));
-    });
-    model.on('change:castActive', (changedModel, active, previousState) => {
-        if (active === previousState) {
-            return;
-        }
-
-        if (active) {
-            settingsMenu.removeMenu('audioTracks');
-            settingsMenu.removeMenu('quality');
-            settingsMenu.removeMenu('playbackRates');
-        } else {
-            setAudioTracksMenu(model.get('audioTracks'));
-            setLevelsMenu(model.get('levels'));
-            setPlaybackRatesMenu(model.get('playbackRates'));
-        }
-    }, settingsMenu);
-    model.on('change:streamType', () => {
-        setPlaybackRatesMenu(model.get('playbackRates'));
-    }, settingsMenu);
-    window.settingsMenu = settingsMenu;
-    return settingsMenu;
-};
-
-
-const captionsOptions = [
-    {
-        name: 'Font Color',
-        options: ['White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'],
-        defaultVal: 'White'
-    },
-    {
-        name: 'Font Opacity',
-        options: ['100%', '75%', '25%'],
-        defaultVal: '100%'
-    },
-    {
-        name: 'Font Size',
-        options: ['200%', '175%', '150%', '125%', '100%', '75%', '50%'],
-        defaultVal: '100%'
-    },
-    {
-        name: 'Font Family',
-        options: [
-            'Arial', 
-            'Courier', 
-            'Georgia', 
-            'Impact', 
-            'Lucida Console', 
-            'Tahoma', 
-            'Times New Roman', 
-            'Trebuchet MS', 
-            'Verdana'
-        ],
-        defaultVal: 'Arial'
-    },
-    {
-        name: 'Character Edge',
-        options: [ 'None', 'Raised', 'Depressed', 'Uniform', 'Drop Shadow'
-        ],
-        defaultVal: 'None'
-    },
-    {
-        name: 'Background Color',
-        options: [
-            'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'
-        ],
-        defaultVal: 'Black'
-    },
-    {
-        name: 'Background Opacity',
-        options: ['100%', '75%', '25%', '0%'],
-        defaultVal: '100%'
-    },
-    {
-        name: 'Window Color',
-        options: [
-            'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'
-        ],
-        defaultVal: 'Black'
-    },
-    {
-        name: 'Window Opacity',
-        options: ['100%', '75%', '25%', '0%'],
-        defaultVal: '0%'
-    },
-];
-

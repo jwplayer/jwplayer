@@ -74,6 +74,7 @@ Object.assign(CoreShim.prototype, {
             'volume',
             'mute',
             'captionLabel',
+            'captions',
             'bandwidthEstimate',
             'bitrateSelection',
             'qualityLabel',
