@@ -50,8 +50,7 @@ export function normalizePlaylistItem(model, item, feedData) {
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
 
 function formatItem(item) {
-    const source = item.sources[0];
-    const liveSyncDuration = source.liveSyncDuration;
+    const liveSyncDuration = item.sources[0].liveSyncDuration;
     item.dvrSeekLimit = item.liveSyncDuration = liveSyncDuration;
     return item;
 }
