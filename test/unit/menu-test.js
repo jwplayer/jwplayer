@@ -81,7 +81,7 @@ describe('Menu', () => {
     });
 });
 
-describe.only('Settings Menu', () => {
+describe('Settings Menu', () => {
     let viewModel;
     let settingsMenu;
     let api;

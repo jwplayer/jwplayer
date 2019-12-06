@@ -37,17 +37,18 @@ export default class Menu extends Events {
         this.closeButton = (this.parentMenu && this.parentMenu.closeButton) || this.createCloseButton(_localization);
         if (this.isSubmenu) {
             this.categoryButton = this.parentMenu.categoryButton || this.createCategoryButton(_localization);
-            this.itemsContainer = this.createItemsContainer();
-            this.parentMenu.appendMenu(this);
             if (this.parentMenu.parentMenu && !this.mainMenu.backButton) {
                 this.mainMenu.backButton = this.createBackButton(_localization);
             }
+            this.itemsContainer = this.createItemsContainer();
+            this.parentMenu.appendMenu(this);
         } else {
             this.ui = addGlobalMenuKeyListener(this);
         }
     }
     createItemsContainer() {
         const itemsContainerElement = this.el.querySelector('.jw-settings-submenu-items');
+        const getTopbar = () => this.topbar;
         const onKeydown = function(event) {
             if (event.target.parentNode !== itemsContainerElement) {
                 return;
@@ -60,12 +61,15 @@ export default class Menu extends Events {
                 }
             };
             const evt = event.sourceEvent;
-            const nextItem = nextSibling(topbarTarget);
-            const prevItem = previousSibling(topbarTarget);
+            const target = evt.target;
+            const isFirstChild = itemsContainerElement.firstChild === target;
+            const isLastChild = itemsContainerElement.lastChild === target;
+            const topbar = getTopbar();
+            const nextItem = closeButtonElement || nextSibling(topbarTarget);
+            const prevItem = backButtonElement || previousSibling(topbarTarget);
             const nextSubItem = nextSibling(evt.target);
             const prevSubItem = previousSibling(evt.target);
             const key = evt.key.replace(/(Arrow|ape)/, '');
-
             switch (key) {
                 case 'Tab':
                     focusElement(evt.shiftKey ? prevItem : nextItem);
@@ -75,13 +79,21 @@ export default class Menu extends Events {
                         previousSibling(document.getElementsByClassName('jw-icon-settings')[0]));
                     break;
                 case 'Up':
-                    focusElement(prevSubItem, itemsContainerElement.childNodes.length - 1);
+                    if (topbar && isFirstChild) {
+                        focusElement(topbar.firstChild);
+                    } else {
+                        focusElement(prevSubItem, itemsContainerElement.childNodes.length - 1);
+                    }
                     break;
                 case 'Right':
                     focusElement(nextItem);
                     break;
                 case 'Down':
-                    focusElement(nextSubItem, 0);
+                    if (topbar && isLastChild) {
+                        focusElement(topbar.firstChild);
+                    } else {
+                        focusElement(nextSubItem, 0);
+                    }
                     break;
                 default:
                     break;
@@ -93,11 +105,18 @@ export default class Menu extends Events {
             }
             
         };
+        const itemsContainer = new UI(itemsContainerElement);
         let topbarTarget = 
             this.categoryButton && this.categoryButton.element() || 
             this.parentMenu.categoryButton && this.parentMenu.categoryButton.element() ||
             this.mainMenu.buttonContainer.firstChild;
-        const itemsContainer = new UI(itemsContainerElement);
+        let closeButtonElement;
+        let backButtonElement;
+
+        if (this.parentMenu.isSubmenu) {
+            closeButtonElement = this.mainMenu.closeButton.element();
+            backButtonElement = this.mainMenu.backButton.element();
+        }
         itemsContainer.on('keydown', onKeydown);
 
         return itemsContainer;
@@ -287,9 +306,15 @@ export default class Menu extends Events {
                 parentMenu.el.classList.remove('jw-settings-submenu-active');
                 mainMenu.topbar.classList.add('jw-nested-menu-open');
                 const topbarText = mainMenu.topbar.querySelector('.jw-settings-topbar-text');
+                topbarText.setAttribute('name', this.name);
                 topbarText.innerText = this.title || this.name;
                 mainMenu.backButton.show();
                 backButtonTarget = this.parentMenu;
+                if (this.topbar) {
+                    focusEl = this.topbar.firstChild;
+                } else {
+                    focusEl = evt && evt.type === 'enter' ? this.items[0].el : topbarText;
+                }
             } else {
                 mainMenu.topbar.classList.remove('jw-nested-menu-open');
                 if (mainMenu.backButton) {
@@ -301,7 +326,7 @@ export default class Menu extends Events {
             if (!mainMenu.visible) {
                 mainMenu.open(evt);
                 if (this.items && evt && evt.type === 'enter') {
-                    focusEl = this.items[0].el;
+                    focusEl = this.topbar ? this.topbar.firstChild.focus() : this.items[0].el;
                 } else {
                     // Don't show tooltip if auto-focusing for navigation's sake.
                     categoryButton.tooltip.suppress = true;
@@ -417,7 +442,29 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
                 next.focus();
             }
         };
-        let childMenu;
+        const openMenu = () => {
+            let childMenu = settingsMenu.children[target.getAttribute('name')];
+            if (!childMenu && backButtonTarget) {
+                childMenu = backButtonTarget.children[backButtonTarget.openMenus];
+            }
+            if (childMenu) {
+                childMenu.open(evt);
+                if (childMenu.topbar) {
+                    childMenu.topbar.firstChild.focus();
+                } else if (childMenu.items && childMenu.items.length) {
+                    childMenu.items[0].el.focus();
+                }
+                return;
+            }
+            const isTopbar = evt.target.parentNode.classList.contains('jw-submenu-topbar');
+            if (isTopbar) {
+                const submenuItems = evt.target.parentNode.parentNode.querySelector('.jw-settings-submenu-items');
+                const focusElement = key === 'Down' ?
+                    submenuItems.childNodes[0] :
+                    submenuItems.childNodes[submenuItems.childNodes.length - 1];
+                focusElement.focus();
+            }
+        };
         switch (key) {
             case 'Esc':
                 settingsMenu.close(evt);
@@ -435,13 +482,7 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
                 break;
             case 'Up':
             case 'Down':
-                childMenu = settingsMenu.children[target.getAttribute('name')];
-                if (childMenu) {
-                    childMenu.open(evt);
-                    if (childMenu.items && childMenu.items.length) {
-                        childMenu.items[0].el.focus();
-                    }
-                }
+                openMenu(key);
                 break;
             default:
                 break;
