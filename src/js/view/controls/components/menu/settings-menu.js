@@ -90,8 +90,8 @@ const SettingsMenu = (api, model, controlbar, localization) => {
                 const value = captionsOption.options && captionsOption.options[index];
                 const newValue = captionsOption.getTypedValue(value);
                 const newStyles = Object.assign({}, captionStyles);
-                newStyles[propertyName] = newValue;
 
+                newStyles[propertyName] = newValue;
                 model.set('captions', newStyles);
             };
             const resetItem = new RadioMenuItem('Reset', () => {
