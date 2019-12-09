@@ -19,8 +19,7 @@ Object.assign(Storage.prototype, {
         return this.items.reduce((memo, key) => {
             const val = storage[`${this.namespace}.${key}`];
             if (val) {
-                // eslint-disable-next-line no-unused-expressions
-                key !== 'captions' ? memo[key] = serialize(val) : memo[key] = JSON.parse(val);
+                memo[key] = key !== 'captions' ? serialize(val) : JSON.parse(val);
             }
             return memo;
         }, {});
