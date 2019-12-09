@@ -84,7 +84,6 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             captionsSettingsMenu.title = 'Subtitle Settings';
             const captionsSettingsButton = new MenuItem('Settings', captionsSettingsMenu.open);
             captionsMenu.topbar.appendChild(captionsSettingsButton.el);
-            const captionsSettingsItems = [];
             const setCaptionStyles = (captionsOption, index) => {
                 const captionStyles = model.get('captions');
                 const propertyName = captionsOption.propertyName;
@@ -97,34 +96,39 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             };
             const resetItem = new RadioMenuItem('Reset', () => {
                 model.set('captions', CaptionsDefaults);
+                renderCaptionsSettings();
             });
             resetItem.el.classList.add('jw-settings-reset');
             const persistedOptions = model.get('captions');
-            captionStyleItems.forEach(captionItem => {
-                if (persistedOptions && persistedOptions[captionItem.propertyName]) {
-                    captionItem.defaultVal = captionItem.getOption(persistedOptions[captionItem.propertyName]);
-                }
-                const itemMenu = new Menu(captionItem.name, captionsSettingsMenu, localization);
-                const item = new MenuItem(
-                    { label: captionItem.name, value: captionItem.defaultVal }, 
-                    itemMenu.open, 
-                    itemMenuTemplate
-                );
-                const items = itemMenu.createItems(
-                    captionItem.options, (index) => {
-                        setCaptionStyles(captionItem, index);
-                        item.el.querySelector('.jw-settings-content-item-value').innerText = captionItem.options[index];
-                    },
-                    null
-                );
-                itemMenu.setMenuItems(
-                    items,
-                    captionItem.options.indexOf(captionItem.defaultVal) || 0
-                );
-                captionsSettingsItems.push(item);
-            });
-            captionsSettingsItems.push(resetItem);
-            captionsSettingsMenu.setMenuItems(captionsSettingsItems);
+            const renderCaptionsSettings = () => {
+                const captionsSettingsItems = [];
+                captionStyleItems.forEach(captionItem => {
+                    if (persistedOptions && persistedOptions[captionItem.propertyName]) {
+                        captionItem.defaultVal = captionItem.getOption(persistedOptions[captionItem.propertyName]);
+                    }
+                    const itemMenu = new Menu(captionItem.name, captionsSettingsMenu, localization);
+                    const item = new MenuItem(
+                        { label: captionItem.name, value: captionItem.defaultVal }, 
+                        itemMenu.open, 
+                        itemMenuTemplate
+                    );
+                    const items = itemMenu.createItems(
+                        captionItem.options, (index) => {
+                            setCaptionStyles(captionItem, index);
+                            item.el.querySelector('.jw-settings-content-item-value').innerText = captionItem.options[index];
+                        },
+                        null
+                    );
+                    itemMenu.setMenuItems(
+                        items,
+                        captionItem.options.indexOf(captionItem.defaultVal) || 0
+                    );
+                    captionsSettingsItems.push(item);
+                });
+                captionsSettingsItems.push(resetItem);
+                captionsSettingsMenu.setMenuItems(captionsSettingsItems);
+            };
+            renderCaptionsSettings();
         }
     });
     const onMenuItemSelected = (menu, itemIndex) => {
