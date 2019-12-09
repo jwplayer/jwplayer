@@ -225,7 +225,11 @@ export default class Menu extends Events {
                     this.items.filter(sibling => sibling.active === true).forEach(activeItem => {
                         activeItem.deactivate();
                     });
-                    this.mainMenu.close(evt);
+                    if (backButtonTarget) {
+                        backButtonTarget.open(evt);
+                    } else {
+                        this.mainMenu.close(evt);
+                    }
                 }
                 if (menuItem.activate) {
                     menuItem.activate();
@@ -293,6 +297,7 @@ export default class Menu extends Events {
         if (this.visible && !this.openMenus) {
             return;
         }
+        backButtonTarget = null;
         let focusEl;
         if (this.isSubmenu) {
             const { mainMenu, parentMenu, categoryButton } = this;
