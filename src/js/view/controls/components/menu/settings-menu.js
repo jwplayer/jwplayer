@@ -114,8 +114,9 @@ const SettingsMenu = (api, model, controlbar, localization) => {
                     );
                     const items = itemMenu.createItems(
                         captionItem.options, (index) => {
+                            const el = item.el.querySelector('.jw-settings-content-item-value');
                             setCaptionStyles(captionItem, index);
-                            item.el.querySelector('.jw-settings-content-item-value').innerText = captionItem.options[index];
+                            el.innerText = captionItem.options[index];
                         },
                         null
                     );
