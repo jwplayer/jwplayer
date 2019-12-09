@@ -37,7 +37,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             menuItemOptions
         );
         const childMenus = settingsMenu.children;
-        const shouldShowGear = !!childMenus.quality || Object.keys(childMenus).length > 1;
+        const shouldShowGear = !!childMenus.quality || childMenus.playbackRates || Object.keys(childMenus).length > 1;
         controlbar.elements.settingsButton.toggle(shouldShowGear);
     };
     model.change('levels', (changedModel, levels) => {
