@@ -46,6 +46,10 @@ export default class Menu extends Events {
             this.ui = addGlobalMenuKeyListener(this);
         }
     }
+    get defaultChild() {
+        const { quality, captions, audioTracks, sharing } = this.children;
+        return quality || captions || audioTracks || sharing;
+    }
     createItemsContainer() {
         const itemsContainerElement = this.el.querySelector('.jw-settings-submenu-items');
         const getTopbar = () => this.topbar;
@@ -235,9 +239,6 @@ export default class Menu extends Events {
 
         return menuItems;
     }
-    defaultChild() {
-        return this.children.quality || this.children.captions || this.children.audioTracks || this.children.sharing;
-    }
     setMenuItems(menuItems, initialSelectionIndex) {
         if (!menuItems) {
             this.removeMenu();
@@ -280,16 +281,15 @@ export default class Menu extends Events {
         if (!name) {
             return this.parentMenu.removeMenu(this.name);
         }
-        
-        if (!this.children[name]) {
+
+        const menu = this.children[name];
+        if (!menu) {
             return;
         }
-        const menu = this.children[name];
         delete this.children[name];
         menu.destroy();
     }
     open(evt) {
-        // if visible, return
         if (this.visible && !this.openMenus) {
             return;
         }
