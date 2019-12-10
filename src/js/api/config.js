@@ -42,6 +42,19 @@ export const Defaults = {
     width: 640
 };
 
+export function getLiveSyncDuration(liveSyncDuration) {
+    if (!liveSyncDuration) {
+        return 25;
+    }
+    if (liveSyncDuration < 5) {
+        return 5;
+    }
+    if (liveSyncDuration > 30) {
+        return 30;
+    } 
+    return liveSyncDuration;
+}
+
 function _deserialize(options) {
     Object.keys(options).forEach((key) => {
         if (key === 'id') {
@@ -163,6 +176,8 @@ const Config = function(options, persisted) {
     const parsedBitrateSelection = parseFloat(config.bitrateSelection);
     config.bandwidthEstimate = isValidNumber(parsedBwEstimate) ? parsedBwEstimate : _adjustDefaultBwEstimate(config.defaultBandwidthEstimate);
     config.bitrateSelection = isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
+
+    config.liveSyncDuration = getLiveSyncDuration(config.liveSyncDuration);
 
     config.backgroundLoading = isBoolean(config.backgroundLoading) ? config.backgroundLoading : Features.backgroundLoading;
     return config;

@@ -18,7 +18,6 @@ export function filterPlaylist(playlist, model, feedData) {
 
 }
 
-
 export function validatePlaylist(playlist) {
     if (!Array.isArray(playlist) || playlist.length === 0) {
         throw new PlayerError(MSG_CANT_PLAY_VIDEO, 630);
@@ -45,10 +44,16 @@ export function normalizePlaylistItem(model, item, feedData) {
     
     playlistItem.feedData = feedData;
 
-    return playlistItem;
+    return formatItem(playlistItem);
 }
 
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
+
+function formatItem(item) {
+    const liveSyncDuration = item.sources[0].liveSyncDuration;
+    item.dvrSeekLimit = item.liveSyncDuration = liveSyncDuration;
+    return item;
+}
 
 function formatSources(item, model) {
     const { attributes } = model;
@@ -63,6 +68,7 @@ function formatSources(item, model) {
         copyAttribute(originalSource, attributes, 'androidhls');
         copyAttribute(originalSource, attributes, 'hlsjsdefault');
         copyAttribute(originalSource, attributes, 'safarihlsjs');
+        copyLiveSyncDurationAttribute(originalSource, item, attributes);
         // Set in order to force the progressive Hls.js provider; used for A/B testing
         // TODO: Remove after A/B testing concludes
         copyAttribute(originalSource, attributes, '_hlsjsProgressive');
@@ -84,6 +90,15 @@ function formatSources(item, model) {
 
         return Source(originalSource);
     }).filter(source => !!source);
+}
+
+function copyLiveSyncDurationAttribute(source, item, attributes) {
+    if (source.liveSyncDuration) {
+        return;
+    }
+
+    const copyFrom = item.liveSyncDuration ? item : attributes;
+    copyAttribute(source, copyFrom, 'liveSyncDuration');
 }
 
 // A playlist item may have multiple different sources, but we want to stick with one.

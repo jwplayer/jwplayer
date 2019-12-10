@@ -28,11 +28,6 @@ const Item = function(config) {
         dvrSeekLimit: 25
     }, config);
 
-    if (playlistItem.dvrSeekLimit < 5) {
-        playlistItem.dvrSeekLimit = 5;
-    }
-
-
     if ((playlistItem.sources === Object(playlistItem.sources)) && !isArray(playlistItem.sources)) {
         playlistItem.sources = [Source(playlistItem.sources)];
     }
