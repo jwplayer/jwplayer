@@ -232,6 +232,10 @@ module.exports = function(grunt) {
         runCommand(command, '.');
     });
 
+    grunt.registerTask('type-check', 'Run type-check on ts files', function() {
+        runCommand('yarn type-check', '.')
+    });
+
     grunt.registerTask('docs', 'Generate API documentation', function() {
         runCommand('yarn docs', '.');
     });
@@ -256,6 +260,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', [
         'clean:dist',
         'build-js',
+        'type-check',
         'notice',
         'karma:local'
     ]);

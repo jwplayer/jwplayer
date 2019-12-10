@@ -1,0 +1,32 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "commonjs": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions":{
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "rules": {
+        "spaced-comment": [1, "always"],
+        "space-infix-ops": 1,
+        "no-unsafe-any": true,
+        "@typescript-eslint/no-explicit-any": [0],
+        "@typescript-eslint/explicit-function-return-type":
+        {
+            "allowExpressions": true
+        },
+        "@typescript-eslint/typedef": [
+            2,
+            {
+                "arrowParameter": false
+            }
+        ]
+    }      
+}

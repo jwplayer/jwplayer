@@ -38,7 +38,8 @@ const webpackConfig = {
             'src/js/',
             'src',
             'node_modules'
-        ]
+        ],
+        extensions: ['.ts', '.js']
     },
     module: {
         strictExportPresence: true,
@@ -87,6 +88,17 @@ const webpackConfig = {
                                 }
                             }
                         ]
+                    }
+                }
+            },
+            {
+                test: /\.ts$/,
+                exclude: /\/node_modules\//,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        babelrc: false,
+                        presets: ['@babel/preset-typescript']
                     }
                 }
             }
