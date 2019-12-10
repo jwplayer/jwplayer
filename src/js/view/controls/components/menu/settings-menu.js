@@ -223,7 +223,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
     model.on('change:streamType', () => {
         setPlaybackRatesMenu(model.get('playbackRates'));
     }, settingsMenu);
-    window.settingsMenu = settingsMenu;
+
     return settingsMenu;
 };
 
