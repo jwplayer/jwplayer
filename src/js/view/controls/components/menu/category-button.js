@@ -18,7 +18,7 @@ const categoryButton = (menu, localizedName) => {
     }
 
     const menuCategoryButton = button(
-        `jw-settings-${name}`, 
+        `jw-settings-${name} jw-submenu-${name}`, 
         (event) => {
             menu.open(event);
         }, 

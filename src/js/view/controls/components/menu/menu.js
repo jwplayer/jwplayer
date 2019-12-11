@@ -47,8 +47,8 @@ export default class Menu extends Events {
         }
     }
     get defaultChild() {
-        const { quality, captions, audioTracks, sharing } = this.children;
-        return quality || captions || audioTracks || sharing;
+        const { quality, captions, audioTracks, sharing, playbackRates } = this.children;
+        return quality || captions || audioTracks || sharing || playbackRates;
     }
     createItemsContainer() {
         const itemsContainerElement = this.el.querySelector('.jw-settings-submenu-items');
@@ -334,8 +334,11 @@ export default class Menu extends Events {
                     focusEl = this.topbar ? this.topbar.firstChild.focus() : this.items[0].el;
                 } else {
                     // Don't show tooltip if auto-focusing for navigation's sake.
-                    categoryButton.tooltip.suppress = true;
-                    focusEl = categoryButton.element();
+                    const tooltip = categoryButton.tooltip;
+                    if (tooltip) {
+                        categoryButton.tooltip.suppress = true;
+                        focusEl = categoryButton.element();
+                    }
                 }
             }
             if (this.openMenus.length) {
