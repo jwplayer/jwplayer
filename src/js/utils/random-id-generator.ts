@@ -24,7 +24,3 @@ export function genId(length: number): string {
     }
     return str.slice(0, length);
 }
-
-export function testUnsafeAny(): void {
-    const x = (error) => error.status;
-}

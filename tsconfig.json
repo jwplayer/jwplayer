@@ -1,11 +1,10 @@
 {
     "compilerOptions": {
-        "allowJs": true,
         "module": "commonjs",
         "target": "ES5"
     },
     "include": [
-        "src/ts"
+        "src/js"
     ],
     "exclude": [
         "node_modules"
