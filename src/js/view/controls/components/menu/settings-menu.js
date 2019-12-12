@@ -189,7 +189,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
         onMenuItemSelected(settingsMenu.children.playbackRates, index);
     }, settingsMenu);
     model.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
-        settingsMenu.children.audioTracks.items[currentAudioTrack].activate();
+        onMenuItemSelected(settingsMenu.children.audioTracks, currentAudioTrack);
     }, settingsMenu);
     model.on('change:playlistItem', () => {
         // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
