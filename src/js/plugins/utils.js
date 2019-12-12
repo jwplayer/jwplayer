@@ -29,6 +29,9 @@ export function mapPluginToCode(pluginUrl) {
         case 'gapro':
             code = 305006;
             break;
+        case 'bidding':
+            code = 305007;
+            break;
         default:
             break;
     }
