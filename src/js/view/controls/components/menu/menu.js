@@ -294,19 +294,41 @@ export default class Menu extends Events {
         menu.destroy();
     }
     open(evt) {
-        if (this.visible && !this.openMenus) {
+        if (this.visible && !this.openMenus.length) {
+            if (this.items.length || this.topbar) {
+                (this.topbar && this.topbar.firstChild || this.items[0].el).focus();
+            }
             return;
         }
         backButtonTarget = null;
         let focusEl;
         if (this.isSubmenu) {
             const { mainMenu, parentMenu, categoryButton } = this;
-            if (parentMenu.openMenus.length) {
-                parentMenu.closeChildren();
+            parentMenu.openMenus.push(this.name);
+            if (this.items.length) {
+                focusEl = this.items[0].el;
             }
-            if (categoryButton) {
+            if (parentMenu.openMenus.length > 1) {
+                this.closeSiblings();
+            }
+            const enterPressed = evt && evt.type === 'enter';
+            // Check cat but
+            if (categoryButton && !mainMenu.visible) {
                 categoryButton.element().setAttribute('aria-checked', 'true');
+                if (!enterPressed) {
+                    // Suppress tooltip on click
+                    const tooltip = categoryButton.tooltip;
+                    if (tooltip) {
+                        categoryButton.tooltip.suppress = true;
+                    }
+                }
+                focusEl = categoryButton.element();
             }
+
+            if (enterPressed && this.topbar) {
+                focusEl = this.topbar.firstChild;
+            }
+
             if (parentMenu.isSubmenu) {
                 parentMenu.el.classList.remove('jw-settings-submenu-active');
                 mainMenu.topbar.classList.add('jw-nested-menu-open');
@@ -327,19 +349,8 @@ export default class Menu extends Events {
                 }
             }
             this.el.classList.add('jw-settings-submenu-active');
-            parentMenu.openMenus.push(this.name);
             if (!mainMenu.visible) {
                 mainMenu.open(evt);
-                if (this.items && evt && evt.type === 'enter') {
-                    focusEl = this.topbar ? this.topbar.firstChild.focus() : this.items[0].el;
-                } else {
-                    // Don't show tooltip if auto-focusing for navigation's sake.
-                    const tooltip = categoryButton.tooltip;
-                    if (tooltip) {
-                        categoryButton.tooltip.suppress = true;
-                        focusEl = categoryButton.element();
-                    }
-                }
             }
             if (this.openMenus.length) {
                 this.closeChildren();
@@ -382,6 +393,18 @@ export default class Menu extends Events {
     closeChildren() {
         this.openMenus.forEach(menuName => {
             const menu = this.children[menuName];
+            if (menu) {
+                menu.close();
+            }
+        });
+    }
+    closeSiblings() {
+        const parentMenu = this.parentMenu;
+        parentMenu.openMenus.forEach(menuName => {
+            if (menuName === this.name) {
+                return;
+            }
+            const menu = parentMenu.children[menuName];
             if (menu) {
                 menu.close();
             }
@@ -433,8 +456,11 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
     const settingsMenuElement = settingsMenu.el;
     const ui = new UI(settingsMenuElement).on('keydown', function(evt) {
         const { sourceEvent, target } = evt;
-        const next = nextSibling(target);
-        const prev = previousSibling(target);
+        const menu = settingsMenu.children[target.getAttribute('name')] || 
+            settingsMenu.children[settingsMenu.openMenus[0]];
+        const isTopbar = evt.target.parentNode.classList.contains('jw-submenu-topbar');
+        const next = isTopbar ? menu.categoryButton.element() : nextSibling(target);
+        const prev = isTopbar ? previousSibling(menu.categoryButton.element()) : previousSibling(target);
         const key = sourceEvent.key.replace(/(Arrow|ape)/, '');
         const onLeft = (isTab) => {
             if (prev) {
@@ -451,26 +477,29 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
             }
         };
         const openMenu = () => {
-            let childMenu = settingsMenu.children[target.getAttribute('name')];
-            if (!childMenu && backButtonTarget) {
-                childMenu = backButtonTarget.children[backButtonTarget.openMenus];
-            }
-            if (childMenu) {
-                childMenu.open(evt);
-                if (childMenu.topbar) {
-                    childMenu.topbar.firstChild.focus();
-                } else if (childMenu.items && childMenu.items.length) {
-                    childMenu.items[0].el.focus();
-                }
-                return;
-            }
-            const isTopbar = evt.target.parentNode.classList.contains('jw-submenu-topbar');
+            let targetMenu = menu.openMenus.length ? menu.children[menu.openMenus[0]] : menu;
             if (isTopbar) {
                 const submenuItems = evt.target.parentNode.parentNode.querySelector('.jw-settings-submenu-items');
                 const focusElement = key === 'Down' ?
                     submenuItems.childNodes[0] :
                     submenuItems.childNodes[submenuItems.childNodes.length - 1];
                 focusElement.focus();
+                return;
+            }
+            if (!menu && backButtonTarget) {
+                targetMenu = backButtonTarget.children[backButtonTarget.openMenus];
+            }
+            if (targetMenu) {
+                targetMenu.open(evt);
+                if (key === 'Down') {
+                    if (targetMenu.topbar) {
+                        targetMenu.topbar.firstChild.focus();
+                    } else {
+                        targetMenu.items[0].el.focus();
+                    }
+                } else {
+                    targetMenu.items[targetMenu.items.length - 1].el.focus();
+                }
             }
         };
         switch (key) {
@@ -486,11 +515,13 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
             case 'Tab': 
                 if (sourceEvent.shiftKey) {
                     onLeft(true);
+                } else if (isTopbar) {
+                    onRight();
                 }
                 break;
             case 'Up':
             case 'Down':
-                openMenu(key);
+                openMenu();
                 break;
             default:
                 break;
