@@ -296,14 +296,17 @@ export default class Menu extends Events {
         if (!menuItems) {
             this.removeMenu();
         } else {
-            this.items = [];
             emptyElement(this.itemsContainer.el);
+            this.items.forEach(item => {
+                item.destroy();
+            });
+            this.items = [];
             menuItems.forEach(menuItem => {
                 this.items.push(menuItem);
                 this.itemsContainer.el.appendChild(menuItem.el);
             });
             if (initialSelectionIndex > -1) {
-                menuItems[initialSelectionIndex].activate();
+                this.items[initialSelectionIndex].activate();
             }
             this.categoryButton.show();
         }
@@ -470,11 +473,17 @@ export default class Menu extends Events {
                 this.categoryButton.ui.destroy();
             }
             if (this.itemsContainer) {
+                emptyElement(this.itemsContainer.el);
                 this.itemsContainer.destroy();
             }
             if (this.topbarUI) {
                 this.topbarUI.destroy();
             } 
+            if (this.items) {
+                this.items.forEach(item => {
+                    item.destroy();
+                });
+            }
             const openMenus = this.parentMenu.openMenus;
             const openMenuIndex = openMenus.indexOf(this.name);
             if (openMenus.length && openMenuIndex > -1) {

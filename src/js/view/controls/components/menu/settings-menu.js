@@ -27,6 +27,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             controlBarButton.show();
         }
     };
+    let levelChangedManually = false;
     const setLevelsMenu = (levels) => {
         const menuItemOptions = { defaultText: localization.auto };
         changeMenuItems(
@@ -40,7 +41,21 @@ const SettingsMenu = (api, model, controlbar, localization) => {
         const shouldShowGear = !!childMenus.quality || childMenus.playbackRates || Object.keys(childMenus).length > 1;
         controlbar.elements.settingsButton.toggle(shouldShowGear);
     };
+    const onMenuItemSelected = (menu, itemIndex) => {
+        if (menu && itemIndex > -1) {
+            menu.items.forEach(item => {
+                item.deactivate();
+            });
+            menu.items[itemIndex].activate();
+        }
+    };
+
+    // Quality Tracks
     model.change('levels', (changedModel, levels) => {
+        if (levelChangedManually) {
+            levelChangedManually = false;
+            return;
+        }
         setLevelsMenu(levels);
     }, settingsMenu);
     const changeAutoLabel = function (qualityLevel, qualityMenu, currentIndex) {
@@ -54,17 +69,52 @@ const SettingsMenu = (api, model, controlbar, localization) => {
 
         item.textContent = currentIndex ? '' : level.label;
     };
+    model.on('change:currentLevel', (changedModel, currentIndex) => {
+        const qualityMenu = settingsMenu.children.quality;
+        const visualQuality = model.get('visualQuality');
+        if (visualQuality && qualityMenu) {
+            changeAutoLabel(visualQuality.level, qualityMenu, currentIndex);
+        }
+        if (!qualityMenu.items[currentIndex].active) {
+            onMenuItemSelected(qualityMenu, currentIndex);
+        }
+        levelChangedManually = true;
+    }, settingsMenu);
+
+    // Visual Quality
     model.on('change:visualQuality', (changedModel, quality) => {
         const qualityMenu = settingsMenu.children.quality;
         if (quality && qualityMenu) {
             changeAutoLabel(quality.level, qualityMenu, model.get('currentLevel'));
         }
     });
-    model.on('change:currentLevel', (changedModel, currentIndex) => {
-        const qualityMenu = settingsMenu.children.quality;
-        const visualQuality = model.get('visualQuality');
-        if (visualQuality && qualityMenu) {
-            changeAutoLabel(visualQuality.level, qualityMenu, currentIndex);
+
+    // Audio Tracks
+    const setAudioTracksMenu = (audioTracks) => {
+        changeMenuItems(
+            'audioTracks', 
+            audioTracks, 
+            (index) => api.setCurrentAudioTrack(index), 
+            model.get('currentAudioTrack')
+        );
+    };
+    model.change('audioTracks', (changedModel, audioTracks) => {
+        setAudioTracksMenu(audioTracks);
+    }, settingsMenu);
+    model.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
+        onMenuItemSelected(settingsMenu.children.audioTracks, currentAudioTrack);
+    }, settingsMenu);
+
+    // Captions
+    model.on('change:playlistItem', () => {
+        // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
+        // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
+        settingsMenu.removeMenu('captions');
+        controlbar.elements.captionsButton.hide();
+
+        // Settings menu should not be visible when switching playlist items via controls or .load()
+        if (settingsMenu.visible) {
+            settingsMenu.close();
         }
     }, settingsMenu);
     model.change('captionsList', (changedModel, captionsList) => {
@@ -132,11 +182,6 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             renderCaptionsSettings();
         }
     });
-    const onMenuItemSelected = (menu, itemIndex) => {
-        if (menu && itemIndex > -1) {
-            menu.items[itemIndex].activate();
-        }
-    };
     model.change('captionsIndex', (changedModel, index) => {
         const captionsSubmenu = settingsMenu.children.captions;
         if (captionsSubmenu) {
@@ -144,6 +189,8 @@ const SettingsMenu = (api, model, controlbar, localization) => {
         }
         controlbar.toggleCaptionsButtonState(!!index);
     }, settingsMenu);
+
+    // Playback Rates
     const setPlaybackRatesMenu = (playbackRates) => {
         const showPlaybackRateControls =
             model.get('supportsPlaybackRate') &&
@@ -166,21 +213,10 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             menuItemOptions
         );
     };
-    model.on('change:playbackRates', (changedModel, playbackRates) => {
+    model.change('playbackRates', (changedModel, playbackRates) => {
         setPlaybackRatesMenu(playbackRates);
     }, settingsMenu);
-    const setAudioTracksMenu = (audioTracks) => {
-        changeMenuItems(
-            'audioTracks', 
-            audioTracks, 
-            (index) => api.setCurrentAudioTrack(index), 
-            model.get('currentAudioTrack')
-        );
-    };
-    model.on('change:audioTracks', (changedModel, audioTracks) => {
-        setAudioTracksMenu(audioTracks);
-    }, settingsMenu);
-    model.on('change:playbackRate', (changedModel, playbackRate) => {
+    model.change('playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
         let index = -1;
         if (rates) {
@@ -188,23 +224,12 @@ const SettingsMenu = (api, model, controlbar, localization) => {
         }
         onMenuItemSelected(settingsMenu.children.playbackRates, index);
     }, settingsMenu);
-    model.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
-        onMenuItemSelected(settingsMenu.children.audioTracks, currentAudioTrack);
-    }, settingsMenu);
-    model.on('change:playlistItem', () => {
-        // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
-        // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
-        settingsMenu.removeMenu('captions');
-        controlbar.elements.captionsButton.hide();
 
-        // Settings menu should not be visible when switching playlist items via controls or .load()
-        if (settingsMenu.visible) {
-            settingsMenu.close();
-        }
-    }, settingsMenu);
     model.on('change:playbackRateControls', () => {
         setPlaybackRatesMenu(model.get('playbackRates'));
     });
+
+    // Remove the audio tracks, qualities, and playback rates submenus when casting
     model.on('change:castActive', (changedModel, active, previousState) => {
         if (active === previousState) {
             return;
@@ -220,6 +245,8 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             setPlaybackRatesMenu(model.get('playbackRates'));
         }
     }, settingsMenu);
+
+    // Update playback rates when stream type changes
     model.on('change:streamType', () => {
         setPlaybackRatesMenu(model.get('playbackRates'));
     }, settingsMenu);
