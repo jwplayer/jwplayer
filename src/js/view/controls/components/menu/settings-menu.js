@@ -130,6 +130,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
                 captionsSettingsMenu.setMenuItems(captionsSettingsItems);
             };
             renderCaptionsSettings();
+            controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
         }
     });
     const onMenuItemSelected = (menu, itemIndex) => {
