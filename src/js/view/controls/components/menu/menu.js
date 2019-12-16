@@ -342,17 +342,25 @@ export default class Menu extends Events {
         menu.destroy();
     }
     open(evt) {
-        if (this.visible && !this.openMenus.length) {
-            if (this.items.length && evt && evt.type === 'keydown') {
-                this.items[0].el.focus();
-            }
-            return;
-        }
         const mainMenuVisible = this.mainMenu.visible;
         let focusEl;
+        if (!this.items.length || this.children) {
+            return;
+        }
         if (this.isSubmenu) {
-            const { mainMenu, parentMenu, categoryButton } = this;
+            const sourceEvent = evt.sourceEvent || event;
             const firstItem = this.topbar ? this.topbar.firstChild : this.items[0].el;
+            const lastItem = this.items[this.items.length - 1].el;
+            const isKeydown = sourceEvent.type === 'keydown';
+            const key = isKeydown && sourceEvent.key.replace(/(Arrow|ape)/, '');
+            const itemTarget = isKeydown && key === 'Up' ? lastItem : firstItem;
+            if (this.visible && !this.openMenus.length) {
+                if (this.items.length && isKeydown) {
+                    itemTarget.focus();
+                }
+                return;
+            }
+            const { mainMenu, parentMenu, categoryButton } = this;
             parentMenu.openMenus.push(this.name);
             if (parentMenu.openMenus.length > 1) {
                 parentMenu.closeChildren(this.name);
@@ -368,7 +376,7 @@ export default class Menu extends Events {
                 menuTitle.innerText = this.title || this.name;
                 mainMenu.backButton.show();
                 backButtonTarget = this.parentMenu;
-                focusEl = mainMenuVisible && evt && evt.type === 'enter' ? firstItem : menuTitle;
+                focusEl = menuTitle;
             } else {
                 mainMenu.topbar.classList.remove('jw-nested-menu-open');
                 if (mainMenu.backButton) {
@@ -376,15 +384,12 @@ export default class Menu extends Events {
                 }
             }
             this.el.classList.add('jw-settings-submenu-active');
-            if (mainMenuVisible && evt && evt.type === 'enter') {
-                focusEl = firstItem;
+            if (mainMenuVisible && isKeydown) {
+                focusEl = itemTarget;
             } else if (!mainMenuVisible) {
                 mainMenu.open(evt);
                 focusEl = categoryButton.element();
-                const tooltip = categoryButton.tooltip;
-                if (this.items && evt && evt.type === 'enter') {
-                    tooltip.suppress = false;
-                } else if (tooltip) {
+                if (categoryButton && !isKeydown) {
                     categoryButton.tooltip.suppress = true;
                         
                 }
@@ -397,6 +402,9 @@ export default class Menu extends Events {
             }
             this.el.scrollTop = 0;
         } else {
+            if (this.visible) {
+                return;
+            }
             this.el.parentNode.classList.add('jw-settings-open');
             this.trigger('menuVisibility', { visible: true, evt });
             document.addEventListener('click', this.onDocumentClick);
