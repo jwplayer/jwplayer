@@ -450,7 +450,10 @@ export default class Menu extends Events {
             }
         });
     }
-    toggle(evt) {
+    toggle(evt, isDefault) {
+        if (isDefault && this.mainMenu.visible) {
+            return this.mainMenu.close(evt);
+        }
         if (this.visible) {
             this.close(evt);
         } else {
