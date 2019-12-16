@@ -11,6 +11,7 @@ import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { RadioMenuItem } from 'view/controls/components/menu/menu-item';
 import { MenuTemplate } from 'view/controls/templates/menu/menu';
+import { normalizeKey } from './utils';
 import menuCategoryButton from 'view/controls/components/menu/category-button';
 import { isRtl } from 'utils/language';
 
@@ -43,7 +44,7 @@ export default class Menu extends Events {
             this.itemsContainer = this.createItemsContainer();
             this.parentMenu.appendMenu(this);
         } else {
-            this.ui = addGlobalMenuKeyListener(this);
+            this.ui = addMenuTopbarListener(this);
         }
     }
     get defaultChild() {
@@ -51,10 +52,9 @@ export default class Menu extends Events {
         return quality || captions || audioTracks || sharing || playbackRates;
     }
     createItemsContainer() {
-        const close = this.close;
         const itemsContainerElement = this.el.querySelector('.jw-settings-submenu-items');
         const getTopbar = () => this.topbar;
-        const onKeydown = function(evt) {
+        const onKeydown = (evt) => {
             if (event.target.parentNode !== itemsContainerElement) {
                 return;
             }
@@ -73,7 +73,7 @@ export default class Menu extends Events {
             const prevItem = backButtonElement || previousSibling(topbarTarget);
             const nextSubItem = nextSibling(evt.target);
             const prevSubItem = previousSibling(evt.target);
-            const key = sourceEvent.key.replace(/(Arrow|ape)/, '');
+            const key = sourceEvent && normalizeKey(sourceEvent.key);
             switch (key) {
                 case 'Tab':
                     focusElement(sourceEvent.shiftKey ? prevItem : nextItem);
@@ -99,8 +99,8 @@ export default class Menu extends Events {
                         focusElement(nextSubItem, 0);
                     }
                     break;
-                case 'Escape':
-                    close(event);
+                case 'Esc':
+                    this.close(event);
                     break;
                 default:
                     break;
@@ -132,9 +132,9 @@ export default class Menu extends Events {
         const closeButton = button('jw-settings-close', this.close, localization.close, [cloneIcon('close')]);
         this.topbar.appendChild(closeButton.element());
         closeButton.show();
-        closeButton.ui.on('keydown', function(evt) {
+        closeButton.ui.on('keydown', (evt) => {
             const sourceEvent = evt.sourceEvent;
-            const key = sourceEvent.key.replace(/(Arrow|ape)/, '');
+            const key = normalizeKey(sourceEvent.key);
             // Close settings menu when enter is pressed on the close button
             // or when tab or right arrow key is pressed since it is the last element in topbar
             if (key === 'Enter' || key === 'Right' || (key === 'Tab' && !sourceEvent.shiftKey)) {
@@ -180,11 +180,12 @@ export default class Menu extends Events {
         const settingsMenu = this.mainMenu;
         const categoryButton = this.categoryButton;
         this.topbarUI = new UI(topbar).on('keydown', (evt) => {
-            const key = evt.sourceEvent.key.replace(/(Arrow|ape)/, '');
+            const sourceEvent = evt.sourceEvent;
+            const key = normalizeKey(sourceEvent.key);
             const onLeft = () => {
                 if (categoryButton) {
                     previousSibling(categoryButton.element()).focus();
-                    evt.sourceEvent.preventDefault();
+                    sourceEvent.preventDefault();
                 } else {
                     settingsMenu.backButton.element().focus();
                 }
@@ -192,7 +193,7 @@ export default class Menu extends Events {
             const onRight = () => {
                 if (categoryButton) {
                     nextSibling(categoryButton.element()).focus();
-                    evt.sourceEvent.preventDefault();
+                    sourceEvent.preventDefault();
                 } else {
                     settingsMenu.closeButton.element().focus();
                 }
@@ -211,7 +212,7 @@ export default class Menu extends Events {
                     onRight();
                     break;
                 case 'Tab':
-                    if (evt.sourceEvent.shiftKey) {
+                    if (sourceEvent.shiftKey) {
                         onLeft();
                     } else {
                         onRight();
@@ -344,16 +345,16 @@ export default class Menu extends Events {
     open(evt) {
         const mainMenuVisible = this.mainMenu.visible;
         let focusEl;
-        if (!this.items.length || this.children) {
-            return;
-        }
         if (this.isSubmenu) {
-            const sourceEvent = evt.sourceEvent || event;
+            if (!this.items.length) {
+                return;
+            }
+            const sourceEvent = evt && evt.sourceEvent;
             const firstItem = this.topbar ? this.topbar.firstChild : this.items[0].el;
             const lastItem = this.items[this.items.length - 1].el;
-            const isKeydown = sourceEvent.type === 'keydown';
-            const key = isKeydown && sourceEvent.key.replace(/(Arrow|ape)/, '');
-            const itemTarget = isKeydown && key === 'Up' ? lastItem : firstItem;
+            const isKeydown = sourceEvent && sourceEvent.type === 'keydown';
+            const key = isKeydown && normalizeKey(sourceEvent.key);
+            const itemTarget = key === 'Up' ? lastItem : firstItem;
             if (this.visible && !this.openMenus.length) {
                 if (this.items.length && isKeydown) {
                     itemTarget.focus();
@@ -490,13 +491,13 @@ export default class Menu extends Events {
     }
 }
 
-const addGlobalMenuKeyListener = (settingsMenu) => {
+const addMenuTopbarListener = (settingsMenu) => {
     const closeButton = settingsMenu.closeButton;
     const ui = new UI(settingsMenu.topbar).on('keydown', function(evt) {
         const { sourceEvent, target } = evt;
         const next = nextSibling(target);
         const prev = previousSibling(target);
-        const key = sourceEvent.key.replace(/(Arrow|ape)/, '');
+        const key = normalizeKey(sourceEvent.key);
         const onLeft = (isTab) => {
             if (prev) {
                 if (!isTab) {
@@ -511,13 +512,17 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
                 next.focus();
             }
         };
-        const menu = () => {
+        const onOpen = () => {
             let targetMenu = settingsMenu.children[target.getAttribute('name')];
             if (!targetMenu && backButtonTarget) {
                 targetMenu = backButtonTarget.children[backButtonTarget.openMenus[0]];
             }
+            if (targetMenu && targetMenu.open) {
+                targetMenu.open(evt);
+            }
             return targetMenu;
         };
+        
         switch (key) {
             case 'Esc':
                 settingsMenu.close(evt);
@@ -536,7 +541,7 @@ const addGlobalMenuKeyListener = (settingsMenu) => {
             case 'Up':
             case 'Down':
             case 'Enter':
-                menu().open(evt);
+                onOpen();
                 break;
             default:
                 break;
