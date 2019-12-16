@@ -36,6 +36,10 @@ class Model extends SimpleModel {
         config.instreamMode = !!config.instream;
         delete config.instream;
         delete config.mediaModel;
+
+        Object.keys(config.setupConfig).forEach(key => {
+            config.setupConfig[key] = config[key];
+        });
         return config;
     }
 
