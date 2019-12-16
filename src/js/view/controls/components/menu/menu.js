@@ -393,7 +393,7 @@ export default class Menu extends Events {
             } else if (!mainMenuVisible) {
                 mainMenu.open(evt);
                 focusEl = categoryButton.element();
-                if (categoryButton && !isKeydown) {
+                if (categoryButton && categoryButton.tooltip && !isKeydown) {
                     categoryButton.tooltip.suppress = true;
                         
                 }
