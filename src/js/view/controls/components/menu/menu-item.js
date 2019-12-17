@@ -6,6 +6,7 @@ export class MenuItem {
     constructor(_content, _action, _template = itemTemplate) {
         this.el = createElement(_template(_content));
         this.ui = new UI(this.el).on('click tap enter', _action, this);
+        this.ui.directSelect = true;
     }
     destroy() {
         this.ui.destroy();
