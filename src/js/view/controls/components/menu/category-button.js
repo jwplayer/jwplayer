@@ -33,6 +33,7 @@ const categoryButton = (menu, localizedName) => {
     if (!('ontouchstart' in window)) {
         menuCategoryButton.tooltip = SimpleTooltip(buttonElement, name, localizedName);
     }
+    menuCategoryButton.ui.directSelect = true;
     return menuCategoryButton;
 };
 
