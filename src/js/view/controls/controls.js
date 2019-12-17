@@ -195,7 +195,6 @@ export default class Controls extends Events {
             const activeTimeout = (visible || isKeyEvent) ? 0 : ACTIVE_TIMEOUT;
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive(activeTimeout);
-            lastState = state;
             if (getBreakpoint(model.get('containerWidth')) < 2) {
                 if (visible && state === STATE_PLAYING) {
                     // Pause playback on open if we're currently playing
@@ -205,6 +204,7 @@ export default class Controls extends Events {
                     api.play(settingsInteraction);
                 }
             }
+            lastState = state;
             if (!visible && isKeyEvent && settingsButton) {
                 settingsButton.element().focus();
             } else if (evt) {
