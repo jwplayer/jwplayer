@@ -296,10 +296,7 @@ export default class Menu extends Events {
         if (!menuItems) {
             this.removeMenu();
         } else {
-            emptyElement(this.itemsContainer.el);
-            this.items.forEach(item => {
-                item.destroy();
-            });
+            this.destroyItems();
             this.items = [];
             menuItems.forEach(menuItem => {
                 this.items.push(menuItem);
@@ -465,6 +462,15 @@ export default class Menu extends Events {
             this.close();
         }
     }
+    destroyItems() {
+        this.items.forEach(item => {
+            item.destroy();
+        });
+        if (this.itemsContainer) {
+            emptyElement(this.itemsContainer.el);
+            this.itemsContainer.destroy();
+        }
+    }
     destroy() {
         document.removeEventListener('click', this.onDocumentClick);
         Object.keys(this.children).map(menuName => {
@@ -475,18 +481,10 @@ export default class Menu extends Events {
                 this.parentMenu.buttonContainer.removeChild(this.categoryButton.element());
                 this.categoryButton.ui.destroy();
             }
-            if (this.itemsContainer) {
-                emptyElement(this.itemsContainer.el);
-                this.itemsContainer.destroy();
-            }
             if (this.topbarUI) {
                 this.topbarUI.destroy();
-            } 
-            if (this.items) {
-                this.items.forEach(item => {
-                    item.destroy();
-                });
             }
+            this.destroyItems();
             const openMenus = this.parentMenu.openMenus;
             const openMenuIndex = openMenus.indexOf(this.name);
             if (openMenus.length && openMenuIndex > -1) {
