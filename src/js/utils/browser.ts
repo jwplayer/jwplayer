@@ -1,16 +1,16 @@
+declare const __FLASH_VERSION__: number;
+
 const userAgent = navigator.userAgent;
 
-function userAgentMatch(regex) {
+function userAgentMatch(regex: RegExp): boolean {
     return userAgent.match(regex) !== null;
 }
 
-function lazyUserAgentMatch(regex) {
-    return function () {
-        return userAgentMatch(regex);
-    };
+function lazyUserAgentMatch(regex: RegExp): () => boolean {
+    return () => userAgentMatch(regex);
 }
 
-export function isFlashSupported() {
+export function isFlashSupported(): boolean {
     const version = flashVersion();
     return !!(version && version >= __FLASH_VERSION__);
 }
@@ -24,31 +24,31 @@ export const isOSX = () => userAgentMatch(/Macintosh/i) && !isIPadOS13;
 // Check for Facebook App Version to see if it's Facebook
 export const isFacebook = lazyUserAgentMatch(/FBAV/i);
 
-export function isEdge() {
+export function isEdge(): boolean {
     return userAgentMatch(/\sEdge\/\d+/i);
 }
 
-export function isMSIE() {
+export function isMSIE(): boolean {
     return userAgentMatch(/msie/i);
 }
 
-export function isChrome() {
+export function isChrome(): boolean {
     return userAgentMatch(/\s(?:(?:Headless)?Chrome|CriOS)\//i) && !isEdge() && !userAgentMatch(/UCBrowser/i);
 }
 
-export function isIE() {
+export function isIE(): boolean {
     return isEdge() || isIETrident() || isMSIE();
 }
 
-export function isSafari() {
+export function isSafari(): boolean {
     return userAgentMatch(/safari/i) && !userAgentMatch(/(?:Chrome|CriOS|chromium|android|phantom)/i);
 }
 
-export function isIOS() {
+export function isIOS(): boolean {
     return userAgentMatch(/iP(hone|ad|od)/i) || isIPadOS13;
 }
 
-export function isAndroidNative() {
+export function isAndroidNative(): boolean {
     // Android Browser appears to include a user-agent string for Chrome/18
     if (userAgentMatch(/chrome\/[123456789]/i) && !userAgentMatch(/chrome\/18/i) && !isFF()) {
         return false;
@@ -56,15 +56,15 @@ export function isAndroidNative() {
     return isAndroid();
 }
 
-export function isAndroid() {
+export function isAndroid(): boolean {
     return userAgentMatch(/Android/i) && !userAgentMatch(/Windows Phone/i);
 }
 
-export function isMobile() {
+export function isMobile(): boolean {
     return isIOS() || isAndroid() || userAgentMatch(/Windows Phone/i);
 }
 
-export function isIframe() {
+export function isIframe(): boolean {
     try {
         return window.self !== window.top;
     } catch (e) {
@@ -72,7 +72,7 @@ export function isIframe() {
     }
 }
 
-export function flashVersion() {
+export function flashVersion(): number {
     if (isAndroid()) {
         return 0;
     }
@@ -81,7 +81,7 @@ export function flashVersion() {
     let flash;
 
     if (plugins) {
-        flash = plugins['Shockwave Flash'];
+        flash = plugins.namedItem('Shockwave Flash');
         if (flash && flash.description) {
             return parseFloat(flash.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
         }
