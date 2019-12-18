@@ -96,7 +96,9 @@ export default class Menu extends Events {
                 default:
                     break;
             }
-            focusEl.focus();
+            if (focusEl) {
+                focusEl.focus();
+            }
             sourceEvent.preventDefault();
             if (key !== 'Esc') {
                 // only bubble event if esc key was pressed
@@ -404,7 +406,9 @@ export default class Menu extends Events {
         this.el.setAttribute('aria-expanded', 'false'); 
         if (this.isSubmenu) {
             this.el.classList.remove('jw-settings-submenu-active');
-            this.categoryButton.element().setAttribute('aria-checked', 'false');
+            if (this.categoryButton) {
+                this.categoryButton.element().setAttribute('aria-checked', 'false');
+            }
             this.parentMenu.openMenus = this.parentMenu.openMenus.filter(name => name !== this.name);
             if (!this.mainMenu.openMenus.length && this.mainMenu.visible) {
                 this.mainMenu.close(evt);
@@ -456,7 +460,7 @@ export default class Menu extends Events {
             this.children[menuName].destroy();
         });
         if (this.isSubmenu) {
-            if (this.parentMenu.name === this.mainMenu.name && this.categoryButton) {
+            if (this.categoryButton) {
                 this.parentMenu.buttonContainer.removeChild(this.categoryButton.element());
                 this.categoryButton.ui.destroy();
             }
