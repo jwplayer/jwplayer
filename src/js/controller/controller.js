@@ -3,8 +3,7 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist, normalizePlaylistItem } from 'playlist/playlist';
-import Item from 'playlist/item';
+import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -413,7 +412,7 @@ Object.assign(Controller.prototype, {
             }
             _this.trigger('destroyPlugin', {});
             _stop(true);
-
+            _programController.clearItemPromises();
             checkAutoStartCancelable.cancel();
             checkAutoStartCancelable = cancelable(_checkAutoStart);
             updatePlaylistCancelable.cancel();
@@ -912,6 +911,8 @@ Object.assign(Controller.prototype, {
                 index += length;
             }
 
+            _model.set(PLAYER_STATE, STATE_BUFFERING);
+
             return _programController.setActiveItem(index).catch(error => {
                 if (error.code >= 151 && error.code <= 162) {
                     error = composePlayerError(error, ERROR_LOADING_PROVIDER);
@@ -955,6 +956,14 @@ Object.assign(Controller.prototype, {
         this.getWidth = () => _model.get('containerWidth');
         this.getHeight = () => _model.get('containerHeight');
         this.getItemQoe = () => _model._qoeItem;
+
+        this.setItemCallback = function (callback) {
+            _programController.itemCallback = callback;
+        };
+        this.getItemPromise = function (index = (_model.get('item') + (_model.get('itemReady') ? 1 : 0))) {
+            return _programController.getItemPromise(index, _api);
+        };
+
         this.addButton = function(img, tooltip, callback, id, btnClass) {
             let customButtons = _model.get('customButtons') || [];
             let replaced = false;
@@ -1036,15 +1045,14 @@ Object.assign(Controller.prototype, {
         };
 
         this.setPlaylistItem = function (index, item) {
-            item = normalizePlaylistItem(_model, new Item(item), item.feedData || {});
-
-            if (item) {
-                const playlist = _model.get('playlist');
-                playlist[index] = item;
-
-                if (index === _model.get('item') && _model.get('state') === 'idle') {
-                    this.setItemIndex(index);
+            const newItem = _programController.setPlaylistItem(index, item);
+            if (newItem && index === _model.get('item') && _model.get('state') === 'idle') {
+                const itemPromise = this.itemPromises[index];
+                if (itemPromise) {
+                    itemPromise.reject(new Error('Item replaced'));
+                    this.itemPromises[index] = null;
                 }
+                this.setItemIndex(index);
             }
         };
 

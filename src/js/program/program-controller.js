@@ -4,8 +4,11 @@ import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Events from 'utils/backbone.events';
 import BackgroundMedia from 'program/background-media';
-import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_PAUSED } from 'events/events';
+import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED } from 'events/events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
+import { ItemPromise } from 'controller/next-item-promise';
+import { normalizePlaylistItem } from 'playlist/playlist';
+import Item from 'playlist/item';
 
 class ProgramController extends Events {
     /**
@@ -25,11 +28,27 @@ class ProgramController extends Events {
         this.providers = new Providers(model.getConfiguration());
         this.loadPromise = Promise.resolve();
         this.backgroundLoading = model.get('backgroundLoading');
+        this.itemPromises = [];
 
         if (!this.backgroundLoading) {
             // If background loading is not supported, set the shared media element
             model.set('mediaElement', this.mediaPool.getPrimedElement());
         }
+    }
+
+    asyncItem(index, item) {
+        const { model } = this;
+        return this.getItemPromise(index).setItem(index).then((playlistItem) => {
+            if (playlistItem && playlistItem !== item) {
+                this.setPlaylistItem(index, playlistItem);
+                return playlistItem;
+            }
+            return item;
+        }).catch((/* itemPromiseError */) => {
+            if (index < model.get('playlist').length - 1) {
+                this.setActiveItem(index + 1);
+            }
+        });
     }
 
     /**
@@ -44,45 +63,49 @@ class ProgramController extends Events {
         const item = model.get('playlist')[index];
 
         model.attributes.itemReady = false;
-        model.setActiveItem(index);
-        const source = getSource(item);
-        if (!source) {
-            return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE));
-        }
 
         // setActiveItem above might change this.mediaController, so retrieve here.
         const { background, mediaController } = this;
 
-        // Activate the background media if it's loading the item we want to play
-        if (background.isNext(item)) {
-            // First destroy the active item so that the BGL provider can enter the foreground
-            this._destroyActiveMedia();
-            // Attach the BGL provider into the load/play chain
-            this.loadPromise = this._activateBackgroundMedia();
-            return this.loadPromise;
-        }
-        // Loading a new item invalidates all background loading media
-        this._destroyBackgroundMedia();
-
-        if (mediaController) {
-            const casting = model.get('castActive');
-            if (casting || this._providerCanPlay(mediaController.provider, source)) {
-                // We can synchronously reuse the current mediaController
-                this.loadPromise = Promise.resolve(mediaController);
-                // Reinitialize the mediaController with the new item, allowing a new playback session
-                mediaController.activeItem = item;
-                this._setActiveMedia(mediaController);
-                return this.loadPromise;
+        return (this.loadPromise = this.asyncItem(index, item).then((playlistItem) => {
+            if (!playlistItem) {
+                return;
             }
 
-            // If we can't play the source with the current provider, reset the current one and
-            // prime the next tag within the gesture
-            this._destroyActiveMedia();
-        }
+            model.setActiveItem(index);
 
-        const mediaModelContext = model.mediaModel;
-        this.loadPromise = this._setupMediaController(source)
-            .then(nextMediaController => {
+            const source = getSource(item);
+            if (!source) {
+                return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE));
+            }
+
+            // Activate the background media if it's loading the item we want to play
+            if (background.isNext(playlistItem)) {
+                // First destroy the active item so that the BGL provider can enter the foreground
+                this._destroyActiveMedia();
+                // Attach the BGL provider into the load/play chain
+                return this._activateBackgroundMedia();
+            }
+            // Loading a new item invalidates all background loading media
+            this._destroyBackgroundMedia();
+
+            if (mediaController) {
+                const casting = model.get('castActive');
+                if (casting || this._providerCanPlay(mediaController.provider, source)) {
+                    // We can synchronously reuse the current mediaController
+                    // Reinitialize the mediaController with the new item, allowing a new playback session
+                    mediaController.activeItem = playlistItem;
+                    this._setActiveMedia(mediaController);
+                    return mediaController;
+                }
+
+                // If we can't play the source with the current provider, reset the current one and
+                // prime the next tag within the gesture
+                this._destroyActiveMedia();
+            }
+
+            const mediaModelContext = model.mediaModel;
+            return this._setupMediaController(source).then(nextMediaController => {
                 // Don't do anything if we've tried to load another provider while this promise was resolving
                 // We check using the mediaModel because it is unique per item, and per instance of that item
                 if (mediaModelContext === model.mediaModel) {
@@ -90,12 +113,11 @@ class ProgramController extends Events {
                     this._setActiveMedia(nextMediaController);
                     return nextMediaController;
                 }
-            })
-            .catch(err => {
+            }).catch(err => {
                 this._destroyActiveMedia();
                 throw err;
             });
-        return this.loadPromise;
+        }));
     }
 
 
@@ -708,6 +730,41 @@ class ProgramController extends Events {
         }
 
         mediaPool.syncVolume(volume);
+    }
+
+    set itemCallback(callback) {
+        this.model.set('playlistItemCallback', callback);
+        this.itemPromises.forEach(itemPromise => {
+            if (itemPromise) {
+                itemPromise.callback = callback;
+            }
+        });
+    }
+
+    getItemPromise(index, api) {
+        let itemPromise = this.itemPromises[index];
+        if (!itemPromise) {
+            itemPromise = this.itemPromises[index] = new ItemPromise(index, this.model, api);
+            itemPromise.callback = this.model.get('playlistItemCallback');
+        }
+        return itemPromise;
+    }
+
+    clearItemPromises() {
+        this.itemPromises.forEach(itemPromise => {
+            if (itemPromise) {
+                itemPromise.reject(new Error('Item playback aborted'));
+            }
+        });
+        this.itemPromises.length = 0;
+    }
+
+    setPlaylistItem(index, item) {
+        const { model } = this;
+        const newItem = normalizePlaylistItem(model, new Item(item), item.feedData || {});
+        if (newItem) {
+            model.get('playlist')[index] = newItem;
+        }
     }
 }
 
