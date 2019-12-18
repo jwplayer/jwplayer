@@ -27,7 +27,6 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             controlBarButton.show();
         }
     };
-    let levelChangedManually = false;
     const setLevelsMenu = (levels) => {
         const menuItemOptions = { defaultText: localization.auto };
         changeMenuItems(
@@ -52,10 +51,6 @@ const SettingsMenu = (api, model, controlbar, localization) => {
 
     // Quality Tracks
     model.change('levels', (changedModel, levels) => {
-        if (levelChangedManually) {
-            levelChangedManually = false;
-            return;
-        }
         setLevelsMenu(levels);
     }, settingsMenu);
     const changeAutoLabel = function (qualityLevel, qualityMenu, currentIndex) {
@@ -78,7 +73,6 @@ const SettingsMenu = (api, model, controlbar, localization) => {
         if (!qualityMenu.items[currentIndex].active) {
             onMenuItemSelected(qualityMenu, currentIndex);
         }
-        levelChangedManually = true;
     }, settingsMenu);
 
     // Visual Quality
