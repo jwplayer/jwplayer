@@ -250,10 +250,7 @@ export default class Menu extends Events {
                 if (menuItem.active) {
                     return;
                 }
-                action(argument || index);
-                // Re-assignment from index prevents side effect if action re-renders menu
-                const targetItem = this.items[index];
-                if (targetItem.deactivate) {  
+                if (menuItem.deactivate) {  
                     this.items.filter(sibling => sibling.active === true).forEach(activeItem => {
                         activeItem.deactivate();
                     });
@@ -263,9 +260,10 @@ export default class Menu extends Events {
                         this.mainMenu.close(evt);
                     }
                 }
-                if (targetItem.activate) {
-                    targetItem.activate();
+                if (menuItem.activate) {
+                    menuItem.activate();
                 }
+                action(argument || index);
             };
 
             const menuItem = new Item(content, menuItemClick.bind(this));
