@@ -1,14 +1,16 @@
-import { exists } from 'utils/validator';
-import { isNaN } from 'utils/underscore';
+import { exists } from './validator';
+import { isNaN } from './underscore';
 
 // Returns the absolute file path based on a relative filepath, and optional base path
-export function getAbsolutePath(path, base) {
-    if (!exists(base)) {
+export function getAbsolutePath(path: string): string;
+export function getAbsolutePath(path: string, base: string): string;
+export function getAbsolutePath(path: string, base?: string): string {
+    if (!base || !exists(base)) {
         base = document.location.href;
     }
 
     if (!exists(path)) {
-        return;
+        return '';
     }
 
     if (isAbsolutePath(path)) {
@@ -17,7 +19,7 @@ export function getAbsolutePath(path, base) {
 
     const protocol = base.substring(0, base.indexOf('://') + 3);
     const domain = base.substring(protocol.length, base.indexOf('/', protocol.length + 1));
-    let patharray;
+    let patharray: string[];
 
     if (path.indexOf('/') === 0) {
         patharray = path.split('/');
@@ -39,12 +41,12 @@ export function getAbsolutePath(path, base) {
     return protocol + domain + '/' + result.join('/');
 }
 
-export function isAbsolutePath(path) {
+export function isAbsolutePath(path: string): boolean {
     return /^(?:(?:https?|file):)?\/\//.test(path);
 }
 
 // Returns an XML object for the given XML string, or null if the input cannot be parsed.
-export function parseXML(input) {
+export function parseXML(input: string): Document | null {
     let parsedXML = null;
     try {
         parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
@@ -61,7 +63,7 @@ export function parseXML(input) {
 // as null if undefined
 // as a boolean for string values 'true' and 'false'
 // as a number for numeric strings with a character length of 5 or less
-export function serialize(val) {
+export function serialize(val: any): any {
     if (val === undefined) {
         return null;
     }
@@ -81,21 +83,20 @@ export function serialize(val) {
 }
 
 // Returns the integer value a of css string (e.g. '420px')
-export function parseDimension(dimension) {
-    if (typeof dimension === 'string') {
-        if (dimension === '') {
-            return 0;
-        } else if (dimension.lastIndexOf('%') > -1) {
-            return dimension;
-        }
-        return parseInt(dimension.replace('px', ''), 10);
+export function parseDimension(dimension: string): number {
+    if (dimension === '') {
+        return 0;
+    } if (dimension.lastIndexOf('%') > -1) {
+        return parseInt(dimension, 10);
     }
-    return dimension;
+    return parseInt(dimension.replace('px', ''), 10);
 }
 
 // Returns a formatted time string from "mm:ss" to "hh:mm:ss" for the given number of seconds
-export function timeFormat(sec, allowNegative) {
-    if ((sec <= 0 && !allowNegative) || isNaN(parseInt(sec))) {
+export function timeFormat(sec: number): string;
+export function timeFormat(sec: number, allowNegative: boolean): string;
+export function timeFormat(sec: number, allowNegative?: boolean): string {
+    if (isNaN(sec) || !isFinite(sec) || (sec <= 0 && !allowNegative)) {
         return '00:00';
     }
 

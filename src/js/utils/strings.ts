@@ -1,12 +1,14 @@
-import { isValidNumber, isString } from 'utils/underscore';
+import { isValidNumber } from './underscore';
 
 const parseFloat = window.parseFloat;
 
-export function trim(inputString) {
+export function trim(inputString: string): string {
     return inputString.replace(/^\s+|\s+$/g, '');
 }
 
-export function pad(str, length, padder) {
+export function pad(str: string, length: number): string;
+export function pad(str: string, length: number, padder: string): string;
+export function pad(str: string, length: number, padder?: string): string {
     str = '' + str;
     padder = padder || '0';
     while (str.length < length) {
@@ -16,7 +18,7 @@ export function pad(str, length, padder) {
 }
 
 // Get the value of a case-insensitive attribute in an XML node
-export function xmlAttribute(xml, attribute) {
+export function xmlAttribute(xml: Element, attribute: string): string {
     const attributes = xml.attributes;
     for (let attrib = 0; attrib < attributes.length; attrib++) {
         if (attributes[attrib].name && attributes[attrib].name.toLowerCase() === attribute.toLowerCase()) {
@@ -26,7 +28,7 @@ export function xmlAttribute(xml, attribute) {
     return '';
 }
 
-export function extension(path) {
+export function extension(path: string): string {
     if (!path || path.substr(0, 4) === 'rtmp') {
         return '';
     }
@@ -40,23 +42,26 @@ export function extension(path) {
     if (path.lastIndexOf('.') > -1) {
         return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
     }
+    return '';
 }
 
 // Convert seconds to HH:MN:SS.sss
-export function hms(secondsNumber) {
+export function hms(secondsNumber: number): string {
     const h = (secondsNumber / 3600) | 0;
     const m = ((secondsNumber / 60) | 0) % 60;
     const s = secondsNumber % 60;
-    return pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s.toFixed(3), 6);
+    return pad(h.toString(), 2) + ':' + pad(m.toString(), 2) + ':' + pad(s.toFixed(3), 6);
 }
 
 // Convert a time-representing string to a number
-export function seconds(str, frameRate) {
+export function seconds(str: string): number;
+export function seconds(str: string, frameRate: number): number;
+export function seconds(str: string, frameRate?: number): number {
     if (!str) {
         return 0;
     }
     if (isValidNumber(str)) {
-        return str;
+        return parseFloat(str);
     }
 
     const input = str.replace(',', '.');
@@ -94,25 +99,32 @@ export function seconds(str, frameRate) {
 }
 
 // Convert an offset string to a number; supports conversion of percentage offsets
-export function offsetToSeconds(offset, duration, frameRate) {
-    if (isString(offset) && offset.slice(-1) === '%') {
+export function offsetToSeconds(offset: string): number;
+export function offsetToSeconds(offset: string, duration: number): number;
+export function offsetToSeconds(offset: string, duration: number, frameRate: number): number;
+export function offsetToSeconds(offset: string, duration?: number, frameRate?: number): number | null {
+    if (offset && offset.slice(-1) === '%') {
         const percent = parseFloat(offset);
-        if (!duration || !isValidNumber(duration) || !isValidNumber(percent)) {
+        if (!duration || !isValidNumber(percent)) {
             return null;
         }
         return duration * percent / 100;
     }
-    return seconds(offset, frameRate);
+
+    if (frameRate) {
+        return seconds(offset, frameRate);
+    }
+    return seconds(offset);
 }
 
-export function prefix(arr, add) {
+export function prefix(arr: Array<string>, add: string): string[] {
     return arr.map(val => add + val);
 }
 
-export function suffix(arr, add) {
+export function suffix(arr: Array<string>, add: string): string[] {
     return arr.map(val => val + add);
 }
 
-export function isPercentage(value) {
-    return typeof value === 'string' && value.slice(-1) === '%';
+export function isPercentage(value: string): boolean {
+    return value !== undefined && value.slice(-1) === '%';
 }

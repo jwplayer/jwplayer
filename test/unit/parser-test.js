@@ -10,7 +10,7 @@ describe('parser', function() {
 
     it('parser.getAbsolutePath', function() {
         let path = parser.getAbsolutePath(null, null);
-        expect(path, 'passing null as path returns null').to.be.undefined;
+        expect(path, 'passing null as path returns empty string').to.equal('');
 
         path = parser.getAbsolutePath('https://testingUrl', null);
         expect(path, 'passing absolute path returns the path').to.equal('https://testingUrl');
@@ -69,13 +69,10 @@ describe('parser', function() {
         expect(dimension, 'dimension with empty string should be 0').to.equal(0);
 
         dimension = parser.parseDimension('35%');
-        expect(dimension, 'dimension with percentage string should be the same').to.equal('35%');
+        expect(dimension, 'dimension with percentage string should be the same').to.equal(35);
 
         dimension = parser.parseDimension('35px');
         expect(dimension, 'dimension with px string should remove px').to.equal(35);
-
-        dimension = parser.parseDimension(35);
-        expect(dimension, 'dimension with int should be itself').to.equal(35);
     });
 
     it('parser.timeFormat', function() {
@@ -99,22 +96,10 @@ describe('parser', function() {
         time = parser.timeFormat(0);
         expect(time, 'timeFormat with minutes seconds').to.equal('00:00');
 
-        time = parser.timeFormat();
-        expect(time, 'timeFormat with minutes seconds').to.equal('00:00');
-
         time = parser.timeFormat(NaN);
         expect(time, 'timeFormat with minutes seconds').to.equal('00:00');
 
         time = parser.timeFormat(Infinity);
-        expect(time, 'timeFormat with minutes seconds').to.equal('00:00');
-
-        time = parser.timeFormat(null);
-        expect(time, 'timeFormat with minutes seconds').to.equal('00:00');
-
-        time = parser.timeFormat(false);
-        expect(time, 'timeFormat with minutes seconds').to.equal('00:00');
-
-        time = parser.timeFormat('test');
         expect(time, 'timeFormat with minutes seconds').to.equal('00:00');
     });
 });
