@@ -2,7 +2,6 @@ import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import { 
     createElement, 
-    emptyElement, 
     prependChild, 
     nextSibling, 
     previousSibling
@@ -37,7 +36,9 @@ export default class Menu extends Events {
         this.categoryButton = null;
         this.closeButton = (this.parentMenu && this.parentMenu.closeButton) || this.createCloseButton(_localization);
         if (this.isSubmenu) {
-            this.categoryButton = this.parentMenu.categoryButton || this.createCategoryButton(_localization);
+            if (this.parentMenu.name === this.mainMenu.name) {
+                this.categoryButton = this.createCategoryButton(_localization);
+            }
             if (this.parentMenu.parentMenu && !this.mainMenu.backButton) {
                 this.mainMenu.backButton = this.createBackButton(_localization);
             }
@@ -53,58 +54,49 @@ export default class Menu extends Events {
     }
     createItemsContainer() {
         const itemsContainerElement = this.el.querySelector('.jw-settings-submenu-items');
-        const getTopbar = () => this.topbar;
+        const closeButtonElement = this.mainMenu.closeButton && this.mainMenu.closeButton.element();
+        const backButtonElement = this.mainMenu.backButton && this.mainMenu.backButton.element();
+        const categoryButtonElement = this.categoryButton && this.categoryButton.element();
+        const getTopbar = () => this.topbar && this.topbar.firstChild;
         const onKeydown = (evt) => {
             if (event.target.parentNode !== itemsContainerElement) {
                 return;
             }
-            const focusElement = (ele, i) => {  
-                if (ele) {
-                    ele.focus();
-                } else if (i !== undefined) {
-                    itemsContainerElement.childNodes[i].focus();
-                }
-            };
+
             const { sourceEvent, target } = evt;
-            const isFirstChild = itemsContainerElement.firstChild === target;
-            const isLastChild = itemsContainerElement.lastChild === target;
             const topbar = getTopbar();
-            const nextItem = closeButtonElement || nextSibling(topbarTarget);
-            const prevItem = backButtonElement || previousSibling(topbarTarget);
-            const nextSubItem = nextSibling(evt.target);
-            const prevSubItem = previousSibling(evt.target);
+            const settingsElement = document.getElementsByClassName('jw-icon-settings')[0];
+            const rightItem = categoryButtonElement ? nextSibling(categoryButtonElement) : closeButtonElement;
+            const leftItem = categoryButtonElement ? previousSibling(categoryButtonElement) : backButtonElement;
+            const downItem = nextSibling(target) || topbar || itemsContainerElement.firstChild;
+            const upItem = previousSibling(target) || topbar || itemsContainerElement.lastChild;
             const key = sourceEvent && normalizeKey(sourceEvent.key);
+            let focusEl;
+
             switch (key) {
                 case 'Tab':
-                    focusElement(sourceEvent.shiftKey ? prevItem : nextItem);
+                    focusEl = sourceEvent.shiftKey ? leftItem : rightItem;
                     break;
                 case 'Left':
-                    focusElement(prevItem || 
-                        previousSibling(document.getElementsByClassName('jw-icon-settings')[0]));
+                    focusEl = (leftItem || this.close(evt) && settingsElement);
                     break;
                 case 'Up':
-                    if (topbar && isFirstChild) {
-                        focusElement(topbar.firstChild);
-                    } else {
-                        focusElement(prevSubItem, itemsContainerElement.childNodes.length - 1);
-                    }
+                    focusEl = upItem;
                     break;
                 case 'Right':
-                    focusElement(nextItem);
+                    focusEl = rightItem;
                     break;
                 case 'Down':
-                    if (topbar && isLastChild) {
-                        focusElement(topbar.firstChild);
-                    } else {
-                        focusElement(nextSubItem, 0);
-                    }
+                    focusEl = downItem;
                     break;
                 case 'Esc':
+                    focusEl = settingsElement;
                     this.close(event);
                     break;
                 default:
                     break;
             }
+            focusEl.focus();
             sourceEvent.preventDefault();
             if (key !== 'Esc') {
                 // only bubble event if esc key was pressed
@@ -113,17 +105,6 @@ export default class Menu extends Events {
             
         };
         const itemsContainer = new UI(itemsContainerElement);
-        let topbarTarget = 
-            this.categoryButton && this.categoryButton.element() || 
-            this.parentMenu.categoryButton && this.parentMenu.categoryButton.element() ||
-            this.mainMenu.buttonContainer.firstChild;
-        let closeButtonElement;
-        let backButtonElement;
-
-        if (this.parentMenu.isSubmenu) {
-            closeButtonElement = this.mainMenu.closeButton.element();
-            backButtonElement = this.mainMenu.backButton.element();
-        }
         itemsContainer.on('keydown', onKeydown);
 
         return itemsContainer;
@@ -270,7 +251,9 @@ export default class Menu extends Events {
                     return;
                 }
                 action(argument || index);
-                if (menuItem.deactivate) {  
+                // Re-assignment from index prevents side effect if action re-renders menu
+                const targetItem = this.items[index];
+                if (targetItem.deactivate) {  
                     this.items.filter(sibling => sibling.active === true).forEach(activeItem => {
                         activeItem.deactivate();
                     });
@@ -280,8 +263,8 @@ export default class Menu extends Events {
                         this.mainMenu.close(evt);
                     }
                 }
-                if (menuItem.activate) {
-                    menuItem.activate();
+                if (targetItem.activate) {
+                    targetItem.activate();
                 }
             };
 
@@ -297,7 +280,6 @@ export default class Menu extends Events {
             this.removeMenu();
         } else {
             this.destroyItems();
-            this.items = [];
             menuItems.forEach(menuItem => {
                 this.items.push(menuItem);
                 this.itemsContainer.el.appendChild(menuItem.el);
@@ -305,7 +287,9 @@ export default class Menu extends Events {
             if (initialSelectionIndex > -1) {
                 this.items[initialSelectionIndex].activate();
             }
-            this.categoryButton.show();
+            if (this.categoryButton) {
+                this.categoryButton.show();
+            }
         }
     }
     appendMenu(childMenu) {
@@ -466,10 +450,7 @@ export default class Menu extends Events {
         this.items.forEach(item => {
             item.destroy();
         });
-        if (this.itemsContainer) {
-            emptyElement(this.itemsContainer.el);
-            this.itemsContainer.destroy();
-        }
+        this.items = [];
     }
     destroy() {
         document.removeEventListener('click', this.onDocumentClick);
@@ -485,6 +466,7 @@ export default class Menu extends Events {
                 this.topbarUI.destroy();
             }
             this.destroyItems();
+            this.itemsContainer.destroy();
             const openMenus = this.parentMenu.openMenus;
             const openMenuIndex = openMenus.indexOf(this.name);
             if (openMenus.length && openMenuIndex > -1) {
