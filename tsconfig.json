@@ -15,6 +15,6 @@
     "exclude": [
         "node_modules",
         "bin-debug/**/*",
-        "bin-release/**/*",
+        "bin-release/**/*"
     ]
 }
