@@ -10,7 +10,7 @@ describe('parser', function() {
 
     it('parser.getAbsolutePath', function() {
         let path = parser.getAbsolutePath(null, null);
-        expect(path, 'passing null as path returns null').to.equal('');
+        expect(path, 'passing null as path returns empty string').to.equal('');
 
         path = parser.getAbsolutePath('https://testingUrl', null);
         expect(path, 'passing absolute path returns the path').to.equal('https://testingUrl');
