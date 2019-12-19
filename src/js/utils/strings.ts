@@ -52,7 +52,7 @@ export function hms(secondsNumber: number): string {
 }
 
 // Convert a time-representing string to a number
-export function seconds(str: string, frameRate?: number): number {
+export function seconds(str?: string, frameRate?: number): number {
     if (!str) {
         return 0;
     }
@@ -119,5 +119,5 @@ export function suffix(arr: Array<string>, add: string): string[] {
 }
 
 export function isPercentage(value: string): boolean {
-    return value !== undefined && value.slice(-1) === '%';
+    return !!value && value.slice(-1) === '%';
 }

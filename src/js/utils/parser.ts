@@ -83,7 +83,7 @@ export function serialize(val: any): any {
 // Returns the integer value a of css string (e.g. '420px')
 export function parseDimension(dimension: string): number {
     if (isValidNumber(dimension)) {
-        return dimension;
+        return parseInt(dimension);
     }
 
     if (dimension === '') {
