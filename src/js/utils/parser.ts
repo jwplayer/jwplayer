@@ -1,9 +1,7 @@
 import { exists } from './validator';
-import { isNaN } from './underscore';
+import { isNaN, isValidNumber } from './underscore';
 
 // Returns the absolute file path based on a relative filepath, and optional base path
-export function getAbsolutePath(path: string): string;
-export function getAbsolutePath(path: string, base: string): string;
 export function getAbsolutePath(path: string, base?: string): string {
     if (!base || !exists(base)) {
         base = document.location.href;
@@ -84,6 +82,10 @@ export function serialize(val: any): any {
 
 // Returns the integer value a of css string (e.g. '420px')
 export function parseDimension(dimension: string): number {
+    if (isValidNumber(dimension)) {
+        return dimension;
+    }
+
     if (dimension === '') {
         return 0;
     } if (dimension.lastIndexOf('%') > -1) {
@@ -93,8 +95,6 @@ export function parseDimension(dimension: string): number {
 }
 
 // Returns a formatted time string from "mm:ss" to "hh:mm:ss" for the given number of seconds
-export function timeFormat(sec: number): string;
-export function timeFormat(sec: number, allowNegative: boolean): string;
 export function timeFormat(sec: number, allowNegative?: boolean): string {
     if (isNaN(sec) || !isFinite(sec) || (sec <= 0 && !allowNegative)) {
         return '00:00';

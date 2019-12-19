@@ -1,4 +1,4 @@
-import { isValidNumber } from './underscore';
+import { isValidNumber, isString } from './underscore';
 
 const parseFloat = window.parseFloat;
 
@@ -6,8 +6,6 @@ export function trim(inputString: string): string {
     return inputString.replace(/^\s+|\s+$/g, '');
 }
 
-export function pad(str: string, length: number): string;
-export function pad(str: string, length: number, padder: string): string;
 export function pad(str: string, length: number, padder?: string): string {
     str = '' + str;
     padder = padder || '0';
@@ -54,8 +52,6 @@ export function hms(secondsNumber: number): string {
 }
 
 // Convert a time-representing string to a number
-export function seconds(str: string): number;
-export function seconds(str: string, frameRate: number): number;
 export function seconds(str: string, frameRate?: number): number {
     if (!str) {
         return 0;
@@ -99,13 +95,10 @@ export function seconds(str: string, frameRate?: number): number {
 }
 
 // Convert an offset string to a number; supports conversion of percentage offsets
-export function offsetToSeconds(offset: string): number;
-export function offsetToSeconds(offset: string, duration: number): number;
-export function offsetToSeconds(offset: string, duration: number, frameRate: number): number;
 export function offsetToSeconds(offset: string, duration?: number, frameRate?: number): number | null {
-    if (offset && offset.slice(-1) === '%') {
+    if (isString(offset) && offset.slice(-1) === '%') {
         const percent = parseFloat(offset);
-        if (!duration || !isValidNumber(percent)) {
+        if (!duration || !isValidNumber(duration) || !isValidNumber(percent)) {
             return null;
         }
         return duration * percent / 100;
