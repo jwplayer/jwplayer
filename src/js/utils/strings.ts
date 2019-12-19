@@ -52,12 +52,12 @@ export function hms(secondsNumber: number): string {
 }
 
 // Convert a time-representing string to a number
-export function seconds(str?: string, frameRate?: number): number {
+export function seconds(str?: string | number, frameRate?: number): number {
     if (!str) {
         return 0;
     }
     if (isValidNumber(str)) {
-        return parseFloat(str);
+        return parseFloat(str.toString());
     }
 
     const input = str.replace(',', '.');
@@ -95,7 +95,7 @@ export function seconds(str?: string, frameRate?: number): number {
 }
 
 // Convert an offset string to a number; supports conversion of percentage offsets
-export function offsetToSeconds(offset: string, duration?: number, frameRate?: number): number | null {
+export function offsetToSeconds(offset: string | number, duration?: number, frameRate?: number): number | null {
     if (isString(offset) && offset.slice(-1) === '%') {
         const percent = parseFloat(offset);
         if (!duration || !isValidNumber(duration) || !isValidNumber(percent)) {
