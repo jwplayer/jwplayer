@@ -212,6 +212,7 @@ export default class Controls extends Events {
             }
         });
         settingsMenu.on('menuVisibility', (menu) => this.controlbar.trigger('menuVisibility', menu));
+        settingsMenu.on('captionStylesOpened', () => this.trigger('captionStylesOpened'));
         this.controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
             if (isDefault) {
                 return settingsMenu.defaultChild.toggle(event, true);
