@@ -52,7 +52,7 @@ export function isYouTube(path: string, type: string): boolean {
 }
 
 /**
- * @param {string} value - The variable to test.
+ * @param {any} value - The variable to test.
  * @returns {string} The typeof object, 'array' or 'null'.
  */
 export function typeOf(value: any): string {

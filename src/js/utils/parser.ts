@@ -44,7 +44,7 @@ export function isAbsolutePath(path: string): boolean {
 }
 
 // Returns an XML object for the given XML string, or null if the input cannot be parsed.
-export function parseXML(input: string): Document | null {
+export function parseXML(input: string): XMLDocument | null {
     let parsedXML = null;
     try {
         parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');

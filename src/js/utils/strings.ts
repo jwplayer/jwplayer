@@ -52,15 +52,15 @@ export function hms(secondsNumber: number): string {
 }
 
 // Convert a time-representing string to a number
-export function seconds(str?: string | number, frameRate?: number): number {
-    if (!str) {
+export function seconds(time?: string | number, frameRate?: number): number {
+    if (!time) {
         return 0;
     }
-    if (isValidNumber(str)) {
-        return parseFloat(str.toString());
+    if (isValidNumber(time)) {
+        return time;
     }
 
-    const input = str.replace(',', '.');
+    const input = time.replace(',', '.');
     const lastChar = input.slice(-1);
     const arr = input.split(':');
     const arrLength = arr.length;
@@ -104,10 +104,7 @@ export function offsetToSeconds(offset: string | number, duration?: number, fram
         return duration * percent / 100;
     }
 
-    if (frameRate) {
-        return seconds(offset, frameRate);
-    }
-    return seconds(offset);
+    return seconds(offset, frameRate);
 }
 
 export function prefix(arr: Array<string>, add: string): string[] {
