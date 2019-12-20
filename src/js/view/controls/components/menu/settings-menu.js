@@ -126,6 +126,14 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             captionsMenu.topbar = captionsMenu.topbar || captionsMenu.createTopbar();
             const captionsSettingsMenu = new Menu('captionsSettings', captionsMenu, localization);
             captionsSettingsMenu.title = 'Subtitle Settings';
+            const open = captionsSettingsMenu.open;
+            captionsSettingsMenu.open = (e) => {
+                const wasVisible = captionsSettingsMenu.visible;
+                open(e);
+                if (!wasVisible) {
+                    settingsMenu.trigger('captionStylesOpened');
+                }
+            };
             const captionsSettingsButton = new MenuItem('Settings', captionsSettingsMenu.open);
             captionsMenu.topbar.appendChild(captionsSettingsButton.el);
             const setCaptionStyles = (captionsOption, index) => {
