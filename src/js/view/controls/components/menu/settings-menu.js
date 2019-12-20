@@ -1,5 +1,5 @@
 import Menu from 'view/controls/components/menu/menu';
-import { MenuItem, RadioMenuItem } from 'view/controls/components/menu/menu-item';
+import { MenuItem } from 'view/controls/components/menu/menu-item';
 import { itemMenuTemplate } from 'view/controls/templates/menu/menu-item';
 import { _defaults as CaptionsDefaults } from 'view/captionsrenderer';
 import { captionStyleItems } from './utils';
