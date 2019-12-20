@@ -138,13 +138,13 @@ const SettingsMenu = (api, model, controlbar, localization) => {
                 newStyles[propertyName] = newValue;
                 model.set('captions', newStyles);
             };
-            const resetItem = new RadioMenuItem('Reset', () => {
-                model.set('captions', CaptionsDefaults);
-                renderCaptionsSettings();
-            });
-            resetItem.el.classList.add('jw-settings-reset');
             const persistedOptions = model.get('captions');
             const renderCaptionsSettings = () => {
+                const resetItem = new MenuItem('Reset', () => {
+                    model.set('captions', CaptionsDefaults);
+                    renderCaptionsSettings();
+                });
+                resetItem.el.classList.add('jw-settings-reset');
                 const captionsSettingsItems = [];
                 captionStyleItems.forEach(captionItem => {
                     if (persistedOptions && persistedOptions[captionItem.propertyName]) {
