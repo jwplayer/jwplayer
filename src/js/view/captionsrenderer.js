@@ -132,9 +132,6 @@ const CaptionsRenderer = function (viewModel) {
         _fontScale = _defaults.fontScale;
 
         const styleCaptions = () => {
-            if (_model.get('renderCaptionsNatively')) {
-                return;
-            }
             _setFontScale(_options.fontSize);
     
             const windowColor = _options.windowColor;
