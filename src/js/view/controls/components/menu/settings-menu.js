@@ -147,20 +147,22 @@ const SettingsMenu = (api, model, controlbar, localization) => {
                 model.set('captions', newStyles);
             };
             const persistedOptions = model.get('captions');
-            const renderCaptionsSettings = () => {
+            const renderCaptionsSettings = (isReset) => {
                 const resetItem = new MenuItem('Reset', () => {
-                    model.set('captions', CaptionsDefaults);
-                    renderCaptionsSettings();
+                    model.set('captions', Object.assign({}, CaptionsDefaults));
+                    renderCaptionsSettings(true);
                 });
                 resetItem.el.classList.add('jw-settings-reset');
                 const captionsSettingsItems = [];
                 captionStyleItems.forEach(captionItem => {
-                    if (persistedOptions && persistedOptions[captionItem.propertyName]) {
-                        captionItem.defaultVal = captionItem.getOption(persistedOptions[captionItem.propertyName]);
+                    if (!isReset && persistedOptions && persistedOptions[captionItem.propertyName]) {
+                        captionItem.val = captionItem.getOption(persistedOptions[captionItem.propertyName]);
+                    } else {
+                        captionItem.val = captionItem.defaultVal;
                     }
                     const itemMenu = new Menu(captionItem.name, captionsSettingsMenu, localization);
                     const item = new MenuItem(
-                        { label: captionItem.name, value: captionItem.defaultVal }, 
+                        { label: captionItem.name, value: captionItem.val }, 
                         itemMenu.open, 
                         itemMenuTemplate
                     );
@@ -174,7 +176,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
                     );
                     itemMenu.setMenuItems(
                         items,
-                        captionItem.options.indexOf(captionItem.defaultVal) || 0
+                        captionItem.options.indexOf(captionItem.val) || 0
                     );
                     captionsSettingsItems.push(item);
                 });
