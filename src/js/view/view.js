@@ -448,6 +448,8 @@ function View(_api, _model) {
         clickHandler.on({
             click: () => {
                 _this.trigger(DISPLAY_CLICK);
+                // Ensures that Firefox focuses the container not the video tag for aria compatibility
+                _getCurrentElement().focus();
 
                 if (_controls) {
                     if (settingsMenuVisible()) {
@@ -496,7 +498,7 @@ function View(_api, _model) {
             },
             doubleClick: () => _controls && api.setFullscreen()
         });
-        
+
         if (!_isMobile) {
             _playerElement.addEventListener('mousemove', moveHandler);
             _playerElement.addEventListener('mouseover', overHandler);
