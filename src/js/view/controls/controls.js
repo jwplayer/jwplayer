@@ -101,10 +101,13 @@ export default class Controls extends Events {
         this.logo = this.playerContainer.querySelector('.jw-logo');
 
         const touchMode = model.get('touchMode');
-        
+
         const focusPlayerElement = () => {
-            const floatingElement = model.get('isFloating') ? this.wrapperElement : this.playerContainer;
-            floatingElement.focus();
+            if (model.get('isFloating')) {
+                this.wrapperElement.querySelector('video').focus();
+            } else {
+                this.playerContainer.focus();
+            }
         };
 
         // Display Buttons
@@ -128,11 +131,17 @@ export default class Controls extends Events {
             if (visible) {
                 //  Focus modal close button on open
                 this.div.querySelector('.jw-info-close').focus();
+            } else {
+                focusPlayerElement();
             }
         });
         //  Add keyboard shortcuts if not on mobi;e
         if (!OS.mobile) {
-            this.shortcutsTooltip = new ShortcutsTooltip(this.wrapperElement, api, model);
+            this.shortcutsTooltip = new ShortcutsTooltip(this.wrapperElement, api, model, visible => {
+                if (!visible) {
+                    focusPlayerElement();
+                }
+            });
         }
         this.rightClickMenu = new RightClick(this.infoOverlay, this.shortcutsTooltip);
         if (touchMode) {
@@ -447,7 +456,7 @@ export default class Controls extends Events {
     }
 
     disable(model) {
-        const { 
+        const {
             nextUpToolTip,
             settingsMenu,
             infoOverlay,
