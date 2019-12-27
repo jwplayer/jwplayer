@@ -187,7 +187,7 @@ export default class Controls extends Events {
         const settingsMenu = this.settingsMenu = SettingsMenu(api, model.player, this.controlbar, localization);
         let lastState = null;
 
-        this.controlbar.on('menuVisibility', ({ visible, evt }) => {
+        settingsMenu.on('menuVisibility', ({ visible, evt }) => {
             const state = model.get('state');
             const settingsInteraction = { reason: 'settingsInteraction' };
             const settingsButton = this.controlbar.elements.settingsButton;
@@ -211,15 +211,29 @@ export default class Controls extends Events {
                 focusPlayerElement();
             }
         });
-        settingsMenu.on('menuVisibility', (menu) => this.controlbar.trigger('menuVisibility', menu));
         settingsMenu.on('captionStylesOpened', () => this.trigger('captionStylesOpened'));
-        this.controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
+        controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
             if (isDefault) {
                 return settingsMenu.defaultChild.toggle(event, true);
             }
             settingsMenu.children[submenuName].toggle(event);
         });
-
+        const updateControlbarButtons = (menuName) => {
+            const childMenus = settingsMenu.children;
+            const shouldShowGear = !!childMenus.quality || !!childMenus.playbackRates || Object.keys(childMenus).length > 1;
+            controlbar.elements.settingsButton.toggle(shouldShowGear);
+            if (childMenus.captions) {
+                controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
+            }
+            const controlBarButton = controlbar.elements[`${menuName}Button`];
+            if (controlBarButton) {
+                const isVisible = !!childMenus[menuName];
+                controlBarButton.toggle(isVisible);
+            }
+        };
+        settingsMenu.on('menuRemoved menuAppended', (menuName) => { 
+            updateControlbarButtons(menuName);
+        });
         if (OS.mobile) {
             this.div.appendChild(settingsMenu.el);
         } else {

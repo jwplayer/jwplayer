@@ -313,6 +313,7 @@ export default class Menu extends Events {
             );
         }
         this.mainMenu.el.appendChild(el);
+        this.trigger('menuAppended', name);
     }
     removeMenu(name) {
         if (!name) {
@@ -325,6 +326,7 @@ export default class Menu extends Events {
         }
         delete this.children[name];
         menu.destroy();
+        this.trigger('menuRemoved', name);
     }
     open(evt) {
         const mainMenuVisible = this.mainMenu.visible;

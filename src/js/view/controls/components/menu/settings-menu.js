@@ -7,12 +7,8 @@ import { captionStyleItems } from './utils';
 const SettingsMenu = (api, model, controlbar, localization) => {
     const settingsMenu = new Menu('settings', null, localization);
     const changeMenuItems = (menuName, items, onItemSelect, defaultItemIndex, itemOptions) => {
-        const controlBarButton = controlbar.elements[`${menuName}Button`];
         if (!items || items.length <= 1) {
             settingsMenu.removeMenu(menuName);
-            if (controlBarButton) {
-                controlBarButton.hide();
-            }
             return;
         }
         let menu = settingsMenu.children[menuName];
@@ -23,9 +19,6 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             menu.createItems(items, onItemSelect, itemOptions), 
             defaultItemIndex
         );
-        if (controlBarButton) {
-            controlBarButton.show();
-        }
     };
     const setLevelsMenu = (levels) => {
         const menuItemOptions = { defaultText: localization.auto };
@@ -36,9 +29,6 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             model.get('currentLevel') || 0, 
             menuItemOptions
         );
-        const childMenus = settingsMenu.children;
-        const shouldShowGear = !!childMenus.quality || childMenus.playbackRates || Object.keys(childMenus).length > 1;
-        controlbar.elements.settingsButton.toggle(shouldShowGear);
     };
     const onMenuItemSelected = (menu, itemIndex) => {
         if (menu && itemIndex > -1) {
@@ -184,7 +174,6 @@ const SettingsMenu = (api, model, controlbar, localization) => {
                 captionsSettingsMenu.setMenuItems(captionsSettingsItems);
             };
             renderCaptionsSettings();
-            controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
         }
     });
     model.change('captionsIndex', (changedModel, index) => {
