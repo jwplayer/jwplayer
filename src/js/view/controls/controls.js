@@ -184,7 +184,9 @@ export default class Controls extends Events {
         this.div.appendChild(controlbar.element());
 
         const localization = model.get('localization');
-        const settingsMenu = this.settingsMenu = SettingsMenu(api, model.player, this.controlbar, localization);
+
+        // Settings Menu
+        const settingsMenu = this.settingsMenu = SettingsMenu(api, model.player, localization);
         let lastState = null;
 
         settingsMenu.on('menuVisibility', ({ visible, evt }) => {
@@ -211,6 +213,9 @@ export default class Controls extends Events {
                 focusPlayerElement();
             }
         });
+        model.change('captionsIndex', (changedModel, index) => {
+            controlbar.toggleCaptionsButtonState(!!index);
+        });
         settingsMenu.on('captionStylesOpened', () => this.trigger('captionStylesOpened'));
         controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
             if (isDefault) {
@@ -220,7 +225,11 @@ export default class Controls extends Events {
         });
         const updateControlbarButtons = (menuName) => {
             const childMenus = settingsMenu.children;
-            const shouldShowGear = !!childMenus.quality || !!childMenus.playbackRates || Object.keys(childMenus).length > 1;
+            const shouldShowGear = 
+                !!childMenus.quality || 
+                !!childMenus.playbackRates || 
+                Object.keys(childMenus).length > 1;
+
             controlbar.elements.settingsButton.toggle(shouldShowGear);
             if (childMenus.captions) {
                 controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));

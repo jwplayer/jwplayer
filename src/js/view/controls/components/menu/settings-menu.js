@@ -4,7 +4,7 @@ import { itemMenuTemplate } from 'view/controls/templates/menu/menu-item';
 import { _defaults as CaptionsDefaults } from 'view/captionsrenderer';
 import { captionStyleItems } from './utils';
 
-const SettingsMenu = (api, model, controlbar, localization) => {
+const SettingsMenu = (api, model, localization) => {
     const settingsMenu = new Menu('settings', null, localization);
     const changeMenuItems = (menuName, items, onItemSelect, defaultItemIndex, itemOptions) => {
         if (!items || items.length <= 1) {
@@ -42,7 +42,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
     // Quality Tracks
     model.change('levels', (changedModel, levels) => {
         setLevelsMenu(levels);
-    }, settingsMenu);
+    });
     const changeAutoLabel = function (qualityLevel, qualityMenu, currentIndex) {
         const levels = model.get('levels');
         // Return early if the label isn't "Auto" (html5 provider with multiple mp4 sources)
@@ -63,7 +63,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
         if (!qualityMenu.items[currentIndex].active) {
             onMenuItemSelected(qualityMenu, currentIndex);
         }
-    }, settingsMenu);
+    });
 
     // Visual Quality
     model.on('change:visualQuality', (changedModel, quality) => {
@@ -84,23 +84,22 @@ const SettingsMenu = (api, model, controlbar, localization) => {
     };
     model.change('audioTracks', (changedModel, audioTracks) => {
         setAudioTracksMenu(audioTracks);
-    }, settingsMenu);
+    });
     model.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
         onMenuItemSelected(settingsMenu.children.audioTracks, currentAudioTrack);
-    }, settingsMenu);
+    });
 
     // Captions
     model.on('change:playlistItem', () => {
         // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
         // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
         settingsMenu.removeMenu('captions');
-        controlbar.elements.captionsButton.hide();
 
         // Settings menu should not be visible when switching playlist items via controls or .load()
         if (settingsMenu.visible) {
             settingsMenu.close();
         }
-    }, settingsMenu);
+    });
     model.change('captionsList', (changedModel, captionsList) => {
         const menuItemOptions = { defaultText: localization.off };
         const initialIndex = model.get('captionsIndex');
@@ -181,8 +180,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
         if (captionsSubmenu) {
             onMenuItemSelected(captionsSubmenu, index);
         }
-        controlbar.toggleCaptionsButtonState(!!index);
-    }, settingsMenu);
+    });
 
     // Playback Rates
     const setPlaybackRatesMenu = (playbackRates) => {
@@ -209,7 +207,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
     };
     model.change('playbackRates', (changedModel, playbackRates) => {
         setPlaybackRatesMenu(playbackRates);
-    }, settingsMenu);
+    });
     model.change('playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
         let index = -1;
@@ -217,7 +215,7 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             index = rates.indexOf(playbackRate);
         }
         onMenuItemSelected(settingsMenu.children.playbackRates, index);
-    }, settingsMenu);
+    });
 
     model.on('change:playbackRateControls', () => {
         setPlaybackRatesMenu(model.get('playbackRates'));
@@ -238,12 +236,12 @@ const SettingsMenu = (api, model, controlbar, localization) => {
             setLevelsMenu(model.get('levels'));
             setPlaybackRatesMenu(model.get('playbackRates'));
         }
-    }, settingsMenu);
+    });
 
     // Update playback rates when stream type changes
     model.on('change:streamType', () => {
         setPlaybackRatesMenu(model.get('playbackRates'));
-    }, settingsMenu);
+    });
 
     return settingsMenu;
 };
