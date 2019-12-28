@@ -184,55 +184,12 @@ export default class Controls extends Events {
         this.div.appendChild(controlbar.element());
 
         const localization = model.get('localization');
-        const settingsMenu = this.settingsMenu = SettingsMenu(api, model.player, this.controlbar, localization);
-        let lastState = null;
-
-        settingsMenu.on('menuVisibility', ({ visible, evt }) => {
-            const state = model.get('state');
-            const settingsInteraction = { reason: 'settingsInteraction' };
-            const settingsButton = this.controlbar.elements.settingsButton;
-            const isKeyEvent = (evt && evt.sourceEvent || evt || {}).type === 'keydown';
-            const activeTimeout = (visible || isKeyEvent) ? 0 : ACTIVE_TIMEOUT;
-            // Trigger userActive so that a dismissive click outside the player can hide the controlbar
-            this.userActive(activeTimeout);
-            if (getBreakpoint(model.get('containerWidth')) < 2) {
-                if (visible && state === STATE_PLAYING) {
-                    // Pause playback on open if we're currently playing
-                    api.pause(settingsInteraction);
-                } else if (!visible && state === STATE_PAUSED && lastState === STATE_PLAYING) {
-                    // Resume playback on close if we are paused and were playing before
-                    api.play(settingsInteraction);
-                }
-            }
-            lastState = state;
-            if (!visible && isKeyEvent && settingsButton) {
-                settingsButton.element().focus();
-            } else if (evt) {
-                focusPlayerElement();
-            }
-        });
-        settingsMenu.on('captionStylesOpened', () => this.trigger('captionStylesOpened'));
+        const settingsMenu = this.settingsMenu = new SettingsMenu(api, model.player, this.controlbar, localization);
         controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
             if (isDefault) {
                 return settingsMenu.defaultChild.toggle(event, true);
             }
             settingsMenu.children[submenuName].toggle(event);
-        });
-        const updateControlbarButtons = (menuName) => {
-            const childMenus = settingsMenu.children;
-            const shouldShowGear = !!childMenus.quality || !!childMenus.playbackRates || Object.keys(childMenus).length > 1;
-            controlbar.elements.settingsButton.toggle(shouldShowGear);
-            if (childMenus.captions) {
-                controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
-            }
-            const controlBarButton = controlbar.elements[`${menuName}Button`];
-            if (controlBarButton) {
-                const isVisible = !!childMenus[menuName];
-                controlBarButton.toggle(isVisible);
-            }
-        };
-        settingsMenu.on('menuRemoved menuAppended', (menuName) => { 
-            updateControlbarButtons(menuName);
         });
         if (OS.mobile) {
             this.div.appendChild(settingsMenu.el);
