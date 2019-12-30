@@ -5,11 +5,33 @@ import MockApi from 'mock/mock-api';
 
 const localization = { close: 'close', hd: 'quality', playbackRates: 'rates' };
 const createMockMenu = (name, parent) => new Menu(name, parent, localization);
+let settingsMenu;
+let viewModel;
+let api;
+let controlbar;
 
 describe('Menu', () => {
-    let settingsMenu;
     beforeEach(() => {
-        settingsMenu = new Menu('settings', null, localization);
+        viewModel = new SimpleModel();
+        api = MockApi;
+        controlbar = {};
+        controlbar.on = sinon.stub();
+        controlbar.elements = {
+            hd: { selectItem: sinon.spy() },
+            settingsButton: {
+                toggle: function(bool) { 
+                    if (bool) {
+                        return this.show();
+                    }
+                    return this.hide();
+                },
+                show: sinon.spy(),
+                hide: sinon.spy(),
+                element: () => {}
+            }
+        };
+        controlbar.toggleCaptionsButtonState = sinon.spy();
+        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
     });
 
     it('properly constructs', () => {
@@ -79,39 +101,10 @@ describe('Menu', () => {
         // Parent menu closes when only child closes.
         expect(settingsMenu.visible).to.be.false;
     });
-});
-
-describe('Settings Menu', () => {
-    let viewModel;
-    let settingsMenu;
-    let api;
-    let controlbar;
-    
-    beforeEach(function() {
-        viewModel = new SimpleModel();
-        api = MockApi;
-        controlbar = {};
-        controlbar.on = sinon.stub();
-        controlbar.elements = {
-            hd: { selectItem: sinon.spy() },
-            settingsButton: {
-                toggle: function(bool) { 
-                    if (bool) {
-                        return this.show();
-                    }
-                    return this.hide();
-                },
-                show: sinon.spy(),
-                hide: sinon.spy()
-            }
-        };
-        controlbar.toggleCaptionsButtonState = sinon.spy();
-    });
-
     it('properly toggles visibility of settings button on quality levels', () => {
         viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
         // Should show settings button and create quality menu if levels present.
-        settingsMenu = SettingsMenu(api, viewModel, controlbar, localization);
+        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         expect(controlbar.elements.settingsButton.show.called).to.be.true;
         expect(controlbar.elements.settingsButton.hide.called).to.be.false;
         expect(!!settingsMenu.children.quality).to.be.true;
@@ -132,14 +125,14 @@ describe('Settings Menu', () => {
     });
     
     it('should setup quality menu on levels change', function() {
-        settingsMenu = SettingsMenu(api, viewModel, controlbar, localization);
+        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         expect(!!settingsMenu.children.quality).to.be.false;
         viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
         expect(!!settingsMenu.children.quality).to.be.true;
     });
 
     it('should setup captions menu on captions change', function() {
-        settingsMenu = SettingsMenu(api, viewModel, controlbar, localization);
+        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         expect(!!settingsMenu.children.captions).to.be.false;
         viewModel.set('captionsList', [
             { id: 'off', label: 'Off' },
@@ -149,7 +142,7 @@ describe('Settings Menu', () => {
     });
 
     it('should setup playback rates menu on playback rates if configured', () => {
-        settingsMenu = SettingsMenu(api, viewModel, controlbar, localization);
+        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         viewModel.set('playbackRates', [0.5, 1, 1.25, 1.5, 2]);
         expect(!!settingsMenu.children.playbackRates).to.be.false;
         viewModel.set('supportsPlaybackRate', true);
@@ -167,10 +160,25 @@ describe('Settings Menu', () => {
             shakaIndex: 0,
             shakaId: 32
         };
-        settingsMenu = SettingsMenu(api, viewModel, controlbar, localization);
+        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         viewModel.set('audioTracks', [track]);
         expect(!!settingsMenu.children.audioTracks).to.be.false;
         viewModel.set('audioTracks', [track, track]);
         expect(!!settingsMenu.children.audioTracks).to.be.true;
+    });
+
+    it('Emits an event when a submenu is added', () => {
+        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
+        settingsMenu.trigger = sinon.spy();
+        viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
+        expect(settingsMenu.trigger.calledWith('menuAppended')).to.equal(true);
+    });
+
+    it('Emits an event when a submenu is removed', () => {
+        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
+        settingsMenu.trigger = sinon.spy();
+        viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
+        viewModel.set('levels', [{ label: 'Auto' }]);
+        expect(settingsMenu.trigger.calledWith('menuRemoved')).to.equal(true);
     });
 });
