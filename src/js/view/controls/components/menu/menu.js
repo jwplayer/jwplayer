@@ -484,6 +484,7 @@ export default class Menu extends Events {
         if (this.el.parentNode) {
             this.el.parentNode.removeChild(this.el);
         }
+        this.off();
     }
 }
 
