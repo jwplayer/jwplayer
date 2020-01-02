@@ -225,10 +225,11 @@ export default class Controls extends Events {
         });
         const updateControlbarButtons = (menuName) => {
             const childMenus = settingsMenu.children;
+            const menuCount = Object.keys(childMenus).length;
             const shouldShowGear = 
                 !!childMenus.quality || 
                 !!childMenus.playbackRates || 
-                Object.keys(childMenus).length > 1;
+                menuCount > 1;
 
             controlbar.elements.settingsButton.toggle(shouldShowGear);
             if (childMenus.captions) {
@@ -236,13 +237,14 @@ export default class Controls extends Events {
             }
             const controlBarButton = controlbar.elements[`${menuName}Button`];
             if (controlBarButton) {
-                const isVisible = !!childMenus[menuName];
+                const isVisible = !!childMenus[menuName] && !shouldShowGear || menuCount > 1;
                 controlBarButton.toggle(isVisible);
             }
         };
         settingsMenu.on('menuRemoved menuAppended', (menuName) => { 
             updateControlbarButtons(menuName);
         });
+        updateControlbarButtons('captions');
         if (OS.mobile) {
             this.div.appendChild(settingsMenu.el);
         } else {
