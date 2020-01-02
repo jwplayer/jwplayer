@@ -59,7 +59,7 @@ class SettingsMenu extends Menu {
         );
     }
 
-    onChangeCurrentLevel(model, currentIndex) {
+    onCurrentLevel(model, currentIndex) {
         const { children } = this;
         const qualityMenu = children.quality;
         const visualQuality = model.get('visualQuality');
@@ -71,7 +71,7 @@ class SettingsMenu extends Menu {
         }
     }
 
-    onChangeVisualQuality(model, quality) {
+    onVisualQuality(model, quality) {
         const qualityMenu = this.children.quality;
         if (quality && qualityMenu) {
             changeAutoLabel(model.get('levels'), quality.level, qualityMenu, model.get('currentLevel'));
@@ -168,7 +168,7 @@ class SettingsMenu extends Menu {
     
     }
 
-    onChangePlaylistItem() {
+    onPlaylistItem() {
         // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
         // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
         this.removeMenu('captions');
@@ -226,11 +226,11 @@ class SettingsMenu extends Menu {
         selectMenuItem(this.children.playbackRates, index);
     }
 
-    onChangePlaybackRateControls(model) {
+    onPlaybackRateControls(model) {
         this.onPlaybackRates(model);
     }
 
-    onChangeCastActive(model, active, previousState) {
+    onCastActive(model, active, previousState) {
         if (active === previousState) {
             return;
         }
@@ -258,22 +258,19 @@ class SettingsMenu extends Menu {
 
     addEventListeners() {
         const { updateControlbarButtons, model } = this;
-        const handlers = Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(name => /^on/.test(name));
-
         this.on('menuAppended menuRemoved', updateControlbarButtons, this);
-        handlers.forEach(handler => {
-            let firstLetter;
-            let event;
-            if (/Change/.test(handler)) {
-                firstLetter = handler.charAt('onChange'.length).toLowerCase();
-                event = 'change:' + firstLetter + handler.substring('onChange'.length + 1);
-                model.on(event, this[handler], this);
-            } else {
-                firstLetter = handler.charAt(2).toLowerCase();
-                event = firstLetter + handler.substring('on'.length + 1);
-                model.change(event, this[handler], this);
-            }
-        });
+        model.change('levels', this.onLevels, this);
+        model.on('change:currentLevel', this.onCurrentLevel, this);
+        model.on('change:visualQuality', this.onVisualQuality, this);
+        model.change('audioTracks', this.onAudioTracks, this);
+        model.change('captionsList', this.onCaptionsList, this);
+        model.on('change:playlistItem', this.onPlaylistItem, this);
+        model.change('captionsIndex', this.onCaptionsIndex, this);
+        model.change('playbackRates', this.onPlaybackRates, this); 
+        model.change('playbackRate', this.onPlaybackRate, this); 
+        model.on('change:playbackRateControls', this.onPlaybackRateControls, this);
+        model.on('change:castActive', this.onCastActive, this);
+        model.on('change:streamType', this.onChangeStreamType, this);
     }
 
     open(evt) {
