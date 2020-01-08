@@ -23,6 +23,7 @@ const Tracks = {
     clearCueData,
     disableTextTrack,
     enableTextTrack,
+    getCurrentTextTrack,
     getSubtitlesTrack,
     removeTracksListener,
     addTextTracks,
@@ -158,7 +159,6 @@ function setTextTracks(tracks) {
 
 function setupSideloadedTracks(itemTracks) {
     // Add tracks if we're starting playback or resuming after a midroll
-
     if (!this.renderNatively) {
         return;
     }
@@ -167,7 +167,9 @@ function setupSideloadedTracks(itemTracks) {
     if (!alreadyLoaded) {
         cancelXhr(this._itemTracks);
     }
+
     this._itemTracks = itemTracks;
+
     if (!itemTracks) {
         return;
     }
@@ -423,6 +425,10 @@ function disableTextTrack() {
     }
 }
 
+function getCurrentTextTrack() {
+    return this._textTracks && this._textTracks[this._currentTextTrackIndex];
+}
+
 function enableTextTrack() {
     if (this._textTracks) {
         const track = this._textTracks[this._currentTextTrackIndex];
@@ -481,6 +487,7 @@ function addTextTracks(tracksArray) {
             itemTrack.data = [];
             loadFile(itemTrack,
                 (vttCues) => {
+                    textTrackAny.sideloaded = true;
                     this.addVTTCuesToTrack(textTrackAny, vttCues);
                 },
                 error => {

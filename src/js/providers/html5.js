@@ -265,8 +265,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             clearTimeouts();
             // Stop listening to track changes so disabling the current track doesn't update the model
             this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
-            // Prevent tracks from showing during ad playback
-            this.disableTextTrack();
+
+            const currTrack = this.getCurrentTextTrack();
+            // Prevent sideloaded tracks from showing during ad playback
+            if (currTrack && currTrack.sideloaded) {
+                this.disableTextTrack();
+            }
         },
         attachMedia() {
             VideoAttached.attachMedia.call(_this);
@@ -275,8 +279,13 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             this.seeking = false;
             // In case the video tag was modified while we shared it
             _videotag.loop = false;
-            // If there was a showing track, re-enable it
-            this.enableTextTrack();
+
+            const currTrack = this.getCurrentTextTrack();
+            // If there was a showing sideloaded track disabled in detached, re-enable it
+            if (currTrack && currTrack.sideloaded) {
+                this.enableTextTrack();
+            }
+
             if (this.renderNatively) {
                 this.setTextTracks(this.video.textTracks);
             }
