@@ -420,7 +420,7 @@ function CueStyleBox(window, cue) {
         top: 0,
         bottom: 0,
         display: 'inline',
-        'white-space': 'pre',
+        whiteSpace: 'pre',
         writingMode,
         unicodeBidi: 'plaintext',
     };
@@ -502,11 +502,17 @@ function CueStyleBox(window, cue) {
         this.applyStyles({
             top: this.formatStyle(box.top, 'px'),
             bottom: this.formatStyle(box.bottom, 'px'),
-            left: this.formatStyle(box.left, 'px'),
             paddingRight: this.formatStyle(box.right, 'px'),
             height: this.formatStyle(box.height, 'px'),
             transform: ''
         });
+
+        // Apply the left styling if the cue has not been wrapped.
+        if (this.cueDiv.style['white-space'] === 'pre') {
+            this.applyStyles({
+                left: this.formatStyle(box.left, 'px'),
+            });
+        }
     };
 
 }
@@ -526,7 +532,7 @@ function BoxPosition(obj) {
     let width;
     let top;
 
-    const { div } = obj;
+    const { div, cueDiv } = obj;
     if (div) {
         height = div.offsetHeight;
         width = div.offsetWidth;
@@ -551,6 +557,11 @@ function BoxPosition(obj) {
     this.width = obj.width || width;
     this.lineHeight = lh !== undefined ? lh : obj.lineHeight;
 
+    if (cueDiv && div && this.width > div.parentElement.offsetWidth) {
+        cueDiv.style.whiteSpace = 'pre-wrap';
+        div.style.left = '0px';
+    }
+    
     // Sets the width to be slightly larger to prevent text wrapping in IE 11
     this.width = Math.ceil(this.width + 1);
 }
