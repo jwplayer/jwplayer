@@ -216,8 +216,9 @@ function setSubtitlesTrack(menuIndex) {
     // Set the provider's index to the model's index, then show the selected track if it exists
     this._currentTextTrackIndex = menuIndex - 1;
 
-    if (this._textTracks[this._currentTextTrackIndex]) {
-        this._textTracks[this._currentTextTrackIndex].mode = 'showing';
+    const track = this.getCurrentTextTrack();
+    if (track) {
+        track.mode = 'showing';
     }
 
     // Update the model index since the track change may have come from a browser event
@@ -412,15 +413,13 @@ function clearCueData(trackId) {
 }
 
 function disableTextTrack() {
-    if (this._textTracks) {
-        const track = this._textTracks[this._currentTextTrackIndex];
-        if (track) {
-            // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
-            track.mode = 'disabled';
-            const trackId = track._id;
-            if (trackId && trackId.indexOf('nativecaptions') === 0) {
-                track.mode = 'hidden';
-            }
+    const track = this.getCurrentTextTrack();
+    if (track) {
+        // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
+        track.mode = 'disabled';
+        const trackId = track._id;
+        if (trackId && trackId.indexOf('nativecaptions') === 0) {
+            track.mode = 'hidden';
         }
     }
 }
@@ -430,11 +429,9 @@ function getCurrentTextTrack() {
 }
 
 function enableTextTrack() {
-    if (this._textTracks) {
-        const track = this._textTracks[this._currentTextTrackIndex];
-        if (track) {
-            track.mode = 'showing';
-        }
+    const track = this.getCurrentTextTrack();
+    if (track) {
+        track.mode = 'showing';
     }
 }
 
