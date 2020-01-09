@@ -265,8 +265,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             clearTimeouts();
             // Stop listening to track changes so disabling the current track doesn't update the model
             this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
-            // Prevent tracks from showing during ad playback
-            this.disableTextTrack();
+
+            // Prevent sideloaded tracks from showing during ad playback
+            if (_shouldToggleTrackOnDetach()) {
+                this.disableTextTrack();
+            }
         },
         attachMedia() {
             VideoAttached.attachMedia.call(_this);
@@ -275,8 +278,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             this.seeking = false;
             // In case the video tag was modified while we shared it
             _videotag.loop = false;
-            // If there was a showing track, re-enable it
-            this.enableTextTrack();
+
+            // If there was a showing sideloaded track disabled in detached, re-enable it
+            if (_shouldToggleTrackOnDetach()) {
+                this.enableTextTrack();
+            }
+
             if (this.renderNatively) {
                 this.setTextTracks(this.video.textTracks);
             }
@@ -536,6 +543,18 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (_levels.length && _levels[0].type !== 'hls') {
             _setMediaType();
         }
+    }
+
+    // Safari has a bug where our disable of an embedded rendered track causes
+    //  the track to not display when we re-attach the media. We can avoid this
+    //  by only disabling the track if sideloaded in safari
+    function _shouldToggleTrackOnDetach() {
+        if (!Browser.safari) {
+            return true;
+        }
+
+        const track = _this.getCurrentTextTrack();
+        return track && track.sideloaded;
     }
 
     function _setVideotagSource(source) {
