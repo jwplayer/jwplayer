@@ -38,13 +38,19 @@ class ProgramController extends Events {
 
     asyncItem(index, item) {
         const { model } = this;
+        // Set the player state to buffering if there is a playlist item callback
+        const deferBufferingState = setTimeout(() => {
+            model.set(PLAYER_STATE, STATE_BUFFERING);
+        });
         return this.getItemPromise(index).setItem(index).then((playlistItem) => {
+            clearTimeout(deferBufferingState);
             if (playlistItem && playlistItem !== item) {
                 this.setPlaylistItem(index, playlistItem);
                 return playlistItem;
             }
             return item;
         }).catch((/* itemPromiseError */) => {
+            clearTimeout(deferBufferingState);
             if (index < model.get('playlist').length - 1) {
                 this.setActiveItem(index + 1);
             }

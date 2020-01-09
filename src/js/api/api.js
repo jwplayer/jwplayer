@@ -959,19 +959,22 @@ export default function Api(element) {
         },
 
         /**
-         * Gets the async blocking Promise for the next playlist item.
+         * Gets the async blocking Promise for the next playlist item, or a specific playlist item if the
+         * index argument is supplied.
          *
          * The Promise returned resolves when the async item callback resolves for the
-         * next item. If there is no callback, or the callback promise resolved immediately, this promise can
-         * resolve in advance of the current playlist item completing, to allow time for preloading the next item and
+         * playlist item. If there is no callback, or the callback promise resolved immediately, this promise can
+         * resolve in advance of the previous playlist item completing, to allow time for preloading media and
          * any scheduled pre-rolls.
          *
-         * The Promise will throw if the item is skipped, or the async item callback is rejected.
+         * The Promise will throw if the async item callback is rejected.
          *
-         * @returns {Promise<Item>} The next item promise.
+         * @param {number} [index] - Specify the playlist item index. When omitted, the promise for the next
+         * playlist item will be returned.
+         * @returns {Promise<Item>} The playlist item promise.
          */
-        getPlaylistItemPromise() {
-            const itemPromise = core.getItemPromise();
+        getPlaylistItemPromise(index) {
+            const itemPromise = core.getItemPromise(index);
             if (!itemPromise) {
                 return null;
             }
