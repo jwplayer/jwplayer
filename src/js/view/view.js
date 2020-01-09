@@ -98,7 +98,7 @@ function View(_api, _model) {
     }
 
     function fosMobileBehavior() {
-        return _isMobile && !deviceIsLandscape();
+        return _isMobile && !deviceIsLandscape() && !_model.get('fullscreen');
     }
 
     // Compute player size, handle DOM removal/insertion, add to views-manager
