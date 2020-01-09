@@ -181,6 +181,10 @@
         left: 0;
     }
 
+    .jw-breakpoint-0.jw-flag-touch &::before {
+        height: 34px;
+    }
+
     &.jw-tab-focus:focus .jw-rail {
         outline: @ui-focus;
     }
@@ -201,5 +205,11 @@
             height: 12px;
             width: 10px;
         }
+    }
+}
+
+.jw-breakpoint-0 {
+    .jw-slider-time {
+        height: 11px;
     }
 }
