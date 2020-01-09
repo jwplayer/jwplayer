@@ -911,8 +911,6 @@ Object.assign(Controller.prototype, {
                 index += length;
             }
 
-            _model.set(PLAYER_STATE, STATE_BUFFERING);
-
             return _programController.setActiveItem(index).catch(error => {
                 if (error.code >= 151 && error.code <= 162) {
                     error = composePlayerError(error, ERROR_LOADING_PROVIDER);
