@@ -18,13 +18,15 @@ describe('Keyboard Shortcuts Modal Test', function() {
     const api = new MockApi();
     let player;
     let shortcutsTooltip;
+    let visHandle;
     beforeEach(function() {
         player = document.createElement('div');
         player.classList.add('jwplayer');
         model.setup({});
         api.play = sinon.spy();
         api.pause = sinon.spy();
-        shortcutsTooltip = new ShortcutsTooltip(player, api, model);
+        visHandle = sinon.spy();
+        shortcutsTooltip = new ShortcutsTooltip(player, api, model, visHandle);
         document.body.appendChild(player);
     });
     afterEach(function() {
@@ -57,7 +59,7 @@ describe('Keyboard Shortcuts Modal Test', function() {
         const isVisibleAfterFirstToggle = isVisible(shortcutsTooltip.el);
         shortcutsTooltip.toggleVisibility();
         const isHiddenAfterSecondToggle = isHidden(shortcutsTooltip.el);
-        
+
         isTogglingWorking = isInitiallyHidden && isVisibleAfterFirstToggle && isHiddenAfterSecondToggle;
         expect(isTogglingWorking).to.equal(true);
     });
@@ -75,5 +77,13 @@ describe('Keyboard Shortcuts Modal Test', function() {
         shortcutsTooltip.open();
         shortcutsTooltip.close();
         expect(api.play.calledOnce).to.equal(true);
+    });
+    it('should call vis handler with proper args when opened', () => {
+        shortcutsTooltip.open();
+        expect(visHandle.calledWith(true)).to.be.true;
+    });
+    it('should call vis handler with proper args when closed', () => {
+        shortcutsTooltip.close();
+        expect(visHandle.calledWith(false)).to.be.true;
     });
 });

@@ -69,7 +69,7 @@ export default function (container, model, api, onVisibility) {
             durationContainer.textContent = durationText;
         }, instance);
 
-    
+
         clientIdContainer.textContent = shouldTrackUser() ? `Client ID: ${getClientId()}` : '';
     }
 

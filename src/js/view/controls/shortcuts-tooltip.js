@@ -60,7 +60,7 @@ function getShortcuts(shortcuts) {
 }
 
 
-export default function (container, api, model) {
+export default function (container, api, model, onVisibility) {
     let isOpen = false;
     let lastState = null;
     const shortcuts = model.get('localization').shortcuts;
@@ -79,16 +79,17 @@ export default function (container, api, model) {
         document.addEventListener('click', documentClickHandler);
         isOpen = true;
         api.pause(settingsInteraction);
+        onVisibility(true);
     };
 
     const close = () => {
         removeClass(template, 'jw-open');
         document.removeEventListener('click', documentClickHandler);
-        container.focus();
         isOpen = false;
         if (lastState === STATE_PLAYING) {
             api.play(settingsInteraction);
         }
+        onVisibility(false);
     };
 
     const destroy = () => {
@@ -116,7 +117,7 @@ export default function (container, api, model) {
             open();
         }
     };
-    
+
     const render = () => {
         const closeButton = button('jw-shortcuts-close', close, model.get('localization').close, [cloneIcon('close')]);
 
@@ -126,7 +127,7 @@ export default function (container, api, model) {
 
         //  Append modal to container
         container.appendChild(template);
-        
+
         shortcutToggleUi.on('click tap enter', toggleClickHandler);
     };
 
