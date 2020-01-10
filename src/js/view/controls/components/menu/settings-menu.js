@@ -12,12 +12,10 @@ import {
     previousSibling
 } from 'utils/dom';
 
-let playerAPI;
 class SettingsMenu extends Menu {
     constructor(api, model, controlbar, localization) {
         super('settings', null, localization);
-        // Set player API so it can be used by appropriate handlers, but keep it private so it can't be accidentally used/mutated.
-        playerAPI = api;
+        this.api = api;
         this.model = model;
         this.localization = localization;
         this.controlbar = controlbar;
@@ -54,7 +52,7 @@ class SettingsMenu extends Menu {
         this.setupMenu(
             'quality', 
             levels, 
-            (index) => playerAPI.setCurrentQuality(index), 
+            (index) => this.api.setCurrentQuality(index), 
             model.get('currentLevel') || 0, 
             menuItemOptions
         );
@@ -83,7 +81,7 @@ class SettingsMenu extends Menu {
         this.setupMenu(
             'audioTracks', 
             audioTracks, 
-            (index) => playerAPI.setCurrentAudioTrack(index), 
+            (index) => this.api.setCurrentAudioTrack(index), 
             model.get('currentAudioTrack')
         );
     }
@@ -95,7 +93,7 @@ class SettingsMenu extends Menu {
         this.setupMenu(
             'captions', 
             captionsList, 
-            (index) => playerAPI.setCurrentCaptions(index), 
+            (index) => this.api.setCurrentCaptions(index), 
             initialIndex, 
             menuItemOptions
         );
@@ -212,7 +210,7 @@ class SettingsMenu extends Menu {
         this.setupMenu(
             'playbackRates', 
             playbackRates, 
-            (playbackRate) => playerAPI.setPlaybackRate(playbackRate), 
+            (playbackRate) => this.api.setPlaybackRate(playbackRate), 
             initialSelectionIndex, 
             menuItemOptions
         );
