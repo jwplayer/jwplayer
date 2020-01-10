@@ -23,7 +23,6 @@ class SettingsMenu extends Menu {
         this.backButtonTarget = null;
         this.topbar = createTopbar(this);
         this.onDocumentClick = this.onDocumentClick.bind(this);
-        this.cachedMenus = {};
         this.addEventListeners();
     }
 
@@ -109,15 +108,22 @@ class SettingsMenu extends Menu {
         const open = captionsSettingsMenu.open;
         captionsSettingsMenu.open = (e) => {
             const wasVisible = captionsSettingsMenu.visible;
-            open(e);
+            open.call(captionsSettingsMenu, e);
             if (!wasVisible) {
                 this.trigger('captionStylesOpened');
             }
         };
+        const destroy = captionsSettingsMenu.destroy;
+        captionsSettingsMenu.destroy = (e) => {
+            captionsMenu.topbar.parentNode.removeChild(captionsMenu.topbar);
+            captionsMenu.topbar = null;
+            captionsMenu.topbarUI.destroy();
+            destroy.call(captionsSettingsMenu, e);
+        };
         const captionsSettingsButton = new MenuItem('Settings', captionsSettingsMenu.open);
         captionsMenu.topbar.appendChild(captionsSettingsButton.el);
         const setCaptionStyles = (captionsOption, index) => {
-            const captionStyles = this.model.get('captions');
+            const captionStyles = model.get('captions');
             const propertyName = captionsOption.propertyName;
             const value = captionsOption.options && captionsOption.options[index];
             const newValue = captionsOption.getTypedValue(value);
@@ -126,7 +132,7 @@ class SettingsMenu extends Menu {
             newStyles[propertyName] = newValue;
             this.model.set('captions', newStyles);
         };
-        const persistedOptions = this.model.get('captions');
+        const persistedOptions = model.get('captions');
         const renderCaptionsSettings = (isReset) => {
             const resetItem = new MenuItem('Reset', () => {
                 this.model.set('captions', Object.assign({}, CaptionsDefaults));
@@ -233,23 +239,18 @@ class SettingsMenu extends Menu {
         if (active === previousState) {
             return;
         }
-
         if (active) {
             this.removeMenu('audioTracks');
             this.removeMenu('quality');
             this.removeMenu('playbackRates');
             if (this.children.captions) {
-                this.cachedMenus.captionsSettingsMenu = Object.assign({}, captionsSettingsMenu);
                 this.children.captions.removeMenu('captionsSettings');
             }
         } else {
-            const captionsSettingsMenu = this.cachedMenus.captionsSettingsMenu;
-            this.audioTracksMenu(model.get('audioTracks'));
-            this.levelsMenu(model.get('levels'));
-            this.playbackRatesMenu(model.get('playbackRates'));
-            if (this.children.captions && captionsSettingsMenu) {
-                this.children.captions.appendMenu(captionsSettingsMenu);
-            }
+            this.onAudioTracks(model, model.get('audioTracks'));
+            this.onLevels(model, model.get('levels'));
+            this.onPlaybackRates(model, model.get('playbackRates'));
+            this.onCaptionsList(model, model.get('captionsList'));
         }
     }
 
