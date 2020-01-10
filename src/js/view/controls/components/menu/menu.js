@@ -119,12 +119,13 @@ export default class Menu extends Events {
         return categoryButtonInstance;
     }
     createBackButton(localization) {
-        const backButtonTarget = () => this.mainMenu.backButtonTarget;
+        const getPreviousMenu = () => this.mainMenu.backButtonTarget;
         const backButton = button(
             'jw-settings-back', 
             (evt) => {
-                if (backButtonTarget) {
-                    backButtonTarget().open(evt);
+                const menu = getPreviousMenu();
+                if (menu) {
+                    menu.open(evt);
                 }
             }, 
             localization.close, 
