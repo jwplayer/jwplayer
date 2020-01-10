@@ -508,7 +508,7 @@ function CueStyleBox(window, cue) {
         });
 
         // Apply the left styling if the cue has not been wrapped.
-        if (this.cueDiv.style['white-space'] === 'pre') {
+        if (this.cueDiv.style.whiteSpace === 'pre') {
             this.applyStyles({
                 left: this.formatStyle(box.left, 'px'),
             });
