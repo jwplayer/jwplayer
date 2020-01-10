@@ -24,7 +24,8 @@ class SettingsMenu extends Menu {
         this.closeButton = createCloseButton(this.el.querySelector(`.jw-${this.name}-topbar-buttons`), this.close, localization);
         this.backButtonTarget = null;
         this.topbar = createTopbar(this);
-        this.doucmentClick = this.documentClick.bind(this);
+        this.onDocumentClick = this.onDocumentClick.bind(this);
+        this.cachedMenus = {};
         this.addEventListeners();
     }
 
@@ -239,10 +240,18 @@ class SettingsMenu extends Menu {
             this.removeMenu('audioTracks');
             this.removeMenu('quality');
             this.removeMenu('playbackRates');
+            if (this.children.captions) {
+                this.cachedMenus.captionsSettingsMenu = Object.assign({}, captionsSettingsMenu);
+                this.children.captions.removeMenu('captionsSettings');
+            }
         } else {
+            const captionsSettingsMenu = this.cachedMenus.captionsSettingsMenu;
             this.audioTracksMenu(model.get('audioTracks'));
             this.levelsMenu(model.get('levels'));
             this.playbackRatesMenu(model.get('playbackRates'));
+            if (this.children.captions && captionsSettingsMenu) {
+                this.children.captions.appendMenu(captionsSettingsMenu);
+            }
         }
     }
 
@@ -250,7 +259,7 @@ class SettingsMenu extends Menu {
         this.onPlaybackRates(this.model);
     }
 
-    documentClick(evt) {
+    onDocumentClick(evt) {
         if (!/jw-(settings|video|nextup-close|sharing-link|share-item)/.test(evt.target.className)) {
             this.close();
         }
@@ -279,7 +288,7 @@ class SettingsMenu extends Menu {
         }
         this.el.parentNode.classList.add('jw-settings-open');
         this.trigger('menuVisibility', { visible: true, evt });
-        document.addEventListener('click', this.documentClick);
+        document.addEventListener('click', this.onDocumentClick);
         this.el.setAttribute('aria-expanded', 'true');
         this.visible = true;
     }
@@ -287,7 +296,7 @@ class SettingsMenu extends Menu {
     close(evt) {
         this.el.parentNode.classList.remove('jw-settings-open');
         this.trigger('menuVisibility', { visible: false, evt });
-        document.removeEventListener('click', this.documentClick);
+        document.removeEventListener('click', this.onDocumentClick);
         this.visible = false;
         if (this.openMenus.length) {
             this.closeChildren();
@@ -342,15 +351,13 @@ class SettingsMenu extends Menu {
         Object.keys(this.children).map(menuName => {
             this.children[menuName].destroy();
         });
-        document.removeEventListener('click', this.documentClick);
+        document.removeEventListener('click', this.onDocumentClick);
         if (this.model) {
             this.model.off(null, null, this);
         }
         this.off();
     }
-
 }
-export default SettingsMenu;
 
 function changeAutoLabel(levels, qualityLevel, qualityMenu, currentIndex) {
     // Return early if the label isn't "Auto" (html5 provider with multiple mp4 sources)
@@ -455,3 +462,5 @@ function createTopbar (mainMenu) {
     });
     return ui;
 }
+
+export default SettingsMenu;

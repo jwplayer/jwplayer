@@ -101,6 +101,7 @@ describe('Menu', () => {
         // Parent menu closes when only child closes.
         expect(settingsMenu.visible).to.be.false;
     });
+
     it('properly toggles visibility of settings button on quality levels', () => {
         viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
         // Should show settings button and create quality menu if levels present.
