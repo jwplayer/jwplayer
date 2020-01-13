@@ -74,5 +74,33 @@
         "seekBackward": "Reculer",
         "spacebar": "Espace",
         "captionsToggle": "Sous-titres Activés/Désactivés"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Réglages des sous-titres",
+        "color": "Couleur de police",
+        "fontOpacity": "Opacité de police",
+        "userFontScale": "Taille de police",
+        "fontFamily": "Police",
+        "edgeStyle": "Effets",
+        "backgroundColor": "Couleur de fond",
+        "backgroundOpacity": "Opacité de la couleur de fond",
+        "windowColor": "Couleur de fenêtre",
+        "windowOpacity": "Opacité de fenêtre",
+        "white": "Blanc",
+        "black": "Noir",
+        "red": "Rouge",
+        "green": "Vert",
+        "blue": "Bleu",
+        "yellow": "Jaune",
+        "magenta": "Magenta",
+        "cyan": "Cyan",
+        "none": "Aucun",
+        "raised": "Relief",
+        "depressed": "Empreinte",
+        "uniform": "Contour",
+        "dropShadow": "Ombre"
+    },
+    "disabled": "Désactivé",
+    "enabled": "Activé",
+    "reset": "Réinitialiser"
 }

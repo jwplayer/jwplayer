@@ -74,5 +74,33 @@
         "seekBackward": "영상 되돌리기",
         "spacebar": "공백키",
         "captionsToggle": "자막 켜기/끄기"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "자막 설정",
+        "color": "글꼴 색상",
+        "fontOpacity": "글꼴 불투명도",
+        "userFontScale": "글꼴 크기",
+        "fontFamily": "글꼴 집합",
+        "edgeStyle": "문자 가장자리",
+        "backgroundColor": "배경색",
+        "backgroundOpacity": "배경 불투명도",
+        "windowColor": "창 색",
+        "windowOpacity": "창 불투명도",
+        "white": "흰색",
+        "black": "검은색",
+        "red": "빨간색",
+        "green": "녹색",
+        "blue": "파란색",
+        "yellow": "노란색",
+        "magenta": "자홍색",
+        "cyan": "청록색",
+        "none": "없음",
+        "raised": "양각",
+        "depressed": "음각",
+        "uniform": "테두리",
+        "dropShadow": "그림자"
+    },
+    "disabled": "비활성",
+    "enabled": "활성",
+    "reset": "재설정"
 }

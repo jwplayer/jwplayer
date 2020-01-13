@@ -327,7 +327,7 @@ const CaptionsRenderer = function (viewModel) {
 
     function _addEdgeStyle(option, styles, fontOpacity) {
         const color = getRgba('#000000', fontOpacity);
-        if (option === 'dropshadow') { // small drop shadow
+        if (option === 'dropShadow') { // small drop shadow
             styles.textShadow = '0 2px 1px ' + color;
         } else if (option === 'raised') { // larger drop shadow
             styles.textShadow = '0 0 5px ' + color + ', 0 1px 5px ' + color + ', 0 2px 5px ' + color;

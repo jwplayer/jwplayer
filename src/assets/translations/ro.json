@@ -74,5 +74,33 @@
         "seekBackward": "Caută înapoi",
         "spacebar": "Spațiu",
         "captionsToggle": "Subtitrare Pornită/Oprită"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Setări subtitrare",
+        "color": "Culoare font",
+        "fontOpacity": "Opacitate font",
+        "userFontScale": "Mărime font",
+        "fontFamily": "Familie de fonturi",
+        "edgeStyle": "Margine caracter",
+        "backgroundColor": "Culoare de fundal",
+        "backgroundOpacity": "Opacitate fundal",
+        "windowColor": "Culoare fereastră",
+        "windowOpacity": "Opacitate fereastră",
+        "white": "Alb",
+        "black": "Negru",
+        "red": "Roșu",
+        "green": "Verde",
+        "blue": "Albastru",
+        "yellow": "Galben",
+        "magenta": "Purpuriu",
+        "cyan": "Cyan",
+        "none": "Niciuna",
+        "raised": "Profilat",
+        "depressed": "Adîncit",
+        "uniform": "Uniform",
+        "dropShadow": "Umbră de fundal"
+    },
+    "disabled": "Dezactivare",
+    "enabled": "Activare",
+    "reset": "Resetare"
 }

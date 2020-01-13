@@ -74,5 +74,33 @@
         "seekBackward": "Išči Nazaj",
         "spacebar": "Presledek",
         "captionsToggle": "Podnapisi Vklop/Izklop"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Nastavitve podnapisov",
+        "color": "Barva pisave",
+        "fontOpacity": "Transparentnost pisave",
+        "userFontScale": "Velikost pisave",
+        "fontFamily": "Tip pisave",
+        "edgeStyle": "Stil pisave",
+        "backgroundColor": "Barva ozadja",
+        "backgroundOpacity": "Transparentnost ozadja",
+        "windowColor": "Barva ozadja podnapisov",
+        "windowOpacity": "Transparentnost ozadja podnapisov",
+        "white": "Bela",
+        "black": "Črna",
+        "red": "Rdeča",
+        "green": "Zelena",
+        "blue": "Modra",
+        "yellow": "Rumena",
+        "magenta": "Magenta",
+        "cyan": "Cian",
+        "none": "Nobena",
+        "raised": "Dvignjena",
+        "depressed": "Ugreznjena",
+        "uniform": "Poudarjena",
+        "dropShadow": "Senčena"
+    },
+    "disabled": "Onemogočeno",
+    "enabled": "Omogočeno",
+    "reset": "Ponastavi"
 }

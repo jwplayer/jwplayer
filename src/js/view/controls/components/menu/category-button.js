@@ -28,7 +28,7 @@ const categoryButton = (menu, localizedName) => {
 
     const buttonElement = menuCategoryButton.element();
     buttonElement.setAttribute('role', 'menuitemradio');
-    buttonElement.setAttribute('aria-checked', 'false');
+    buttonElement.setAttribute('aria-expanded', 'false');
     buttonElement.setAttribute('aria-label', localizedName);
     if (!('ontouchstart' in window)) {
         menuCategoryButton.tooltip = SimpleTooltip(buttonElement, name, localizedName);

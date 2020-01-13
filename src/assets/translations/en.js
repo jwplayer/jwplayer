@@ -75,5 +75,33 @@ export default {
         "seekBackward": "Seek Backward",
         "spacebar": "SPACE",
         "captionsToggle": "Captions On/Off"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Subtitle Settings",
+        "color": "Font Color",
+        "fontOpacity": "Font Opacity",
+        "userFontScale": "Font Size",
+        "fontFamily": "Font Family",
+        "edgeStyle": "Character Edge",
+        "backgroundColor": "Background Color",
+        "backgroundOpacity": "Background Opacity",
+        "windowColor": "Window Color",
+        "windowOpacity": "Window Opacity",
+        "white": "White",
+        "black": "Black",
+        "red": "Red",
+        "green": "Green",
+        "blue": "Blue",
+        "yellow": "Yellow",
+        "magenta": "Magenta",
+        "cyan": "Cyan",
+        "none": "None",
+        "raised": "Raised",
+        "depressed": "Depressed",
+        "uniform": "Uniform",
+        "dropShadow": "Drop Shadow"
+    },
+    "disabled": "Disabled",
+    "enabled": "Enabled",
+    "reset": "Reset"
 };

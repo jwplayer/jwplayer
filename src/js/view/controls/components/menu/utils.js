@@ -14,8 +14,7 @@ const getPercentOption = (value) => value + '%';
 const getPercentValue = (option) => parseInt(option);
 export const captionStyleItems = [
     {
-        name: 'Font Color',
-        propertyName: 'color',
+        name: 'color',
         options: ['White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'],
         defaultVal: 'White',
         getTypedValue: getColorValue,
@@ -23,8 +22,7 @@ export const captionStyleItems = [
         
     },
     {
-        name: 'Font Opacity',
-        propertyName: 'fontOpacity',
+        name: 'fontOpacity',
         options: ['100%', '75%', '25%'],
         defaultVal: '100%',
         getTypedValue: getPercentValue,
@@ -32,16 +30,14 @@ export const captionStyleItems = [
         
     },
     {
-        name: 'Font Size',
-        propertyName: 'userFontScale',
+        name: 'userFontScale',
         options: ['200%', '175%', '150%', '125%', '100%', '75%', '50%'],
         defaultVal: '100%',
         getTypedValue: (option) => parseInt(option) / 100,
         getOption: (value) => (value * 100) + '%'
     },
     {
-        name: 'Font Family',
-        propertyName: 'fontFamily',
+        name: 'fontFamily',
         options: [
             'Arial', 
             'Courier', 
@@ -58,24 +54,19 @@ export const captionStyleItems = [
         getOption: (value) => value
     },
     {
-        name: 'Character Edge',
-        propertyName: 'edgeStyle',
+        name: 'edgeStyle',
         options: [ 'None', 'Raised', 'Depressed', 'Uniform', 'Drop Shadow'
         ],
         defaultVal: 'None',
-        getTypedValue: (option) => option.toLowerCase().replace(/ /g, ''),
+        getTypedValue: (option) => /Drop Shadow/.test(option) ? 'dropShadow' : option.toLowerCase(),
         getOption: (value) => {
-            if (value === 'dropshadow') {
-                return 'Drop Shadow';
-            }
             const result = value.replace(/([A-Z])/g, ' $1');
             const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
             return finalResult;
         }
     },
     {
-        name: 'Background Color',
-        propertyName: 'backgroundColor',
+        name: 'backgroundColor',
         options: [
             'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'
         ],
@@ -84,16 +75,14 @@ export const captionStyleItems = [
         getOption: getColorOption
     },
     {
-        name: 'Background Opacity',
-        propertyName: 'backgroundOpacity',
+        name: 'backgroundOpacity',
         options: ['100%', '75%', '50%', '25%', '0%'],
         defaultVal: '50%',
         getTypedValue: getPercentValue,
         getOption: getPercentOption
     },
     {
-        name: 'Window Color',
-        propertyName: 'windowColor',
+        name: 'windowColor',
         options: [
             'White', 'Black', 'Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan'
         ],
@@ -102,8 +91,7 @@ export const captionStyleItems = [
         getOption: getColorOption
     },
     {
-        name: 'Window Opacity',
-        propertyName: 'windowOpacity',
+        name: 'windowOpacity',
         options: ['100%', '75%', '50%', '25%', '0%'],
         defaultVal: '0%',
         getTypedValue: getPercentValue,

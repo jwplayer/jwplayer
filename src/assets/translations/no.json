@@ -74,5 +74,33 @@
         "seekBackward": "Søk Bakover",
         "spacebar": "Mellomrom",
         "captionsToggle": "Undertekster På/Av"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Undertekst innstillinger",
+        "color": "Skriftfarge",
+        "fontOpacity": "Skriftgjennomsiktighet",
+        "userFontScale": "Skriftstørrelse",
+        "fontFamily": "Skriftfamilie",
+        "edgeStyle": "Karakterkant",
+        "backgroundColor": "Bakgrunnsfarge",
+        "backgroundOpacity": "Bakgrunnsgjennomsiktighet",
+        "windowColor": "Vindusfarge",
+        "windowOpacity": "Vindusgjennomsiktighet",
+        "white": "Hvit",
+        "black": "Sort",
+        "red": "Rød",
+        "green": "Grønn",
+        "blue": "Blå",
+        "yellow": "Gul",
+        "magenta": "Magenta",
+        "cyan": "Cyan",
+        "none": "Ingen",
+        "raised": "Hevet",
+        "depressed": "Senket",
+        "uniform": "Ensartet",
+        "dropShadow": "Skygge"
+    },
+    "disabled": "Deaktivert",
+    "enabled": "Aktivert",
+    "reset": "Tilbakestill"
 }

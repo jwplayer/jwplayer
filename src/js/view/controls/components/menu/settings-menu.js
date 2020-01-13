@@ -9,12 +9,13 @@ import { normalizeKey } from './utils';
 import UI from 'utils/ui';
 import { 
     nextSibling, 
-    previousSibling
+    previousSibling,
+    emptyElement
 } from 'utils/dom';
 
 class SettingsMenu extends Menu {
     constructor(api, model, controlbar, localization) {
-        super('settings', null, localization);
+        super('settings', localization.settings, null, localization);
         this.api = api;
         this.model = model;
         this.localization = localization;
@@ -31,14 +32,14 @@ class SettingsMenu extends Menu {
         return quality || captions || audioTracks || playbackRates || sharing;
     }
 
-    setupMenu(menuName, items, onItemSelect, defaultItemIndex, itemOptions) {
+    setupMenu(menuName, menuTitle, items, onItemSelect, defaultItemIndex, itemOptions) {
         if (!items || items.length <= 1) {
             this.removeMenu(menuName);
             return;
         }
         let menu = this.children[menuName];
         if (!menu) {
-            menu = new Menu(menuName, this, this.localization);
+            menu = new Menu(menuName, menuTitle, this, this.localization);
         }
         menu.setMenuItems(
             menu.createItems(items, onItemSelect, itemOptions), 
@@ -49,7 +50,8 @@ class SettingsMenu extends Menu {
     onLevels(model, levels) {
         const menuItemOptions = { defaultText: this.localization.auto };
         this.setupMenu(
-            'quality', 
+            'quality',
+            this.localization.hd,
             levels, 
             (index) => this.api.setCurrentQuality(index), 
             model.get('currentLevel') || 0, 
@@ -79,6 +81,7 @@ class SettingsMenu extends Menu {
     onAudioTracks(model, audioTracks) {
         this.setupMenu(
             'audioTracks', 
+            this.localization.audioTracks,
             audioTracks, 
             (index) => this.api.setCurrentAudioTrack(index), 
             model.get('currentAudioTrack')
@@ -90,7 +93,8 @@ class SettingsMenu extends Menu {
         const initialIndex = model.get('captionsIndex');
 
         this.setupMenu(
-            'captions', 
+            'captions',
+            this.localization.cc,
             captionsList, 
             (index) => this.api.setCurrentCaptions(index), 
             initialIndex, 
@@ -99,12 +103,18 @@ class SettingsMenu extends Menu {
 
         const captionsMenu = this.children.captions;
 
-        if (!captionsMenu) {
+        if (!captionsMenu || captionsMenu.children.captionsSettings) {
             return;
         }
         captionsMenu.topbar = captionsMenu.topbar || captionsMenu.createTopbar();
-        const captionsSettingsMenu = new Menu('captionsSettings', captionsMenu, this.localization);
-        captionsSettingsMenu.title = 'Subtitle Settings';
+        emptyElement(captionsMenu.topbar);
+        const captionsLocalization = this.localization.captionsStyles;
+        const captionsSettingsMenu = new Menu(
+            'captionsSettings', 
+            captionsLocalization.subtitleSettings, 
+            captionsMenu, 
+            this.localization
+        );
         const open = captionsSettingsMenu.open;
         captionsSettingsMenu.open = (e) => {
             const wasVisible = captionsSettingsMenu.visible;
@@ -124,7 +134,7 @@ class SettingsMenu extends Menu {
         captionsMenu.topbar.appendChild(captionsSettingsButton.el);
         const setCaptionStyles = (captionsOption, index) => {
             const captionStyles = model.get('captions');
-            const propertyName = captionsOption.propertyName;
+            const propertyName = captionsOption.name;
             const value = captionsOption.options && captionsOption.options[index];
             const newValue = captionsOption.getTypedValue(value);
             const newStyles = Object.assign({}, captionStyles);
@@ -134,21 +144,22 @@ class SettingsMenu extends Menu {
         };
         const persistedOptions = model.get('captions');
         const renderCaptionsSettings = (isReset) => {
-            const resetItem = new MenuItem('Reset', () => {
+            const resetItem = new MenuItem(this.localization.reset, () => {
                 this.model.set('captions', Object.assign({}, CaptionsDefaults));
                 renderCaptionsSettings(true);
             });
             resetItem.el.classList.add('jw-settings-reset');
             const captionsSettingsItems = [];
             captionStyleItems.forEach(captionItem => {
-                if (!isReset && persistedOptions && persistedOptions[captionItem.propertyName]) {
-                    captionItem.val = captionItem.getOption(persistedOptions[captionItem.propertyName]);
+                const localizedName = captionsLocalization[captionItem.name];
+                if (!isReset && persistedOptions && persistedOptions[captionItem.name]) {
+                    captionItem.val = captionItem.getOption(persistedOptions[captionItem.name]);
                 } else {
                     captionItem.val = captionItem.defaultVal;
                 }
-                const itemMenu = new Menu(captionItem.name, captionsSettingsMenu, this.localization);
+                const itemMenu = new Menu(captionItem.name, localizedName, captionsSettingsMenu, this.localization);
                 const item = new MenuItem(
-                    { label: captionItem.name, value: captionItem.val }, 
+                    { label: localizedName, value: captionItem.val }, 
                     itemMenu.open, 
                     itemMenuTemplate
                 );
@@ -214,7 +225,8 @@ class SettingsMenu extends Menu {
         const menuItemOptions = { tooltipText: localization.playbackRates };
 
         this.setupMenu(
-            'playbackRates', 
+            'playbackRates',
+            this.localization.playbackRates,
             playbackRates, 
             (playbackRate) => this.api.setPlaybackRate(playbackRate), 
             initialSelectionIndex, 

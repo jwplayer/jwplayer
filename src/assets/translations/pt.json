@@ -74,5 +74,33 @@
         "seekBackward": "Retroceder",
         "spacebar": "Espaço",
         "captionsToggle": "Legendas Ativar/Desativar"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Configurações da Legenda",
+        "color": "Cor da Fonte",
+        "fontOpacity": "Opacidade da Fonte",
+        "userFontScale": "Tamanho da Fonte",
+        "fontFamily": "Família da Fonte",
+        "edgeStyle": "Borda do Caractere",
+        "backgroundColor": "Cor de Fundo",
+        "backgroundOpacity": "Opacidade de Fundo",
+        "windowColor": "Cor da Janela",
+        "windowOpacity": "Opacidade da Janela",
+        "white": "Branco",
+        "black": "Preto",
+        "red": "Vermelho",
+        "green": "Verde",
+        "blue": "Azul",
+        "yellow": "Amarelo",
+        "magenta": "Magenta",
+        "cyan": "Ciano",
+        "none": "Nenhum",
+        "raised": "Elevado",
+        "depressed": "Aprofundado",
+        "uniform": "Uniforme",
+        "dropShadow": "Sombra Projetada"
+    },
+    "disabled": "Desativado",
+    "enabled": "Ativado",
+    "reset": "Reiniciar"
 }

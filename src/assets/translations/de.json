@@ -74,5 +74,33 @@
         "seekBackward": "Rückwärts Springen",
         "spacebar": "Leertaste",
         "captionsToggle": "Untertitel An/Aus"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Untertitel-Einstellungen",
+        "color": "Schriftfarbe",
+        "fontOpacity": "Schrifttransparenz",
+        "userFontScale": "Schriftgröße",
+        "fontFamily": "Schriftfamilie",
+        "edgeStyle": "Zeichenrand",
+        "backgroundColor": "Hintergrundfarbe",
+        "backgroundOpacity": "Hintergrundtransparenz",
+        "windowColor": "Fensterfarbe",
+        "windowOpacity": "Fenstertransparenz",
+        "white": "Weiß",
+        "black": "Schwarz",
+        "red": "Rot",
+        "green": "Grün",
+        "blue": "Blau",
+        "yellow": "Gelb",
+        "magenta": "Magenta",
+        "cyan": "Cyan",
+        "none": "Keine",
+        "raised": "Erhaben",
+        "depressed": "Vertieft",
+        "uniform": "Einheitlich",
+        "dropShadow": "Schlagschatten"
+    },
+    "disabled": "Deaktiviert",
+    "enabled": "Aktiviert",
+    "reset": "Zurücksetzen"
 }
