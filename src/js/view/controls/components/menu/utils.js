@@ -122,4 +122,4 @@ const colorTable = {
     Cyan: '#00ffff'
 };
 
-export const normalizeKey = (sourceEventKey) => sourceEventKey.replace(/(Arrow|ape)/, '');
+export const normalizeKey = (sourceEventKey) => sourceEventKey && sourceEventKey.replace(/(Arrow|ape)/, '');

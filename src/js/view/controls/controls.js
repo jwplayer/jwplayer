@@ -193,9 +193,7 @@ export default class Controls extends Events {
         this.div.appendChild(controlbar.element());
 
         const localization = model.get('localization');
-
-        // Settings Menu
-        const settingsMenu = this.settingsMenu = SettingsMenu(api, model.player, localization);
+        const settingsMenu = this.settingsMenu = new SettingsMenu(api, model.player, this.controlbar, localization);
         let lastState = null;
 
         settingsMenu.on('menuVisibility', ({ visible, evt }) => {
@@ -222,9 +220,6 @@ export default class Controls extends Events {
                 focusPlayerElement();
             }
         });
-        model.change('captionsIndex', (changedModel, index) => {
-            controlbar.toggleCaptionsButtonState(!!index);
-        });
         settingsMenu.on('captionStylesOpened', () => this.trigger('captionStylesOpened'));
         controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
             if (isDefault) {
@@ -232,28 +227,7 @@ export default class Controls extends Events {
             }
             settingsMenu.children[submenuName].toggle(event);
         });
-        const updateControlbarButtons = (menuName) => {
-            const childMenus = settingsMenu.children;
-            const menuCount = Object.keys(childMenus).length;
-            const shouldShowGear = 
-                !!childMenus.quality || 
-                !!childMenus.playbackRates || 
-                menuCount > 1;
 
-            controlbar.elements.settingsButton.toggle(shouldShowGear);
-            if (childMenus.captions) {
-                controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
-            }
-            const controlBarButton = controlbar.elements[`${menuName}Button`];
-            if (controlBarButton) {
-                const isVisible = !!childMenus[menuName] && !shouldShowGear || menuCount > 1;
-                controlBarButton.toggle(isVisible);
-            }
-        };
-        settingsMenu.on('menuRemoved menuAppended', (menuName) => { 
-            updateControlbarButtons(menuName);
-        });
-        updateControlbarButtons('captions');
         if (OS.mobile) {
             this.div.appendChild(settingsMenu.el);
         } else {
