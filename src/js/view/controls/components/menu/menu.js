@@ -104,12 +104,8 @@ export default class Menu extends Events {
         return itemsContainer;
     }
     createCategoryButton() {
-        let localizedName = this.title;
-        const categoryButtonInstance = menuCategoryButton(this, localizedName);
-        categoryButtonInstance.element().setAttribute('name', this.name);
-        categoryButtonInstance.element().setAttribute('aria-haspopup', 'true');
-        categoryButtonInstance.element().setAttribute('aria-controls', this.el.id);
-        return categoryButtonInstance;
+        const categoryButton = menuCategoryButton(this);
+        return categoryButton;
     }
     createBackButton(localization) {
         const getPreviousMenu = () => this.mainMenu.backButtonTarget;

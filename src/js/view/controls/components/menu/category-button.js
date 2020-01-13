@@ -3,8 +3,8 @@ import { cloneIcon } from 'view/controls/icons';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import { createElement } from 'utils/dom';
 
-const categoryButton = (menu, localizedName) => {
-    const name = menu.name;
+const categoryButton = (menu) => {
+    const { name, title } = menu;
     const icons = {
         captions: 'cc-off',
         audioTracks: 'audio-tracks',
@@ -22,16 +22,18 @@ const categoryButton = (menu, localizedName) => {
         (event) => {
             menu.open(event);
         }, 
-        name, 
+        title, 
         [(menu.icon && createElement(menu.icon)) || cloneIcon(icon)]
     );
 
     const buttonElement = menuCategoryButton.element();
+    buttonElement.setAttribute('name', name);
     buttonElement.setAttribute('role', 'menuitemradio');
     buttonElement.setAttribute('aria-expanded', 'false');
-    buttonElement.setAttribute('aria-label', localizedName);
+    buttonElement.setAttribute('aria-haspopup', 'true');
+    buttonElement.setAttribute('aria-controls', menu.el.id);
     if (!('ontouchstart' in window)) {
-        menuCategoryButton.tooltip = SimpleTooltip(buttonElement, name, localizedName);
+        menuCategoryButton.tooltip = SimpleTooltip(buttonElement, name, title);
     }
     menuCategoryButton.ui.directSelect = true;
     return menuCategoryButton;
