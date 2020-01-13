@@ -2,10 +2,10 @@ import Menu from 'view/controls/components/menu/menu';
 import SettingsMenu from 'view/controls/components/menu/settings-menu';
 import SimpleModel from 'model/simplemodel';
 import MockApi from 'mock/mock-api';
+import localization from 'assets/translations/en';
 
 describe('Menu', () => {
-    const localization = { close: 'close', hd: 'quality', playbackRates: 'rates' };
-    const createMockMenu = (name, parent) => new Menu(name, parent, localization);
+    const createMockMenu = (name, parent) => new Menu(name, name, parent, localization);
     let settingsMenu;
     let viewModel;
     let api;
@@ -47,7 +47,7 @@ describe('Menu', () => {
     });
 
     it('appends a child menu', () => {
-        const childMenu = new Menu('quality', settingsMenu, localization);
+        const childMenu = createMockMenu('quality', settingsMenu);
 
         expect(childMenu.parentMenu.name).to.equal('settings');
         expect(childMenu.mainMenu.name).to.equal('settings');
@@ -55,7 +55,7 @@ describe('Menu', () => {
     });
 
     it('removes a child menu', () => {
-        const childMenu = new Menu('quality', settingsMenu, localization);
+        const childMenu = createMockMenu('quality', settingsMenu);
 
         settingsMenu.removeMenu('quality');
         expect(Object.keys(settingsMenu.children).length).to.equal(0);
@@ -63,7 +63,7 @@ describe('Menu', () => {
     });
 
     it('opens', () => {
-        const childMenu = new Menu('quality', settingsMenu, localization);
+        const childMenu = createMockMenu('quality', settingsMenu);
         expect(childMenu.visible).to.be.false;
         expect(settingsMenu.visible).to.be.false;
         // Mock items and set to menu
@@ -82,7 +82,7 @@ describe('Menu', () => {
         expect(settingsMenu.visible).to.be.true;
     });
     it('closes', () => {
-        const childMenu = new Menu('quality', settingsMenu, localization);
+        const childMenu = createMockMenu('quality', settingsMenu);
         expect(childMenu.visible).to.be.false;
         expect(settingsMenu.visible).to.be.false;
         // Mock items and set to menu
@@ -105,7 +105,6 @@ describe('Menu', () => {
     it('properly toggles visibility of settings button on quality levels', () => {
         viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
         // Should show settings button and create quality menu if levels present.
-        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         expect(controlbar.elements.settingsButton.show.called).to.be.true;
         expect(controlbar.elements.settingsButton.hide.called).to.be.false;
         expect(!!settingsMenu.children.quality).to.be.true;
@@ -126,14 +125,12 @@ describe('Menu', () => {
     });
     
     it('should setup quality menu on levels change', function() {
-        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         expect(!!settingsMenu.children.quality).to.be.false;
         viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
         expect(!!settingsMenu.children.quality).to.be.true;
     });
 
     it('should setup captions menu on captions change', function() {
-        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         expect(!!settingsMenu.children.captions).to.be.false;
         viewModel.set('captionsList', [
             { id: 'off', label: 'Off' },
@@ -143,7 +140,6 @@ describe('Menu', () => {
     });
 
     it('should setup playback rates menu on playback rates if configured', () => {
-        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         viewModel.set('playbackRates', [0.5, 1, 1.25, 1.5, 2]);
         expect(!!settingsMenu.children.playbackRates).to.be.false;
         viewModel.set('supportsPlaybackRate', true);
@@ -161,7 +157,6 @@ describe('Menu', () => {
             shakaIndex: 0,
             shakaId: 32
         };
-        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         viewModel.set('audioTracks', [track]);
         expect(!!settingsMenu.children.audioTracks).to.be.false;
         viewModel.set('audioTracks', [track, track]);
@@ -169,14 +164,12 @@ describe('Menu', () => {
     });
 
     it('Emits an event when a submenu is added', () => {
-        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         settingsMenu.trigger = sinon.spy();
         viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
         expect(settingsMenu.trigger.calledWith('menuAppended')).to.equal(true);
     });
 
     it('Emits an event when a submenu is removed', () => {
-        settingsMenu = new SettingsMenu(api, viewModel, controlbar, localization);
         settingsMenu.trigger = sinon.spy();
         viewModel.set('levels', [{ label: 'Auto' }, { label: '1080p' }]);
         viewModel.set('levels', [{ label: 'Auto' }]);
