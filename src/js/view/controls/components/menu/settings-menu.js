@@ -87,6 +87,12 @@ class SettingsMenu extends Menu {
             model.get('currentAudioTrack')
         );
     }
+    onAudioTrackIndex(model, trackIndex) {
+        if (!this.children.audioTracks) {
+            return;
+        }
+        this.children.audioTracks.items[trackIndex].activate();
+    }
 
     onCaptionsList(model, captionsList) {
         const menuItemOptions = { defaultText: this.localization.off };
@@ -283,6 +289,7 @@ class SettingsMenu extends Menu {
         model.on('change:currentLevel', this.onCurrentLevel, this);
         model.on('change:visualQuality', this.onVisualQuality, this);
         model.change('audioTracks', this.onAudioTracks, this);
+        model.on('change:currentAudioTrack', this.onAudioTrackIndex, this);
         model.change('captionsList', this.onCaptionsList, this);
         model.on('change:playlistItem', this.onPlaylistItem, this);
         model.change('captionsIndex', this.onCaptionsIndex, this);
