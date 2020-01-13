@@ -96,6 +96,10 @@ export function parseDimension(dimension: string): number {
 
 // Returns a formatted time string from "mm:ss" to "hh:mm:ss" for the given number of seconds
 export function timeFormat(sec: number, allowNegative?: boolean): string {
+    if (isNaN(sec)) {
+        sec = parseInt(sec.toString());
+    }
+
     if (isNaN(sec) || !isFinite(sec) || (sec <= 0 && !allowNegative)) {
         return '00:00';
     }

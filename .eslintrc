@@ -206,11 +206,13 @@
                 "@typescript-eslint/no-non-null-assertion": "warn",
                 "@typescript-eslint/no-this-alias": "error",
                 "@typescript-eslint/no-var-requires": "error",
+                "@typescript-eslint/no-unused-vars": "error",
                 "@typescript-eslint/prefer-namespace-keyword": "error",
                 "@typescript-eslint/triple-slash-reference": "error",
                 "@typescript-eslint/type-annotation-spacing": "error",
                 "prefer-rest-params": "error",
-                "prefer-spread": "error"
+                "prefer-spread": "error",
+                "no-unused-vars": 0
             }
         }
     ]
