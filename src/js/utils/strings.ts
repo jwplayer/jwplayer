@@ -1,4 +1,4 @@
-import { isValidNumber, isString } from './underscore';
+import { isValidNumber, isString } from 'utils/underscore';
 
 const parseFloat = window.parseFloat;
 

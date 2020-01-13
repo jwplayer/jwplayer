@@ -1,4 +1,4 @@
-import { GenericObjectType } from '../types/generic.type';
+import { GenericObjectType } from 'types/generic.type';
 
 /** @module */
 

@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
+        "baseUrl": "src/js",
         "module": "commonjs",
         "target": "ES5",
         "sourceMap": true,
         "strictNullChecks": true,
         "noImplicitAny": true,
         "noImplicitThis": true,
-        "strictPropertyInitialization": true,
-        "noUnusedLocals": true
+        "noUnusedLocals": true,
+        "strictPropertyInitialization": true
     },
     "include": [
         "src/js"
