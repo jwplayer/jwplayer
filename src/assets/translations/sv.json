@@ -74,5 +74,33 @@
         "seekBackward": "Snabbspolning Bak",
         "spacebar": "Mellanslag",
         "captionsToggle": "Bildtexter På/Av"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Undertextinställningar",
+        "color": "Fontfärg",
+        "fontOpacity": "Teckensnittets Opacitet",
+        "userFontScale": "Textstorlek",
+        "fontFamily": "Typsnittsfamilj",
+        "edgeStyle": "Character Edge",
+        "backgroundColor": "Bakgrundsfärg",
+        "backgroundOpacity": "Bakgrundens Opacitet",
+        "windowColor": "Fönsterfärg",
+        "windowOpacity": "Fönsteropacitet",
+        "white": "Vit",
+        "black": "Svart",
+        "red": "Röd",
+        "green": "Grön",
+        "blue": "Blå",
+        "yellow": "Gul",
+        "magenta": "Magenta",
+        "cyan": "Cyan",
+        "none": "Ingen",
+        "raised": "Raised",
+        "depressed": "Graverad",
+        "uniform": "Uniform",
+        "dropShadow": "Skugga"
+    },
+    "disabled": "Inaktiverad",
+    "enabled": "Aktiverad",
+    "reset": "Återställ"
 }

@@ -74,5 +74,33 @@
         "seekBackward": "Recular",
         "spacebar": "Espaci",
         "captionsToggle": "Legenda Act/Des"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Paramètres dels sos-títols",
+        "color": "Color de la poliça",
+        "fontOpacity": "Transparéncia de la poliça",
+        "userFontScale": "Talha de la poliça",
+        "fontFamily": "Font Family",
+        "edgeStyle": "Bòrds de caractèr",
+        "backgroundColor": "Color de fons",
+        "backgroundOpacity": "Transparéncia del fons",
+        "windowColor": "Color de la fenèstra",
+        "windowOpacity": "Transparéncia de la fenèstra",
+        "white": "Blanc",
+        "black": "Negre",
+        "red": "Roge",
+        "green": "Verd",
+        "blue": "Blau",
+        "yellow": "Jaune",
+        "magenta": "Magenta",
+        "cyan": "Cian",
+        "none": "Pas cap",
+        "raised": "Relèu",
+        "depressed": "Curat",
+        "uniform": "Unifòrme",
+        "dropShadow": "Ombrat"
+    },
+    "disabled": "Desactivat",
+    "enabled": "Activat",
+    "reset": "Restablir"
 }

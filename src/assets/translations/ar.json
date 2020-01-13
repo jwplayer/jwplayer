@@ -74,5 +74,33 @@
         "seekBackward": "‏الرجوع للخلف",
         "spacebar": "‏مسافة",
         "captionsToggle": "‏تشغيل/إيقاف الترجمة"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "‏إعدادات الترجمة المرئية",
+        "color": "‏لون الخط",
+        "fontOpacity": "‏شفافية الخط",
+        "userFontScale": "‏حجم الخط",
+        "fontFamily": "‏نوع الخط",
+        "edgeStyle": "‏حواف الحروف",
+        "backgroundColor": "‏لون الخلفية",
+        "backgroundOpacity": "‏شفافية الخلفية",
+        "windowColor": "‏لون النافذة المحيطة",
+        "windowOpacity": "‏شفافية النافذة المحيطة",
+        "white": "‏أبيض",
+        "black": "‏أسود",
+        "red": "‏أحمر",
+        "green": "‏أخضر",
+        "blue": "‏أزرق",
+        "yellow": "‏أصفر",
+        "magenta": "‏أرجواني",
+        "cyan": "‏ازرق سماوي",
+        "none": "‏لا شيء",
+        "raised": "‏مرفوع",
+        "depressed": "‏مطموس",
+        "uniform": "‏موحد",
+        "dropShadow": "‏إلقاء ظل"
+    },
+    "disabled": "‏مُعطل",
+    "enabled": "‏مُفعل",
+    "reset": "‏عودة إلى الوضع الافتراضي"
 }

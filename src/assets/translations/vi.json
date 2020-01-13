@@ -74,5 +74,33 @@
         "seekBackward": "Tua Lùi",
         "spacebar": "Phím Cách",
         "captionsToggle": "Phụ đề Mở/Tắt"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Cài đặt phụ đề",
+        "color": "Màu phông chữ",
+        "fontOpacity": "Độ mờ phông chữ",
+        "userFontScale": "Cỡ chữ",
+        "fontFamily": "Họ phông chữ",
+        "edgeStyle": "Viền kí tự",
+        "backgroundColor": "Màu nền",
+        "backgroundOpacity": "Độ mờ nền",
+        "windowColor": "Màu cửa sổ",
+        "windowOpacity": "Độ mờ cửa sổ",
+        "white": "Trắng",
+        "black": "Đen",
+        "red": "Đỏ",
+        "green": "Xanh lá",
+        "blue": "Xanh da trời",
+        "yellow": "Vàng",
+        "magenta": "Đỏ tươi",
+        "cyan": "Lục lam",
+        "none": "Bỏ chọn tất cả",
+        "raised": "Nâng lên",
+        "depressed": "Nén xuống",
+        "uniform": "Đồng nhất",
+        "dropShadow": "Đổ bóng"
+    },
+    "disabled": "Đã tắt",
+    "enabled": "Đã bật",
+    "reset": "Thiết lập lại"
 }

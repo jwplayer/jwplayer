@@ -74,5 +74,33 @@
         "seekBackward": "ค้นหาย้อนหลัง",
         "spacebar": "เว้นวรรค",
         "captionsToggle": "เปิด / ปิด คำบรรยาย"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "ตั้งค่าบทบรรยาย",
+        "color": "สีตัวอักษร",
+        "fontOpacity": "ความเข้มของตัวอักษร",
+        "userFontScale": "ขนาดตัวอักษร",
+        "fontFamily": "ตระกูลตัวอักษร",
+        "edgeStyle": "กรอบตัวอักษร",
+        "backgroundColor": "สีพื้นหลัง",
+        "backgroundOpacity": "ความเข้มของพื้นหลัง",
+        "windowColor": "สีหน้าวินโดว์",
+        "windowOpacity": "ความเข้มของหน้าวินโดว์",
+        "white": "สีขาว",
+        "black": "สีดำ",
+        "red": "สีแดง",
+        "green": "สีเขียว",
+        "blue": "สีฟ้า",
+        "yellow": "สีเหลือง",
+        "magenta": "สีม่วงแดง",
+        "cyan": "สีเขียวแกมน้ำเงิน",
+        "none": "ไม่เลือกค่าใดๆ",
+        "raised": "ทำเป็นตัวนูน",
+        "depressed": "ทำเป็นตัวสลัก",
+        "uniform": "ใส่ขอบ",
+        "dropShadow": "ใส่แสงเงา"
+    },
+    "disabled": "ปิดใช้งาน",
+    "enabled": "เปิดใช้งาน",
+    "reset": "ตั้งค่าเริ่มต้นใหม่"
 }

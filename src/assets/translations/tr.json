@@ -74,5 +74,33 @@
         "seekBackward": "Geri Sar",
         "spacebar": "Aralık Tuşu",
         "captionsToggle": "Alt Yazı Açık/Kapalı"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Altyazı Ayarları",
+        "color": "Font Rengi",
+        "fontOpacity": "Font Parlaklığı",
+        "userFontScale": "Font Büyüklüğü",
+        "fontFamily": "Font Türü",
+        "edgeStyle": "Karakter Ayrıtı",
+        "backgroundColor": "Arka Plan Rengi",
+        "backgroundOpacity": "Arka Plan Parlaklığı",
+        "windowColor": "Pencere Rengi",
+        "windowOpacity": "Pencere Parlaklığı",
+        "white": "Beyaz",
+        "black": "Siyah",
+        "red": "Kırmızı",
+        "green": "Yeşil",
+        "blue": "Mavi",
+        "yellow": "Sarı",
+        "magenta": "Kızılımsı Mor",
+        "cyan": "Cam Göbeği",
+        "none": "Hiçbiri",
+        "raised": "Yukarıya Kaldırılmış",
+        "depressed": "Aşağıya Bastırılmış",
+        "uniform": "Üniform",
+        "dropShadow": "Kabartı Gölgesi"
+    },
+    "disabled": "Devredışı",
+    "enabled": "Etkin",
+    "reset": "Sıfırla"
 }

@@ -1,6 +1,6 @@
 export const MenuTemplate = (isSubmenu, name) => {
     return isSubmenu ? (
-        `<div class="jw-reset jw-settings-submenu jw-settings-submenu-${name}" role="menu" aria-expanded="false">` +
+        `<div id="jw-settings-submenu-${name}" class="jw-reset jw-settings-submenu jw-settings-submenu-${name}" role="menu" aria-expanded="false">` +
             `<div class="jw-settings-submenu-items"></div>` +
         `</div>`
     ) : (

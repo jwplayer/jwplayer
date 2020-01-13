@@ -74,5 +74,33 @@
         "seekBackward": "Terugspoelen",
         "spacebar": "Spatiebalk",
         "captionsToggle": "Ondertiteling Aan/Uit"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Instellingen voor ondertiteling",
+        "color": "Tekstkleur",
+        "fontOpacity": "Zichtbaarheid",
+        "userFontScale": "Lettergrootte",
+        "fontFamily": "Lettertype",
+        "edgeStyle": "Letterstijl",
+        "backgroundColor": "Achtergrondkleur",
+        "backgroundOpacity": "Zichtbaarheid Achtergrondkleur",
+        "windowColor": "Kaderkleur",
+        "windowOpacity": "Zichtbaarheid Kader",
+        "white": "Wit",
+        "black": "Zwart",
+        "red": "Rood",
+        "green": "Groen",
+        "blue": "Blauw",
+        "yellow": "Geel",
+        "magenta": "Magenta",
+        "cyan": "Cyaan",
+        "none": "Geen",
+        "raised": "Verhoogd",
+        "depressed": "Verdiept",
+        "uniform": "Contour",
+        "dropShadow": "Schaduw"
+    },
+    "disabled": "Uit",
+    "enabled": "Aan",
+    "reset": "Standaardinstellingen"
 }

@@ -74,5 +74,33 @@
         "seekBackward": "Retroceder",
         "spacebar": "Espaciadora",
         "captionsToggle": "Activar/Ocultar Subtítulos"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Ajustes de subtitulos",
+        "color": "Color de fuente",
+        "fontOpacity": "Opacidad de fuente",
+        "userFontScale": "Tamaño de fuente",
+        "fontFamily": "Fuente",
+        "edgeStyle": "Efectos",
+        "backgroundColor": "Color de fondo",
+        "backgroundOpacity": "Opacidad de fondo",
+        "windowColor": "Color de ventana",
+        "windowOpacity": "Opacidad de ventana",
+        "white": "Blanco",
+        "black": "Negro",
+        "red": "Rojo",
+        "green": "Verde",
+        "blue": "Azul",
+        "yellow": "Amarillo",
+        "magenta": "Magenta",
+        "cyan": "Cian",
+        "none": "Ninguno",
+        "raised": "Relieve",
+        "depressed": "Grabado",
+        "uniform": "Contorno",
+        "dropShadow": "Sombra"
+    },
+    "disabled": "Desactivado",
+    "enabled": "Activado",
+    "reset": "Reiniciar"
 }

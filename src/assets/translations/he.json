@@ -74,5 +74,33 @@
         "seekBackward": "‏העבר אחורה",
         "spacebar": "‏מקש רווח",
         "captionsToggle": "‏הדלק / כבה כתוביות"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "‏הגדרות כתוביות",
+        "color": "‏צבע גופן",
+        "fontOpacity": "‏שקיפות גופן",
+        "userFontScale": "‏גודל גופן",
+        "fontFamily": "‏סוג גופן",
+        "edgeStyle": "‏קצוות טקסט",
+        "backgroundColor": "‏צבע רקע",
+        "backgroundOpacity": "‏שקיפות רקע",
+        "windowColor": "‏צבע חלון",
+        "windowOpacity": "‏שקיפות חלון",
+        "white": "‏לבן",
+        "black": "‏שחור",
+        "red": "‏אדום",
+        "green": "‏ירוק",
+        "blue": "‏כחול",
+        "yellow": "‏צהוב",
+        "magenta": "‏מג׳נטה",
+        "cyan": "‏טורקיז",
+        "none": "‏ללא",
+        "raised": "‏מורם",
+        "depressed": "‏מורד",
+        "uniform": "‏אחיד",
+        "dropShadow": "‏הטלת צל"
+    },
+    "disabled": "‏מכובה",
+    "enabled": "‏מופעל",
+    "reset": "‏אפס"
 }

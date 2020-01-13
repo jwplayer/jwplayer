@@ -74,5 +74,33 @@
         "seekBackward": "Scorri Dietro",
         "spacebar": "Spaziatrice",
         "captionsToggle": "Sottotitoli On/Off"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Opzioni Sottotitoli",
+        "color": "Colore Carattere",
+        "fontOpacity": "Opacità Carattere",
+        "userFontScale": "Grandezza Carattere",
+        "fontFamily": "Famiglia Carattere",
+        "edgeStyle": "Margine Carattere",
+        "backgroundColor": "Colore Sottofondo",
+        "backgroundOpacity": "Opacità Sottofondo",
+        "windowColor": "Colore Finestra",
+        "windowOpacity": "Opacità Finestra",
+        "white": "Bianco",
+        "black": "Nero",
+        "red": "Rosso",
+        "green": "Verde",
+        "blue": "Blu",
+        "yellow": "Giallo",
+        "magenta": "Magenta",
+        "cyan": "Ciano",
+        "none": "Vuoto",
+        "raised": "Alzato",
+        "depressed": "Depresso",
+        "uniform": "Uniforme",
+        "dropShadow": "Ombreggiato"
+    },
+    "disabled": "Disabilitato",
+    "enabled": "Abilitato",
+    "reset": "Resettare"
 }

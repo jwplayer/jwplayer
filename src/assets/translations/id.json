@@ -74,5 +74,33 @@
         "seekBackward": "Cari Mundur",
         "spacebar": "Spasi",
         "captionsToggle": "Subtitel Nyala/Padam"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Pengaturan Subtitle",
+        "color": "Warna Huruf",
+        "fontOpacity": "Kegelapan Huruf",
+        "userFontScale": "Ukuran Huruf",
+        "fontFamily": "Jenis Huruf",
+        "edgeStyle": "Tepi Karakter",
+        "backgroundColor": "Warna Latar",
+        "backgroundOpacity": "Kegelapan Latar",
+        "windowColor": "Warna Jendela",
+        "windowOpacity": "Kegelapan Jendela",
+        "white": "Putih",
+        "black": "Hitam",
+        "red": "Merah",
+        "green": "Hijau",
+        "blue": "Biru",
+        "yellow": "Kuning",
+        "magenta": "Magenta",
+        "cyan": "Sian",
+        "none": "Tidak Ada",
+        "raised": "Timbul",
+        "depressed": "Ukir",
+        "uniform": "Garis Tepi",
+        "dropShadow": "Bayangan"
+    },
+    "disabled": "Matikan",
+    "enabled": "Aktifkan",
+    "reset": "Atur Ulang"
 }

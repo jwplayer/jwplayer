@@ -74,5 +74,33 @@
         "seekBackward": "快退5秒",
         "spacebar": "空格键",
         "captionsToggle": "打开/关闭字幕"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "字幕设置",
+        "color": "字体颜色",
+        "fontOpacity": "字体不透明度",
+        "userFontScale": "字体大小",
+        "fontFamily": "字体系列",
+        "edgeStyle": "字符边缘",
+        "backgroundColor": "背景颜色",
+        "backgroundOpacity": "背景不透明度",
+        "windowColor": "窗口颜色",
+        "windowOpacity": "窗口不透明度",
+        "white": "白色",
+        "black": "黑色",
+        "red": "红色",
+        "green": "绿色",
+        "blue": "蓝色",
+        "yellow": "黄色",
+        "magenta": "品红色",
+        "cyan": "青色",
+        "none": "无",
+        "raised": "悬浮",
+        "depressed": "下沉",
+        "uniform": "简图",
+        "dropShadow": "阴影效果"
+    },
+    "disabled": "已禁用",
+    "enabled": "已启用",
+    "reset": "已重置"
 }

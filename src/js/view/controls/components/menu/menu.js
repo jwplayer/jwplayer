@@ -1,9 +1,9 @@
 import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import { 
-    createElement, 
-    prependChild, 
-    nextSibling, 
+    createElement,
+    prependChild,
+    nextSibling,
     previousSibling
 } from 'utils/dom';
 import button from 'view/controls/components/button';
@@ -15,12 +15,13 @@ import menuCategoryButton from 'view/controls/components/menu/category-button';
 import { isRtl } from 'utils/language';
 
 export default class Menu extends Events {
-    constructor(_name, _parentMenu, _localization, _template = MenuTemplate) {
+    constructor(_name, _title, _parentMenu, _localization, _template = MenuTemplate) {
         super();
         this.open = this.open.bind(this);
         this.close = this.close.bind(this);
         this.toggle = this.toggle.bind(this);
         this.name = _name;
+        this.title = _title;
         this.isSubmenu = !!_parentMenu;
         this.el = createElement(_template(this.isSubmenu, _name));
         this.buttonContainer = this.el.querySelector(`.jw-${this.name}-topbar-buttons`);
@@ -34,7 +35,7 @@ export default class Menu extends Events {
         this.closeButton = this.mainMenu.closeButton;
         if (this.isSubmenu) {
             if (this.parentMenu.name === this.mainMenu.name) {
-                this.categoryButton = this.createCategoryButton(_localization);
+                this.categoryButton = this.createCategoryButton();
             }
             if (this.parentMenu.parentMenu && !this.mainMenu.backButton) {
                 this.mainMenu.backButton = this.createBackButton(_localization);
@@ -102,20 +103,12 @@ export default class Menu extends Events {
 
         return itemsContainer;
     }
-    createCategoryButton(localization) {
-        const localizationKeys = {
-            captions: 'cc',
-            audioTracks: 'audioTracks',
-            quality: 'hd',
-            playbackRates: 'playbackRates',
-        };
-        let localizedName = localization[localizationKeys[this.name]];
-        if (this.name === 'sharing') {
-            localizedName = localization.sharing.heading;
-        }
+    createCategoryButton() {
+        let localizedName = this.title;
         const categoryButtonInstance = menuCategoryButton(this, localizedName);
         categoryButtonInstance.element().setAttribute('name', this.name);
-
+        categoryButtonInstance.element().setAttribute('aria-haspopup', 'true');
+        categoryButtonInstance.element().setAttribute('aria-controls', this.el.id);
         return categoryButtonInstance;
     }
     createBackButton(localization) {
@@ -128,7 +121,7 @@ export default class Menu extends Events {
                     menu.open(evt);
                 }
             }, 
-            localization.close, 
+            localization.prev, 
             [cloneIcon('arrow-left')]
         );
         prependChild(this.mainMenu.topbar.el, backButton.element());
@@ -331,7 +324,7 @@ export default class Menu extends Events {
             parentMenu.closeChildren(this.name);
         }
         if (categoryButton) {
-            categoryButton.element().setAttribute('aria-checked', 'true');
+            categoryButton.element().setAttribute('aria-expanded', 'true');
         }
         if (parentMenu.isSubmenu) {
             parentMenu.el.classList.remove('jw-settings-submenu-active');
@@ -378,7 +371,7 @@ export default class Menu extends Events {
         this.el.setAttribute('aria-expanded', 'false'); 
         this.el.classList.remove('jw-settings-submenu-active');
         if (this.categoryButton) {
-            this.categoryButton.element().setAttribute('aria-checked', 'false');
+            this.categoryButton.element().setAttribute('aria-expanded', 'false');
         }
         this.parentMenu.openMenus = this.parentMenu.openMenus.filter(name => name !== this.name);
         if (!this.mainMenu.openMenus.length && this.mainMenu.visible) {

@@ -74,5 +74,33 @@
         "seekBackward": "巻き戻す",
         "spacebar": "スペースキー",
         "captionsToggle": "字幕のオン / オフ"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "サブタイトル設定",
+        "color": "フォント色",
+        "fontOpacity": "フォント透明度",
+        "userFontScale": "フォントサイズ",
+        "fontFamily": "フォントファミリー",
+        "edgeStyle": "文字装飾",
+        "backgroundColor": "背景色",
+        "backgroundOpacity": "背景透明度",
+        "windowColor": "枠の色",
+        "windowOpacity": "枠の透明度",
+        "white": "白",
+        "black": "黒",
+        "red": "赤",
+        "green": "緑",
+        "blue": "青",
+        "yellow": "黄色",
+        "magenta": "マゼンタ",
+        "cyan": "シアン",
+        "none": "無し",
+        "raised": "３D",
+        "depressed": "型押し",
+        "uniform": "アウトライン化",
+        "dropShadow": "影付き"
+    },
+    "disabled": "オフ",
+    "enabled": "オン",
+    "reset": "リセット"
 }

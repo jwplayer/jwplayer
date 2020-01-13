@@ -74,5 +74,33 @@
         "seekBackward": "Siirry Taaksepäin",
         "spacebar": "Välilyönti",
         "captionsToggle": "Tekstitys Päällä/Pois"
-    }
+    },
+    "captionsStyles": {
+        "subtitleSettings": "Tekstitysasetukset",
+        "color": "Fontin väri",
+        "fontOpacity": "Fontin läpinäkyvyys",
+        "userFontScale": "Fonttikoko",
+        "fontFamily": "Fontti",
+        "edgeStyle": "Merkin reuna",
+        "backgroundColor": "Taustaväri",
+        "backgroundOpacity": "Taustan läpinäkyvyys",
+        "windowColor": "Ikkunan väri",
+        "windowOpacity": "Ikkunan läpinäkyvyys",
+        "white": "Valkoinen",
+        "black": "Musta",
+        "red": "Punainen",
+        "green": "Vihreä",
+        "blue": "Sininen",
+        "yellow": "Keltainen",
+        "magenta": "Purppura",
+        "cyan": "Syaani",
+        "none": "Ei mitään",
+        "raised": "Kohotettu",
+        "depressed": "Upotettu",
+        "uniform": "Yhtenäinen",
+        "dropShadow": "Varjostus"
+    },
+    "disabled": "Pois päältä",
+    "enabled": "Pois",
+    "reset": "Nollaa"
 }
