@@ -116,5 +116,5 @@ export function suffix(arr: Array<string>, add: string): string[] {
 }
 
 export function isPercentage(value: string): boolean {
-    return !!value && value.slice(-1) === '%';
+    return !!value && isString(value) && value.slice(-1) === '%';
 }
