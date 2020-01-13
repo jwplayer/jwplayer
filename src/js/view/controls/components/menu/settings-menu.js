@@ -353,6 +353,7 @@ class SettingsMenu extends Menu {
         document.removeEventListener('click', this.onDocumentClick);
         if (this.model) {
             this.model.off(null, null, this);
+            this.model = null;
         }
         this.off();
     }

@@ -3,14 +3,14 @@ import SettingsMenu from 'view/controls/components/menu/settings-menu';
 import SimpleModel from 'model/simplemodel';
 import MockApi from 'mock/mock-api';
 
-const localization = { close: 'close', hd: 'quality', playbackRates: 'rates' };
-const createMockMenu = (name, parent) => new Menu(name, parent, localization);
-let settingsMenu;
-let viewModel;
-let api;
-let controlbar;
-
 describe('Menu', () => {
+    const localization = { close: 'close', hd: 'quality', playbackRates: 'rates' };
+    const createMockMenu = (name, parent) => new Menu(name, parent, localization);
+    let settingsMenu;
+    let viewModel;
+    let api;
+    let controlbar;
+
     beforeEach(() => {
         viewModel = new SimpleModel();
         api = MockApi;
