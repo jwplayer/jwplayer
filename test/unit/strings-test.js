@@ -81,7 +81,7 @@ describe('strings', function() {
     });
 
     function timeConversionTest(converter) {
-        let sec = converter('5');
+        let sec = converter(5);
         expect(sec, 'number input returns input').to.equal(5);
 
         sec = converter('5s');

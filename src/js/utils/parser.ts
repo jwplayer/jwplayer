@@ -81,15 +81,15 @@ export function serialize(val: any): any {
 }
 
 // Returns the integer value a of css string (e.g. '420px')
-export function parseDimension(dimension: string): number {
+export function parseDimension(dimension: string): number | string {
     if (isValidNumber(dimension)) {
-        return parseInt(dimension);
+        return dimension;
     }
 
     if (dimension === '') {
         return 0;
     } if (dimension.lastIndexOf('%') > -1) {
-        return parseInt(dimension, 10);
+        return dimension;
     }
     return parseInt(dimension.replace('px', ''), 10);
 }

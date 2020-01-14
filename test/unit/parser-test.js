@@ -69,7 +69,7 @@ describe('parser', function() {
         expect(dimension, 'dimension with empty string should be 0').to.equal(0);
 
         dimension = parser.parseDimension('35%');
-        expect(dimension, 'dimension with percentage string should be the same').to.equal(35);
+        expect(dimension, 'dimension with percentage string should be the same').to.equal('35%');
 
         dimension = parser.parseDimension('35px');
         expect(dimension, 'dimension with px string should remove px').to.equal(35);
