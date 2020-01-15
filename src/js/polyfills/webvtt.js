@@ -502,9 +502,9 @@ function CueStyleBox(window, cue) {
         this.applyStyles({
             top: this.formatStyle(box.top, 'px'),
             bottom: this.formatStyle(box.bottom, 'px'),
+            left: this.formatStyle(box.left, 'px'),
             paddingRight: this.formatStyle(box.right, 'px'),
             height: this.formatStyle(box.height, 'px'),
-            left: this.formatStyle(box.left, 'px'),
             transform: ''
         });
     };
