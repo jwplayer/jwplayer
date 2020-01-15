@@ -136,13 +136,12 @@ class SettingsMenu extends Menu {
             captionsMenu.topbarUI.destroy();
             destroy.call(captionsSettingsMenu, e);
         };
-        const captionsSettingsButton = new MenuItem('Settings', captionsSettingsMenu.open);
+        const captionsSettingsButton = new MenuItem(this.localization.settings, captionsSettingsMenu.open);
         captionsMenu.topbar.appendChild(captionsSettingsButton.el);
         const setCaptionStyles = (captionsOption, index) => {
             const captionStyles = model.get('captions');
             const propertyName = captionsOption.name;
-            const value = captionsOption.options && captionsOption.options[index];
-            const newValue = captionsOption.getTypedValue(value);
+            const newValue = captionsOption.values[index];
             const newStyles = Object.assign({}, captionStyles);
 
             newStyles[propertyName] = newValue;
@@ -156,21 +155,23 @@ class SettingsMenu extends Menu {
             });
             resetItem.el.classList.add('jw-settings-reset');
             const captionsSettingsItems = [];
-            captionStyleItems.forEach(captionItem => {
-                const localizedName = captionsLocalization[captionItem.name];
+            captionStyleItems(captionsLocalization).forEach(captionItem => {
                 if (!isReset && persistedOptions && persistedOptions[captionItem.name]) {
-                    captionItem.val = captionItem.getOption(persistedOptions[captionItem.name]);
+                    captionItem.val = persistedOptions[captionItem.name];
                 } else {
                     captionItem.val = captionItem.defaultVal;
                 }
-                const itemMenu = new Menu(captionItem.name, localizedName, captionsSettingsMenu, this.localization);
+                const selectionIndex = captionItem.values.indexOf(captionItem.val);
+                captionItem.currentSelection = captionItem.options[selectionIndex];
+                const itemMenu = new Menu(captionItem.name, captionItem.label, captionsSettingsMenu, this.localization);
                 const item = new MenuItem(
-                    { label: localizedName, value: captionItem.val }, 
+                    captionItem, 
                     itemMenu.open, 
                     itemMenuTemplate
                 );
                 const items = itemMenu.createItems(
-                    captionItem.options, (index) => {
+                    captionItem.options, 
+                    (index) => {
                         const el = item.el.querySelector('.jw-settings-content-item-value');
                         setCaptionStyles(captionItem, index);
                         el.innerText = captionItem.options[index];
@@ -179,7 +180,7 @@ class SettingsMenu extends Menu {
                 );
                 itemMenu.setMenuItems(
                     items,
-                    captionItem.options.indexOf(captionItem.val) || 0
+                    captionItem.values.indexOf(captionItem.val) || 0
                 );
                 captionsSettingsItems.push(item);
             });
