@@ -5,6 +5,7 @@ import {
 
 const Title = function(_model) {
     this.model = _model.player;
+    this.truncated = _model.get('__ab_truncated');
 };
 
 Object.assign(Title.prototype, {
@@ -24,7 +25,9 @@ Object.assign(Title.prototype, {
         const arr = this.el.getElementsByTagName('div');
         this.title = arr[0];
         this.description = arr[1];
-
+        if (this.truncated) {
+            this.el.classList.add('jw-ab-truncated');
+        }
         this.model.on('change:logoWidth', this.update, this);
         this.model.change('playlistItem', this.playlistItem, this);
     },
