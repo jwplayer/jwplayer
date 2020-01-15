@@ -504,15 +504,9 @@ function CueStyleBox(window, cue) {
             bottom: this.formatStyle(box.bottom, 'px'),
             paddingRight: this.formatStyle(box.right, 'px'),
             height: this.formatStyle(box.height, 'px'),
+            left: this.formatStyle(box.left, 'px'),
             transform: ''
         });
-
-        // Apply the left styling if the cue has not been wrapped.
-        if (this.cueDiv.style.whiteSpace === 'pre') {
-            this.applyStyles({
-                left: this.formatStyle(box.left, 'px'),
-            });
-        }
     };
 
 }
@@ -532,7 +526,7 @@ function BoxPosition(obj) {
     let width;
     let top;
 
-    const { div, cueDiv } = obj;
+    const { div } = obj;
     if (div) {
         height = div.offsetHeight;
         width = div.offsetWidth;
@@ -557,11 +551,6 @@ function BoxPosition(obj) {
     this.width = obj.width || width;
     this.lineHeight = lh !== undefined ? lh : obj.lineHeight;
 
-    if (cueDiv && div && this.width > div.parentElement.offsetWidth) {
-        cueDiv.style.whiteSpace = 'pre-wrap';
-        div.style.left = '0px';
-    }
-    
     // Sets the width to be slightly larger to prevent text wrapping in IE 11
     this.width = Math.ceil(this.width + 1);
 }
@@ -944,6 +933,11 @@ WebVTT.processCues = function (window, cues, overlay, updateBoxPosition) {
             // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
             styleBox.div.className = 'jw-text-track-display jw-reset';
             paddedOverlay.appendChild(styleBox.div);
+
+            if (styleBox.div.offsetWidth > containerBox.width) {
+                styleBox.cueDiv.style.whiteSpace = 'pre-wrap';
+                styleBox.div.style.left = '0px';
+            }
 
             // Move the cue div to it's correct line position.
             // Added on 08/03/2016 by Evol Greaves: evol@jwplayer.com for determining the correct
