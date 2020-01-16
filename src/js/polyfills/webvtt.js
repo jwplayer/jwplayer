@@ -420,7 +420,7 @@ function CueStyleBox(window, cue) {
         top: 0,
         bottom: 0,
         display: 'inline',
-        'white-space': 'pre',
+        whiteSpace: 'pre',
         writingMode,
         unicodeBidi: 'plaintext',
     };
@@ -933,6 +933,11 @@ WebVTT.processCues = function (window, cues, overlay, updateBoxPosition) {
             // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
             styleBox.div.className = 'jw-text-track-display jw-reset';
             paddedOverlay.appendChild(styleBox.div);
+
+            if (styleBox.div.offsetWidth > containerBox.width) {
+                styleBox.cueDiv.style.whiteSpace = 'pre-wrap';
+                styleBox.div.style.left = '0px';
+            }
 
             // Move the cue div to it's correct line position.
             // Added on 08/03/2016 by Evol Greaves: evol@jwplayer.com for determining the correct
