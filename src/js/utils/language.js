@@ -17,6 +17,7 @@ const codeToLang = {
     de: 'German',
     it: 'Italian',
     ja: 'Japanese',
+    pl: 'Polish',
     pt: 'Portuguese',
     ru: 'Russian',
     es: 'Spanish',
@@ -84,7 +85,7 @@ export function getLanguage() {
     return language || navigator.language || 'en';
 }
 
-export const translatedLanguageCodes = ['ar', 'da', 'de', 'el', 'es', 'fi', 'fr', 'he', 'id', 'it', 'ja', 'ko', 'nl', 'no', 'oc', 'pt', 'ro', 'ru', 'sl', 'sv', 'th', 'tr', 'vi', 'zh'];
+export const translatedLanguageCodes = ['ar', 'da', 'de', 'el', 'es', 'fi', 'fr', 'he', 'id', 'it', 'ja', 'ko', 'nl', 'no', 'oc', 'pl', 'pt', 'ro', 'ru', 'sl', 'sv', 'th', 'tr', 'vi', 'zh'];
 
 export function isRtl(message) {
     // RTL regex can be improved with ranges from:
