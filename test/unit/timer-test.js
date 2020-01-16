@@ -3,13 +3,11 @@ import { dateTime } from 'utils/clock';
 
 describe('clock', function() {
     it('provides date time equal or close to Date.now()', function() {
-        const before = Date.now() - 2;
-        const clockTime = dateTime();
-        const after = Date.now() + 2;
-        // With rounding differences between Date.now() and performance.now(),
-        // and JavaScipt execution, only allow a few milliseconds difference
-        expect(clockTime).to.be.at.least(before);
-        expect(clockTime).to.be.at.most(after);
+        const DateNowTime = Date.now();
+        const clockDateTime = dateTime();
+        // With rounding differences between Date.now() and navigationStart + performance.now(),
+        // and JavaScript execution, only allow 0.05s difference.
+        expect(clockDateTime).to.be.closeTo(DateNowTime, 50);
     });
 });
 
