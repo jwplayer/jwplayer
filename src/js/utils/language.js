@@ -187,6 +187,7 @@ export function applyTranslation(baseLocalization, customization) {
     merge(localization, 'sharing', baseLocalization, customization);
     merge(localization, 'advertising', baseLocalization, customization);
     merge(localization, 'shortcuts', baseLocalization, customization);
+    merge(localization, 'captionsStyles', baseLocalization, customization);
     return localization;
 }
 
