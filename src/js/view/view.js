@@ -804,6 +804,9 @@ function View(_api, _model) {
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
+                if (_preview && !_model.get('isFloating')) {
+                    _preview.enableZoomThumbnail();
+                }
                 break;
             default:
                 if (_captionsRenderer) {
@@ -811,6 +814,9 @@ function View(_api, _model) {
                     if (state === STATE_PAUSED && _controls && !_controls.showing) {
                         _captionsRenderer.renderCues(true);
                     }
+                }
+                if (_preview) {
+                    _preview.removeZoomThumbnail();
                 }
                 break;
         }

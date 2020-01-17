@@ -12,10 +12,14 @@ function validState(state) {
 Object.assign(Preview.prototype, {
     setup: function(element) {
         this.el = element;
-        this.hasZoomThumbnail = !this.model.get('autostart') && this.model.get('_abZoomThumbnail');
-        
+        this.hasZoomThumbnail = this.model.get('_abZoomThumbnail');
+
         if (this.hasZoomThumbnail) {
-            this.enableZoom();
+            this.zoomOriginX = Math.ceil(Math.random() * 100) + '%';
+            this.zoomOriginY = Math.ceil(Math.random() * 100) + '%';
+            
+            this.model.on('change:viewable', this.pauseZoomThumbnail, this);
+            this.model.on('change:isFloating', this.enableZoomThumbnail, this);
         }
     },
     setImage: function(img) {
@@ -34,25 +38,26 @@ Object.assign(Preview.prototype, {
         style(this.el, {
             backgroundImage: backgroundImage
         });
+       
+        if (this.hasZoomThumbnail) {
+            this.enableZoomThumbnail();     
+        }
     },
-    enableZoom: function() {
-        if (this.model.get('state' !== 'idle')) {
+    enableZoomThumbnail: function() {
+        if (this.model.get('isFloating')) {
             return;
         }
         
         this.zoomThumbnailTimeout = setTimeout(() => {
-            const originX = Math.ceil(Math.random() * 100) + '%';
-            const originY = Math.ceil(Math.random() * 100) + '%';
-            
             this.el.classList.add('jw-ab-zoom-thumbnail');
-            this.el.style.transformOrigin = originX + ' ' + originY;
+            this.el.style.transformOrigin = this.zoomOriginX + ' ' + this.zoomOriginY;
         }, 2000);
-        
-        this.model.once('change:state', this.destroy, this);
-        this.model.on('change:viewable', this.pauseZoom, this);
     },
-    pauseZoom: function() {
+    pauseZoomThumbnail: function() {
         this.el.style.animationPlayState = this.model.get('viewable') ? 'running' : 'paused';
+    },
+    removeZoomThumbnail: function() {
+        this.el.classList.remove('jw-ab-zoom-thumbnail');
     },
     resize: function(width, height, stretching) {
         if (stretching === 'uniform') {
@@ -90,14 +95,11 @@ Object.assign(Preview.prototype, {
     },
     destroy: function() {
         if (this.hasZoomThumbnail) {
-            this.el.classList.remove('jw-ab-zoom-thumbnail');
-            this.model.off('change:state', this.destroy, this);
-            this.model.off('change:viewable', this.pauseZoom, this);
+            this.removeZoomThumbnail();
+            this.model.off(null, null, this);
         }
 
-        if (this.zoomThumbnailTimeout) {
-            clearTimeout(this.zoomThumbnailTimeout);
-        }
+        clearTimeout(this.zoomThumbnailTimeout);
     }
 });
 
