@@ -40,7 +40,7 @@ Object.assign(Preview.prototype, {
             return;
         }
         
-        setTimeout(() => {
+        this.zoomThumbnailTimeout = setTimeout(() => {
             const originX = Math.ceil(Math.random() * 100) + '%';
             const originY = Math.ceil(Math.random() * 100) + '%';
             
@@ -93,6 +93,10 @@ Object.assign(Preview.prototype, {
             this.el.classList.remove('jw-ab-zoom-thumbnail');
             this.model.off('change:state', this.destroy, this);
             this.model.off('change:viewable', this.pauseZoom, this);
+        }
+
+        if (this.zoomThumbnailTimeout) {
+            clearTimeout(this.zoomThumbnailTimeout);
         }
     }
 });
