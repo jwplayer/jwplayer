@@ -12,6 +12,11 @@ function validState(state) {
 Object.assign(Preview.prototype, {
     setup: function(element) {
         this.el = element;
+        this.hasZoomThumbnail = !this.model.get('autostart') && this.model.get('_abZoomThumbnail');
+        
+        if (this.hasZoomThumbnail) {
+            this.enableZoom();
+        }
     },
     setImage: function(img) {
         // Remove onload function from previous image
@@ -29,6 +34,25 @@ Object.assign(Preview.prototype, {
         style(this.el, {
             backgroundImage: backgroundImage
         });
+    },
+    enableZoom: function() {
+        if (this.model.get('state' !== 'idle')) {
+            return;
+        }
+        
+        setTimeout(() => {
+            const originX = Math.ceil(Math.random() * 100) + '%';
+            const originY = Math.ceil(Math.random() * 100) + '%';
+            
+            this.el.classList.add('jw-ab-zoom-thumbnail');
+            this.el.style.transformOrigin = originX + ' ' + originY;
+        }, 2000);
+        
+        this.model.once('change:state', this.destroy, this);
+        this.model.on('change:viewable', this.pauseZoom, this);
+    },
+    pauseZoom: function() {
+        this.el.style.animationPlayState = this.model.get('viewable') ? 'running' : 'paused';
     },
     resize: function(width, height, stretching) {
         if (stretching === 'uniform') {
@@ -63,6 +87,13 @@ Object.assign(Preview.prototype, {
     },
     element: function() {
         return this.el;
+    },
+    destroy: function() {
+        if (this.hasZoomThumbnail) {
+            this.el.classList.remove('jw-ab-zoom-thumbnail');
+            this.model.off('change:state', this.destroy, this);
+            this.model.off('change:viewable', this.pauseZoom, this);
+        }
     }
 });
 

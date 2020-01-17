@@ -1072,6 +1072,7 @@ function View(_api, _model) {
 
     this.destroy = function () {
         _model.destroy();
+        _preview.destroy();
         viewsManager.unobserve(_playerElement);
         viewsManager.remove(this);
         this.isSetup = false;
