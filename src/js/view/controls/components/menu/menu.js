@@ -21,7 +21,7 @@ export default class Menu extends Events {
         this.close = this.close.bind(this);
         this.toggle = this.toggle.bind(this);
         this.name = _name;
-        this.title = _title;
+        this.title = _title || _name;
         this.isSubmenu = !!_parentMenu;
         this.el = createElement(_template(this.isSubmenu, _name));
         this.buttonContainer = this.el.querySelector(`.jw-${this.name}-topbar-buttons`);
@@ -326,8 +326,8 @@ export default class Menu extends Events {
             parentMenu.el.classList.remove('jw-settings-submenu-active');
             mainMenu.topbar.el.classList.add('jw-nested-menu-open');
             const menuTitle = mainMenu.topbar.el.querySelector('.jw-settings-topbar-text');
-            menuTitle.setAttribute('name', this.name);
-            menuTitle.innerText = this.title || this.name;
+            menuTitle.setAttribute('name', this.title);
+            menuTitle.innerText = this.title;
             mainMenu.backButton.show();
             this.mainMenu.backButtonTarget = this.parentMenu;
             focusEl = menuTitle;

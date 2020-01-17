@@ -1,12 +1,12 @@
 import ARROW_RIGHT_ICON from 'assets/SVG/arrow-right.svg';
 export const itemTemplate = (content) => `<button type="button" class="jw-reset-text jw-settings-content-item" dir="auto">${content}</button>`;
 
-export const itemMenuTemplate = (content) => {
+export const itemMenuTemplate = ({ name, label, currentSelection }) => {
     return (
-        `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${content.label}" aria-controls="jw-settings-submenu-${content.value}" dir="auto" aria-haspopup="true">` +
-            `${content.label}` +
+        `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${label}" aria-controls="jw-settings-submenu-${name}" dir="auto" aria-haspopup="true">` +
+            `${label}` +
             `<div class='jw-reset jw-settings-value-wrapper'>` +
-                `<div class="jw-reset-text jw-settings-content-item-value">${content.value}</div>` +
+                `<div class="jw-reset-text jw-settings-content-item-value">${currentSelection}</div>` +
                 `<div class="jw-reset-text jw-settings-content-item-arrow">${ARROW_RIGHT_ICON}</div>` +
             `</div>` +
        `</button>`
