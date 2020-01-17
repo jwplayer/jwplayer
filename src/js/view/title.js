@@ -2,10 +2,11 @@ import { style } from 'utils/css';
 import {
     replaceInnerHtml
 } from 'utils/dom';
+import { Browser } from 'environment/environment';
 
 const Title = function(_model) {
     this.model = _model.player;
-    this.truncated = _model.get('__ab_truncated');
+    this.truncated = _model.get('__ab_truncated') && !Browser.ie;
 };
 
 Object.assign(Title.prototype, {
