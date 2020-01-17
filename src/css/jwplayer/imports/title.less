@@ -32,10 +32,34 @@
     .jw-flag-small-player & {
         font-size: 1.25em;
     }
+
+    .jw-breakpoint-0 .jw-ab-truncated &,
+    .jw-breakpoint-1 .jw-ab-truncated &,
+    .jw-breakpoint-2 .jw-ab-truncated & {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        padding-bottom: 0;
+        margin-bottom: 0.5em;
+        white-space: pre-wrap;
+        line-height: 1.2;
+    }
+
+    .jw-breakpoint-1 .jw-ab-truncated & {
+        font-size: 1.25em;
+    }
+
+    .jw-breakpoint-0 .jw-ab-truncated & {
+        font-size: 1em;
+    }
 }
 
 .jw-title-secondary {
     .jw-flag-small-player &,
+    .jw-breakpoint-0 .jw-ab-truncated &,
+    .jw-breakpoint-1 .jw-ab-truncated &,
+    .jw-breakpoint-2 .jw-ab-truncated &,
     &:empty {
         display: none;
     }
