@@ -17,7 +17,7 @@ Object.assign(Preview.prototype, {
         if (this.hasZoomThumbnail) {
             this.zoomOriginX = Math.ceil(Math.random() * 100) + '%';
             this.zoomOriginY = Math.ceil(Math.random() * 100) + '%';
-            
+
             this.model.on('change:viewable', this.pauseZoomThumbnail, this);
             this.model.on('change:isFloating', this.enableZoomThumbnail, this);
         }
@@ -48,15 +48,18 @@ Object.assign(Preview.prototype, {
             return;
         }
         
+        clearTimeout(this.zoomThumbnailTimeout);
         this.zoomThumbnailTimeout = setTimeout(() => {
             this.el.classList.add('jw-ab-zoom-thumbnail');
             this.el.style.transformOrigin = this.zoomOriginX + ' ' + this.zoomOriginY;
         }, 2000);
     },
     pauseZoomThumbnail: function() {
+        clearTimeout(this.zoomThumbnailTimeout);
         this.el.style.animationPlayState = this.model.get('viewable') ? 'running' : 'paused';
     },
     removeZoomThumbnail: function() {
+        clearTimeout(this.zoomThumbnailTimeout);
         this.el.classList.remove('jw-ab-zoom-thumbnail');
     },
     resize: function(width, height, stretching) {
@@ -98,8 +101,6 @@ Object.assign(Preview.prototype, {
             this.removeZoomThumbnail();
             this.model.off(null, null, this);
         }
-
-        clearTimeout(this.zoomThumbnailTimeout);
     }
 });
 
