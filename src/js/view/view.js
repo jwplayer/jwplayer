@@ -804,7 +804,7 @@ function View(_api, _model) {
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
-                if (_preview && !_model.get('isFloating')) {
+                if (_preview) {
                     _preview.enableZoomThumbnail();
                 }
                 break;
