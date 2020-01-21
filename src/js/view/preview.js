@@ -44,7 +44,7 @@ Object.assign(Preview.prototype, {
         }
     },
     enableZoomThumbnail: function() {
-        if (this.model.get('isFloating')) {
+        if (!this.hasZoomThumbnail || this.model.get('isFloating')) {
             return;
         }
         
