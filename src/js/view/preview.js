@@ -35,32 +35,42 @@ Object.assign(Preview.prototype, {
             image = this.image = new Image();
             image.src = img;
         }
-        style(this.el, {
-            backgroundImage: backgroundImage
-        });
        
         if (this.hasZoomThumbnail) {
+            this.imageEl = document.createElement('div');
+            style(this.imageEl, {
+                backgroundImage: backgroundImage
+            });
+            this.el.appendChild(this.imageEl);
             this.enableZoomThumbnail();     
+        } else {
+            style(this.el, {
+                backgroundImage: backgroundImage
+            });
         }
     },
     enableZoomThumbnail: function() {
-        if (this.model.get('isFloating')) {
+        if (!this.hasZoomThumbnail || this.model.get('isFloating')) {
             return;
         }
         
         clearTimeout(this.zoomThumbnailTimeout);
         this.zoomThumbnailTimeout = setTimeout(() => {
-            this.el.classList.add('jw-ab-zoom-thumbnail');
-            this.el.style.transformOrigin = this.zoomOriginX + ' ' + this.zoomOriginY;
+            this.imageEl.classList.add('jw-ab-zoom-thumbnail');
+            this.imageEl.style.transformOrigin = this.zoomOriginX + ' ' + this.zoomOriginY;
         }, 2000);
     },
     pauseZoomThumbnail: function() {
         clearTimeout(this.zoomThumbnailTimeout);
-        this.el.style.animationPlayState = this.model.get('viewable') ? 'running' : 'paused';
+        if (this.imageEl) {
+            this.imageEl.style.animationPlayState = this.model.get('viewable') ? 'running' : 'paused';
+        }
     },
     removeZoomThumbnail: function() {
         clearTimeout(this.zoomThumbnailTimeout);
-        this.el.classList.remove('jw-ab-zoom-thumbnail');
+        if (this.imageEl) {
+            this.imageEl.classList.remove('jw-ab-zoom-thumbnail');
+        }
     },
     resize: function(width, height, stretching) {
         if (stretching === 'uniform') {
