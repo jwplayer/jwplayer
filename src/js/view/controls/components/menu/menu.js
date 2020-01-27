@@ -180,10 +180,12 @@ export default class Menu extends Events {
         const menuItems = genericItems.map((item, index) => {
             let content;
             let argument;
+            let additionalHTML;
             switch (itemType) {
                 case 'quality':
                     if (item.label === 'Auto' && index === 0) {
-                        content = `${options.defaultText}&nbsp;<span class="jw-reset jw-auto-label"></span>`;
+                        content = `${options.defaultText}`;
+                        additionalHTML = ' <span class="jw-reset jw-auto-label"></span>';
                     } else {
                         content = item.label;
                     }
@@ -237,7 +239,9 @@ export default class Menu extends Events {
             };
 
             const menuItem = new Item(content, menuItemClick.bind(this));
-
+            if (additionalHTML) {
+                menuItem.el.appendChild(createElement(additionalHTML));
+            }
             return menuItem;
         });
 
