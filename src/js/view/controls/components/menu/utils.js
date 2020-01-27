@@ -14,14 +14,11 @@ const fontValues = [
 const opacityOptions = ['100%', '75%', '50%', '25%', '0%'];
 const opacityValues = [100, 75, 50, 25, 0];
 
-let colors;
-let fonts;
-
 export const captionStyleItems = (localization) => [
     {
         name: 'color',
         label: localization.color,
-        options: colors || colorOptions(localization),
+        options: colorOptions(localization),
         values: colorValues,
         defaultVal: '#ffffff',
         
@@ -51,7 +48,7 @@ export const captionStyleItems = (localization) => [
     {
         name: 'edgeStyle',
         label: localization.edgeStyle,
-        options: fonts || fontOptions(localization),
+        options: fontOptions(localization),
         values: [ 'none', 'raised', 'depressed', 'uniform', 'dropShadow'
         ],
         defaultVal: 'none',
@@ -59,7 +56,7 @@ export const captionStyleItems = (localization) => [
     {
         name: 'backgroundColor',
         label: localization.backgroundColor,
-        options: colors || colorOptions(localization),
+        options: colorOptions(localization),
         values: colorValues,
         defaultVal: '#000000',
     },
@@ -73,7 +70,7 @@ export const captionStyleItems = (localization) => [
     {
         name: 'windowColor',
         label: localization.windowColor,
-        options: colors || colorOptions(localization),
+        options: colorOptions(localization),
         values: colorValues,
         defaultVal: '#000000',
     },
@@ -90,13 +87,13 @@ export const normalizeKey = (sourceEventKey) => sourceEventKey && sourceEventKey
 
 const colorOptions = (localization) => {
     const { white, black, red, green, blue, yellow, magenta, cyan } = localization;
-    colors = [ white, black, red, green, blue, yellow, magenta, cyan ];
+    const colors = [ white, black, red, green, blue, yellow, magenta, cyan ];
     return colors;
 };
 
 const fontOptions = (localization) => {
     const { none, raised, depressed, uniform, dropShadow } = localization;
-    fonts = [ none, raised, depressed, uniform, dropShadow];
+    const fonts = [ none, raised, depressed, uniform, dropShadow];
     return fonts;
 };
 
