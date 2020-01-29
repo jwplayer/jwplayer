@@ -79,7 +79,7 @@
     "subtitleSettings": "Ustawienia napisów",
     "color": "Kolor czcionki",
     "fontOpacity": "Przezroczystość czcionki",
-    "userFontScale": "Skala czcionki",
+    "userFontScale": "Rozmiar czcionki",
     "fontFamily": "Rodzina czcionki",
     "edgeStyle": "Style krawędzi znaków",
     "backgroundColor": "Kolor tła",
@@ -100,7 +100,7 @@
     "uniform": "Obrys",
     "dropShadow": "Z cieniem"
   },
-  "disabled": "Wyłączony",
-  "enabled": "Włączony",
+  "disabled": "Wył.",
+  "enabled": "Wł.",
   "reset": "Reset"
 }
