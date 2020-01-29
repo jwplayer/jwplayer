@@ -1,14 +1,16 @@
 {
     "compilerOptions": {
         "baseUrl": "src/js",
-        "module": "esnext",
         "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
         "sourceMap": true,
         "strictNullChecks": true,
         "noImplicitAny": true,
         "noImplicitThis": true,
         "noUnusedLocals": true,
-        "strictPropertyInitialization": true
+        "strictPropertyInitialization": true,
+        "noEmit": true
     },
     "include": [
         "src/js"

@@ -84,7 +84,7 @@
     "squash": "node parse-squashed-files.js",
     "test": "karma start",
     "karma:hook": "karma start --browsers=ChromeHeadless --reporters=mocha",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc"
   },
   "engines": {
     "node": ">=4.3.1"
