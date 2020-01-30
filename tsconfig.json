@@ -2,7 +2,7 @@
     "compilerOptions": {
         "baseUrl": "src/js",
         "target": "esnext",
-        "module": "es6",
+        "module": "esnext",
         "sourceMap": true,
         "strictNullChecks": true,
         "noImplicitAny": true,
