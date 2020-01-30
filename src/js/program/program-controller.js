@@ -26,7 +26,7 @@ class ProgramController extends Events {
         this.mediaControllerListener = MediaControllerListener(model, this);
         this.model = model;
         this.providers = new Providers(model.getConfiguration());
-        this.loadPromise = Promise.resolve();
+        this.loadPromise = null;
         this.backgroundLoading = model.get('backgroundLoading');
         this.itemPromises = [];
 
@@ -73,6 +73,11 @@ class ProgramController extends Events {
         // setActiveItem above might change this.mediaController, so retrieve here.
         const { background, mediaController } = this;
 
+        // Destroy background loading item early so we can reuse the media elements in asyncItem
+        if (!background.isNext(item)) {
+            // Loading a new item invalidates all background loading media
+            this._destroyBackgroundMedia();
+        }
         return (this.loadPromise = this.asyncItem(index, item).then((playlistItem) => {
             if (!playlistItem) {
                 return;
@@ -92,8 +97,6 @@ class ProgramController extends Events {
                 // Attach the BGL provider into the load/play chain
                 return this._activateBackgroundMedia();
             }
-            // Loading a new item invalidates all background loading media
-            this._destroyBackgroundMedia();
 
             if (mediaController) {
                 const casting = model.get('castActive');
@@ -192,7 +195,7 @@ class ProgramController extends Events {
                 throw new Error('Playback cancelled.');
             });
 
-            playPromise = this.loadPromise
+            playPromise = (this.loadPromise || Promise.resolve())
                 .catch(error => {
                     thenPlayPromise.cancel();
                     // Fail the playPromise to trigger "playAttemptFailed"

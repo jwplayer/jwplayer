@@ -18,7 +18,7 @@ export default class AdProgramController extends ProgramController {
         // (i.e. prerolls, midrolls, and postrolls must use the same tag)
         let mediaElement;
         if (this.backgroundLoading) {
-            // The media pool has reserves an element for ads to use. It is reserved on setup and is not used by other media
+            // The media pool has reserved an element for ads to use. It is reserved on setup and is not used by other media
             mediaElement = mediaPool.getAdElement();
         } else {
             // Take the tag that we're using to play the current item. The tag has been freed before reaching this point
