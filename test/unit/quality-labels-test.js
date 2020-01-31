@@ -5,6 +5,7 @@ import {
     createLabel,
     getCustomLabel,
     findClosestBandwidth,
+    hasRedundantLabels,
     toKbps
 } from 'providers/utils/quality-labels';
 
@@ -201,6 +202,25 @@ describe('quality-labels', function() {
                 const actual = generateLabel(level, customLabels, false);
                 expect(actual).to.equal('medium');
             });
+        });
+    });
+
+    describe('#hasRedundantLabels', () => {
+        it('should return true if multiple labels are the same', () => {
+            const levels = [{ label: 'Video 1' }, { label: 'Video 2' }, { label: 'Video 2' }];
+            expect(hasRedundantLabels(levels)).to.be.true;
+        });
+        it('should return false if multiple labels are not the same', () => {
+            const levels = [{ label: 'Video 1' }, { label: 'Video 2' }, { label: 'Video 3' }];
+            expect(hasRedundantLabels(levels)).to.be.false;
+        });
+        it('should return false if multiple labels are the not same with some nulls', () => {
+            const levels = [{ label: 'Video 1' }, { label: 'Video 2' }, { label: 'Video 3' }, { label: null }, { label: null }];
+            expect(hasRedundantLabels(levels)).to.be.false;
+        });
+        it('should return false if multiple labels are the same with some nulls', () => {
+            const levels = [{ label: 'Video 1' }, { label: 'Video 2' }, { label: 'Video 1' }, { label: null }, { label: null }];
+            expect(hasRedundantLabels(levels)).to.be.true;
         });
     });
 });

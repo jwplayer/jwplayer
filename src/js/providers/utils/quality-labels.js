@@ -74,8 +74,31 @@ export function hasRedundantLevels(levels) {
     if (!Array.isArray(levels)) {
         return false;
     }
+    return checkForLevelDuplicates(levels, ['height', 'bitrate', 'bandwidth']);
+}
+
+export function hasRedundantLabels(levels) {
+    if (!Array.isArray(levels)) {
+        return false;
+    }
+    return checkForLevelDuplicates(levels, ['label']);
+}
+
+function checkForLevelDuplicates(levels, dupKeys) {
     return levels.some(function (level) {
-        const key = level.height || level.bitrate || level.bandwidth;
+        let key;
+        for (let i = 0; i < dupKeys.length; i++) {
+            // Take the passed keys which are used to detect duplicates and
+            // in priority order find one that is populated on the given level
+            key = level[dupKeys[i]];
+            if (key) {
+                break;
+            }
+        }
+
+        if (!key) {
+            return false;
+        }
         const foundDuplicate = this[key];
         this[key] = 1;
         return foundDuplicate;
