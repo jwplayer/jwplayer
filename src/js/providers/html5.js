@@ -57,18 +57,22 @@ function _removeListeners(eventsHash, videoTag) {
 }
 
 function VideoProvider(_playerId, _playerConfig, mediaElement) {
+    const _this = this;
+
     // Current media state
-    this.state = STATE_IDLE;
+    _this.state = STATE_IDLE;
 
     // Are we buffering due to seek, or due to playback?
-    this.seeking = false;
+    _this.seeking = false;
 
     // Value of mediaElement.currentTime on last "timeupdate" used for decode error retry workaround
-    this.currentTime = -1;
+    _this.currentTime = -1;
 
     // Attempt to reload video on error
-    this.retries = 0;
-    this.maxRetries = 3;
+    _this.retries = 0;
+    _this.maxRetries = 3;
+
+    _this.loadAndParseHlsMetadata = _playerConfig.loadAndParseHlsMetadata || true;
 
     // Always render natively in iOS and Safari, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
@@ -82,8 +86,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
         return configRenderNatively && Browser.chrome;
     }
-
-    const _this = this;
 
     let minDvrWindow = _playerConfig.minDvrWindow;
 
