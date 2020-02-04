@@ -2,7 +2,7 @@ import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import {
-    STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META_CUE_PARSED, MEDIA_META, MEDIA_ERROR, WARNING,
+    STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META, MEDIA_ERROR, WARNING,
     MEDIA_VISUAL_QUALITY, MEDIA_TYPE, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, NATIVE_FULLSCREEN, STATE_LOADING
 } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
@@ -349,26 +349,30 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             const startDate = _videotag.getStartDate();
             const startDateTime = startDate.getTime ? startDate.getTime() : NaN;
             if (startDateTime !== _this.startDateTime && !isNaN(startDateTime)) {
-                _this.startDateTime = startDateTime;
-                const programDateTime = startDate.toISOString();
-                const { start, end } = _this.getSeekRange();
-                const metadataType = 'program-date-time';
-                const metadata = {
-                    metadataType,
-                    programDateTime,
-                    start,
-                    end
-                };
-                const cue = _this.createCue(start, end, JSON.stringify(metadata));
-                _this.addVTTCue({
-                    type: 'metadata',
-                    cue,
-                });
-                delete metadata.metadataType;
-                _this.trigger(MEDIA_META_CUE_PARSED, { metadataType, metadata });
+                _this.setStartDateTime(startDateTime);
             }
         }
     }
+
+    _this.setStartDateTime = function(startDateTime) {
+        _this.startDateTime = startDateTime;
+        const programDateTime = new Date(startDateTime).toISOString();
+        let { start, end } = _this.getSeekRange();
+        start = Math.max(0, start);
+        end = Math.max(start, end + 10);
+        const metadataType = 'program-date-time';
+        const metadata = {
+            metadataType,
+            programDateTime,
+            start,
+            end
+        };
+        const cue = _this.createCue(start, end, JSON.stringify(metadata));
+        _this.addVTTCue({
+            type: 'metadata',
+            cue,
+        });
+    };
 
     function setTimeBeforeSeek(currentTime) {
         _timeBeforeSeek = currentTime;
