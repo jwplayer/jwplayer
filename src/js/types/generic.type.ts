@@ -1,1 +1,1 @@
-export type GenericObjectType = { [key: string]: any };
+export type GenericObject = { [key: string]: any };

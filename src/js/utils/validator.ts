@@ -1,4 +1,4 @@
-import { GenericObjectType } from 'types/generic.type';
+import { GenericObject } from 'types/generic.type';
 
 /** @module */
 
@@ -72,12 +72,12 @@ export function typeOf(value: any): string {
 
 /**
  * Indicates whether or not the customObj has *at least* the same keys as the defaultObj; the customObj could have more keys.
- * @param {GenericObjectType} defaultObj - The object that determines the desired set of keys.
- * @param {GenericObjectType} customObj - The object we want to verify has, at least, the same keys as defaultObj.
+ * @param {GenericObject} defaultObj - The object that determines the desired set of keys.
+ * @param {GenericObject} customObj - The object we want to verify has, at least, the same keys as defaultObj.
  * @param {function} predicate - The function evaluating whether the property has a valid value and can be considered compliant. Inputs are the object and its key.
  * @returns {boolean} Does the customObj have at least the same keys as defaultObj, and do their properties also share the same keys ?
  */
-export function isDeepKeyCompliant(defaultObj: GenericObjectType, customObj: GenericObjectType, predicate: (x: string, y: object) => boolean): boolean {
+export function isDeepKeyCompliant(defaultObj: GenericObject, customObj: GenericObject, predicate: (x: string, y: object) => boolean): boolean {
     const defaultKeys = Object.keys(defaultObj);
     return Object.keys(customObj).length >= defaultKeys.length &&
         defaultKeys.every(key => {
