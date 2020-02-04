@@ -177,6 +177,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
         seeked() {
             VideoEvents.seeked.call(_this);
+            _this.ensureMetaTracksActive();
         },
 
         waiting() {
@@ -408,6 +409,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         dvrEnd = seekRange.end;
         dvrPosition = Math.min(0, _videotag.currentTime - dvrEnd);
         dvrUpdatedTime = now();
+        _this.ensureMetaTracksActive();
     }
 
     _this.getDuration = function() {
