@@ -1,7 +1,13 @@
 export const FEED_SHOWN_ID_LENGTH = 12;
 
+declare global {
+    interface Window {
+        msCrypto: Crypto;
+    }   
+}
+
 // Taken from the Analytics repo (src/js/utils/general_utils.ts)
-function randomAlphaNumericString() {
+function randomAlphaNumericString(): string {
     try {
         const crypto = window.crypto || window.msCrypto;
         if (crypto && crypto.getRandomValues) {
@@ -11,7 +17,7 @@ function randomAlphaNumericString() {
     return Math.random().toString(36).slice(2, 9);
 }
 
-export function genId(length) {
+export function genId(length: number): string {
     let str = '';
     while (str.length < length) {
         str += randomAlphaNumericString();

@@ -20,7 +20,7 @@ describe('strings', function() {
 
     it('extension', function() {
         let ext = extension('invalid');
-        expect(ext, 'invalid path extension returns undefined').to.equal(undefined);
+        expect(ext, 'invalid path extension returns empty string').to.equal('');
 
         ext = extension(null);
         expect(ext, 'null path extension').to.equal('');

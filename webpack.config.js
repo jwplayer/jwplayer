@@ -38,7 +38,8 @@ const webpackConfig = {
             'src/js/',
             'src',
             'node_modules'
-        ]
+        ],
+        extensions: ['.ts', '.js']
     },
     module: {
         strictExportPresence: true,
@@ -69,13 +70,16 @@ const webpackConfig = {
                 loader: 'svg-inline-loader'
             },
             {
-                test: /\.js$/,
+                test: /\.(?:ts|js)$/,
                 exclude: /\/node_modules\//,
                 use: {
                     loader: 'babel-loader',
                     options: {
                         babelrc: false,
-                        presets: ['@babel/preset-env'],
+                        presets: [
+                            '@babel/preset-env',
+                            '@babel/preset-typescript'
+                        ],
                         plugins: [
                             {
                                 visitor: {
