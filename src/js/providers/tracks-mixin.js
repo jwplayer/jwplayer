@@ -689,16 +689,26 @@ function _clearSideloadedTextTracks() {
 
 function _cueChangeHandler(e) {
     const track = e.target;
-    this.parseNativeID3Cues(track.cues, track._id);
-    this.triggerActiveCues(track.activeCues, track._id);
+    const { _id, activeCues, cues } = track;
+
+    if (cues && cues.length) {
+        const previousCues = this._cues[_id];
+        this._cues[_id] = Array.prototype.slice.call(cues);
+        this.parseNativeID3Cues(cues, previousCues);
+    } else {
+        this._cues[_id] = null;
+    }
+
+    if (activeCues && activeCues.length) {
+        const previousActiveCues = this._activeCues[_id];
+        this._activeCues[_id] = Array.prototype.slice.call(activeCues);
+        this.triggerActiveCues(activeCues, previousActiveCues);
+    } else {
+        this._activeCues[_id] = null;
+    }
 }
 
-function parseNativeID3Cues(cues, trackId) {
-    if (!cues || !cues.length) {
-        this._cues[trackId] = null;
-        return;
-    }
-    const previousCues = this._cues[trackId];
+function parseNativeID3Cues(cues, previousCues) {
     const lastCue = cues[cues.length - 1];
     if (previousCues && previousCues.length === cues.length &&
         (lastCue._parsed || cuesMatch(previousCues[previousCues.length - 1], lastCue))) {
@@ -721,18 +731,12 @@ function parseNativeID3Cues(cues, trackId) {
         const event = getId3CueMetaEvent(dataCues);
         this.trigger(MEDIA_META_CUE_PARSED, event);
     });
-    this._cues[trackId] = Array.prototype.slice.call(cues);
 }
 
-function triggerActiveCues(activeCues, trackId) {
-    if (!activeCues || !activeCues.length) {
-        this._activeCues[trackId] = null;
-        return;
-    }
-    const previouslyActiveCues = this._activeCues[trackId];
+function triggerActiveCues(activeCues, previousActiveCues) {
     const dataCues = Array.prototype.filter.call(activeCues, cue => {
         // Prevent duplicate meta events for cues that were active in the previous "cuechange" event
-        if (!previouslyActiveCues || previouslyActiveCues.some(prevCue => cuesMatch(cue, prevCue))) {
+        if (previousActiveCues && previousActiveCues.some(prevCue => cuesMatch(cue, prevCue))) {
             return false;
         }
         if (cue.data || cue.value) {
@@ -748,7 +752,6 @@ function triggerActiveCues(activeCues, trackId) {
         const event = getId3CueMetaEvent(dataCues);
         this.trigger(MEDIA_META, event);
     }
-    this._activeCues[trackId] = Array.prototype.slice.call(activeCues);
 }
 
 function ensureMetaTracksActive() {
