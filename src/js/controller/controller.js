@@ -20,8 +20,8 @@ import cancelable from 'utils/cancelable';
 import { inInteraction } from 'utils/in-interaction-event';
 import { isUndefined, isBoolean } from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
-import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
-    STATE_STALLED, AUTOSTART_NOT_ALLOWED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
+import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
+    AUTOSTART_NOT_ALLOWED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
     AD_PLAY, AD_PAUSE,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
@@ -30,14 +30,7 @@ import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
 import { composePlayerError, convertToPlayerError, getPlayAttemptFailedErrorCode, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
     ERROR_COMPLETING_SETUP, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
-
-// The model stores a different state than the provider
-function normalizeState(newstate) {
-    if (newstate === STATE_LOADING || newstate === STATE_STALLED) {
-        return STATE_BUFFERING;
-    }
-    return newstate;
-}
+import { normalizeState } from 'utils/eventNormalizer';
 
 const Controller = function() {};
 const noop = function() {};
@@ -169,6 +162,7 @@ Object.assign(Controller.prototype, {
             model.set('errorEvent', undefined);
             mediaModel.change('mediaState', function (changedMediaModel, state) {
                 if (!model.get('errorEvent')) {
+                    // The model stores a different state than the provider
                     model.set(PLAYER_STATE, normalizeState(state));
                 }
             }, this);
@@ -837,8 +831,9 @@ Object.assign(Controller.prototype, {
             }
 
             _model.set('fullscreen', state);
-            if (_this._instreamAdapter && _this._instreamAdapter._adModel) {
-                _this._instreamAdapter._adModel.set('fullscreen', state);
+            const instream = _this._instreamAdapter;
+            if (instream && instream._adModel) {
+                instream._adModel.set('fullscreen', state);
             }
         }
 

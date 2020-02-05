@@ -157,6 +157,11 @@ export const AD_PAUSE = 'adPause';
 export const AD_PLAY = 'adPlay';
 
 /**
+ * Event triggered when the player's state becomes buffering during ad playback.
+ */
+export const AD_BUFFER = 'adBuffer';
+
+/**
  * Event triggered when an ad is skipped.
 */
 export const AD_SKIPPED = 'adSkipped';
