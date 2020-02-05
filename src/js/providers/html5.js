@@ -72,7 +72,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     _this.retries = 0;
     _this.maxRetries = 3;
 
-    _this.loadAndParseHlsMetadata = _playerConfig.loadAndParseHlsMetadata || true;
+    let { loadAndParseHlsMetadata, minDvrWindow } = _playerConfig;
+
+    _this.loadAndParseHlsMetadata = loadAndParseHlsMetadata === undefined ? true : !!loadAndParseHlsMetadata;
 
     // Always render natively in iOS and Safari, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
@@ -86,8 +88,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
         return configRenderNatively && Browser.chrome;
     }
-
-    let minDvrWindow = _playerConfig.minDvrWindow;
 
     const MediaEvents = {
         progress() {
