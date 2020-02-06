@@ -1,8 +1,9 @@
 import { seconds, trim } from 'utils/strings';
+import { CaptionEntryData } from './captions';
 
 // Component that loads and parses an SRT file
 
-export default function Srt(data) {
+export default function Srt(data: string) {
     // Trim whitespace and split the list by returns.
     const _captions = [];
     data = trim(data);
@@ -27,8 +28,8 @@ export default function Srt(data) {
 
 
 /* Parse a single captions entry. */
-function _entry(data) {
-    const entry = {};
+function _entry(data: string): CaptionEntryData {
+    const entry: CaptionEntryData = {};
     let array = data.split('\r\n');
     if (array.length === 1) {
         array = data.split('\n');

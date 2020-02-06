@@ -1,9 +1,5 @@
 import { trim } from 'utils/strings';
-
-type PageNode = HTMLElement & {
-    baseName: string;
-    text: string;
-};
+import { PageNode } from 'types/generic.type';
 
 export function localName(node: PageNode): string {
     let name = '';
@@ -30,8 +26,8 @@ export function textContent(node: PageNode): string {
     return text;
 }
 
-export function getChildNode(parent: PageNode, index: number): ChildNode {
-    return parent.childNodes[index];
+export function getChildNode(parent: PageNode, index: number): PageNode {
+    return parent.childNodes[index] as PageNode;
 }
 
 export function numChildren(parent: PageNode): number {
