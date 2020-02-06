@@ -6,7 +6,7 @@ import { CaptionEntryData } from './captions';
 
 type ParagraphNodes = HTMLCollectionOf<Element & { text?: string }>;
 
-export default function Dfxp(xmlDoc: XMLDocument) {
+export default function Dfxp(xmlDoc: XMLDocument): CaptionEntryData[] {
     if (!xmlDoc) {
         parseError(306007);
     }
@@ -69,6 +69,6 @@ export default function Dfxp(xmlDoc: XMLDocument) {
     return _captions;
 }
 
-function parseError(code: number) {
+function parseError(code: number): void {
     throw new PlayerError(null, code);
 }

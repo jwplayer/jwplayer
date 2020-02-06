@@ -1,4 +1,4 @@
-import { GenericObject } from "types/generic.type";
+import { GenericObject } from 'types/generic.type';
 
 const preloadValues: {
     none: boolean;

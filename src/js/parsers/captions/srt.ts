@@ -3,7 +3,7 @@ import { CaptionEntryData } from './captions';
 
 // Component that loads and parses an SRT file
 
-export default function Srt(data: string) {
+export default function Srt(data: string): CaptionEntryData[] {
     // Trim whitespace and split the list by returns.
     const _captions = [];
     data = trim(data);

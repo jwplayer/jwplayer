@@ -1,5 +1,3 @@
-declare module '*';
-
 export type GenericObject = { [key: string]: any };
 
 export type CoreModel = any;
@@ -9,3 +7,5 @@ export type PageNode = (Element | ChildNode) & {
     localName: string;
     text: string;
 };
+
+export type PlaylistItemType = any;

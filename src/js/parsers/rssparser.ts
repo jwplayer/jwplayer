@@ -1,4 +1,4 @@
-import { GenericObject, PageNode } from 'types/generic.type';
+import { GenericObject, PageNode, PlaylistItemType } from 'types/generic.type';
 
 import { localName, textContent, getChildNode, numChildren } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
@@ -10,10 +10,12 @@ import PlaylistItem from 'playlist/item';
 * Parse an RSS feed and translate it to playlistItems.
 */
 
-export default function parseRss(dat: PageNode) {
-    const arr: HTMLElement[] & {
-        feedData?: GenericObject;
-    } = [];
+type FeedDataArray = HTMLElement[] & {
+    feedData?: GenericObject;
+};
+
+export default function parseRss(dat: PageNode): FeedDataArray {
+    const arr: FeedDataArray = [];
 
     arr.feedData = {};
     for (let i = 0; i < numChildren(dat); i++) {
@@ -36,7 +38,7 @@ export default function parseRss(dat: PageNode) {
 }
 
 // Translate RSS item to playlist item.
-function parseItem(obj: PageNode) {
+function parseItem(obj: PageNode): PlaylistItemType {
     const item: {
         file?: string;
         title?: string;
