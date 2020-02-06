@@ -15,6 +15,7 @@ class ProgramController extends Events {
      * ProgramController constructor
      * @param {Model} model - The player's model
      * @param {MediaElementPool} mediaPool - The player's media element pool
+     * @param {Api} api - The player API applied as context in async playlist item promise callback execution
      */
     constructor(model, mediaPool, api) {
         super();
