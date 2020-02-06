@@ -17,11 +17,11 @@ export class ItemPromise {
     }
 
     run () {
-        const { api, async, index, model, resolve, reject, promise } = this;
-        const playlist = model.get('playlist');
-        const playlistItem = playlist[index];
+        const { api, async, index, resolve, reject, promise } = this;
+        const playlistItem = this.getItem(index);
         if (!playlistItem) {
-            reject(new Error(`The playlist does not have an item at index ${index}.`));
+            const message = index === -1 ? 'No recs item' : `No playlist item at index ${index}`;
+            reject(new Error(message));
         }
         if (async) {
             this.clear();
@@ -31,6 +31,15 @@ export class ItemPromise {
             resolve(playlistItem);
         }
         return promise;
+    }
+
+    getItem(index) {
+        const { model } = this;
+        if (index === -1) {
+            return model.get('nextUp');
+        }
+        const playlist = model.get('playlist');
+        return playlist[index];
     }
 
     clear () {
