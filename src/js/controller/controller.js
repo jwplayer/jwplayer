@@ -87,7 +87,7 @@ Object.assign(Controller.prototype, {
             _trigger(type, event);
         }, _this);
 
-        const _programController = this._programController = new ProgramController(_model, mediaPool);
+        const _programController = this._programController = new ProgramController(_model, mediaPool, _api);
         updateProgramSoundSettings();
         addProgramControllerListeners();
         initQoe(_model, _programController);
@@ -180,8 +180,8 @@ Object.assign(Controller.prototype, {
                 model.setStreamType(type);
             }, this);
 
-            const index = model.get('item') + 1;
             const recsAuto = (model.get('related') || {}).oncomplete === 'autoplay';
+            let index = model.get('item') + 1;
             let item = model.get('playlist')[index];
             if ((item || recsAuto) && _backgroundLoading) {
                 const onPosition = (changedMediaModel, position) => {
@@ -190,8 +190,9 @@ Object.assign(Controller.prototype, {
                     const duration = mediaModel.get('duration');
                     if (allowPreload && position && duration > 0 && position >= duration - BACKGROUND_LOAD_OFFSET) {
                         mediaModel.off('change:position', onPosition, this);
-                        _programController.backgroundLoad(item);
+                        _programController.backgroundLoad(item, index);
                     } else if (recsAuto) {
+                        index = -1;
                         item = _model.get('nextUp');
                     }
                 };
