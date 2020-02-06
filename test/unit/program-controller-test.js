@@ -424,7 +424,7 @@ describe('ProgramController', function () {
             .then(function () {
                 expect(model.trigger).to.have.callCount(5 + changeMediaElement);
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
-                programController.backgroundLoad(mp4Item);
+                programController.backgroundLoad(mp4Item, 1);
             })
             .then(() => programController.setActiveItem(1))
             .then(function () {

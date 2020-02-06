@@ -16,10 +16,11 @@ class ProgramController extends Events {
      * @param {Model} model - The player's model
      * @param {MediaElementPool} mediaPool - The player's media element pool
      */
-    constructor(model, mediaPool) {
+    constructor(model, mediaPool, api) {
         super();
 
         this.adPlaying = false;
+        this.api = api;
         this.background = BackgroundMedia();
         this.mediaPool = mediaPool;
         this.mediaController = null;
@@ -37,12 +38,12 @@ class ProgramController extends Events {
     }
 
     asyncItem(index, item) {
-        const { model } = this;
+        const { api, model } = this;
         // Set the player state to buffering if there is a playlist item callback
         const deferBufferingState = setTimeout(() => {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         });
-        return this.getItemPromise(index).setItem(index).then((playlistItem) => {
+        return this.getItemPromise(index, api).setItem(index).then((playlistItem) => {
             clearTimeout(deferBufferingState);
             if (playlistItem && playlistItem !== item) {
                 this.setPlaylistItem(index, playlistItem);
@@ -344,14 +345,22 @@ class ProgramController extends Events {
     /**
      * Loads the next playlist item in the background.
      * @param {Item} item - The playlist item to load.
+     * @param {number} index - The playlist item promise index.
      *
      * @returns {void}
      */
-    backgroundLoad(item) {
-        const { background } = this;
-        const source = getSource(item);
+    backgroundLoad(item, index) {
+        const { api, background } = this;
 
-        background.setNext(item, this._setupMediaController(source)
+        const loadPromise = this.getItemPromise(index, api).preload()
+            .then((playlistItem) => {
+                if (playlistItem && playlistItem !== item) {
+                    this.setPlaylistItem(index, playlistItem);
+                    background.updateNext(playlistItem);
+                }
+                const source = getSource(playlistItem);
+                return this._setupMediaController(source);
+            })
             .then(nextMediaController => {
                 nextMediaController.activeItem = item;
                 nextMediaController.preload();
@@ -359,8 +368,9 @@ class ProgramController extends Events {
             })
             .catch(() => {
                 background.clearNext();
-            })
-        );
+            });
+
+        background.setNext(item, loadPromise);
     }
 
     /**

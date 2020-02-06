@@ -23,6 +23,9 @@ export default function BackgroundMedia() {
         isNext(item) {
             return !!(nextMedia && JSON.stringify(nextMedia.item.sources[0]) === JSON.stringify(item.sources[0]));
         },
+        updateNext(item) {
+            nextMedia.item = item;
+        },
         clearNext() {
             nextMedia = null;
         }
