@@ -56,7 +56,7 @@ function parseItem(obj: PageNode): PlaylistItemType {
         }
         switch (name.toLowerCase()) {
             case 'enclosure':
-                item.file = xmlAttribute(node, 'url');
+                item.file = xmlAttribute(node as Element, 'url');
                 break;
             case 'title':
                 item.title = textContent(node);

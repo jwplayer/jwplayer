@@ -8,7 +8,7 @@ interface StateChangeEvent {
     reason: string;
     playReason?: string;
     pauseReason?: string;
-};
+}
 
 // The api should dispatch an idle event when the model's state changes to complete
 // This is to avoid conflicts with the complete event and to maintain legacy event flow
