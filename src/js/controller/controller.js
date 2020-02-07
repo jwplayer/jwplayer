@@ -1045,14 +1045,17 @@ Object.assign(Controller.prototype, {
 
         this.setPlaylistItem = function (index, item) {
             const newItem = _programController.setPlaylistItem(index, item);
-            if (newItem && index === _model.get('item') && _model.get('state') === 'idle') {
+            if (newItem) {
                 // If the item is replaced using the api here outside of program-controller, reset any item promise
                 const itemPromise = _programController.itemPromises[index];
                 if (itemPromise) {
                     itemPromise.reject(new Error('Item replaced'));
                     _programController.itemPromises[index] = null;
                 }
-                this.setItemIndex(index);
+                // If the current item was replaced, and the player is idle, load the new item
+                if (index === _model.get('item') && _model.get('state') === 'idle') {
+                    this.setItemIndex(index);
+                }
             }
         };
 
