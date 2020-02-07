@@ -10,6 +10,6 @@ export type PageNode = (Element | ChildNode) & {
 
 export type XMLNode = PageNode & {
     attributes?: any
-}
+};
 
 export type PlaylistItemType = any;
