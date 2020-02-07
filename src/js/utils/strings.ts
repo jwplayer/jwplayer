@@ -1,4 +1,5 @@
 import { isValidNumber, isString } from 'utils/underscore';
+import { XMLNode } from 'types/generic.type';
 
 const parseFloat = window.parseFloat;
 
@@ -16,7 +17,7 @@ export function pad(str: string, length: number, padder?: string): string {
 }
 
 // Get the value of a case-insensitive attribute in an XML node
-export function xmlAttribute(xml: Element, attribute: string): string {
+export function xmlAttribute(xml: XMLNode, attribute: string): string {
     const attributes = xml.attributes;
     for (let attrib = 0; attrib < attributes.length; attrib++) {
         if (attributes[attrib].name && attributes[attrib].name.toLowerCase() === attribute.toLowerCase()) {
