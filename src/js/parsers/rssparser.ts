@@ -49,14 +49,14 @@ function parseItem(obj: PageNode): PlaylistItemType {
         tags?: string;
     } = {};
     for (let i = 0; i < obj.childNodes.length; i++) {
-        const node = obj.childNodes[i] as PageNode;
+        const node: PageNode = obj.childNodes[i];
         const name = localName(node);
         if (!name) {
             continue;
         }
         switch (name.toLowerCase()) {
             case 'enclosure':
-                item.file = xmlAttribute(node as Element, 'url');
+                item.file = xmlAttribute(node, 'url');
                 break;
             case 'title':
                 item.title = textContent(node);

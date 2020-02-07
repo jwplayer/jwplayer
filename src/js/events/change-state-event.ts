@@ -1,6 +1,15 @@
 import { STATE_IDLE, STATE_LOADING, STATE_STALLED, STATE_BUFFERING, STATE_COMPLETE, STATE_ERROR } from 'events/events';
 import { CoreModel } from 'types/generic.type';
 
+interface StateChangeEvent {
+    type: string;
+    newstate: string;
+    oldstate: string;
+    reason: string;
+    playReason?: string;
+    pauseReason?: string;
+};
+
 // The api should dispatch an idle event when the model's state changes to complete
 // This is to avoid conflicts with the complete event and to maintain legacy event flow
 function normalizeApiState(newstate: string): string {
@@ -27,14 +36,7 @@ export default function ChangeStateEvent(this: any, model: CoreModel, newstate: 
         const type = newstate.replace(/(?:ing|d)$/, '');
         const reason = normalizeReason(newstate, model.mediaModel.get('mediaState'));
 
-        const evt: {
-            type: string;
-            newstate: string;
-            oldstate: string;
-            reason: string;
-            playReason?: string;
-            pauseReason?: string;
-        } = {
+        const evt: StateChangeEvent = {
             type,
             newstate,
             oldstate,
