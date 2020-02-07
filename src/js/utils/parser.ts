@@ -26,7 +26,7 @@ export function getAbsolutePath(path: string, base?: string): string {
         basepath = basepath.substring(protocol.length + domain.length + 1, basepath.lastIndexOf('/'));
         patharray = basepath.split('/').concat(path.split('/'));
     }
-    const result = [];
+    const result: string[] = [];
     for (let i = 0; i < patharray.length; i++) {
         if (patharray[i] && exists(patharray[i]) && patharray[i] !== '.') {
             if (patharray[i] === '..') {
@@ -45,7 +45,7 @@ export function isAbsolutePath(path: string): boolean {
 
 // Returns an XML object for the given XML string, or null if the input cannot be parsed.
 export function parseXML(input: string): XMLDocument | null {
-    let parsedXML = null;
+    let parsedXML: XMLDocument | null = null;
     try {
         parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
         // In Firefox the XML doc may contain the parsererror, other browsers it's further down
