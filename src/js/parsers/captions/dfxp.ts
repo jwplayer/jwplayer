@@ -11,7 +11,7 @@ export default function Dfxp(xmlDoc: XMLDocument): CaptionEntryData[] {
         parseError(306007);
     }
 
-    const _captions = [];
+    const _captions: CaptionEntryData[] = [];
     let paragraphs: ParagraphNodes = xmlDoc.getElementsByTagName('p');
     // Default frameRate is 30
     let frameRate = 30;

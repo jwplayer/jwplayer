@@ -5,7 +5,7 @@ import { CaptionEntryData } from './captions';
 
 export default function Srt(data: string): CaptionEntryData[] {
     // Trim whitespace and split the list by returns.
-    const _captions = [];
+    const _captions: CaptionEntryData[] = [];
     data = trim(data);
     let list = data.split('\r\n\r\n');
     if (list.length === 1) {
