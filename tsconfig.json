@@ -5,7 +5,6 @@
         "module": "esnext",
         "sourceMap": true,
         "strictNullChecks": true,
-        "noImplicitAny": true,
         "noImplicitThis": true,
         "noUnusedLocals": true,
         "strictPropertyInitialization": true,
