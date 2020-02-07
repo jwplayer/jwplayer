@@ -779,12 +779,21 @@ class ProgramController extends Events {
         this.itemPromises.length = 0;
     }
 
+    /**
+     * Replace an item in the playlist.
+     * @param {number} index - The index in the playlist where the item will be replaced.
+     * @param {Item} item - The new playlist item.
+     *
+     * @returns {Item | null} Return the new item if successful. Otherwise (if missing sources or invalid), return null.
+     */
     setPlaylistItem(index, item) {
         const { model } = this;
         const newItem = normalizePlaylistItem(model, new Item(item), item.feedData || {});
         if (newItem) {
             model.get('playlist')[index] = newItem;
+            return newItem;
         }
+        return null;
     }
 }
 
