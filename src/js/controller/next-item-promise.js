@@ -10,6 +10,7 @@ export class ItemPromise {
             this.reject = reject;
         });
         this.async = null;
+        this.asyncPromise = null;
     }
 
     set callback (handler) {
@@ -25,9 +26,10 @@ export class ItemPromise {
         }
         if (async) {
             this.clear();
-            const asyncPromise = async.call(api, playlistItem, index) || Promise.resolve();
+            const asyncPromise = this.asyncPromise =
+                async.call(api, playlistItem, index) || Promise.resolve();
             asyncPromise.then(resolve).catch(reject);
-        } else {
+        } else if (!this.asyncPromise) {
             resolve(playlistItem);
         }
         return promise;
@@ -45,16 +47,4 @@ export class ItemPromise {
     clear () {
         this.async = null;
     }
-
-    preload () {
-        return this.run();
-    }
-
-    setItem (index) {
-        if (index !== this.index) {
-            this.reject(new Error(`Item ${this.index} was skipped.`));
-        }
-        return this.run();
-    }
-
 }

@@ -44,7 +44,7 @@ class ProgramController extends Events {
         const deferBufferingState = setTimeout(() => {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         });
-        return this.getItemPromise(index, api).setItem(index).then((playlistItem) => {
+        return this.getItemPromise(index, api).run().then((playlistItem) => {
             clearTimeout(deferBufferingState);
             if (playlistItem && playlistItem !== item) {
                 this.setPlaylistItem(index, playlistItem);
@@ -353,7 +353,7 @@ class ProgramController extends Events {
     backgroundLoad(item, index) {
         const { api, background } = this;
 
-        const loadPromise = this.getItemPromise(index, api).preload()
+        const loadPromise = this.getItemPromise(index, api).run()
             .then((playlistItem) => {
                 if (playlistItem && playlistItem !== item) {
                     this.setPlaylistItem(index, playlistItem);
