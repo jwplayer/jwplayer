@@ -72,16 +72,15 @@ export function isIframe(): boolean {
     }
 }
 
-export function flashVersion(): number | Plugin {
+export function flashVersion(): number {
     if (isAndroid()) {
         return 0;
     }
 
     const plugins = navigator.plugins;
-    let flashPlugin: Plugin | null = null;
 
     if (plugins) {
-        flashPlugin = plugins.namedItem('Shockwave Flash');
+        const flashPlugin = plugins.namedItem('Shockwave Flash');
         if (flashPlugin && flashPlugin.description) {
             return parseFloat(flashPlugin.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
         }
@@ -117,7 +116,7 @@ export function flashVersion(): number | Plugin {
 =======
 >>>>>>> Return flash plugin in flashVersion and cast when vars are defined
     }
-    return flashPlugin || 0;
+    return 0;
 }
 
 <<<<<<< HEAD
