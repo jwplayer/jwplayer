@@ -1,3 +1,5 @@
+import { GenericObject, PageNode, PlaylistItemType } from 'types/generic.type';
+
 import { localName, textContent, getChildNode, numChildren } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
 import mediaParser from 'parsers/mediaparser';
@@ -8,8 +10,13 @@ import PlaylistItem from 'playlist/item';
 * Parse an RSS feed and translate it to playlistItems.
 */
 
-export default function parseRss(dat) {
-    const arr = [];
+type FeedDataArray = HTMLElement[] & {
+    feedData?: GenericObject;
+};
+
+export default function parseRss(dat: PageNode): FeedDataArray {
+    const arr: FeedDataArray = [];
+
     arr.feedData = {};
     for (let i = 0; i < numChildren(dat); i++) {
         const node = getChildNode(dat, i);
@@ -31,17 +38,25 @@ export default function parseRss(dat) {
 }
 
 // Translate RSS item to playlist item.
-function parseItem(obj) {
-    const item = {};
+function parseItem(obj: PageNode): PlaylistItemType {
+    const item: {
+        file?: string;
+        title?: string;
+        mediaid?: string;
+        date?: string;
+        description?: string;
+        link?: string;
+        tags?: string;
+    } = {};
     for (let i = 0; i < obj.childNodes.length; i++) {
-        const node = obj.childNodes[i];
+        const node: PageNode = obj.childNodes[i];
         const name = localName(node);
         if (!name) {
             continue;
         }
         switch (name.toLowerCase()) {
             case 'enclosure':
-                item.file = xmlAttribute(node, 'url');
+                item.file = xmlAttribute(node as Element, 'url');
                 break;
             case 'title':
                 item.title = textContent(node);

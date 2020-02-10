@@ -1,20 +1,23 @@
 import { seconds, trim } from 'utils/strings';
 import { PlayerError } from 'api/errors';
+import { CaptionEntryData } from './captions';
 
 // Component that loads and parses an DFXP file
 
-export default function Dfxp(xmlDoc) {
+type ParagraphNodes = HTMLCollectionOf<Element & { text?: string }>;
+
+export default function Dfxp(xmlDoc: XMLDocument): CaptionEntryData[] {
     if (!xmlDoc) {
         parseError(306007);
     }
 
-    const _captions = [];
-    let paragraphs = xmlDoc.getElementsByTagName('p');
+    const _captions: CaptionEntryData[] = [];
+    let paragraphs: ParagraphNodes = xmlDoc.getElementsByTagName('p');
     // Default frameRate is 30
     let frameRate = 30;
     const tt = xmlDoc.getElementsByTagName('tt');
     if (tt && tt[0]) {
-        const parsedFrameRate = parseFloat(tt[0].getAttribute('ttp:frameRate'));
+        const parsedFrameRate = parseFloat(tt[0].getAttribute('ttp:frameRate') || '');
         if (!isNaN(parsedFrameRate)) {
             frameRate = parsedFrameRate;
         }
@@ -36,24 +39,26 @@ export default function Dfxp(xmlDoc) {
         const breaks = p.getElementsByTagName('br');
         for (let j = 0; j < breaks.length; j++) {
             const b = breaks[j];
-            b.parentNode.replaceChild(xmlDoc.createTextNode('\r\n'), b);
+            if (b && b.parentNode) {
+                b.parentNode.replaceChild(xmlDoc.createTextNode('\r\n'), b);
+            }
         }
 
         const rawText = (p.innerHTML || p.textContent || p.text || '');
         const text = trim(rawText).replace(/>\s+</g, '><').replace(/(<\/?)tts?:/g, '$1').replace(/<br.*?\/>/g, '\r\n');
         if (text) {
-            const begin = p.getAttribute('begin');
-            const dur = p.getAttribute('dur');
-            const end = p.getAttribute('end');
+            const begin = p.getAttribute('begin') || '';
+            const dur = p.getAttribute('dur') || '';
+            const end = p.getAttribute('end') || '';
 
-            const entry = {
+            const entry: CaptionEntryData = {
                 begin: seconds(begin, frameRate),
                 text: text
             };
             if (end) {
                 entry.end = seconds(end, frameRate);
             } else if (dur) {
-                entry.end = entry.begin + seconds(dur, frameRate);
+                entry.end = (entry.begin || 0) + seconds(dur, frameRate);
             }
             _captions.push(entry);
         }
@@ -64,6 +69,6 @@ export default function Dfxp(xmlDoc) {
     return _captions;
 }
 
-function parseError(code) {
+function parseError(code: number): void {
     throw new PlayerError(null, code);
 }

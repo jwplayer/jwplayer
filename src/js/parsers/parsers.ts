@@ -1,6 +1,7 @@
 import { trim } from 'utils/strings';
+import { PageNode } from 'types/generic.type';
 
-export function localName(node) {
+export function localName(node: PageNode): string {
     let name = '';
     if (node) {
         if (node.localName) {
@@ -12,7 +13,7 @@ export function localName(node) {
     return name;
 }
 
-export function textContent(node) {
+export function textContent(node: PageNode): string {
     let text = '';
     if (node) {
         if (node.textContent) {
@@ -25,11 +26,11 @@ export function textContent(node) {
     return text;
 }
 
-export function getChildNode(parent, index) {
-    return parent.childNodes[index];
+export function getChildNode(parent: PageNode, index: number): PageNode {
+    return parent.childNodes[index] as PageNode;
 }
 
-export function numChildren(parent) {
+export function numChildren(parent: PageNode): number {
     if (parent.childNodes) {
         return parent.childNodes.length;
     }
