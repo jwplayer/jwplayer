@@ -189,7 +189,6 @@
                         ]
                     }
                 }],
-                "@typescript-eslint/no-unsafe-any": true,
                 "@typescript-eslint/no-explicit-any": 0,
                 "@typescript-eslint/adjacent-overload-signatures": "error",
                 "@typescript-eslint/ban-ts-ignore": "error",
