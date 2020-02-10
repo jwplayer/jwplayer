@@ -8,8 +8,4 @@ export type PageNode = (Element | ChildNode) & {
     text?: string;
 };
 
-export type XMLNode = PageNode & {
-    attributes?: any
-};
-
 export type PlaylistItemType = any;
