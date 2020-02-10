@@ -85,7 +85,7 @@ export function isDeepKeyCompliant(defaultObj: GenericObject, customObj: Generic
             const customValue = customObj[key];
             if (defaultValue && typeof defaultValue === 'object') {
                 if (customValue && typeof customValue === 'object') {
-                    return isDeepKeyCompliant(defaultValue, customValue, predicate);
+                    return isDeepKeyCompliant(defaultValue as GenericObject, customValue as GenericObject, predicate);
                 }
                 return false;
             }

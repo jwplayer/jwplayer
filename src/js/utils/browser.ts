@@ -78,26 +78,29 @@ export function flashVersion(): number {
     }
 
     const plugins = navigator.plugins;
-    let flash;
 
     if (plugins) {
-        flash = plugins.namedItem('Shockwave Flash');
-        if (flash && flash.description) {
-            return parseFloat(flash.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
+        const flashPlugin = plugins.namedItem('Shockwave Flash');
+        if (flashPlugin && flashPlugin.description) {
+            return parseFloat(flashPlugin.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
         }
     }
 
     if (typeof window.ActiveXObject !== 'undefined') {
         try {
-            flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-            if (flash) {
-                return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
+            const flashObj = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+            if (flashObj) {
+                return parseFloat((flashObj as FlashObject).GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
             }
         } catch (e) {
             return 0;
         }
 
-        return flash;
+        return 0;
     }
     return 0;
+}
+
+interface FlashObject {
+    GetVariable: (s: string) => string;
 }
