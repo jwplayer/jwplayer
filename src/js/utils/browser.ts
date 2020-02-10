@@ -72,15 +72,16 @@ export function isIframe(): boolean {
     }
 }
 
-export function flashVersion(): number {
+export function flashVersion(): number | Plugin {
     if (isAndroid()) {
         return 0;
     }
 
     const plugins = navigator.plugins;
+    let flashPlugin: Plugin | null = null;
 
     if (plugins) {
-        const flashPlugin = plugins.namedItem('Shockwave Flash');
+        flashPlugin = plugins.namedItem('Shockwave Flash');
         if (flashPlugin && flashPlugin.description) {
             return parseFloat(flashPlugin.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
         }
@@ -88,6 +89,7 @@ export function flashVersion(): number {
 
     if (typeof window.ActiveXObject !== 'undefined') {
         try {
+<<<<<<< HEAD
 <<<<<<< HEAD
             const flashObj = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash') as FlashObject;
             if (flashObj) {
@@ -97,23 +99,35 @@ export function flashVersion(): number {
             if (flashObj) {
                 return parseFloat((flashObj as FlashObject).GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
 >>>>>>> Activate no-unsafe-any lint rule
+=======
+            const flashObj = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash') as FlashObject;
+            if (flashObj) {
+                return parseFloat(flashObj.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
+>>>>>>> Return flash plugin in flashVersion and cast when vars are defined
             }
         } catch (e) {
             return 0;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
         return 0;
 >>>>>>> Activate no-unsafe-any lint rule
+=======
+>>>>>>> Return flash plugin in flashVersion and cast when vars are defined
     }
-    return 0;
+    return flashPlugin || 0;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 interface FlashObject extends ActiveXObject {
 =======
 interface FlashObject {
 >>>>>>> Activate no-unsafe-any lint rule
+=======
+interface FlashObject extends ActiveXObject {
+>>>>>>> Return flash plugin in flashVersion and cast when vars are defined
     GetVariable: (s: string) => string;
 }
