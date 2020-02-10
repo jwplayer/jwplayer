@@ -88,17 +88,32 @@ export function flashVersion(): number {
 
     if (typeof window.ActiveXObject !== 'undefined') {
         try {
+<<<<<<< HEAD
             const flashObj = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash') as FlashObject;
             if (flashObj) {
                 return parseFloat(flashObj.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
+=======
+            const flashObj = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+            if (flashObj) {
+                return parseFloat((flashObj as FlashObject).GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
+>>>>>>> Activate no-unsafe-any lint rule
             }
         } catch (e) {
             return 0;
         }
+<<<<<<< HEAD
+=======
+
+        return 0;
+>>>>>>> Activate no-unsafe-any lint rule
     }
     return 0;
 }
 
+<<<<<<< HEAD
 interface FlashObject extends ActiveXObject {
+=======
+interface FlashObject {
+>>>>>>> Activate no-unsafe-any lint rule
     GetVariable: (s: string) => string;
 }
