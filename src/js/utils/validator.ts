@@ -81,11 +81,11 @@ export function isDeepKeyCompliant(defaultObj: GenericObject, customObj: Generic
     const defaultKeys = Object.keys(defaultObj);
     return Object.keys(customObj).length >= defaultKeys.length &&
         defaultKeys.every(key => {
-            const defaultValue = defaultObj[key];
-            const customValue = customObj[key];
+            const defaultValue = defaultObj[key] as GenericObject;
+            const customValue = customObj[key] as GenericObject;
             if (defaultValue && typeof defaultValue === 'object') {
                 if (customValue && typeof customValue === 'object') {
-                    return isDeepKeyCompliant(defaultValue as GenericObject, customValue as GenericObject, predicate);
+                    return isDeepKeyCompliant(defaultValue, customValue, predicate);
                 }
                 return false;
             }
