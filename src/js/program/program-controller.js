@@ -47,8 +47,7 @@ class ProgramController extends Events {
         return this.getItemPromise(index, api).run().then((playlistItem) => {
             clearTimeout(deferBufferingState);
             if (playlistItem && playlistItem !== item) {
-                this.setPlaylistItem(index, playlistItem);
-                return playlistItem;
+                return this.replaceItem(index, playlistItem);
             }
             return item;
         }).catch((/* itemPromiseError */) => {
@@ -82,12 +81,13 @@ class ProgramController extends Events {
         }
         return (this.loadPromise = this.asyncItem(index, item).then((playlistItem) => {
             if (!playlistItem) {
+                // Exception was caught in asyncItem
                 return;
             }
 
             model.setActiveItem(index);
 
-            const source = getSource(item);
+            const source = getSource(playlistItem);
             if (!source) {
                 return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE));
             }
@@ -120,7 +120,7 @@ class ProgramController extends Events {
                 // Don't do anything if we've tried to load another provider while this promise was resolving
                 // We check using the mediaModel because it is unique per item, and per instance of that item
                 if (mediaModelContext === model.mediaModel) {
-                    nextMediaController.activeItem = item;
+                    nextMediaController.activeItem = playlistItem;
                     this._setActiveMedia(nextMediaController);
                     return nextMediaController;
                 }
@@ -355,17 +355,18 @@ class ProgramController extends Events {
 
         const loadPromise = this.getItemPromise(index, api).run()
             .then((playlistItem) => {
+                let normalizedItem = item;
                 if (playlistItem && playlistItem !== item) {
-                    this.setPlaylistItem(index, playlistItem);
-                    background.updateNext(playlistItem);
+                    normalizedItem = this.replaceItem(index, playlistItem);
+                    background.updateNext(normalizedItem);
                 }
-                const source = getSource(playlistItem);
-                return this._setupMediaController(source);
-            })
-            .then(nextMediaController => {
-                nextMediaController.activeItem = item;
-                nextMediaController.preload();
-                return nextMediaController;
+                const source = getSource(normalizedItem);
+                return this._setupMediaController(source)
+                    .then(nextMediaController => {
+                        nextMediaController.activeItem = normalizedItem;
+                        nextMediaController.preload();
+                        return nextMediaController;
+                    });
             })
             .catch(() => {
                 background.clearNext();
@@ -786,7 +787,7 @@ class ProgramController extends Events {
      *
      * @returns {Item | null} Return the new item if successful. Otherwise (if missing sources or invalid), return null.
      */
-    setPlaylistItem(index, item) {
+    replaceItem(index, item) {
         const { model } = this;
         const newItem = normalizePlaylistItem(model, new Item(item), item.feedData || {});
         if (newItem) {

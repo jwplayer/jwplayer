@@ -69,7 +69,7 @@ describe('Background Loading', function () {
             mediaController.container = container;
             mediaController.item = {
                 starttime: 42
-            }
+            };
             mediaController.beforeComplete = true;
             mediaController.background = true;
             mediaController.on('complete', onComplete);
