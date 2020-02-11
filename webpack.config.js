@@ -12,7 +12,7 @@ const licensesNotice = require('./jwplayer.license.notice.js');
 const compileConstants = {
     __SELF_HOSTED__: true,
     __REPO__: `''`,
-    __DEBUG__: true,
+    __DEBUG__: false,
     __BUILD_VERSION__: `'${getBuildVersion()}'`,
     __FLASH_VERSION__: 18
 };
