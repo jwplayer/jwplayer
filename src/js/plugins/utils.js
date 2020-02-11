@@ -4,7 +4,7 @@ export const getPluginName = function(url) {
     return url.replace(/^(.*\/)?([^-]*)-?.*\.(js)$/, '$2');
 };
 
-export function mapPluginToCode(/* pluginUrl */) {
+export function getPluginErrorCode(/* pluginUrl */) {
     return 305000;
 }
 

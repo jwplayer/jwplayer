@@ -1,7 +1,7 @@
-import { mapPluginToCode } from 'plugins/utils';
+import { getPluginErrorCode } from 'plugins/utils';
 
-describe('mapPluginToCode', function () {
+describe('getPluginErrorCode', function () {
     it('assigns 305000 to plugins', function () {
-        expect(mapPluginToCode('foo')).to.equal(305000);
+        expect(getPluginErrorCode('foo')).to.equal(305000);
     });
 });
