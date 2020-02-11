@@ -88,45 +88,17 @@ export function flashVersion(): number {
 
     if (typeof window.ActiveXObject !== 'undefined') {
         try {
-<<<<<<< HEAD
-<<<<<<< HEAD
             const flashObj = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash') as FlashObject;
             if (flashObj) {
                 return parseFloat(flashObj.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
-=======
-            const flashObj = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-            if (flashObj) {
-                return parseFloat((flashObj as FlashObject).GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
->>>>>>> Activate no-unsafe-any lint rule
-=======
-            const flashObj = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash') as FlashObject;
-            if (flashObj) {
-                return parseFloat(flashObj.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
->>>>>>> Return flash plugin in flashVersion and cast when vars are defined
             }
         } catch (e) {
             return 0;
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-        return 0;
->>>>>>> Activate no-unsafe-any lint rule
-=======
->>>>>>> Return flash plugin in flashVersion and cast when vars are defined
     }
     return 0;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 interface FlashObject extends ActiveXObject {
-=======
-interface FlashObject {
->>>>>>> Activate no-unsafe-any lint rule
-=======
-interface FlashObject extends ActiveXObject {
->>>>>>> Return flash plugin in flashVersion and cast when vars are defined
     GetVariable: (s: string) => string;
 }
