@@ -30,7 +30,7 @@ export class ItemPromise {
                 async.call(api, playlistItem, index) || Promise.resolve();
             asyncPromise.then(resolve).catch(reject);
         } else if (!this.asyncPromise) {
-            resolve(playlistItem);
+            resolve();
         }
         return promise;
     }
