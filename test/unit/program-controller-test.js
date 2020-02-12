@@ -105,7 +105,8 @@ describe('ProgramController', function () {
             mediaContainer: document.createElement('div'),
         }, customTestConfigOptions);
         model = new Model().setup(config);
-        programController = new ProgramController(model, new MediaElementPool());
+        const apiContext = {};
+        programController = new ProgramController(model, new MediaElementPool(), apiContext);
         programController.providers = {
             choose: () => ({ name: 'mock', provider: MockProvider }),
             load: () => Promise.resolve(MockProvider),
