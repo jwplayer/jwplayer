@@ -959,7 +959,11 @@ Object.assign(Controller.prototype, {
         this.setItemCallback = function (callback) {
             _programController.itemCallback = callback;
         };
-        this.getItemPromise = function (index = (_model.get('item') + (_model.get('itemReady') ? 1 : 0))) {
+        this.getItemPromise = function (index) {
+            const playlist = _model.get('playlist');
+            if (index < -1 || index > playlist.length - 1 || isNaN(index)) {
+                return null;
+            }
             return _programController.getItemPromise(index);
         };
 

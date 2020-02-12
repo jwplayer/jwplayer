@@ -969,9 +969,8 @@ export default function Api(element) {
          *
          * The Promise will throw if the async item callback is rejected.
          *
-         * @param {number} [index] - Specify the playlist item index. When omitted, the promise for the next
-         * playlist item will be returned.
-         * @returns {Promise<Item>} The playlist item promise.
+         * @param {number} index - A valid playlist item index, or -1 for the next recommended item.
+         * @returns {Promise<Item>|null} The playlist item promise, or null when index is invalid or setup is incomplete.
          */
         getPlaylistItemPromise(index) {
             const itemPromise = core.getItemPromise(index);
