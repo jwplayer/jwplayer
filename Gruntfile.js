@@ -120,8 +120,7 @@ module.exports = function(grunt) {
                 junitReporter: {
                     suite: '<%= grunt.task.current.target %>',
                     outputDir: 'reports/junit'
-                },
-                concurrency: 1
+                }
             },
             headless: {
                 browsers: ['ChromeHeadless']

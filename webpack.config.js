@@ -77,7 +77,7 @@ const webpackConfig = {
                     options: {
                         babelrc: false,
                         presets: [
-                            '@babel/preset-env',
+                            ['@babel/preset-env', { loose: true, modules: false }],
                             '@babel/preset-typescript'
                         ],
                         plugins: [
