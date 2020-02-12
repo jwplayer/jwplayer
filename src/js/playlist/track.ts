@@ -1,3 +1,5 @@
+import { PlaylistItemTrack } from '../types/generic.type';
+
 /**
  * A media source variant present in a playlist item
  * @internal
@@ -6,7 +8,7 @@
  * @property {boolean} default - Enable the track by default.
  */
 
-const Track = function(config) {
+const Track = function(config: PlaylistItemTrack): PlaylistItemTrack | undefined {
     // File is the only required attr
     if (!config || !config.file) {
         return;

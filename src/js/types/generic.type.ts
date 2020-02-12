@@ -11,3 +11,11 @@ export type PageNode = (Element | ChildNode) & {
 export type PlaylistItemType = any;
 
 export type HTMLTemplateString = string;
+
+export type PlaylistItemTrack = GenericObject & {
+    kind: string;
+    default: boolean;
+    file: string;
+};
+
+export type PlayerAPI = any;
