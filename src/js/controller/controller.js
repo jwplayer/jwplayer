@@ -87,7 +87,7 @@ Object.assign(Controller.prototype, {
             _trigger(type, event);
         }, _this);
 
-        const _programController = this._programController = new ProgramController(_model, mediaPool, _api);
+        const _programController = this._programController = new ProgramController(_model, mediaPool, _api._publicApi);
         updateProgramSoundSettings();
         addProgramControllerListeners();
         initQoe(_model, _programController);
@@ -960,7 +960,7 @@ Object.assign(Controller.prototype, {
             _programController.itemCallback = callback;
         };
         this.getItemPromise = function (index = (_model.get('item') + (_model.get('itemReady') ? 1 : 0))) {
-            return _programController.getItemPromise(index, _api);
+            return _programController.getItemPromise(index);
         };
 
         this.addButton = function(img, tooltip, callback, id, btnClass) {

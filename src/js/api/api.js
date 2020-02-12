@@ -974,7 +974,7 @@ export default function Api(element) {
          * @returns {Promise<Item>} The playlist item promise.
          */
         getPlaylistItemPromise(index) {
-            const itemPromise = core.getItemPromise(index, this);
+            const itemPromise = core.getItemPromise(index);
             if (!itemPromise) {
                 return null;
             }
