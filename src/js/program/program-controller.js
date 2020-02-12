@@ -7,8 +7,6 @@ import BackgroundMedia from 'program/background-media';
 import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED } from 'events/events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
 import { ItemPromise } from 'controller/next-item-promise';
-import { normalizePlaylistItem } from 'playlist/playlist';
-import Item from 'playlist/item';
 
 class ProgramController extends Events {
     /**
@@ -38,7 +36,13 @@ class ProgramController extends Events {
         }
     }
 
-    asyncItem(index, item) {
+    /**
+     * Runs the async playlist item callback / promise
+     * @param {number} index - The playlist index of the item
+     * @returns {Promise<PlaylistItem>} The ItemPromise run promise
+     * @memberOf ProgramController
+     */
+    asyncItem(index) {
         const { model } = this;
         // Set the player state to buffering if there is a playlist item callback
         const deferBufferingState = setTimeout(() => {
@@ -46,10 +50,7 @@ class ProgramController extends Events {
         });
         return this.getItemPromise(index).run().then((playlistItem) => {
             clearTimeout(deferBufferingState);
-            if (playlistItem && playlistItem !== item) {
-                return this.replaceItem(index, playlistItem);
-            }
-            return item;
+            return playlistItem;
         }).catch((/* itemPromiseError */) => {
             clearTimeout(deferBufferingState);
             if (index < model.get('playlist').length - 1) {
@@ -62,7 +63,7 @@ class ProgramController extends Events {
      * Activates a playlist item, loading it into the foreground.
      * This method will either load a new Provider or reuse the active one.
      * @param {number} index - The playlist index of the item
-     * @returns {Promise} The Provider promise. Resolves with the active Media Controller
+     * @returns {Promise<MediaController>} The Provider promise. Resolves with the active Media Controller
      * @memberOf ProgramController
      */
     setActiveItem(index) {
@@ -79,12 +80,7 @@ class ProgramController extends Events {
             // Loading a new item invalidates all background loading media
             this._destroyBackgroundMedia();
         }
-        return (this.loadPromise = this.asyncItem(index, item).then((playlistItem) => {
-            if (!playlistItem) {
-                // Exception was caught in asyncItem
-                return;
-            }
-
+        return (this.loadPromise = this.asyncItem(index).then((playlistItem) => {
             model.setActiveItem(index);
 
             const source = getSource(playlistItem);
@@ -355,15 +351,11 @@ class ProgramController extends Events {
 
         const loadPromise = this.getItemPromise(index).run()
             .then((playlistItem) => {
-                let normalizedItem = item;
-                if (playlistItem && playlistItem !== item) {
-                    normalizedItem = this.replaceItem(index, playlistItem);
-                    background.updateNext(normalizedItem);
-                }
-                const source = getSource(normalizedItem);
+                background.updateNext(playlistItem);
+                const source = getSource(playlistItem);
                 return this._setupMediaController(source)
                     .then(nextMediaController => {
-                        nextMediaController.activeItem = normalizedItem;
+                        nextMediaController.activeItem = playlistItem;
                         nextMediaController.preload();
                         return nextMediaController;
                     });
@@ -779,23 +771,6 @@ class ProgramController extends Events {
             }
         });
         this.itemPromises.length = 0;
-    }
-
-    /**
-     * Replace an item in the playlist.
-     * @param {number} index - The index in the playlist where the item will be replaced.
-     * @param {Item} item - The new playlist item.
-     *
-     * @returns {Item | null} Return the new item if successful. Otherwise (if missing sources or invalid), return null.
-     */
-    replaceItem(index, item) {
-        const { model } = this;
-        const newItem = normalizePlaylistItem(model, new Item(item), item.feedData || {});
-        if (newItem) {
-            model.get('playlist')[index] = newItem;
-            return newItem;
-        }
-        return null;
     }
 }
 

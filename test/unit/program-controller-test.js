@@ -434,19 +434,6 @@ describe('ProgramController', function () {
             });
     });
 
-    describe('replaceItem()', function () {
-        it('returns a normalized playlist item when playlist[index] is set', function () {
-            const result = programController.replaceItem(0, {
-                file: 'video.mp4'
-            });
-            expect(result).to.be.an('object').with.property('sources').with.lengthOf(1);
-        });
-        it('returns null when the playlist item argument is invalid', function () {
-            const result = programController.replaceItem(0, {});
-            expect(result).to.eql(null);
-        });
-    });
-
     describe('setActiveItem() with background loading', function () {
         it('Uses background loaded media controller and item', function () {
             const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
