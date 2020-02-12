@@ -15,13 +15,13 @@ class ProgramController extends Events {
      * ProgramController constructor
      * @param {Model} model - The player's model
      * @param {MediaElementPool} mediaPool - The player's media element pool
-     * @param {Api} api - The player API applied as context in async playlist item promise callback execution
+     * @param {PublicApi} publicApi - The player API applied as context in async playlist item promise callback execution
      */
-    constructor(model, mediaPool, api) {
+    constructor(model, mediaPool, publicApi) {
         super();
 
         this.adPlaying = false;
-        this.api = api;
+        this.apiContext = publicApi;
         this.background = BackgroundMedia();
         this.mediaPool = mediaPool;
         this.mediaController = null;
@@ -39,12 +39,12 @@ class ProgramController extends Events {
     }
 
     asyncItem(index, item) {
-        const { api, model } = this;
+        const { model } = this;
         // Set the player state to buffering if there is a playlist item callback
         const deferBufferingState = setTimeout(() => {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         });
-        return this.getItemPromise(index, api).run().then((playlistItem) => {
+        return this.getItemPromise(index).run().then((playlistItem) => {
             clearTimeout(deferBufferingState);
             if (playlistItem && playlistItem !== item) {
                 return this.replaceItem(index, playlistItem);
@@ -351,9 +351,9 @@ class ProgramController extends Events {
      * @returns {void}
      */
     backgroundLoad(item, index) {
-        const { api, background } = this;
+        const { background } = this;
 
-        const loadPromise = this.getItemPromise(index, api).run()
+        const loadPromise = this.getItemPromise(index).run()
             .then((playlistItem) => {
                 let normalizedItem = item;
                 if (playlistItem && playlistItem !== item) {
@@ -415,6 +415,7 @@ class ProgramController extends Events {
         this.off();
         this._destroyBackgroundMedia();
         this._destroyActiveMedia();
+        this.apiContext = null;
     }
 
     /**
@@ -762,10 +763,10 @@ class ProgramController extends Events {
         });
     }
 
-    getItemPromise(index, api) {
+    getItemPromise(index) {
         let itemPromise = this.itemPromises[index];
         if (!itemPromise) {
-            itemPromise = this.itemPromises[index] = new ItemPromise(index, this.model, api);
+            itemPromise = this.itemPromises[index] = new ItemPromise(index, this.model, this.apiContext);
             itemPromise.callback = this.model.get('playlistItemCallback');
         }
         return itemPromise;
