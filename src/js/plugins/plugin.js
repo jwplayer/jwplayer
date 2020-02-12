@@ -2,7 +2,7 @@ import ScriptLoader from 'utils/scriptloader';
 import { getAbsolutePath } from 'utils/parser';
 import { extension } from 'utils/strings';
 import { PlayerError } from 'api/errors';
-import { mapPluginToCode } from 'plugins/utils';
+import { getPluginErrorCode } from 'plugins/utils';
 
 const PLUGIN_PATH_TYPE_ABSOLUTE = 0;
 const PLUGIN_PATH_TYPE_RELATIVE = 1;
@@ -77,7 +77,7 @@ Object.assign(Plugin.prototype, {
     getNewInstance(api, config, div) {
         const PluginClass = this.js;
         if (typeof PluginClass !== 'function') {
-            throw new PlayerError(null, mapPluginToCode(this.url) + 100);
+            throw new PlayerError(null, getPluginErrorCode(this.url) + 100);
         }
         const pluginInstance = new PluginClass(api, config, div);
 

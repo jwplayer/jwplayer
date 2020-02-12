@@ -1,5 +1,5 @@
 import { PlayerError } from 'api/errors';
-import { configurePlugin, mapPluginToCode } from 'plugins/utils';
+import { configurePlugin, getPluginErrorCode } from 'plugins/utils';
 
 const PluginLoader = function () {
     this.load = function (api, pluginsModel, pluginsConfig, model) {
@@ -19,7 +19,7 @@ const PluginLoader = function () {
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
                     if (!error.code) {
-                        return new PlayerError(null, mapPluginToCode(pluginUrl), error);
+                        return new PlayerError(null, getPluginErrorCode(pluginUrl), error);
                     }
                     return error;
                 });
