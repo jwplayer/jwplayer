@@ -11,10 +11,15 @@ export class ItemPromise {
         });
         this.async = null;
         this.asyncPromise = null;
+        this.item = null;
     }
 
     set callback (handler) {
         this.async = handler;
+    }
+
+    set resolvedItem (item) {
+        this.item = item;
     }
 
     run () {
@@ -23,6 +28,9 @@ export class ItemPromise {
         if (!playlistItem) {
             const message = index === -1 ? 'No recs item' : `No playlist item at index ${index}`;
             reject(new Error(message));
+        }
+        if (this.item) {
+            return Promise.resolve(this.item);
         }
         if (async) {
             this.clear();

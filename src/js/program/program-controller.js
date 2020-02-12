@@ -47,6 +47,7 @@ class ProgramController extends Events {
         return this.getItemPromise(index).run().then((playlistItem) => {
             clearTimeout(deferBufferingState);
             if (playlistItem && playlistItem !== item) {
+                console.log('replaced in async');
                 return this.replaceItem(index, playlistItem);
             }
             return item;
@@ -353,11 +354,13 @@ class ProgramController extends Events {
     backgroundLoad(item, index) {
         const { background } = this;
 
-        const loadPromise = this.getItemPromise(index).run()
+        const itemPromise = this.getItemPromise(index);
+        const loadPromise = itemPromise.run()
             .then((playlistItem) => {
                 let normalizedItem = item;
                 if (playlistItem && playlistItem !== item) {
                     normalizedItem = this.replaceItem(index, playlistItem);
+                    itemPromise.resolvedItem = normalizedItem;
                     background.updateNext(normalizedItem);
                 }
                 const source = getSource(normalizedItem);
