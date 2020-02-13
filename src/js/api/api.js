@@ -973,11 +973,7 @@ export default function Api(element) {
          * @returns {Promise<Item>|null} The playlist item promise, or null when index is invalid or setup is incomplete.
          */
         getPlaylistItemPromise(index) {
-            const itemPromise = core.getItemPromise(index);
-            if (!itemPromise) {
-                return null;
-            }
-            return itemPromise.promise;
+            return core.getItemPromise(index);
         }
     });
 }

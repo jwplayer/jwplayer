@@ -1,9 +1,22 @@
 import { normalizePlaylistItem } from 'playlist/playlist';
+// Type only imports
 import Item from 'playlist/item';
+import Model from 'controller/model';
+import ApiPublic from 'api/api';
 
-export class ItemPromise {
+type AsyncCallback = (item: Item, index: number) => Promise<Item | void> | void;
 
-    constructor (index, model, api) {
+export class AsyncItemController {
+    private index: number;
+    private model: Model;
+    private api: ApiPublic;
+    private promise: Promise<Item>;
+    private resolve!: (item: Item) => void;
+    private reject!: (error: Error) => void;
+    private async: AsyncCallback | null;
+    private asyncPromise: Promise<Item | void> | null;
+
+    constructor (index: number, model: Model, api: ApiPublic) {
         this.index = index;
         this.model = model;
         this.api = api;
@@ -15,11 +28,11 @@ export class ItemPromise {
         this.asyncPromise = null;
     }
 
-    set callback (handler) {
+    set callback (handler: AsyncCallback) {
         this.async = handler;
     }
 
-    run () {
+    run (): Promise<Item> {
         const { api, async, index, model, resolve, reject, promise } = this;
         const playlist = model.get('playlist');
         const playlistItem = this.getItem(index);
@@ -31,7 +44,7 @@ export class ItemPromise {
             this.clear();
             const asyncPromise = this.asyncPromise = async.call(api, playlistItem, index);
             if (asyncPromise && asyncPromise.then) {
-                asyncPromise.then((item) => {
+                asyncPromise.then((item: Item | void) => {
                     if (item && item !== playlistItem) {
                         const newItem = normalizePlaylistItem(model, new Item(item), item.feedData || {});
                         if (index === -1) {
@@ -54,7 +67,7 @@ export class ItemPromise {
         return promise;
     }
 
-    getItem(index) {
+    getItem(index: number): Item {
         const { model } = this;
         if (index === -1) {
             return model.get('nextUp');
@@ -63,7 +76,7 @@ export class ItemPromise {
         return playlist[index];
     }
 
-    clear () {
+    clear (): void {
         this.async = null;
     }
 }

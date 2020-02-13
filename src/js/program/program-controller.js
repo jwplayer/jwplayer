@@ -6,7 +6,7 @@ import Events from 'utils/backbone.events';
 import BackgroundMedia from 'program/background-media';
 import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED } from 'events/events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
-import { ItemPromise } from 'controller/next-item-promise';
+import { AsyncItemController } from 'controller/async-item';
 
 class ProgramController extends Events {
     /**
@@ -28,7 +28,7 @@ class ProgramController extends Events {
         this.providers = new Providers(model.getConfiguration());
         this.loadPromise = null;
         this.backgroundLoading = model.get('backgroundLoading');
-        this.itemPromises = [];
+        this.asyncItems = [];
 
         if (!this.backgroundLoading) {
             // If background loading is not supported, set the shared media element
@@ -42,13 +42,13 @@ class ProgramController extends Events {
      * @returns {Promise<PlaylistItem>} The ItemPromise run promise
      * @memberOf ProgramController
      */
-    asyncItem(index) {
+    asyncActiveItem(index) {
         const { model } = this;
         // Set the player state to buffering if there is a playlist item callback
         const deferBufferingState = setTimeout(() => {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         });
-        return this.getItemPromise(index).run().then((playlistItem) => {
+        return this.getAsyncItem(index).run().then((playlistItem) => {
             clearTimeout(deferBufferingState);
             return playlistItem;
         }).catch((/* itemPromiseError */) => {
@@ -80,7 +80,7 @@ class ProgramController extends Events {
             // Loading a new item invalidates all background loading media
             this._destroyBackgroundMedia();
         }
-        return (this.loadPromise = this.asyncItem(index).then((playlistItem) => {
+        return (this.loadPromise = this.asyncActiveItem(index).then((playlistItem) => {
             model.setActiveItem(index);
 
             const source = getSource(playlistItem);
@@ -349,7 +349,7 @@ class ProgramController extends Events {
     backgroundLoad(item, index) {
         const { background } = this;
 
-        const loadPromise = this.getItemPromise(index).run()
+        const loadPromise = this.getAsyncItem(index).run()
             .then((playlistItem) => {
                 background.updateNext(playlistItem);
                 const source = getSource(playlistItem);
@@ -748,29 +748,29 @@ class ProgramController extends Events {
 
     set itemCallback(callback) {
         this.model.set('playlistItemCallback', callback);
-        this.itemPromises.forEach(itemPromise => {
-            if (itemPromise) {
-                itemPromise.callback = callback;
+        this.asyncItems.forEach(asyncItem => {
+            if (asyncItem) {
+                asyncItem.callback = callback;
             }
         });
     }
 
-    getItemPromise(index) {
-        let itemPromise = this.itemPromises[index];
-        if (!itemPromise) {
-            itemPromise = this.itemPromises[index] = new ItemPromise(index, this.model, this.apiContext);
-            itemPromise.callback = this.model.get('playlistItemCallback');
+    getAsyncItem(index) {
+        let asyncItem = this.asyncItems[index];
+        if (!asyncItem) {
+            asyncItem = this.asyncItems[index] = new AsyncItemController(index, this.model, this.apiContext);
+            asyncItem.callback = this.model.get('playlistItemCallback');
         }
-        return itemPromise;
+        return asyncItem;
     }
 
     clearItemPromises() {
-        this.itemPromises.forEach(itemPromise => {
-            if (itemPromise) {
-                itemPromise.reject(new Error('Item playback aborted'));
+        this.asyncItems.forEach(asyncItemController => {
+            if (asyncItemController) {
+                asyncItemController.reject(new Error('Item playback aborted'));
             }
         });
-        this.itemPromises.length = 0;
+        this.asyncItems.length = 0;
     }
 }
 

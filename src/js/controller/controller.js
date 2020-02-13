@@ -3,7 +3,8 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
+import Playlist, { filterPlaylist, normalizePlaylistItem, validatePlaylist } from 'playlist/playlist';
+import Item from 'playlist/item';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -964,7 +965,11 @@ Object.assign(Controller.prototype, {
             if (index < -1 || index > playlist.length - 1 || isNaN(index)) {
                 return null;
             }
-            return _programController.getItemPromise(index);
+            const asyncItem = _programController.getAsyncItem(index);
+            if (!asyncItem) {
+                return null;
+            }
+            return asyncItem.promise;
         };
 
         this.addButton = function(img, tooltip, callback, id, btnClass) {
@@ -1048,17 +1053,21 @@ Object.assign(Controller.prototype, {
         };
 
         this.setPlaylistItem = function (index, item) {
-            const newItem = _programController.setPlaylistItem(index, item);
-            if (newItem) {
-                // If the item is replaced using the api here outside of program-controller, reset any item promise
-                const itemPromise = _programController.itemPromises[index];
-                if (itemPromise) {
-                    itemPromise.reject(new Error('Item replaced'));
-                    _programController.itemPromises[index] = null;
-                }
-                // If the current item was replaced, and the player is idle, load the new item
-                if (index === _model.get('item') && _model.get('state') === 'idle') {
-                    this.setItemIndex(index);
+            const playlist = _model.get('playlist');
+            const playlistItem = playlist[index];
+            if (item && item !== playlistItem) {
+                const newItem = normalizePlaylistItem(_model, new Item(item), item.feedData || {});
+                if (newItem) {
+                    // If the item is replaced using the api here outside of program-controller, reset any item promise
+                    const asyncItemController = _programController.asyncItems[index];
+                    if (asyncItemController) {
+                        asyncItemController.reject(new Error('Item replaced'));
+                        _programController.asyncItems[index] = null;
+                    }
+                    // If the current item was replaced, and the player is idle, load the new item
+                    if (index === _model.get('item') && _model.get('state') === 'idle') {
+                        this.setItemIndex(index);
+                    }
                 }
             }
         };

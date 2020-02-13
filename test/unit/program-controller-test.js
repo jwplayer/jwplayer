@@ -99,11 +99,11 @@ describe('ProgramController', function () {
     let model = null;
     let programController = null;
 
-    const createProgramController = function (customTestConfigOptions = null) {
+    const createProgramController = function (customTestConfigOptions) {
         const config = Object.assign({}, defaultConfig, {
             playlist: defaultPlaylist.slice(0),
             mediaContainer: document.createElement('div'),
-        }, customTestConfigOptions);
+        }, customTestConfigOptions || {});
         model = new Model().setup(config);
         const apiContext = {};
         programController = new ProgramController(model, new MediaElementPool(), apiContext);
@@ -116,13 +116,17 @@ describe('ProgramController', function () {
         programController.toString = (() => '[ProgramController]');
     };
 
-    beforeEach(createProgramController);
-
-    afterEach(function () {
+    const destroyProgramController = function () {
         programController.destroy();
         model.destroy();
         model = null;
         programController = null;
+    };
+
+    beforeEach(() => createProgramController());
+
+    afterEach(() => {
+        destroyProgramController();
         sandbox.restore();
     });
 
@@ -438,6 +442,7 @@ describe('ProgramController', function () {
     describe('setActiveItem() with background loading', function () {
         it('Uses background loaded media controller and item', function () {
             const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
+            destroyProgramController();
             createProgramController({
                 playlist
             });
@@ -460,6 +465,7 @@ describe('ProgramController', function () {
 
         it('Uses background loaded media controller when activating an item still background loading', function () {
             const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
+            destroyProgramController();
             createProgramController({
                 playlist
             });
@@ -482,6 +488,7 @@ describe('ProgramController', function () {
 
         it('Uses background loaded media controller and item with async api item replacement', function () {
             const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
+            destroyProgramController();
             createProgramController({
                 playlist
             });
@@ -517,6 +524,7 @@ describe('ProgramController', function () {
 
         it('Uses background loaded media controller and item with async api item replacement when activating an item still background loading', function () {
             const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
+            destroyProgramController();
             createProgramController({
                 playlist
             });
