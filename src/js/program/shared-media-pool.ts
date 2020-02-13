@@ -1,4 +1,4 @@
-import { MediaElementPoolInt, OptionalUndefVideo } from './media-element-pool';
+import { MediaElementPoolInt, OptionalUndefVideo } from 'program/media-element-pool';
 
 export default function SharedMediaPool(sharedElement: HTMLVideoElement, mediaPool: MediaElementPoolInt): MediaElementPoolInt {
     return Object.assign({}, mediaPool, {
