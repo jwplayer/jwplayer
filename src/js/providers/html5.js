@@ -334,6 +334,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             if ((!_videotag.videoWidth && !isAudioStream()) || _currentQuality === -1) {
                 return;
             }
+            _this.ensureMetaTracksActive();
             level.width = _videotag.videoWidth;
             level.height = _videotag.videoHeight;
             _setMediaType();
@@ -399,6 +400,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             const rangeUpdated = !dvrPosition || Math.abs(dvrEnd - seekRange.end) > 1;
             if (rangeUpdated) {
                 updateDvrPosition(seekRange);
+                _this.ensureMetaTracksActive();
             }
             if (isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
                 return dvrPosition;
@@ -411,7 +413,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         dvrEnd = seekRange.end;
         dvrPosition = Math.min(0, _videotag.currentTime - dvrEnd);
         dvrUpdatedTime = now();
-        _this.ensureMetaTracksActive();
     }
 
     _this.getDuration = function() {
