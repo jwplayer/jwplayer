@@ -9,7 +9,7 @@ export default function middleware(model: GenericObject, type: string, currentSt
         case 'pause':
         case 'play':
         case 'ready': {
-            const viewable: boolean | undefined = model.get('viewable');
+            const viewable: number | undefined = model.get('viewable');
             // Don't add viewable to events if we don't know we're viewable
             if (viewable !== undefined) {
                 // Emit viewable as 0 or 1
