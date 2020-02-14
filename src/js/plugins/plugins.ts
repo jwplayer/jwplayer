@@ -8,7 +8,9 @@ declare global {
 
 const pluginsModel = new PluginsModel();
 
-export const registerPlugin = function(name: string, minimumVersion: string, pluginClass: Function): void {
+type PluginFuncDef = (api: PlayerAPI, config: GenericObject, div: HTMLDivElement) => void;
+
+export const registerPlugin = function(name: string, minimumVersion: string, pluginClass: PluginFuncDef): void {
     let plugin = pluginsModel.addPlugin(name);
     if (!plugin.js) {
         plugin.registerPlugin(name, minimumVersion, pluginClass);

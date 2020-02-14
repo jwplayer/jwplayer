@@ -1,10 +1,10 @@
 type PlaylistItemTrack = {
     file?: string;
-    kind: string;
-    default: boolean;
-    name: string;
-    label: string;
-    language: string;
+    kind: 'captions' | 'metadata' | 'thumbnails' | 'chapters';
+    default?: boolean;
+    name?: string;
+    label?: string;
+    language?: string;
 }
 
 /**

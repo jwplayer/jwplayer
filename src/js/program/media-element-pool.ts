@@ -46,10 +46,11 @@ export default function MediaElementPool(): MediaElementPoolInt {
         played(): void {
             primed = true;
         },
-        getPrimedElement(): OptionalUndefVideo | null {
-            if (pool.length) {
+        getPrimedElement(): HTMLVideoElement | null {
+            const el = pool.shift();
+            if (el) {
                 // Shift over pop so that we cycle through elements instead of reusing the same one
-                return pool.shift();
+                return el;
             }
             return null;
         },
@@ -100,7 +101,7 @@ function primeMediaElementForPlayback(mediaElement: HTMLVideoElement): void {
     }
 }
 
-export function createMediaElement(options: GenericObject | void): HTMLVideoElement {
+export function createMediaElement(options?: GenericObject): HTMLVideoElement {
     const mediaElement = document.createElement('video');
 
     mediaElement.className = 'jw-video jw-reset';
