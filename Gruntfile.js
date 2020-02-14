@@ -264,6 +264,11 @@ module.exports = function(grunt) {
         'karma:local'
     ]);
 
+    grunt.registerTask('ts', [
+        'lint',
+        'type-check'
+    ]);
+
     grunt.registerTask('serve', [
         'connect:livereload',
         'watch'
