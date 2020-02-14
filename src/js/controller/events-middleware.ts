@@ -1,5 +1,7 @@
-export default function middleware(model, type, currentState) {
-    let newState = currentState;
+import { GenericObject } from "types/generic.type";
+
+export default function middleware(model: GenericObject, type: string, currentState: GenericObject) : GenericObject {
+    let newState: GenericObject = currentState;
 
     switch (type) {
         case 'time':
@@ -7,7 +9,7 @@ export default function middleware(model, type, currentState) {
         case 'pause':
         case 'play':
         case 'ready': {
-            const viewable = model.get('viewable');
+            const viewable: boolean | undefined = model.get('viewable');
             // Don't add viewable to events if we don't know we're viewable
             if (viewable !== undefined) {
                 // Emit viewable as 0 or 1

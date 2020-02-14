@@ -1,13 +1,18 @@
-function execResult(array, index) {
+import { GenericObject } from 'types/generic.type';
+
+function execResult(array, index) : string | undefined {
+    let result: string | undefined;
+
     if (array && array.length > index) {
-        return array[index];
+        result = array[index];
     }
+    return result;
 }
 
-export function osVersion(osEnvironment, agent) {
-    let version;
-    let major;
-    let minor;
+export function osVersion(osEnvironment: GenericObject, agent:string) : GenericObject {
+    let version: string | undefined;
+    let major: number | undefined;
+    let minor: number | undefined;
 
     if (osEnvironment.windows) {
         version = execResult(/Windows(?: NT|)? ([._\d]+)/.exec(agent), 1);
@@ -36,7 +41,7 @@ export function osVersion(osEnvironment, agent) {
     if (version) {
         major = parseInt(version, 10);
         // Versions may be in the d.d.d or d_d_d format
-        const versionNumbers = version.split(/[._]/);
+        const versionNumbers: string[] = version.split(/[._]/);
         if (versionNumbers) {
             minor = parseInt(versionNumbers[1], 10);
         }
