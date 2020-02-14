@@ -1,6 +1,6 @@
 import { GenericObject } from 'types/generic.type';
 
-function execResult(array: RegExpExecArray | null, index: number) : string | undefined {
+function execResult(array: RegExpExecArray | null, index: number): string | undefined {
     let result: string | undefined;
 
     if (array && array.length > index) {
@@ -9,7 +9,7 @@ function execResult(array: RegExpExecArray | null, index: number) : string | und
     return result;
 }
 
-export function osVersion(osEnvironment: GenericObject, agent:string) : GenericObject {
+export function osVersion(osEnvironment: GenericObject, agent: string): GenericObject {
     let version: string | undefined;
     let major: number | undefined;
     let minor: number | undefined;

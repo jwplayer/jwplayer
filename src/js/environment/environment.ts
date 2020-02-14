@@ -31,8 +31,8 @@ function supportsPassive(): boolean {
         const opts: GenericObject = Object.defineProperty({}, 'passive', {
             get: () => (passiveOptionRead = true)
         });
-        window.addEventListener('testPassive', function(){}, opts);
-        window.removeEventListener('testPassive', function(){}, opts);
+        window.addEventListener('testPassive', {} as EventListenerObject, opts);
+        window.removeEventListener('testPassive', {} as EventListenerObject, opts);
     } catch (e) {/* noop */}
 
     return passiveOptionRead;
