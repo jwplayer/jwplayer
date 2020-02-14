@@ -24,15 +24,15 @@ import { GenericObject } from 'types/generic.type';
 
 const userAgent: string = navigator.userAgent;
 
-function supportsPassive() : boolean {
-    let passiveOptionRead: boolean = false;
+function supportsPassive(): boolean {
+    let passiveOptionRead = false;
 
     try {
         const opts: GenericObject = Object.defineProperty({}, 'passive', {
             get: () => (passiveOptionRead = true)
         });
-        window.addEventListener('testPassive', () =>{}, opts);
-        window.removeEventListener('testPassive', () => {}, opts);
+        window.addEventListener('testPassive', function(){}, opts);
+        window.removeEventListener('testPassive', function(){}, opts);
     } catch (e) {/* noop */}
 
     return passiveOptionRead;

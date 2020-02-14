@@ -1,6 +1,6 @@
 import { GenericObject } from 'types/generic.type';
 
-function execResult(array, index) : string | undefined {
+function execResult(array: RegExpExecArray | null, index: number) : string | undefined {
     let result: string | undefined;
 
     if (array && array.length > index) {
