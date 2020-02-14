@@ -626,25 +626,6 @@ class ProgramController extends Events {
     }
 
     /**
-     * Mutes or unmutes the activate media.
-     * Syncs across all media elements.
-     * @param {boolean} mute - Mute or unmute media?
-     * @returns {void}
-     */
-    set mute(mute) {
-        const { background, mediaController, mediaPool } = this;
-
-        if (mediaController) {
-            mediaController.mute = mute;
-        }
-        if (background.currentMedia) {
-            background.currentMedia.mute = mute;
-        }
-
-        mediaPool.syncMute(mute);
-    }
-
-    /**
      * Seeks the media to the provided position.
      * Set the item's starttime so that if detached while seeking it resumes from the correct time.
      * ALso set the item's starttime so that if we seek before loading, we load and begin at the correct time.
@@ -692,12 +673,31 @@ class ProgramController extends Events {
     }
 
     /**
+     * Mutes or unmutes the activate media.
+     * Syncs across all media elements.
+     * @param {boolean} mute - Mute or unmute media?
+     * @returns {void}
+     */
+    setMute(mute) {
+        const { background, mediaController, mediaPool } = this;
+
+        if (mediaController) {
+            mediaController.mute = mute;
+        }
+        if (background.currentMedia) {
+            background.currentMedia.mute = mute;
+        }
+
+        mediaPool.syncMute(mute);
+    }
+
+    /**
      * Sets the volume level.
      * Syncs across all media elements.
      * @param {number} volume - A number from 0 to 1.
      * @returns {void}
      */
-    set volume(volume) {
+    setVolume(volume) {
         const { background, mediaController, mediaPool } = this;
 
         if (mediaController) {

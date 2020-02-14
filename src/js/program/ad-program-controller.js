@@ -198,7 +198,7 @@ export default class AdProgramController extends ProgramController {
     set mute(mute) {
         const { mediaController, model, provider } = this;
         model.set('mute', mute);
-        super.mute = mute;
+        super.setMute(mute);
         if (!mediaController) {
             provider.mute(mute);
         }
@@ -207,7 +207,7 @@ export default class AdProgramController extends ProgramController {
     set volume(volume) {
         const { mediaController, model, provider } = this;
         model.set('volume', volume);
-        super.volume = volume;
+        super.setVolume(volume);
         if (!mediaController) {
             provider.volume(volume);
         }

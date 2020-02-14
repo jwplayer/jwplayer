@@ -862,8 +862,8 @@ Object.assign(Controller.prototype, {
         }
 
         function updateProgramSoundSettings() {
-            _programController.mute = _model.getMute();
-            _programController.volume = _model.get('volume');
+            _programController.setMute(_model.getMute());
+            _programController.setVolume(_model.get('volume'));
         }
 
         this.preload = preload;
