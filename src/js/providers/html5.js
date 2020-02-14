@@ -2,7 +2,7 @@ import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import {
-    STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META_CUE_PARSED, MEDIA_META, MEDIA_ERROR, WARNING,
+    STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META, MEDIA_ERROR, WARNING,
     MEDIA_VISUAL_QUALITY, MEDIA_TYPE, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, NATIVE_FULLSCREEN, STATE_LOADING
 } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
@@ -57,18 +57,24 @@ function _removeListeners(eventsHash, videoTag) {
 }
 
 function VideoProvider(_playerId, _playerConfig, mediaElement) {
+    const _this = this;
+
     // Current media state
-    this.state = STATE_IDLE;
+    _this.state = STATE_IDLE;
 
     // Are we buffering due to seek, or due to playback?
-    this.seeking = false;
+    _this.seeking = false;
 
     // Value of mediaElement.currentTime on last "timeupdate" used for decode error retry workaround
-    this.currentTime = -1;
+    _this.currentTime = -1;
 
     // Attempt to reload video on error
-    this.retries = 0;
-    this.maxRetries = 3;
+    _this.retries = 0;
+    _this.maxRetries = 3;
+
+    let { loadAndParseHlsMetadata, minDvrWindow } = _playerConfig;
+
+    _this.loadAndParseHlsMetadata = loadAndParseHlsMetadata === undefined ? true : !!loadAndParseHlsMetadata;
 
     // Always render natively in iOS and Safari, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
@@ -82,10 +88,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
         return configRenderNatively && Browser.chrome;
     }
-
-    const _this = this;
-
-    let minDvrWindow = _playerConfig.minDvrWindow;
 
     const MediaEvents = {
         progress() {
@@ -177,6 +179,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
         seeked() {
             VideoEvents.seeked.call(_this);
+            _this.ensureMetaTracksActive();
         },
 
         waiting() {
@@ -349,26 +352,30 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             const startDate = _videotag.getStartDate();
             const startDateTime = startDate.getTime ? startDate.getTime() : NaN;
             if (startDateTime !== _this.startDateTime && !isNaN(startDateTime)) {
-                _this.startDateTime = startDateTime;
-                const programDateTime = startDate.toISOString();
-                const { start, end } = _this.getSeekRange();
-                const metadataType = 'program-date-time';
-                const metadata = {
-                    metadataType,
-                    programDateTime,
-                    start,
-                    end
-                };
-                const cue = _this.createCue(start, end, JSON.stringify(metadata));
-                _this.addVTTCue({
-                    type: 'metadata',
-                    cue,
-                });
-                delete metadata.metadataType;
-                _this.trigger(MEDIA_META_CUE_PARSED, { metadataType, metadata });
+                _this.setStartDateTime(startDateTime);
             }
         }
     }
+
+    _this.setStartDateTime = function(startDateTime) {
+        _this.startDateTime = startDateTime;
+        const programDateTime = new Date(startDateTime).toISOString();
+        let { start, end } = _this.getSeekRange();
+        start = Math.max(0, start);
+        end = Math.max(start, end + 10);
+        const metadataType = 'program-date-time';
+        const metadata = {
+            metadataType,
+            programDateTime,
+            start,
+            end
+        };
+        const cue = _this.createCue(start, end, JSON.stringify(metadata));
+        _this.addVTTCue({
+            type: 'metadata',
+            cue,
+        });
+    };
 
     function setTimeBeforeSeek(currentTime) {
         _timeBeforeSeek = currentTime;
@@ -404,6 +411,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         dvrEnd = seekRange.end;
         dvrPosition = Math.min(0, _videotag.currentTime - dvrEnd);
         dvrUpdatedTime = now();
+        _this.ensureMetaTracksActive();
     }
 
     _this.getDuration = function() {

@@ -2,7 +2,7 @@ import { loadFile, cancelXhr, convertToVTTCues } from 'controller/tracks-loader'
 import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
-import { MEDIA_META, WARNING } from 'events/events';
+import { MEDIA_META_CUE_PARSED, MEDIA_META, WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
 
 // Used across all providers for loading tracks and handling browser track-related events
@@ -15,7 +15,8 @@ const Tracks = {
     _metaCuesByTextTime: null,
     _currentTextTrackIndex: -1,
     _unknownCount: 0,
-    _activeCues: null,
+    _activeCues: {},
+    _cues: {},
     _initTextTracks,
     addTracksListener,
     clearTracks,
@@ -37,7 +38,9 @@ const Tracks = {
     createCue,
     addVTTCue,
     addVTTCuesToTrack,
+    parseNativeID3Cues,
     triggerActiveCues,
+    ensureMetaTracksActive,
     renderNatively: false
 };
 
@@ -60,7 +63,7 @@ function setTextTracks(tracks) {
     } else {
         // Remove the 608 captions track that was mutated by the browser
         this._unknownCount = 0;
-        this._textTracks = this._textTracks.filter(function(track) {
+        this._textTracks = this._textTracks.filter((track) => {
             const trackId = track._id;
             if (this.renderNatively && trackId && trackId.indexOf('nativecaptions') === 0) {
                 delete this._tracksById[trackId];
@@ -68,11 +71,12 @@ function setTextTracks(tracks) {
             } else if (track.name && track.name.indexOf('Unknown') === 0) {
                 this._unknownCount++;
             }
+            if (trackId.indexOf('nativemetadata') === 0 && track.inBandMetadataTrackDispatchType === 'com.apple.streaming') {
+                // Remove the ID3 track from the cache
+                delete this._tracksById[trackId];
+            }
             return true;
         }, this);
-
-        // Remove the ID3 track from the cache
-        delete this._tracksById.nativemetadata;
     }
 
     // filter for 'subtitles' or 'captions' tracks
@@ -108,7 +112,9 @@ function setTextTracks(tracks) {
             if (track.kind === 'metadata') {
                 // track mode needs to be "hidden", not "showing", so that cues don't display as captions in Firefox
                 track.mode = 'hidden';
-                track.oncuechange = _cueChangeHandler.bind(this);
+                this.cueChangeHandler = this.cueChangeHandler || _cueChangeHandler.bind(this);
+                track.removeEventListener('cuechange', this.cueChangeHandler);
+                track.addEventListener('cuechange', this.cueChangeHandler);
                 this._tracksById[track._id] = track;
             } else if (_kindSupported(track.kind)) {
                 const mode = track.mode;
@@ -367,23 +373,37 @@ function removeTracksListener(tracks, eventType, handler) {
 }
 
 function clearMetaCues() {
-    const metadataTrack = this._tracksById && this._tracksById.nativemetadata;
-    if (metadataTrack) {
-        _removeCues(this.renderNatively, [metadataTrack]);
-        metadataTrack.mode = 'hidden';
-        metadataTrack.inuse = true;
-        this._cachedVTTCues[metadataTrack._id] = {};
+    const { _tracksById } = this;
+    if (_tracksById) {
+        Object.keys(_tracksById).forEach(trackId => {
+            if (trackId.indexOf('nativemetadata') === 0) {
+                const metadataTrack = _tracksById[trackId];
+                _removeCues(this.renderNatively, [metadataTrack]);
+                metadataTrack.mode = 'hidden';
+                metadataTrack.inuse = true;
+                this._cachedVTTCues[metadataTrack._id] = {};
+            }
+        });
     }
 }
 
 function clearTracks() {
     cancelXhr(this._itemTracks);
-    const metadataTrack = this._tracksById && this._tracksById.nativemetadata;
-    if (this.renderNatively || metadataTrack) {
+    if (this.renderNatively) {
         _removeCues(this.renderNatively, this.video.textTracks);
-        if (metadataTrack) {
-            metadataTrack.oncuechange = null;
-        }
+    }
+
+    const { _tracksById } = this;
+    if (_tracksById) {
+        Object.keys(_tracksById).forEach(trackId => {
+            if (trackId.indexOf('nativemetadata') === 0) {
+                const metadataTrack = _tracksById[trackId];
+                if (this.cueChangeHandler) {
+                    metadataTrack.removeEventListener('cuechange', this.cueChangeHandler);
+                }
+                _removeCues(this.renderNatively, [metadataTrack]);
+            }
+        });
     }
 
     this._itemTracks = null;
@@ -393,7 +413,8 @@ function clearTracks() {
     this._metaCuesByTextTime = null;
     this._unknownCount = 0;
     this._currentTextTrackIndex = -1;
-    this._activeCues = null;
+    this._activeCues = {};
+    this._cues = {};
     if (this.renderNatively) {
         // Removing listener first to ensure that removing cues does not trigger it unnecessarily
         this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
@@ -667,54 +688,119 @@ function _clearSideloadedTextTracks() {
 }
 
 function _cueChangeHandler(e) {
-    this.triggerActiveCues(e.currentTarget.activeCues);
-}
+    const track = e.target;
+    const { _id, activeCues, cues } = track;
 
-function triggerActiveCues(activeCues) {
-    if (!activeCues || !activeCues.length) {
-        this._activeCues = null;
-        return;
+    if (cues && cues.length) {
+        const previousCues = this._cues[_id];
+        this._cues[_id] = Array.prototype.slice.call(cues);
+        this.parseNativeID3Cues(cues, previousCues);
+    } else {
+        this._cues[_id] = null;
     }
 
-    const previouslyActiveCues = this._activeCues || [];
+    if (activeCues && activeCues.length) {
+        const previousActiveCues = this._activeCues[_id];
+        this._activeCues[_id] = Array.prototype.slice.call(activeCues);
+        this.triggerActiveCues(activeCues, previousActiveCues);
+    } else {
+        this._activeCues[_id] = null;
+    }
+}
+
+function parseNativeID3Cues(cues, previousCues) {
+    const lastCue = cues[cues.length - 1];
+    if (previousCues && previousCues.length === cues.length &&
+        (lastCue._parsed || cuesMatch(previousCues[previousCues.length - 1], lastCue))) {
+        return;
+    }
+    let dataCueSetIndex = -1;
+    let startTime = -1;
+    const dataCueSets = Array.prototype.reduce.call(cues, (cueSets, cue) => {
+        if (!cue._parsed && (cue.data || cue.value)) {
+            if (cue.startTime !== startTime || cue.endTime === null) {
+                startTime = cue.startTime;
+                cueSets[++dataCueSetIndex] = [];
+            }
+            cueSets[dataCueSetIndex].push(cue);
+        }
+        cue._parsed = true;
+        return cueSets;
+    }, []);
+    dataCueSets.forEach(dataCues => {
+        const event = getId3CueMetaEvent(dataCues);
+        this.trigger(MEDIA_META_CUE_PARSED, event);
+    });
+}
+
+function triggerActiveCues(activeCues, previousActiveCues) {
     const dataCues = Array.prototype.filter.call(activeCues, cue => {
         // Prevent duplicate meta events for cues that were active in the previous "cuechange" event
-        if (previouslyActiveCues.some(prevCue => cuesMatch(cue, prevCue))) {
+        if (previousActiveCues && previousActiveCues.some(prevCue => cuesMatch(cue, prevCue))) {
             return false;
         }
         if (cue.data || cue.value) {
             return true;
         }
         if (cue.text) {
-            const metadata = JSON.parse(cue.text);
-            const metadataTime = cue.startTime;
-            const event = {
-                metadataTime,
-                metadata
-            };
-            if (metadata.programDateTime) {
-                event.programDateTime = metadata.programDateTime;
-            }
-            if (metadata.metadataType) {
-                event.metadataType = metadata.metadataType;
-                delete metadata.metadataType;
-            }
+            const event = getTextCueMetaEvent(cue, false);
             this.trigger(MEDIA_META, event);
         }
         return false;
     });
-
     if (dataCues.length) {
-        const metadata = parseID3(dataCues);
-        const metadataTime = dataCues[0].startTime;
-        this.trigger(MEDIA_META, {
-            metadataType: 'id3',
-            metadataTime,
-            metadata
-        });
+        const event = getId3CueMetaEvent(dataCues);
+        this.trigger(MEDIA_META, event);
     }
+}
 
-    this._activeCues = Array.prototype.slice.call(activeCues);
+function ensureMetaTracksActive() {
+    // Safari sometimes disables metadata tracks after seeking. It does this without warning,
+    // breaking API metadata event functionality.
+    // Ensure metadata tracks are enabled in "hidden" mode.
+    const tracks = this.video.textTracks;
+    const len = tracks.length;
+    for (let i = 0; i < len; i++) {
+        const track = tracks[i];
+        if (track.kind === 'metadata' && track.mode === 'disabled') {
+            track.mode = 'hidden';
+        }
+    }
+}
+
+function getTextCueMetaEvent(cue, parsedEvent) {
+    let metadata;
+    try {
+        metadata = JSON.parse(cue.text);
+    } catch (e) {
+        metadata = {
+            text: cue.text
+        };
+    }
+    const event = {
+        metadata
+    };
+    if (!parsedEvent) {
+        event.metadataTime = cue.startTime;
+        if (metadata.programDateTime) {
+            event.programDateTime = metadata.programDateTime;
+        }
+    }
+    if (metadata.metadataType) {
+        event.metadataType = metadata.metadataType;
+        delete metadata.metadataType;
+    }
+    return event;
+}
+
+function getId3CueMetaEvent(dataCues) {
+    const metadata = parseID3(dataCues);
+    const metadataTime = dataCues[0].startTime;
+    return {
+        metadataType: 'id3',
+        metadataTime,
+        metadata
+    };
 }
 
 function cuesMatch(cue1, cue2) {
@@ -722,7 +808,7 @@ function cuesMatch(cue1, cue2) {
         cue1.endTime === cue2.endTime &&
         cue1.text === cue2.text &&
         cue1.data === cue2.data &&
-        cue1.value === cue2.value;
+        JSON.stringify(cue1.value) === JSON.stringify(cue2.value);
 }
 
 function _cacheVTTCue(track, vttCue, cacheKey) {
