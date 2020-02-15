@@ -21,7 +21,7 @@ export default class MediaController extends Events {
         this.provider = provider;
         this.providerListener = new ProviderListener(this);
         this.thenPlayPromise = cancelable(() => {});
-        addProviderListeners(this);
+        this.addProviderListeners();
         this.eventQueue = new ApiQueueDecorator(this, ['trigger'],
             () => !this.attached || this.background);
     }
@@ -316,14 +316,15 @@ export default class MediaController extends Events {
     set volume(volume) {
         this.provider.volume(volume);
     }
+
+    addProviderListeners() {
+        this.provider.off();
+        this.provider.on('all', this.providerListener, this);
+    }
 }
 
 function syncPlayerWithMediaModel(mediaModel) {
     // Sync player state with mediaModel state
     const mediaState = mediaModel.get('mediaState');
     mediaModel.trigger('change:mediaState', mediaModel, mediaState, mediaState);
-}
-
-function addProviderListeners(mediaController) {
-    mediaController.provider.on('all', mediaController.providerListener, mediaController);
 }

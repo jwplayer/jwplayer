@@ -15,8 +15,8 @@ const Tracks = {
     _metaCuesByTextTime: null,
     _currentTextTrackIndex: -1,
     _unknownCount: 0,
-    _activeCues: {},
-    _cues: {},
+    _activeCues: null,
+    _cues: null,
     _initTextTracks,
     addTracksListener,
     clearTracks,
@@ -61,6 +61,8 @@ function setTextTracks(tracks) {
     if (!this._textTracks) {
         this._initTextTracks();
     } else {
+        this._activeCues = {};
+        this._cues = {};
         // Remove the 608 captions track that was mutated by the browser
         this._unknownCount = 0;
         this._textTracks = this._textTracks.filter((track) => {
@@ -701,8 +703,8 @@ function _cueChangeHandler(e) {
 
     if (activeCues && activeCues.length) {
         const previousActiveCues = this._activeCues[_id];
-        this._activeCues[_id] = Array.prototype.slice.call(activeCues);
-        this.triggerActiveCues(activeCues, previousActiveCues);
+        const currentActiveCues = this._activeCues[_id] = Array.prototype.slice.call(activeCues);
+        this.triggerActiveCues(currentActiveCues, previousActiveCues);
     } else {
         this._activeCues[_id] = null;
     }
@@ -733,8 +735,8 @@ function parseNativeID3Cues(cues, previousCues) {
     });
 }
 
-function triggerActiveCues(activeCues, previousActiveCues) {
-    const dataCues = Array.prototype.filter.call(activeCues, cue => {
+function triggerActiveCues(currentActiveCues, previousActiveCues) {
+    const dataCues = currentActiveCues.filter((cue) => {
         // Prevent duplicate meta events for cues that were active in the previous "cuechange" event
         if (previousActiveCues && previousActiveCues.some(prevCue => cuesMatch(cue, prevCue))) {
             return false;

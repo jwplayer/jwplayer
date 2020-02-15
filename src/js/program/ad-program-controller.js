@@ -78,7 +78,6 @@ export default class AdProgramController extends ProgramController {
     }
 
     usePsuedoProvider(provider) {
-        this.provider = provider;
         if (!provider) {
             return;
         }
@@ -96,7 +95,7 @@ export default class AdProgramController extends ProgramController {
         if (!provider || !this.mediaPool) {
             return;
         }
-
+        this.provider = provider;
         const { model, playerModel } = this;
         const isVpaidProvider = provider.type === 'vpaid';
 
@@ -141,8 +140,12 @@ export default class AdProgramController extends ProgramController {
     }
 
     destroy() {
-        const { model, mediaPool, playerModel } = this;
+        const { model, mediaPool, playerModel, provider } = this;
         model.off();
+        if (provider && provider.destroy) {
+            provider.destroy();
+        }
+        this.provider = null;
 
         // We only use one media element from ads; getPrimedElement will return it
         const mediaElement = mediaPool.getPrimedElement();
