@@ -21,7 +21,8 @@ export default class MediaController extends Events {
         this.provider = provider;
         this.providerListener = new ProviderListener(this);
         this.thenPlayPromise = cancelable(() => {});
-        this.addProviderListeners();
+        provider.off();
+        provider.on('all', this.providerListener, this);
         this.eventQueue = new ApiQueueDecorator(this, ['trigger'],
             () => !this.attached || this.background);
     }
@@ -315,11 +316,6 @@ export default class MediaController extends Events {
 
     set volume(volume) {
         this.provider.volume(volume);
-    }
-
-    addProviderListeners() {
-        this.provider.off();
-        this.provider.on('all', this.providerListener, this);
     }
 }
 
