@@ -47,7 +47,7 @@ class ProgramController extends Events {
         // Set the player state to buffering if there is a playlist item callback
         const deferBufferingState = setTimeout(() => {
             model.set(PLAYER_STATE, STATE_BUFFERING);
-        });
+        }, 50);
         return this.getAsyncItem(index).run().then((playlistItem) => {
             clearTimeout(deferBufferingState);
             return playlistItem;
