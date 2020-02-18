@@ -1062,7 +1062,7 @@ Object.assign(Controller.prototype, {
                 _programController.asyncItems[index] = null;
                 if (newItem) {
                     if (asyncItemControllerToReject) {
-                        asyncItemController.reject(new Error('Item replaced'));
+                        asyncItemControllerToReject.reject(new Error('Item replaced'));
                     }
                     // If the current item was replaced, and the player is idle, load the new item
                     if (index === _model.get('item') && _model.get('state') === 'idle') {
