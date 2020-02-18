@@ -47,12 +47,7 @@ export default function MediaElementPool(): MediaElementPoolInt {
             primed = true;
         },
         getPrimedElement(): HTMLVideoElement | null {
-            const el = pool.shift();
-            if (el) {
-                // Shift over pop so that we cycle through elements instead of reusing the same one
-                return el;
-            }
-            return null;
+            return pool.shift() || null;
         },
         getAdElement(): OptionalUndefVideo {
             return adElement;

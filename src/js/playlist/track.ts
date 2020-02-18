@@ -1,7 +1,7 @@
 type PlaylistItemTrack = {
     file?: string;
     kind: 'captions' | 'metadata' | 'thumbnails' | 'chapters';
-    default?: boolean;
+    default: boolean;
     name?: string;
     label?: string;
     language?: string;
