@@ -1,15 +1,13 @@
 import { MEDIA_POOL_SIZE } from 'program/program-constants';
 import { GenericObject } from 'types/generic.type';
 
-export type OptionalUndefVideo = HTMLVideoElement | undefined;
-
 export interface MediaElementPoolInt {
     primed: () => boolean;
     prime: () => void;
     played: () => void;
-    getPrimedElement: () => OptionalUndefVideo | null;
-    getAdElement: () => OptionalUndefVideo;
-    getTestElement: () => OptionalUndefVideo;
+    getPrimedElement: () => HTMLVideoElement | null;
+    getAdElement: () => HTMLVideoElement;
+    getTestElement: () => HTMLVideoElement;
     clean: (mediaElement: HTMLVideoElement) => void;
     recycle: (mediaElement: HTMLVideoElement) => void;
     syncVolume: (volume: number) => void;
@@ -28,10 +26,10 @@ export default function MediaElementPool(): MediaElementPoolInt {
     }
 
     // Reserve an element exclusively for ads
-    const adElement = pool.shift();
+    const adElement = pool.shift() as HTMLVideoElement;
 
     // Reserve an element exclusively for feature testing.
-    const testElement = pool.shift();
+    const testElement = pool.shift() as HTMLVideoElement;
 
     let primed = false;
 
@@ -49,10 +47,10 @@ export default function MediaElementPool(): MediaElementPoolInt {
         getPrimedElement(): HTMLVideoElement | null {
             return pool.shift() || null;
         },
-        getAdElement(): OptionalUndefVideo {
+        getAdElement(): HTMLVideoElement {
             return adElement;
         },
-        getTestElement(): OptionalUndefVideo {
+        getTestElement(): HTMLVideoElement {
             return testElement;
         },
         clean(mediaElement: HTMLVideoElement): void {
