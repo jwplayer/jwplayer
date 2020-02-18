@@ -23,6 +23,7 @@ import { memoize } from 'utils/underscore';
 import { GenericObject } from 'types/generic.type';
 
 const userAgent: string = navigator.userAgent;
+const noop: () => void = () => {};
 
 function supportsPassive(): boolean {
     let passiveOptionRead = false;
@@ -31,8 +32,8 @@ function supportsPassive(): boolean {
         const opts: GenericObject = Object.defineProperty({}, 'passive', {
             get: () => (passiveOptionRead = true)
         });
-        window.addEventListener('testPassive', {} as EventListenerObject, opts);
-        window.removeEventListener('testPassive', {} as EventListenerObject, opts);
+        window.addEventListener('testPassive', noop, opts);
+        window.removeEventListener('testPassive', noop, opts);
     } catch (e) {/* noop */}
 
     return passiveOptionRead;
