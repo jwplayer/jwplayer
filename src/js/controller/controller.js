@@ -1056,13 +1056,13 @@ Object.assign(Controller.prototype, {
             const playlist = _model.get('playlist');
             const playlistItem = playlist[index];
             if (item && item !== playlistItem) {
-                const newItem = normalizePlaylistItem(_model, new Item(item), item.feedData || {});
+                const asyncItemControllerToReject = _programController.asyncItems[index];
+                const asyncItemController = _programController.getAsyncItem(index);
+                const newItem = asyncItemController.replace(item);
+                _programController.asyncItems[index] = null;
                 if (newItem) {
-                    // If the item is replaced using the api here outside of program-controller, reset any item promise
-                    const asyncItemController = _programController.asyncItems[index];
-                    if (asyncItemController) {
+                    if (asyncItemControllerToReject) {
                         asyncItemController.reject(new Error('Item replaced'));
-                        _programController.asyncItems[index] = null;
                     }
                     // If the current item was replaced, and the player is idle, load the new item
                     if (index === _model.get('item') && _model.get('state') === 'idle') {

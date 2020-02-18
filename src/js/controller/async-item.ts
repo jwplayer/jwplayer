@@ -45,17 +45,14 @@ export class AsyncItemController {
             const asyncPromise = this.asyncPromise = async.call(api, playlistItem, index);
             if (asyncPromise && asyncPromise.then) {
                 asyncPromise.then((item: Item | void) => {
-                    if (item && item !== playlistItem) {
-                        const newItem = normalizePlaylistItem(model, new Item(item), item.feedData || {});
-                        if (index === -1) {
-                            model.set('nextUp', newItem);
-                        } else {
-                            playlist[index] = newItem;
+                    if (item && item !== playlistItem && playlist === model.get('playlist')) {
+                        const newItem = this.replace(item);
+                        if (newItem) {
+                            resolve(newItem);
+                            return;
                         }
-                        resolve(newItem);
-                    } else {
-                        resolve(playlistItem);
                     }
+                    resolve(playlistItem);
                 }).catch(reject);
             } else {
                 this.asyncPromise = null;
@@ -74,6 +71,20 @@ export class AsyncItemController {
         }
         const playlist = model.get('playlist');
         return playlist[index];
+    }
+
+    replace(item: Item): Item | void {
+        const { index, model } = this;
+        const newItem = normalizePlaylistItem(model, new Item(item), item.feedData || {});
+        if (newItem) {
+            if (index === -1) {
+                model.set('nextUp', newItem);
+            } else {
+                const playlist = model.get('playlist');
+                playlist[index] = newItem;
+            }
+            return newItem;
+        }
     }
 
     clear (): void {
