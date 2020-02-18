@@ -268,6 +268,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             clearTimeouts();
             // Stop listening to track changes so disabling the current track doesn't update the model
             this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
+            this.removeTracksListener(_videotag.textTracks, 'addtrack', this.addTrackHandler);
 
             // Prevent sideloaded tracks from showing during ad playback
             if (_shouldToggleTrackOnDetach()) {
@@ -645,11 +646,19 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.destroy = function() {
+        const { addTrackHandler, cueChangeHandler, textTrackChangeHandler } = _this;
+        const textTracks = _videotag.textTracks;
+        _this.off();
         _beforeResumeHandler = noop;
         _removeListeners(MediaEvents, _videotag);
-        this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
-        this.removeTracksListener(_videotag.textTracks, 'change', _this.textTrackChangeHandler);
-        this.off();
+        _this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
+        _this.removeTracksListener(textTracks, 'change', textTrackChangeHandler);
+        _this.removeTracksListener(textTracks, 'addtrack', addTrackHandler);
+        if (cueChangeHandler) {
+            for (let i = 0, len = textTracks.length; i < len; i++) {
+                textTracks[i].removeEventListener('cuechange', cueChangeHandler);
+            }
+        }
     };
 
     this.init = function(item) {
