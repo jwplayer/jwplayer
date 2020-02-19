@@ -67,13 +67,18 @@ class ProgramController extends Events {
      * @memberOf ProgramController
      */
     setActiveItem(index) {
-        const { model } = this;
+        const { background, mediaController, model } = this;
         const item = model.get('playlist')[index];
 
         model.attributes.itemReady = false;
 
-        // setActiveItem above might change this.mediaController, so retrieve here.
-        const { background, mediaController } = this;
+        // Reset the mediaModel now to synchronously "cancel" play promise callbacks
+        // that check `mediaModel === model.mediaModel`
+        if (mediaController) {
+            mediaController.detach();
+            mediaController.off();
+            mediaController.mediaModel.off();
+        }
 
         // Destroy background loading item early so we can reuse the media elements in asyncItem
         if (!background.isNext(item)) {
@@ -280,7 +285,7 @@ class ProgramController extends Events {
         item.starttime = model.mediaModel.get('currentTime');
 
         this.stopVideo();
-        this.setActiveItem(index);
+        this.setActiveItem(index).catch(() => {/* noop */});
     }
 
     /**

@@ -257,11 +257,14 @@ describe('ProgramController', function () {
             .then(() => programController.setActiveItem(1))
             .then(function () {
                 const provider = programController.mediaController.provider;
-                expect(model.trigger).to.have.callCount(backgroundLoading ? 11 : 10);
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:item');
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:playlistItem');
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:mediaModel');
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:provider');
+                const triggeredEvents = model.trigger.getCalls().slice(call).map(spyCall => spyCall.args[0]);
+                expect(triggeredEvents.join(', ')).to.equal([
+                    'change:item',
+                    'change:playlistItem',
+                    'change:mediaModel',
+                    'change:provider',
+                    'change:itemReady'
+                ].join(', '));
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
                 expect(model.trigger.lastCall).to.have.been.calledAfter(provider.init.secondCall);
                 expect(provider.init).to.have.callCount(2);

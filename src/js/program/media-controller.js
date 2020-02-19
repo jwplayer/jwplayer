@@ -136,7 +136,7 @@ export default class MediaController extends Events {
                 syncPlayerWithMediaModel(mediaModel);
             }
         }).catch(error => {
-            if (this.item && mediaModel === model.mediaModel) {
+            if (this.attached && this.item && mediaModel === model.mediaModel) {
                 model.set('playRejected', true);
                 const videoTagPaused = video && video.paused;
                 if (videoTagPaused) {
