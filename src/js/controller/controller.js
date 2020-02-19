@@ -500,43 +500,46 @@ Object.assign(Controller.prototype, {
                 return Promise.resolve();
             }
 
+            let setItemPromise = Promise.resolve();
             if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
-                _this.setItemIndex(0);
+                setItemPromise = _this.setItemIndex(0);
             }
 
-            if (!_beforePlay) {
-                _beforePlay = true;
-                _this.trigger(MEDIA_BEFOREPLAY, {
-                    playReason,
-                    startTime: meta && meta.startTime ? meta.startTime : _model.get('playlistItem').starttime
-                });
-                _beforePlay = false;
+            return setItemPromise.then(() => {
+                if (!_beforePlay) {
+                    _beforePlay = true;
+                    _this.trigger(MEDIA_BEFOREPLAY, {
+                        playReason,
+                        startTime: meta && meta.startTime ? meta.startTime : _model.get('playlistItem').starttime
+                    });
+                    _beforePlay = false;
 
-                if (inInteraction() && !mediaPool.primed()) {
-                    mediaPool.prime();
-                }
-
-                if (playReason === 'playlist' && _model.get('autoPause').viewability) {
-                    _checkPauseOnViewable(_model, _model.get('viewable'));
-                }
-
-                if (_interruptPlay) {
-                    // Force tags to prime if we're about to play an ad
-                    // Resetting the source in order to prime is OK since we'll be switching it anyway
-                    if (inInteraction() && !_backgroundLoading) {
-                        _model.get('mediaElement').load();
+                    if (inInteraction() && !mediaPool.primed()) {
+                        mediaPool.prime();
                     }
-                    _interruptPlay = false;
-                    _actionOnAttach = null;
-                    return Promise.resolve();
-                }
-            }
 
-            return _programController.playVideo(playReason)
-                // If playback succeeded that means we captured a gesture (and used it to prime the pool)
-                // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
-                .then(mediaPool.played);
+                    if (playReason === 'playlist' && _model.get('autoPause').viewability) {
+                        _checkPauseOnViewable(_model, _model.get('viewable'));
+                    }
+
+                    if (_interruptPlay) {
+                        // Force tags to prime if we're about to play an ad
+                        // Resetting the source in order to prime is OK since we'll be switching it anyway
+                        if (inInteraction() && !_backgroundLoading) {
+                            _model.get('mediaElement').load();
+                        }
+                        _interruptPlay = false;
+                        _actionOnAttach = null;
+                        return Promise.resolve();
+                    }
+                }
+
+                return _programController.playVideo(playReason)
+                    // If playback succeeded that means we captured a gesture (and used it to prime the pool)
+                    // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
+                    .then(mediaPool.played);
+            });
         }
 
         function _getReason(meta) {
