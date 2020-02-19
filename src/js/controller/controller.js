@@ -1059,15 +1059,13 @@ Object.assign(Controller.prototype, {
                 const asyncItemController = _programController.getAsyncItem(index);
                 const newItem = asyncItemController.replace(item);
                 _programController.asyncItems[index] = null;
-                if (newItem) {
-                    if (asyncItemControllerToReject) {
-                        asyncItemControllerToReject.reject(new Error('Item replaced'));
-                    }
-                    // If the current item was replaced, and the player is idle, load the new item
-                    if (index === _model.get('item') && _model.get('state') === 'idle') {
-                        this.setItemIndex(index);
-                    }
+                if (newItem && asyncItemControllerToReject) {
+                    asyncItemControllerToReject.reject(new Error('Item replaced'));
                 }
+            }
+            // If the current item was replaced, and the player is idle, reload it
+            if (index === _model.get('item') && _model.get('state') === 'idle') {
+                this.setItemIndex(index);
             }
         };
 
