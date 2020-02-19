@@ -502,7 +502,9 @@ Object.assign(Controller.prototype, {
 
             if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
-                _this.setItemIndex(0);
+                return _this.setItemIndex(0).then(() => {
+                    return _play(meta);
+                });
             }
 
             if (!_beforePlay) {
