@@ -20,18 +20,22 @@ import {
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
 import { memoize } from 'utils/underscore';
+import { GenericObject } from 'types/generic.type';
 
-const userAgent = navigator.userAgent;
+const userAgent: string = navigator.userAgent;
+const noop: () => void = () => {
+    // Do nothing
+};
 
-function supportsPassive() {
+function supportsPassive(): boolean {
     let passiveOptionRead = false;
 
     try {
-        const opts = Object.defineProperty({}, 'passive', {
+        const opts: GenericObject = Object.defineProperty({}, 'passive', {
             get: () => (passiveOptionRead = true)
         });
-        window.addEventListener('testPassive', null, opts);
-        window.removeEventListener('testPassive', null, opts);
+        window.addEventListener('testPassive', noop, opts);
+        window.removeEventListener('testPassive', noop, opts);
     } catch (e) {/* noop */}
 
     return passiveOptionRead;
@@ -56,7 +60,7 @@ function supportsPassive() {
  * @property {boolean} safari - Is the browser Safari?
  * @property {EnvironmentVersion} version - The browser version.
  */
-export const Browser = {};
+export const Browser: GenericObject = {};
 
 /**
  * @typedef {object} OSEnvironment
@@ -69,7 +73,7 @@ export const Browser = {};
  * @property {boolean} windows - Is the operating system Windows?
  * @property {EnvironmentVersion} version - The operating system version.
  */
-export const OS = {};
+export const OS: GenericObject = {};
 
 /**
  * @typedef {object} FeatureEnvironment
@@ -77,7 +81,7 @@ export const OS = {};
  * @property {number} flashVersion - The version of Flash.
  * @property {boolean} iframe - Is the session in an iframe?
  */
-export const Features = {};
+export const Features: GenericObject = {};
 
 const isWindows = () => {
     return userAgent.indexOf('Windows') > -1;

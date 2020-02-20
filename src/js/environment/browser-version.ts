@@ -1,8 +1,10 @@
-export function browserVersion(browserEnvironment, agent) {
-    let version;
-    let major;
-    let minor;
-    let ix;
+import { GenericObject } from 'types/generic.type';
+
+export function browserVersion(browserEnvironment: GenericObject, agent: string): GenericObject {
+    let version: string | undefined;
+    let major: number | undefined;
+    let minor: number | undefined;
+    let ix: number | undefined;
 
     if (browserEnvironment.chrome) {
         // A Chrome UA either contains "Chrome" (desktop/android) or "CriOS" (iOS)
