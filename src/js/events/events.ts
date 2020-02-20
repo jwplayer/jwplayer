@@ -166,6 +166,11 @@ export const AD_SKIPPED = 'adSkipped';
 */
 export const AD_TIME = 'adTime';
 
+/**
+ *  Event triggered for ad warnings (i.e. non-fatal errors)
+*/
+export const AD_WARNING = 'adWarning';
+
 // Events
 
 /**
