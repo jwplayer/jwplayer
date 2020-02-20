@@ -85,7 +85,7 @@
     "test": "karma start",
     "karma:hook": "karma start --browsers=ChromeHeadless --reporters=mocha",
     "type-check": "tsc",
-    "ts-check": "tsc && eslint './src/js' --ext .ts --ext .js"
+    "ts-check": "tsc && eslint './src/js' --ext .ts"
   },
   "engines": {
     "node": ">=4.3.1"
