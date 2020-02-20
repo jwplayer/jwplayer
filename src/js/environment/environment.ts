@@ -23,7 +23,9 @@ import { memoize } from 'utils/underscore';
 import { GenericObject } from 'types/generic.type';
 
 const userAgent: string = navigator.userAgent;
-const noop: () => void = () => {};
+const noop: () => void = () => {
+    // Do nothing
+};
 
 function supportsPassive(): boolean {
     let passiveOptionRead = false;
