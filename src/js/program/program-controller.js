@@ -29,6 +29,7 @@ class ProgramController extends Events {
         this.loadPromise = null;
         this.backgroundLoading = model.get('backgroundLoading');
         this.asyncItems = [];
+        this.itemSetContext = 0;
 
         if (!this.backgroundLoading) {
             // If background loading is not supported, set the shared media element
@@ -51,11 +52,12 @@ class ProgramController extends Events {
         return this.getAsyncItem(index).run().then((playlistItem) => {
             clearTimeout(deferBufferingState);
             return playlistItem;
-        }).catch((/* itemPromiseError */) => {
+        }).catch((itemPromiseError) => {
             clearTimeout(deferBufferingState);
             if (index < model.get('playlist').length - 1) {
-                this.setActiveItem(index + 1);
+                return this.setActiveItem(index + 1).then(() => null);
             }
+            throw itemPromiseError;
         });
     }
 
@@ -85,7 +87,18 @@ class ProgramController extends Events {
             // Loading a new item invalidates all background loading media
             this._destroyBackgroundMedia();
         }
+
+        // Set a context for this async call. If asyncActiveItem resolves and this.itemSetContext has changed exit early.
+        const itemSetContext = this.itemSetContext = Math.random();
+
         return (this.loadPromise = this.asyncActiveItem(index).then((playlistItem) => {
+            // Resolve and exit on asyncActiveItem() itemPromiseError,
+            // or if setActiveItem was called again changing itemSetContext
+            if (playlistItem === null ||
+                itemSetContext !== this.itemSetContext) {
+                return null;
+            }
+
             model.setActiveItem(index);
 
             const source = getSource(playlistItem);
