@@ -64,7 +64,7 @@ class Model extends SimpleModel {
         }
 
         mediaModel = mediaModel || new MediaModel();
-        this.set('mediaModel', mediaModel);
+        this.mediaModel = mediaModel;
         syncPlayerWithMediaModel(mediaModel);
     }
 

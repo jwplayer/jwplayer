@@ -7,6 +7,7 @@ import BackgroundMedia from 'program/background-media';
 import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED } from 'events/events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
 import { AsyncItemController } from 'controller/async-item';
+import { MediaModel } from 'controller/model';
 
 class ProgramController extends Events {
     /**
@@ -77,9 +78,10 @@ class ProgramController extends Events {
         // Reset the mediaModel now to synchronously "cancel" play promise callbacks
         // that check `mediaModel === model.mediaModel`
         if (mediaController) {
-            mediaController.detach();
             mediaController.off();
             mediaController.mediaModel.off();
+            model.attributes.mediaModel = new MediaModel();
+            model.mediaModel.attributes = mediaController.mediaModel.clone();
         }
 
         // Destroy background loading item early so we can reuse the media elements in asyncItem
@@ -129,11 +131,10 @@ class ProgramController extends Events {
                 this._destroyActiveMedia();
             }
 
-            const mediaModelContext = model.mediaModel;
             return this._setupMediaController(source).then(nextMediaController => {
                 // Don't do anything if we've tried to load another provider while this promise was resolving
                 // We check using the mediaModel because it is unique per item, and per instance of that item
-                if (mediaModelContext === model.mediaModel) {
+                if (itemSetContext === this.itemSetContext) {
                     nextMediaController.activeItem = playlistItem;
                     this._setActiveMedia(nextMediaController);
                     return nextMediaController;
