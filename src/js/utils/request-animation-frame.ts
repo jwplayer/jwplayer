@@ -1,6 +1,4 @@
-import { CallbackFunction } from 'types/generic.type';
-
-export const requestAnimationFrame: (callback: CallbackFunction) => number = window.requestAnimationFrame || polyfillRAF;
+export const requestAnimationFrame: (callback: FrameRequestCallback) => number = window.requestAnimationFrame || polyfillRAF;
 
 export const cancelAnimationFrame: (handle: number) => void = window.cancelAnimationFrame || clearTimeout;
 
