@@ -20,14 +20,14 @@ export function isDvr(duration: number, minDvrWindow: number): boolean {
  * @returns {StreamType} The stream typeR.
  */
 export function streamType(duration: number, minDvrWindow: number): StreamType {
-    let type: StreamType = 'VOD';
+    let streamType: StreamType = 'VOD';
 
     if (duration === Infinity) {
-        type = 'LIVE';
+        streamType = 'LIVE';
     } else if (duration < 0) {
-        type = isDvr(duration, validMinDvrWindow(minDvrWindow)) ? 'DVR' : 'LIVE';
+        streamType = isDvr(duration, validMinDvrWindow(minDvrWindow)) ? 'DVR' : 'LIVE';
     }
-    return type;
+    return streamType;
 }
 
 function validMinDvrWindow(minDvrWindow: number): number {
