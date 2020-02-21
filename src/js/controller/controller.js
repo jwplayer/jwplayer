@@ -191,7 +191,7 @@ Object.assign(Controller.prototype, {
                     if (allowPreload && position && duration > 0 && position >= duration - BACKGROUND_LOAD_OFFSET) {
                         mediaModel.off('change:position', onPosition, this);
                         _programController.backgroundLoad(item, index);
-                    } else if (recsAuto) {
+                    } else if (recsAuto && !item) {
                         index = -1;
                         item = _model.get('nextUp');
                     }
