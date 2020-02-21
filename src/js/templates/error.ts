@@ -1,5 +1,7 @@
-export default (id, message, errorCode, code) => {
-    const detail = code ? (`(${errorCode}: ${code})`).replace(/\s+/g, '&nbsp;') : '';
+import { HTMLTemplateString } from 'types/generic.type';
+
+export default (id: string, message: string, errorCode: string, code: string): HTMLTemplateString => {
+    const detail: string = code ? (`(${errorCode}: ${code})`).replace(/\s+/g, '&nbsp;') : '';
     return (
         `<div id="${id}" class="jw-error jw-reset">` +
             `<div class="jw-error-msg jw-info-overlay jw-reset">` +
