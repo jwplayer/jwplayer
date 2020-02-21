@@ -1,3 +1,4 @@
+import { GenericObject } from 'types/generic.type';
 import * as playerutils from 'utils/playerutils';
 import * as validator from 'utils/validator';
 import * as parser from 'utils/parser';
@@ -42,7 +43,7 @@ import { log } from 'utils/log';
 import { genId } from 'utils/random-id-generator';
 
 // TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url))
-function crossdomain(uri) {
+function crossdomain(uri: string): boolean {
     const a = document.createElement('a');
     const b = document.createElement('a');
     a.href = location.href;
@@ -55,7 +56,7 @@ function crossdomain(uri) {
 }
 
 // The predicate received the arguments (key, value) instead of (value, key)
-const foreach = function (aData, fnEach) {
+const foreach = function (aData: GenericObject, fnEach: (key: string, value: any) => void): void {
     for (let key in aData) {
         if (Object.prototype.hasOwnProperty.call(aData, key)) {
             fnEach(key, aData[key]);
@@ -63,9 +64,11 @@ const foreach = function (aData, fnEach) {
     }
 };
 
-const noop = function () {};
+const noop = () => {
+    // noop
+};
 
-const helpers = Object.assign({}, parser, validator, playerutils, {
+const helpers: GenericObject = Object.assign({}, parser, validator, playerutils, {
     addClass,
     hasClass,
     removeClass,
