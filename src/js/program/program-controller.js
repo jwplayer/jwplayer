@@ -78,7 +78,7 @@ class ProgramController extends Events {
         // Reset the mediaModel now to synchronously "cancel" play promise callbacks
         // that check `mediaModel === model.mediaModel`
         if (mediaController) {
-            mediaController.off();
+            mediaController.detach();
             mediaController.mediaModel.off();
             model.attributes.mediaModel = new MediaModel();
             model.mediaModel.attributes = mediaController.mediaModel.clone();
@@ -122,6 +122,7 @@ class ProgramController extends Events {
                     // We can synchronously reuse the current mediaController
                     // Reinitialize the mediaController with the new item, allowing a new playback session
                     mediaController.activeItem = playlistItem;
+                    mediaController.attach();
                     this._setActiveMedia(mediaController);
                     return mediaController;
                 }
