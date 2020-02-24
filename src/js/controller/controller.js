@@ -481,6 +481,35 @@ Object.assign(Controller.prototype, {
             return _model.get('state');
         }
 
+        function _play(meta) {
+            checkAutoStartCancelable.cancel();
+            _stopPlaylist = false;
+
+            if (_model.get('state') === STATE_ERROR) {
+                return Promise.resolve();
+            }
+
+            const playReason = _getReason(meta);
+            _model.set('playReason', playReason);
+
+            const adState = _getAdState();
+
+            if (adState) {
+                // this will resume the ad. _api.playAd would load a new ad
+                _api.pauseAd(false, meta);
+                return Promise.resolve();
+            }
+
+            if (_model.get('state') === STATE_COMPLETE) {
+                _stop(true);
+                return _this.setItemIndex(0).then(() => {
+                    return _playAttempt(meta, playReason);
+                });
+            }
+
+            return _playAttempt(meta, playReason);
+        }
+
         function _playAttempt(meta, playReason) {
             if (!_beforePlay) {
                 _beforePlay = true;
@@ -514,35 +543,6 @@ Object.assign(Controller.prototype, {
                 // If playback succeeded that means we captured a gesture (and used it to prime the pool)
                 // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
                 .then(mediaPool.played);
-        }
-
-        function _play(meta) {
-            checkAutoStartCancelable.cancel();
-            _stopPlaylist = false;
-
-            if (_model.get('state') === STATE_ERROR) {
-                return Promise.resolve();
-            }
-
-            const playReason = _getReason(meta);
-            _model.set('playReason', playReason);
-
-            const adState = _getAdState();
-
-            if (adState) {
-                // this will resume the ad. _api.playAd would load a new ad
-                _api.pauseAd(false, meta);
-                return Promise.resolve();
-            }
-
-            if (_model.get('state') === STATE_COMPLETE) {
-                _stop(true);
-                return _this.setItemIndex(0).then(() => {
-                    return _playAttempt(meta, playReason);
-                });
-            }
-
-            return _playAttempt(meta, playReason);
         }
 
         function _getReason(meta) {
