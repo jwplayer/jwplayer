@@ -503,10 +503,14 @@ Object.assign(Controller.prototype, {
             if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
                 return _this.setItemIndex(0).then(() => {
-                    return _play(meta);
+                    return _playAttempt(meta, playReason);
                 });
             }
 
+            return _playAttempt(meta, playReason);
+        }
+
+        function _playAttempt(meta, playReason) {
             if (!_beforePlay) {
                 _beforePlay = true;
                 _this.trigger(MEDIA_BEFOREPLAY, {
