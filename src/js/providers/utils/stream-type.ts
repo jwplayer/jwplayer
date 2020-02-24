@@ -1,5 +1,6 @@
 /** @module */
-import { StreamType } from 'types/generic.type';
+
+export type StreamType = ('VOD'|'LIVE'|'DVR');
 
 /**
  * It's DVR if the duration is not Infinity and above the minDvrWindow, Live otherwise.
@@ -17,17 +18,17 @@ export function isDvr(duration: number, minDvrWindow: number): boolean {
  * Positive or non-infinite values will result in a return value of 'VOD'. Infinite values always return 'LIVE'.
  * @param {number} minDvrWindow - The duration threshold beyond which a stream should be treated as DVR instead of Live.
  * minDvrWindow should always be positive.
- * @returns {StreamType} The stream typeR.
+ * @returns {StreamType} The stream type.
  */
 export function streamType(duration: number, minDvrWindow: number): StreamType {
-    let streamType: StreamType = 'VOD';
+    let _streamType: StreamType = 'VOD';
 
     if (duration === Infinity) {
-        streamType = 'LIVE';
+        _streamType = 'LIVE';
     } else if (duration < 0) {
-        streamType = isDvr(duration, validMinDvrWindow(minDvrWindow)) ? 'DVR' : 'LIVE';
+        _streamType = isDvr(duration, validMinDvrWindow(minDvrWindow)) ? 'DVR' : 'LIVE';
     }
-    return streamType;
+    return _streamType;
 }
 
 function validMinDvrWindow(minDvrWindow: number): number {

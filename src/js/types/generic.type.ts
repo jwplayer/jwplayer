@@ -10,6 +10,4 @@ export type PageNode = (Element | ChildNode) & {
 
 export type PlaylistItemType = any;
 
-export type StreamType = ('VOD'|'LIVE' |'DVR');
-
 export type HTMLTemplateString = string;
