@@ -183,17 +183,26 @@ Object.assign(Controller.prototype, {
             const recsAuto = (model.get('related') || {}).oncomplete === 'autoplay';
             let index = model.get('item') + 1;
             let item = model.get('playlist')[index];
-            if ((item || recsAuto) && _backgroundLoading) {
+            if ((item || recsAuto)) {
                 const onPosition = (changedMediaModel, position) => {
-                    // Do not background load DAI items because that item will be dynamically replaced before play
-                    const allowPreload = (item && !item.daiSetting);
-                    const duration = mediaModel.get('duration');
-                    if (allowPreload && position && duration > 0 && position >= duration - BACKGROUND_LOAD_OFFSET) {
-                        mediaModel.off('change:position', onPosition, this);
-                        _programController.backgroundLoad(item, index);
-                    } else if (recsAuto && !item) {
+                    if (recsAuto && !item) {
                         index = -1;
                         item = _model.get('nextUp');
+                    }
+                    // Do not background load DAI items because that item will be dynamically replaced before play
+                    const allowPreload = (item && !item.daiSetting);
+                    if (!allowPreload) {
+                        return;
+                    }
+                    const duration = mediaModel.get('duration');
+                    if (position && duration > 0 && position >= duration - BACKGROUND_LOAD_OFFSET) {
+                        mediaModel.off('change:position', onPosition, this);
+                        if (_backgroundLoading) {
+                            _programController.backgroundLoad(item, index);
+                        } else {
+                            _programController.getAsyncItem(index).run();
+                        }
+
                     }
                 };
                 mediaModel.on('change:position', onPosition, this);
