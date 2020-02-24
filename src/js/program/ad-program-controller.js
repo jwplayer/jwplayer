@@ -140,11 +140,9 @@ export default class AdProgramController extends ProgramController {
     }
 
     destroy() {
-        const { model, mediaPool, playerModel, provider } = this;
+        const { model, mediaPool, playerModel } = this;
         model.off();
-        if (provider && provider.destroy) {
-            provider.destroy();
-        }
+        // Do not destroy or remove provider event listeners since non-linear ads may continue to run after this point
         this.provider = null;
 
         // We only use one media element from ads; getPrimedElement will return it
