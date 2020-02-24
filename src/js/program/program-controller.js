@@ -78,7 +78,6 @@ class ProgramController extends Events {
         // Reset the mediaModel now to synchronously "cancel" play promise callbacks
         // that check `mediaModel === model.mediaModel`
         if (mediaController) {
-            mediaController.off();
             mediaController.mediaModel.off();
             model.attributes.mediaModel = new MediaModel();
             model.mediaModel.attributes = mediaController.mediaModel.clone();
