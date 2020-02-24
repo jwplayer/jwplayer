@@ -4,27 +4,33 @@ import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Events from 'utils/backbone.events';
 import BackgroundMedia from 'program/background-media';
-import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_PAUSED } from 'events/events';
+import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED } from 'events/events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
+import { AsyncItemController } from 'controller/async-item';
+import { MediaModel } from 'controller/model';
 
 class ProgramController extends Events {
     /**
      * ProgramController constructor
      * @param {Model} model - The player's model
      * @param {MediaElementPool} mediaPool - The player's media element pool
+     * @param {PublicApi} publicApi - The player API applied as context in async playlist item promise callback execution
      */
-    constructor(model, mediaPool) {
+    constructor(model, mediaPool, publicApi) {
         super();
 
         this.adPlaying = false;
+        this.apiContext = publicApi;
         this.background = BackgroundMedia();
         this.mediaPool = mediaPool;
         this.mediaController = null;
         this.mediaControllerListener = MediaControllerListener(model, this);
         this.model = model;
         this.providers = new Providers(model.getConfiguration());
-        this.loadPromise = Promise.resolve();
+        this.loadPromise = null;
         this.backgroundLoading = model.get('backgroundLoading');
+        this.asyncItems = [];
+        this.itemSetContext = 0;
 
         if (!this.backgroundLoading) {
             // If background loading is not supported, set the shared media element
@@ -33,69 +39,110 @@ class ProgramController extends Events {
     }
 
     /**
+     * Runs the async playlist item callback / promise
+     * @param {number} index - The playlist index of the item
+     * @returns {Promise<PlaylistItem>} The ItemPromise run promise
+     * @memberOf ProgramController
+     */
+    asyncActiveItem(index) {
+        const { model } = this;
+        // Set the player state to buffering if there is a playlist item callback
+        const deferBufferingState = setTimeout(() => {
+            model.set(PLAYER_STATE, STATE_BUFFERING);
+        }, 50);
+        return this.getAsyncItem(index).run().then((playlistItem) => {
+            clearTimeout(deferBufferingState);
+            return playlistItem;
+        }).catch((itemPromiseError) => {
+            clearTimeout(deferBufferingState);
+            if (index < model.get('playlist').length - 1) {
+                return this.setActiveItem(index + 1).then(() => null);
+            }
+            throw itemPromiseError;
+        });
+    }
+
+    /**
      * Activates a playlist item, loading it into the foreground.
      * This method will either load a new Provider or reuse the active one.
      * @param {number} index - The playlist index of the item
-     * @returns {Promise} The Provider promise. Resolves with the active Media Controller
+     * @returns {Promise<MediaController>} The Provider promise. Resolves with the active Media Controller
      * @memberOf ProgramController
      */
     setActiveItem(index) {
-        const { model } = this;
+        const { background, mediaController, model } = this;
         const item = model.get('playlist')[index];
 
         model.attributes.itemReady = false;
-        model.setActiveItem(index);
-        const source = getSource(item);
-        if (!source) {
-            return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE));
-        }
 
-        // setActiveItem above might change this.mediaController, so retrieve here.
-        const { background, mediaController } = this;
-
-        // Activate the background media if it's loading the item we want to play
-        if (background.isNext(item)) {
-            // First destroy the active item so that the BGL provider can enter the foreground
-            this._destroyActiveMedia();
-            // Attach the BGL provider into the load/play chain
-            this.loadPromise = this._activateBackgroundMedia();
-            return this.loadPromise;
-        }
-        // Loading a new item invalidates all background loading media
-        this._destroyBackgroundMedia();
-
+        // Reset the mediaModel now to synchronously "cancel" play promise callbacks
+        // that check `mediaModel === model.mediaModel`
         if (mediaController) {
-            const casting = model.get('castActive');
-            if (casting || this._providerCanPlay(mediaController.provider, source)) {
-                // We can synchronously reuse the current mediaController
-                this.loadPromise = Promise.resolve(mediaController);
-                // Reinitialize the mediaController with the new item, allowing a new playback session
-                mediaController.activeItem = item;
-                this._setActiveMedia(mediaController);
-                return this.loadPromise;
+            mediaController.mediaModel.off();
+            model.attributes.mediaModel = new MediaModel();
+            model.mediaModel.attributes = mediaController.mediaModel.clone();
+        }
+
+        // Destroy background loading item early so we can reuse the media elements in asyncItem
+        if (!background.isNext(item)) {
+            // Loading a new item invalidates all background loading media
+            this._destroyBackgroundMedia();
+        }
+
+        // Set a context for this async call. If asyncActiveItem resolves and this.itemSetContext has changed exit early.
+        const itemSetContext = this.itemSetContext = Math.random();
+
+        return (this.loadPromise = this.asyncActiveItem(index).then((playlistItem) => {
+            // Resolve and exit on asyncActiveItem() itemPromiseError,
+            // or if setActiveItem was called again changing itemSetContext
+            if (playlistItem === null ||
+                itemSetContext !== this.itemSetContext) {
+                return null;
             }
 
-            // If we can't play the source with the current provider, reset the current one and
-            // prime the next tag within the gesture
-            this._destroyActiveMedia();
-        }
+            model.setActiveItem(index);
 
-        const mediaModelContext = model.mediaModel;
-        this.loadPromise = this._setupMediaController(source)
-            .then(nextMediaController => {
+            const source = getSource(playlistItem);
+            if (!source) {
+                return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE));
+            }
+
+            // Activate the background media if it's loading the item we want to play
+            if (background.isNext(playlistItem)) {
+                // First destroy the active item so that the BGL provider can enter the foreground
+                this._destroyActiveMedia();
+                // Attach the BGL provider into the load/play chain
+                return this._activateBackgroundMedia();
+            }
+
+            if (mediaController) {
+                const casting = model.get('castActive');
+                if (casting || this._providerCanPlay(mediaController.provider, source)) {
+                    // We can synchronously reuse the current mediaController
+                    // Reinitialize the mediaController with the new item, allowing a new playback session
+                    mediaController.activeItem = playlistItem;
+                    this._setActiveMedia(mediaController);
+                    return mediaController;
+                }
+
+                // If we can't play the source with the current provider, reset the current one and
+                // prime the next tag within the gesture
+                this._destroyActiveMedia();
+            }
+
+            return this._setupMediaController(source).then(nextMediaController => {
                 // Don't do anything if we've tried to load another provider while this promise was resolving
                 // We check using the mediaModel because it is unique per item, and per instance of that item
-                if (mediaModelContext === model.mediaModel) {
-                    nextMediaController.activeItem = item;
+                if (itemSetContext === this.itemSetContext) {
+                    nextMediaController.activeItem = playlistItem;
                     this._setActiveMedia(nextMediaController);
                     return nextMediaController;
                 }
-            })
-            .catch(err => {
+            }).catch(err => {
                 this._destroyActiveMedia();
                 throw err;
             });
-        return this.loadPromise;
+        }));
     }
 
 
@@ -164,7 +211,7 @@ class ProgramController extends Events {
                 throw new Error('Playback cancelled.');
             });
 
-            playPromise = this.loadPromise
+            playPromise = (this.loadPromise || Promise.resolve())
                 .catch(error => {
                     thenPlayPromise.cancel();
                     // Fail the playPromise to trigger "playAttemptFailed"
@@ -251,7 +298,7 @@ class ProgramController extends Events {
         item.starttime = model.mediaModel.get('currentTime');
 
         this.stopVideo();
-        this.setActiveItem(index);
+        this.setActiveItem(index).catch(() => {/* noop */});
     }
 
     /**
@@ -313,23 +360,29 @@ class ProgramController extends Events {
     /**
      * Loads the next playlist item in the background.
      * @param {Item} item - The playlist item to load.
+     * @param {number} index - The playlist item promise index.
      *
      * @returns {void}
      */
-    backgroundLoad(item) {
+    backgroundLoad(item, index) {
         const { background } = this;
-        const source = getSource(item);
 
-        background.setNext(item, this._setupMediaController(source)
-            .then(nextMediaController => {
-                nextMediaController.activeItem = item;
-                nextMediaController.preload();
-                return nextMediaController;
+        const loadPromise = this.getAsyncItem(index).run()
+            .then((playlistItem) => {
+                background.updateNext(playlistItem);
+                const source = getSource(playlistItem);
+                return this._setupMediaController(source)
+                    .then(nextMediaController => {
+                        nextMediaController.activeItem = playlistItem;
+                        nextMediaController.preload();
+                        return nextMediaController;
+                    });
             })
             .catch(() => {
                 background.clearNext();
-            })
-        );
+            });
+
+        background.setNext(item, loadPromise);
     }
 
     /**
@@ -372,6 +425,7 @@ class ProgramController extends Events {
         this.off();
         this._destroyBackgroundMedia();
         this._destroyActiveMedia();
+        this.apiContext = null;
     }
 
     /**
@@ -708,6 +762,33 @@ class ProgramController extends Events {
         }
 
         mediaPool.syncVolume(volume);
+    }
+
+    set itemCallback(callback) {
+        this.model.set('playlistItemCallback', callback);
+        this.asyncItems.forEach(asyncItem => {
+            if (asyncItem) {
+                asyncItem.callback = callback;
+            }
+        });
+    }
+
+    getAsyncItem(index) {
+        let asyncItem = this.asyncItems[index];
+        if (!asyncItem) {
+            asyncItem = this.asyncItems[index] = new AsyncItemController(index, this.model, this.apiContext);
+            asyncItem.callback = this.model.get('playlistItemCallback');
+        }
+        return asyncItem;
+    }
+
+    clearItemPromises() {
+        this.asyncItems.forEach(asyncItemController => {
+            if (asyncItemController) {
+                asyncItemController.reject(new Error('Item playback aborted'));
+            }
+        });
+        this.asyncItems.length = 0;
     }
 }
 

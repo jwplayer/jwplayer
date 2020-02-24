@@ -99,14 +99,14 @@ describe('ProgramController', function () {
     let model = null;
     let programController = null;
 
-
-    beforeEach(function () {
+    const createProgramController = function (customTestConfigOptions) {
         const config = Object.assign({}, defaultConfig, {
             playlist: defaultPlaylist.slice(0),
             mediaContainer: document.createElement('div'),
-        });
+        }, customTestConfigOptions || {});
         model = new Model().setup(config);
-        programController = new ProgramController(model, new MediaElementPool());
+        const apiContext = {};
+        programController = new ProgramController(model, new MediaElementPool(), apiContext);
         programController.providers = {
             choose: () => ({ name: 'mock', provider: MockProvider }),
             load: () => Promise.resolve(MockProvider),
@@ -114,13 +114,19 @@ describe('ProgramController', function () {
         };
         model.toString = (() => '[Model]');
         programController.toString = (() => '[ProgramController]');
-    });
+    };
 
-    afterEach(function () {
+    const destroyProgramController = function () {
         programController.destroy();
         model.destroy();
         model = null;
         programController = null;
+    };
+
+    beforeEach(() => createProgramController());
+
+    afterEach(() => {
+        destroyProgramController();
         sandbox.restore();
     });
 
@@ -251,11 +257,14 @@ describe('ProgramController', function () {
             .then(() => programController.setActiveItem(1))
             .then(function () {
                 const provider = programController.mediaController.provider;
-                expect(model.trigger).to.have.callCount(backgroundLoading ? 11 : 10);
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:item');
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:playlistItem');
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:mediaModel');
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:provider');
+                const triggeredEvents = model.trigger.getCalls().slice(call).map(spyCall => spyCall.args[0]);
+                expect(triggeredEvents.join(', ')).to.equal([
+                    'change:item',
+                    'change:playlistItem',
+                    'change:mediaModel',
+                    'change:provider',
+                    'change:itemReady'
+                ].join(', '));
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
                 expect(model.trigger.lastCall).to.have.been.calledAfter(provider.init.secondCall);
                 expect(provider.init).to.have.callCount(2);
@@ -424,13 +433,133 @@ describe('ProgramController', function () {
             .then(function () {
                 expect(model.trigger).to.have.callCount(5 + changeMediaElement);
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
-                programController.backgroundLoad(mp4Item);
+                programController.backgroundLoad(mp4Item, 1);
             })
             .then(() => programController.setActiveItem(1))
             .then(function () {
                 expect(model.trigger).to.have.callCount(11 + changeMediaElement * 2);
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
             });
+    });
+
+    describe('setActiveItem() with background loading', function () {
+        it('Uses background loaded media controller and item', function () {
+            const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
+            destroyProgramController();
+            createProgramController({
+                playlist
+            });
+            return programController.setActiveItem(0)
+                .then((mediaController) => {
+                    programController.backgroundLoad(playlist[1], 1);
+                    programController.stopVideo();
+                    expect(mediaController.item).to.eql(playlist[0], 'prepared first playlist item');
+                    return programController.background.nextLoadPromise.then((backgroundMediaController) => {
+                        expect(backgroundMediaController.item).to.eql(playlist[1], 'prepared second playlist item');
+                        expect(programController.background.isNext(playlist[1])).to.eql(true, 'readied second item for background loading');
+                        return programController.setActiveItem(1).then((mediaController2) => {
+                            expect(mediaController2.item).to.eql(playlist[1], 'activated second playlist item');
+                            expect(mediaController2).to.not.eql(mediaController, 'a different media controller is used for background loading');
+                            expect(mediaController2).to.eql(backgroundMediaController, 'background media controller used');
+                        });
+                    });
+                });
+        });
+
+        it('Uses background loaded media controller when activating an item still background loading', function () {
+            const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
+            destroyProgramController();
+            createProgramController({
+                playlist
+            });
+            return programController.setActiveItem(0)
+                .then((mediaController) => {
+                    programController.backgroundLoad(playlist[1], 1);
+                    const nextLoadPromise = programController.background.nextLoadPromise;
+                    programController.stopVideo();
+                    expect(mediaController.item).to.eql(playlist[0], 'prepared first playlist item');
+                    expect(programController.background.isNext(playlist[1])).to.eql(true, 'readied second item for background loading');
+                    return programController.setActiveItem(1).then((mediaController2) => {
+                        expect(mediaController2.item).to.eql(playlist[1], 'activated second playlist item');
+                        expect(mediaController2).to.not.eql(mediaController, 'a different media controller is used for background loading');
+                        return nextLoadPromise.then((backgroundMediaController) => {
+                            expect(mediaController2).to.eql(backgroundMediaController, 'background media controller used');
+                        });
+                    });
+                });
+        });
+
+        it('Uses background loaded media controller and item with async api item replacement', function () {
+            const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
+            destroyProgramController();
+            createProgramController({
+                playlist
+            });
+            // Async API callback will replace bar.mp4 with baz.mp4
+            programController.model.set('playlistItemCallback', function(playlistItem, index) {
+                if (index === 0) {
+                    return;
+                }
+                return Promise.resolve({
+                    sources: [
+                        {
+                            file: 'baz.mp4'
+                        }
+                    ]
+                });
+            });
+            return programController.setActiveItem(0)
+                .then((mediaController) => {
+                    programController.backgroundLoad(playlist[1], 1);
+                    programController.stopVideo();
+                    expect(mediaController.item).to.eql(playlist[0], 'prepared first playlist item');
+                    return programController.background.nextLoadPromise.then((backgroundMediaController) => {
+                        expect(backgroundMediaController.item).to.eql(playlist[1], 'prepared second playlist item');
+                        expect(programController.background.isNext(playlist[1])).to.eql(true, 'readied second item for background loading');
+                        return programController.setActiveItem(1).then((mediaController2) => {
+                            expect(mediaController2.item).to.eql(playlist[1], 'activated second playlist item');
+                            expect(mediaController2.item.file).to.eql('baz.mp4', 'second playlist item was replaced');
+                            expect(mediaController2).to.eql(backgroundMediaController, 'background media controller used');
+                        });
+                    });
+                });
+        });
+
+        it('Uses background loaded media controller and item with async api item replacement when activating an item still background loading', function () {
+            const playlist = [ mp4Item, { sources: [{ file: 'bar.mp4' }] }];
+            destroyProgramController();
+            createProgramController({
+                playlist
+            });
+            // Async API callback will replace bar.mp4 with baz.mp4
+            programController.model.set('playlistItemCallback', function(playlistItem, index) {
+                if (index === 0) {
+                    return;
+                }
+                return Promise.resolve({
+                    sources: [
+                        {
+                            file: 'baz.mp4'
+                        }
+                    ]
+                });
+            });
+            return programController.setActiveItem(0)
+                .then((mediaController) => {
+                    programController.backgroundLoad(playlist[1], 1);
+                    const nextLoadPromise = programController.background.nextLoadPromise;
+                    programController.stopVideo();
+                    expect(mediaController.item).to.eql(playlist[0], 'prepared first playlist item');
+                    expect(programController.background.isNext(playlist[1])).to.eql(true, 'readied second item for background loading');
+                    return programController.setActiveItem(1).then((mediaController2) => {
+                        expect(mediaController2.item).to.eql(playlist[1], 'activated second playlist item');
+                        expect(mediaController2.item.file).to.eql('baz.mp4', 'second playlist item was replaced');
+                        return nextLoadPromise.then((backgroundMediaController) => {
+                            expect(mediaController2).to.eql(backgroundMediaController, 'background media controller used');
+                        });
+                    });
+                });
+        });
     });
 
     describe('errors', function () {

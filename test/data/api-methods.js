@@ -37,6 +37,7 @@ export default {
     getPlaylist: null,
     getPlaylistIndex: null,
     getPlaylistItem: null,
+    getPlaylistItemPromise: null,
     getPosition: null,
     getProvider: null,
     getQualityLevels: null,
@@ -61,8 +62,8 @@ export default {
     playToggle: null,
     qoe: null,
     registerPlugin: null,
-    remove: null,
     removeButton: null,
+    removePlaylistItemCallback: null,
     resize: null,
     seek: null,
     setCaptions: null,
@@ -76,6 +77,7 @@ export default {
     setMute: null,
     setPlaybackRate: null,
     setPlaylistItem: null,
+    setPlaylistItemCallback: null,
     setVolume: null,
     setup: null,
     stop: null,
@@ -83,5 +85,7 @@ export default {
     on: null,
     once: null,
     skipAd: null,
-    trigger: null
+    trigger: null,
+    // In tests that iterate through these methods, call remove last
+    remove: null
 };

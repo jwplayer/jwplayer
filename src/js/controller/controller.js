@@ -3,8 +3,7 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist, normalizePlaylistItem } from 'playlist/playlist';
-import Item from 'playlist/item';
+import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -88,7 +87,7 @@ Object.assign(Controller.prototype, {
             _trigger(type, event);
         }, _this);
 
-        const _programController = this._programController = new ProgramController(_model, mediaPool);
+        const _programController = this._programController = new ProgramController(_model, mediaPool, _api._publicApi);
         updateProgramSoundSettings();
         addProgramControllerListeners();
         initQoe(_model, _programController);
@@ -181,19 +180,29 @@ Object.assign(Controller.prototype, {
                 model.setStreamType(type);
             }, this);
 
-            const index = model.get('item') + 1;
             const recsAuto = (model.get('related') || {}).oncomplete === 'autoplay';
+            let index = model.get('item') + 1;
             let item = model.get('playlist')[index];
-            if ((item || recsAuto) && _backgroundLoading) {
+            if ((item || recsAuto)) {
                 const onPosition = (changedMediaModel, position) => {
+                    if (recsAuto && !item) {
+                        index = -1;
+                        item = _model.get('nextUp');
+                    }
                     // Do not background load DAI items because that item will be dynamically replaced before play
                     const allowPreload = (item && !item.daiSetting);
+                    if (!allowPreload) {
+                        return;
+                    }
                     const duration = mediaModel.get('duration');
-                    if (allowPreload && position && duration > 0 && position >= duration - BACKGROUND_LOAD_OFFSET) {
+                    if (position && duration > 0 && position >= duration - BACKGROUND_LOAD_OFFSET) {
                         mediaModel.off('change:position', onPosition, this);
-                        _programController.backgroundLoad(item);
-                    } else if (recsAuto) {
-                        item = _model.get('nextUp');
+                        if (_backgroundLoading) {
+                            _programController.backgroundLoad(item, index);
+                        } else {
+                            _programController.getAsyncItem(index).run();
+                        }
+
                     }
                 };
                 mediaModel.on('change:position', onPosition, this);
@@ -413,7 +422,7 @@ Object.assign(Controller.prototype, {
             }
             _this.trigger('destroyPlugin', {});
             _stop(true);
-
+            _programController.clearItemPromises();
             checkAutoStartCancelable.cancel();
             checkAutoStartCancelable = cancelable(_checkAutoStart);
             updatePlaylistCancelable.cancel();
@@ -502,9 +511,15 @@ Object.assign(Controller.prototype, {
 
             if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
-                _this.setItemIndex(0);
+                return _this.setItemIndex(0).then(() => {
+                    return _playAttempt(meta, playReason);
+                });
             }
 
+            return _playAttempt(meta, playReason);
+        }
+
+        function _playAttempt(meta, playReason) {
             if (!_beforePlay) {
                 _beforePlay = true;
                 _this.trigger(MEDIA_BEFOREPLAY, {
@@ -955,6 +970,22 @@ Object.assign(Controller.prototype, {
         this.getWidth = () => _model.get('containerWidth');
         this.getHeight = () => _model.get('containerHeight');
         this.getItemQoe = () => _model._qoeItem;
+
+        this.setItemCallback = function (callback) {
+            _programController.itemCallback = callback;
+        };
+        this.getItemPromise = function (index) {
+            const playlist = _model.get('playlist');
+            if (index < -1 || index > playlist.length - 1 || isNaN(index)) {
+                return null;
+            }
+            const asyncItem = _programController.getAsyncItem(index);
+            if (!asyncItem) {
+                return null;
+            }
+            return asyncItem.promise;
+        };
+
         this.addButton = function(img, tooltip, callback, id, btnClass) {
             let customButtons = _model.get('customButtons') || [];
             let replaced = false;
@@ -1036,15 +1067,20 @@ Object.assign(Controller.prototype, {
         };
 
         this.setPlaylistItem = function (index, item) {
-            item = normalizePlaylistItem(_model, new Item(item), item.feedData || {});
-
-            if (item) {
-                const playlist = _model.get('playlist');
-                playlist[index] = item;
-
-                if (index === _model.get('item') && _model.get('state') === 'idle') {
-                    this.setItemIndex(index);
-                }
+            const asyncItemController = _programController.getAsyncItem(index);
+            const newItem = asyncItemController.replace(item);
+            if (!newItem) {
+                return;
+            }
+            const playlist = _model.get('playlist');
+            const playlistItem = playlist[index];
+            if (item && item !== playlistItem) {
+                _programController.asyncItems[index] = null;
+                asyncItemController.reject(new Error('Item replaced'));
+            }
+            // If the current item was replaced, and the player is idle, reload it
+            if (index === _model.get('item') && _model.get('state') === 'idle') {
+                this.setItemIndex(index);
             }
         };
 

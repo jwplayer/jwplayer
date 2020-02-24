@@ -925,6 +925,55 @@ export default function Api(element) {
          */
         isBeforePlay() {
             return core.isBeforePlay();
+        },
+
+        /**
+         * Registers an async playlist item callback. Only one can be set. Replaces previously set callback.
+         *
+         * When the callback returns a promise, playlist progression will be blocked until the promise is resolved.
+         * If the promise resolves with a valid playlist object, that object will replace the item in the playlist.
+         *
+         * @param {function<Promise<Item|undefined>|undefined>} callback - A callback run in advance of the
+         * "playlistItem" event depending on the callback context.
+         *
+         * The callback accepts several arguments:
+         *    item - the playlist item
+         *    index - the playlist items index in the playlist
+         *
+         * The callback may be executed in advance of the current playlist item completing. This is to allow preloading
+         * of the next item and pre-rolls to be blocked.
+         *
+         * @param {Object} [options] - Reserved for future use.
+         * @returns {void}
+         */
+        setPlaylistItemCallback(callback, options) {
+            core.setItemCallback(callback, options);
+        },
+
+        /**
+         * Removes the async playlist item callback.
+         * @returns {void}
+         */
+        removePlaylistItemCallback() {
+            core.setItemCallback(null);
+        },
+
+        /**
+         * Gets the async blocking Promise for the next playlist item, or a specific playlist item if the
+         * index argument is supplied.
+         *
+         * The Promise returned resolves when the async item callback resolves for the
+         * playlist item. If there is no callback, or the callback promise resolved immediately, this promise can
+         * resolve in advance of the previous playlist item completing, to allow time for preloading media and
+         * any scheduled pre-rolls.
+         *
+         * The Promise will throw if the async item callback is rejected.
+         *
+         * @param {number} index - A valid playlist item index, or -1 for the next recommended item.
+         * @returns {Promise<Item>|null} The playlist item promise, or null when index is invalid or setup is incomplete.
+         */
+        getPlaylistItemPromise(index) {
+            return core.getItemPromise(index);
         }
     });
 }

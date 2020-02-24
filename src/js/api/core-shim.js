@@ -200,6 +200,15 @@ Object.assign(CoreShim.prototype, {
     getItemQoe() {
         return this.modelShim._qoeItem;
     },
+    getItemPromise() {
+        return null;
+    },
+    setItemCallback(callback) {
+        if (!this.modelShim) {
+            return;
+        }
+        this.modelShim.attributes.playlistItemCallback = callback;
+    },
     getConfig() {
         return Object.assign({}, this.modelShim.attributes, this.mediaShim);
     },
