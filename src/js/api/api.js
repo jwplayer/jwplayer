@@ -933,8 +933,10 @@ export default function Api(element) {
          * When the callback returns a promise, playlist progression will be blocked until the promise is resolved.
          * If the promise resolves with a valid playlist object, that object will replace the item in the playlist.
          *
-         * @param {function<Promise<Item|undefined>|undefined>} callback - A callback run in advance of the
+         * @param {function} callback - A callback run in advance of the
          * "playlistItem" event depending on the callback context.
+         *
+         * `(item, index) => Promise<Item|undefined>|undefined`
          *
          * The callback accepts several arguments:
          *    item - the playlist item

@@ -235,9 +235,11 @@ module.exports = function(grunt) {
         runCommand('yarn type-check', '.')
     });
 
-    grunt.registerTask('docs', 'Generate API documentation', function() {
-        runCommand('yarn docs', '.');
-    });
+    // grunt.registerTask('docs', 'Generate API documentation', function() {
+    //     runCommand('yarn docs', '.');
+    // "preversion": "grunt && grunt clean:docs && npm run docs && git add docs",
+    // "docs": "jsdoc -c docs/jsdoc.conf.json",
+    // });
 
     grunt.registerTask('karma:local', [
         'karma:headless'
