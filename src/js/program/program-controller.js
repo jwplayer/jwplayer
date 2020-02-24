@@ -122,8 +122,6 @@ class ProgramController extends Events {
                     // We can synchronously reuse the current mediaController
                     // Reinitialize the mediaController with the new item, allowing a new playback session
                     mediaController.activeItem = playlistItem;
-                    mediaController.attached = true;
-                    mediaController.eventQueue.flush();
                     this._setActiveMedia(mediaController);
                     return mediaController;
                 }
@@ -444,6 +442,9 @@ class ProgramController extends Events {
 
         assignMediaContainer(model, mediaController);
         this.mediaController = mediaController;
+
+        mediaController.attached = true;
+        mediaController.eventQueue.flush();
 
         model.set('mediaElement', mediaController.mediaElement);
         model.setMediaModel(mediaModel);
