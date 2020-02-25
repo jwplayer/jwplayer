@@ -1,4 +1,6 @@
-export default (id: string, ariaLabel: string): string => {
+import { HTMLTemplateString } from 'types/generic.type';
+
+export default (id: string, ariaLabel: string): HTMLTemplateString => {
     return (
         `<div id="${id}" class="jwplayer jw-reset jw-state-setup" tabindex="0" aria-label="${(ariaLabel || '')}" role="application">` +
             `<div class="jw-aspect jw-reset"></div>` +
