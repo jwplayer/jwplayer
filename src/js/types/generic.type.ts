@@ -11,3 +11,5 @@ export type PageNode = (Element | ChildNode) & {
 export type PlaylistItemType = any;
 
 export type HTMLTemplateString = string;
+
+export type PlayerAPI = any;

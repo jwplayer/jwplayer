@@ -1,9 +1,23 @@
 import { MEDIA_POOL_SIZE } from 'program/program-constants';
+import { GenericObject } from 'types/generic.type';
 
-export default function MediaElementPool() {
+export interface MediaElementPoolInt {
+    primed: () => boolean;
+    prime: () => void;
+    played: () => void;
+    getPrimedElement: () => HTMLVideoElement | null;
+    getAdElement: () => HTMLVideoElement;
+    getTestElement: () => HTMLVideoElement;
+    clean: (mediaElement: HTMLVideoElement) => void;
+    recycle: (mediaElement: HTMLVideoElement) => void;
+    syncVolume: (volume: number) => void;
+    syncMute: (muted: boolean) => void;
+}
+
+export default function MediaElementPool(): MediaElementPoolInt {
     const maxPrimedTags = MEDIA_POOL_SIZE;
-    const elements = [];
-    const pool = [];
+    const elements: HTMLVideoElement[] = [];
+    const pool: HTMLVideoElement[] = [];
     for (let i = 0; i < maxPrimedTags; i++) {
         const mediaElement = createMediaElement();
         elements.push(mediaElement);
@@ -12,38 +26,34 @@ export default function MediaElementPool() {
     }
 
     // Reserve an element exclusively for ads
-    const adElement = pool.shift();
+    const adElement = pool.shift() as HTMLVideoElement;
 
     // Reserve an element exclusively for feature testing.
-    const testElement = pool.shift();
+    const testElement = pool.shift() as HTMLVideoElement;
 
     let primed = false;
 
     return {
-        primed() {
+        primed(): boolean {
             return primed;
         },
-        prime() {
+        prime(): void {
             elements.forEach(primeMediaElementForPlayback);
             primed = true;
         },
-        played() {
+        played(): void {
             primed = true;
         },
-        getPrimedElement() {
-            if (pool.length) {
-                // Shift over pop so that we cycle through elements instead of reusing the same one
-                return pool.shift();
-            }
-            return null;
+        getPrimedElement(): HTMLVideoElement | null {
+            return pool.shift() || null;
         },
-        getAdElement() {
+        getAdElement(): HTMLVideoElement {
             return adElement;
         },
-        getTestElement() {
+        getTestElement(): HTMLVideoElement {
             return testElement;
         },
-        clean(mediaElement) {
+        clean(mediaElement: HTMLVideoElement): void {
             // Try to clean the media element so that we don't see frames of the previous video when reusing a tag
             // We don't want to call load again if the media element is already clean
             if (!mediaElement.src) {
@@ -57,19 +67,19 @@ export default function MediaElementPool() {
                 // Calling load may throw an exception, but does not result in an error state
             }
         },
-        recycle(mediaElement) {
+        recycle(mediaElement: HTMLVideoElement): void {
             if (mediaElement && !pool.some(element => element === mediaElement)) {
                 this.clean(mediaElement);
                 pool.push(mediaElement);
             }
         },
-        syncVolume: function (volume) {
+        syncVolume: function (volume: number): void {
             const vol = Math.min(Math.max(0, volume / 100), 1);
             elements.forEach(e => {
                 e.volume = vol;
             });
         },
-        syncMute(muted) {
+        syncMute(muted: boolean): void {
             elements.forEach(e => {
                 e.muted = muted;
             });
@@ -77,14 +87,14 @@ export default function MediaElementPool() {
     };
 }
 
-function primeMediaElementForPlayback(mediaElement) {
+function primeMediaElementForPlayback(mediaElement: HTMLVideoElement): void {
     // If we're in a user-gesture event call load() on video to allow async playback
     if (!mediaElement.src) {
         mediaElement.load();
     }
 }
 
-export function createMediaElement(options) {
+export function createMediaElement(options?: GenericObject): HTMLVideoElement {
     const mediaElement = document.createElement('video');
 
     mediaElement.className = 'jw-video jw-reset';

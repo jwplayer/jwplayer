@@ -1,16 +1,23 @@
 import PluginsLoader from 'plugins/loader';
 import PluginsModel from 'plugins/model';
+import { CoreModel, PlayerAPI, GenericObject } from 'types/generic.type';
+
+declare global {
+    interface Window { jwplayerPluginJsonp: Function }
+}
 
 const pluginsModel = new PluginsModel();
 
-export const registerPlugin = function(name, minimumVersion, pluginClass) {
+type PluginFuncDef = (api: PlayerAPI, config: GenericObject, div: HTMLDivElement) => void;
+
+export const registerPlugin = function(name: string, minimumVersion: string, pluginClass: PluginFuncDef): void {
     let plugin = pluginsModel.addPlugin(name);
     if (!plugin.js) {
         plugin.registerPlugin(name, minimumVersion, pluginClass);
     }
 };
 
-export default function loadPlugins(model, api) {
+export default function loadPlugins(model: CoreModel, api: PlayerAPI): Promise<GenericObject> {
     const pluginsConfig = model.get('plugins');
 
     window.jwplayerPluginJsonp = registerPlugin;
