@@ -37,6 +37,8 @@ const Track = function(config?: PlaylistItemTrack): PlaylistItemTrack | undefine
     // Disable dot notation due to default being a reserved word
     // eslint-disable-next-line dot-notation
     trackConfig['default'] = !!trackConfig['default'];
+
+    return trackConfig;
 };
 
 export default Track;
