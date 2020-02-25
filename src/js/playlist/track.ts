@@ -1,4 +1,4 @@
-import { GenericObject } from "types/generic.type";
+import { GenericObject } from 'types/generic.type';
 
 interface PlaylistItemTrack extends GenericObject {
     file?: string;
@@ -7,6 +7,11 @@ interface PlaylistItemTrack extends GenericObject {
     name?: string;
     label?: string;
     language?: string;
+}
+
+const VALID_TRACK_KINDS = ['captions', 'metadata', 'thumbnails', 'chapters'];
+function validTrackKind(tk: string): boolean {
+    return VALID_TRACK_KINDS.indexOf(tk) !== -1;
 }
 
 /**
@@ -23,13 +28,15 @@ const Track = function(config?: PlaylistItemTrack): PlaylistItemTrack | undefine
         return;
     }
 
-    return Object.assign({}, {
+    const trackConfig = Object.assign({}, {
         kind: 'captions',
         'default': false
-    }, config, {
-        default: false,
-        kind: 'captions'
-    });
+    }, config);
+
+    trackConfig.kind = validTrackKind(trackConfig.kind) ? trackConfig.kind : 'captions';
+    // Disable dot notation due to default being a reserved word
+    // eslint-disable-next-line dot-notation
+    trackConfig['default'] = !!trackConfig['default'];
 };
 
 export default Track;
