@@ -1,4 +1,4 @@
-export default function(element, ariaLabel) {
+export default function(element: HTMLElement, ariaLabel: string): void {
     if (!element || !ariaLabel) {
         return;
     }
