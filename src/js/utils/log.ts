@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
+export const log: () => {} = (typeof console.log === 'function') ? console.log.bind(console) : noop;
 
-const noop = () => {
+function noop() {
     // noop
 };
-
-export const log: () => {} = (typeof console.log === 'function') ? console.log.bind(console) : noop;
