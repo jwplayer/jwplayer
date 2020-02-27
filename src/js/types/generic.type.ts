@@ -13,3 +13,7 @@ export type PlaylistItemType = any;
 export type HTMLTemplateString = string;
 
 export type PlayerAPI = any;
+
+export type PlaylistItemSource = any;
+
+export type DefaultProvider = any;
