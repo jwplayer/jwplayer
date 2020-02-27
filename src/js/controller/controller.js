@@ -916,6 +916,7 @@ Object.assign(Controller.prototype, {
             setConfig(_this, newConfig);
         };
         this.setItemIndex = (index) => {
+            this.instreamDestroy();
             _programController.stopVideo();
 
             const playlist = _model.get('playlist');
