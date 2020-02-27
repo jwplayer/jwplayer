@@ -700,6 +700,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _item(index, meta) {
+            _this.instreamDestroy();
             _stop(true);
             _this.setItemIndex(index);
             // Use this.play() so that command is queued until after "playlistItem" event
