@@ -1,11 +1,4 @@
-export function qualityLevel(level: any): QualityLevel {
-    return {
-        bitrate: level.bitrate,
-        label: level.label,
-        width: level.width,
-        height: level.height
-    };
-}
+import { GenericObject } from 'types/generic.type';
 
 export type QualityLevel = {
     label: string;
@@ -13,3 +6,12 @@ export type QualityLevel = {
     width?: number;
     height?: number;
 };
+
+export function qualityLevel(level: QualityLevel | GenericObject): QualityLevel {
+    return {
+        bitrate: level.bitrate,
+        label: level.label,
+        width: level.width,
+        height: level.height
+    };
+}
