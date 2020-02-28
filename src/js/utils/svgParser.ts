@@ -1,8 +1,8 @@
 import { sanitizeElementAttributes, sanitizeScriptNodes } from 'utils/dom';
 
-let parser;
+let parser: DOMParser;
 
-export default function svgParse(svgXml) {
+export default function svgParse(svgXml: string): XMLDocument {
     if (!parser) {
         parser = new DOMParser();
     }
