@@ -9,12 +9,12 @@ export type BandwidthMonitor = {
 }
 
 export default function BandwidthMonitor(provider: DefaultProvider, initialEstimate: number): BandwidthMonitor {
-    let bandwidthMonitorInterval: NodeJS.Timeout;
+    let bandwidthMonitorInterval: number | undefined;
     let bandwidthEstimate = initialEstimate;
     return {
         start(): void {
             this.stop();
-            bandwidthMonitorInterval = setInterval(() => {
+            bandwidthMonitorInterval = window.setInterval(() => {
                 const bwEstimate = provider.getBandwidthEstimate();
                 if (!isValidNumber(bwEstimate)) {
                     return;
