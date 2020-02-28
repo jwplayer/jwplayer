@@ -15,12 +15,12 @@ export function isFlashSupported(): boolean {
     return !!(version && version >= __FLASH_VERSION__);
 }
 
+const isIPadOS13 = () => navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
 export const isFF = lazyUserAgentMatch(/gecko\//i);
 export const isIETrident = lazyUserAgentMatch(/trident\/.+rv:\s*11/i);
 export const isIPod = lazyUserAgentMatch(/iP(hone|od)/i);
-export const isIPadOS13 = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-export const isIPad = () => userAgentMatch(/iPad/i) || isIPadOS13;
-export const isOSX = () => userAgentMatch(/Macintosh/i) && !isIPadOS13;
+export const isIPad = () => userAgentMatch(/iPad/i) || isIPadOS13();
+export const isOSX = () => userAgentMatch(/Macintosh/i) && !isIPadOS13();
 // Check for Facebook App Version to see if it's Facebook
 export const isFacebook = lazyUserAgentMatch(/FBAV/i);
 
@@ -32,8 +32,14 @@ export function isMSIE(): boolean {
     return userAgentMatch(/msie/i);
 }
 
+export function isTizen(): boolean {
+    return userAgentMatch(/SMART-TV/);
+}
+
 export function isChrome(): boolean {
-    return userAgentMatch(/\s(?:(?:Headless)?Chrome|CriOS)\//i) && !isEdge() && !userAgentMatch(/UCBrowser/i);
+    return userAgentMatch(/\s(?:(?:Headless)?Chrome|CriOS)\//i) && !isEdge() &&
+        !userAgentMatch(/UCBrowser/i) &&
+        !isTizen();
 }
 
 export function isIE(): boolean {
@@ -41,11 +47,12 @@ export function isIE(): boolean {
 }
 
 export function isSafari(): boolean {
-    return userAgentMatch(/safari/i) && !userAgentMatch(/(?:Chrome|CriOS|chromium|android|phantom)/i);
+    return (userAgentMatch(/safari/i) && !userAgentMatch(/(?:Chrome|CriOS|chromium|android|phantom)/i)) ||
+        isTizen();
 }
 
 export function isIOS(): boolean {
-    return userAgentMatch(/iP(hone|ad|od)/i) || isIPadOS13;
+    return userAgentMatch(/iP(hone|ad|od)/i) || isIPadOS13();
 }
 
 export function isAndroidNative(): boolean {

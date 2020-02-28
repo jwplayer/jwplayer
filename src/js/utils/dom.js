@@ -2,6 +2,9 @@ import { trim } from 'utils/strings';
 import { isString, contains, difference, isBoolean } from 'utils/underscore';
 import { Browser } from '../environment/environment';
 
+const DOMParser = window.DOMParser;
+
+let useDomParser = true;
 let parser;
 
 export function hasClass(element, searchClass) {
@@ -31,10 +34,7 @@ function appendHtml(element, html) {
 }
 
 export function htmlToParentElement(html) {
-    if (!parser) {
-        parser = new DOMParser();
-    }
-    const parsedElement = parser.parseFromString(html, 'text/html').body;
+    const parsedElement = domParse(html);
 
     // Delete script nodes
     sanitizeScriptNodes(parsedElement);
@@ -48,6 +48,38 @@ export function htmlToParentElement(html) {
 
     return parsedElement;
 }
+
+function supportsHtmlParsing() {
+    // Firefox/Opera/IE throw errors on unsupported types
+    try {
+        // WebKit returns null on unsupported types
+        if (parser.parseFromString('', 'text/html')) {
+            // text/html parsing is natively supported
+            return true;
+        }
+    } catch (err) {/* noop */}
+    return false;
+}
+
+function domParse(html) {
+    if (!parser) {
+        parser = new DOMParser();
+        useDomParser = supportsHtmlParsing();
+    }
+    if (useDomParser) {
+        return parser.parseFromString(html, 'text/html').body;
+    }
+    const doc = document.implementation.createHTMLDocument('');
+    if (html.toLowerCase().indexOf('<!doctype') > -1) {
+        // eslint-disable-next-line no-unsanitized/property
+        doc.documentElement.innerHTML = html;
+    } else {
+        // eslint-disable-next-line no-unsanitized/property
+        doc.body.innerHTML = html;
+    }
+    return doc.body;
+}
+
 
 export function sanitizeScriptNodes(element) {
     const nodes = element.querySelectorAll('script,object,iframe');
