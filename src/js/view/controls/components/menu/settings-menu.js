@@ -450,6 +450,24 @@ function createTopbar (mainMenu) {
             }
             return targetMenu;
         };
+
+        switch (sourceEvent.keyCode) {
+            case 37: // left-arrow
+                onLeft();
+                break;
+            case 39: // right-arrow
+                onRight();
+                break;
+            case 38: // up-arrow
+            case 40: // down-arrow
+                onOpen();
+                break;
+            case 10009:
+                mainMenu.close(evt);
+                break;
+            default:
+                break;
+        }
         
         switch (key) {
             case 'Esc':
