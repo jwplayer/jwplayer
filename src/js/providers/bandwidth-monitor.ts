@@ -1,13 +1,20 @@
 import { BANDWIDTH_ESTIMATE } from 'events/events';
 import { isValidNumber } from 'utils/underscore';
+import { DefaultProvider } from 'types/generic.type';
 
-export default function BandwidthMonitor(provider, initialEstimate) {
-    let bandwidthMonitorInterval = null;
+export type BandwidthMonitor = {
+    start: () => void;
+    stop: () => void;
+    getEstimate: () => number;
+}
+
+export default function BandwidthMonitor(provider: DefaultProvider, initialEstimate: number): BandwidthMonitor {
+    let bandwidthMonitorInterval: number | undefined;
     let bandwidthEstimate = initialEstimate;
     return {
-        start() {
+        start(): void {
             this.stop();
-            setInterval(() => {
+            bandwidthMonitorInterval = window.setInterval(() => {
                 const bwEstimate = provider.getBandwidthEstimate();
                 if (!isValidNumber(bwEstimate)) {
                     return;
@@ -18,10 +25,10 @@ export default function BandwidthMonitor(provider, initialEstimate) {
                 });
             }, 1000);
         },
-        stop() {
+        stop(): void {
             clearInterval(bandwidthMonitorInterval);
         },
-        getEstimate() {
+        getEstimate(): number {
             return bandwidthEstimate;
         }
     };
