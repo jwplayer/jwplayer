@@ -65,6 +65,27 @@ export default class Menu extends Events {
             const key = sourceEvent && normalizeKey(sourceEvent.key);
             let focusEl;
 
+
+            switch (sourceEvent.keyCode) {
+                case 37: // left-arrow
+                    focusEl = (leftItem || this.close(evt) && settingsElement);
+                    break;
+                case 39: // right-arrow
+                    focusEl = rightItem;
+                    break;
+                case 38: // up-arrow
+                    focusEl = upItem;
+                    break;
+                case 40: // down-arrow
+                    focusEl = downItem;
+                    break;
+                case 10009: // return
+                    focusEl = settingsElement;
+                    this.close(event);
+                    break;
+                default:
+                    break;
+            }
             switch (key) {
                 case 'Tab':
                     focusEl = sourceEvent.shiftKey ? leftItem : rightItem;
@@ -148,6 +169,27 @@ export default class Menu extends Events {
                     settingsMenu.closeButton.element().focus();
                 }
             };
+
+            switch (sourceEvent.keyCode) {
+                case 37: // left-arrow
+                    onLeft();
+                    break;
+                case 39: // right-arrow
+                    onRight();
+                    break;
+                case 38: // up-arrow
+                    itemsContainer.lastChild.focus();
+                    break;
+                case 40: // down-arrow
+                    itemsContainer.firstChild.focus();
+                    break;
+                case 10009:
+                    settingsMenu.close(evt);
+                    break;
+                default:
+                    break;
+            }
+
             switch (key) {
                 case 'Up':
                     itemsContainer.lastChild.focus();
