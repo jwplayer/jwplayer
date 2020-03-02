@@ -175,7 +175,7 @@ export default class RightClick {
         this.model = _model;
         this.mouseOverContext = false;
         this.playerContainer = _playerContainer;
-        this.ui = new UI(_wrapperElement).on('longPress', this.rightClick, this);
+        this.ui = !_model.get('isTizenApp') && new UI(_wrapperElement).on('longPress', this.rightClick, this);
     }
 
     addHideMenuHandlers() {

@@ -1,0 +1,222 @@
+@import "../../shared-imports/vars.less";
+
+.jw-tizen-app {
+    // Increasing the overall font size of the player - reset.less
+    // .jw-reset-text {
+    //     font-size: @tizen-font-size;
+    // }
+
+    // Increasing the size of the svg-icons - icon.less
+    .jw-svg-icon {
+        .square(60px);
+    }
+
+    .jw-icon {
+        .square(100px);
+    }
+
+    // Include the back icon in pointer events - jwplayerlayout.less
+    // Tizen back icon to fade with control bar - title.less
+    .jw-icon-back {
+        pointer-events: all;
+        left: 0;
+        top: 0;
+        transition: 250ms @default-timing-function;
+        transition-property: opacity, visibility;
+        transition-delay: 0s;
+    }
+
+    .jw-text {
+        font-size: @tizen-font-size;
+    }
+
+    .jw-controls {
+        padding: @tizen-margin;
+    }
+
+    .jw-controls-backdrop {
+        background: linear-gradient(to bottom, fade(@black, 40%) 100%, fade(@black, 40%) 77%, transparent, fade(@black, 40%) 77%, fade(@black, 40%) 100%);
+    }
+
+    // Raise control bar - controlbar.less
+    .jw-controlbar {
+        padding: @tizen-margin;
+        max-height: 300px;
+
+        .jw-text {
+            font-size: 1.5em;
+        }
+
+        .jw-text-elapsed {
+            justify-content: flex-end;
+        }
+    }
+
+    // Video title styling
+    .jw-title {
+        padding-top: 6.5%;
+        padding-left: 10%;
+    }
+
+    // Increase margin around JW Logo - logo.less
+    .jw-logo {
+        margin: @tizen-margin;
+    }
+
+    // Moving display container down when the back icon is also displayed - display.less
+    .jw-display {
+        height: 70%;
+    }
+
+    // Increasing size of Live text on livestreams - live.less
+    .jw-text-live {
+        font-size: 2em;
+    }
+
+    // Changing the formatting for the skip ad button - skipad.less
+    .jw-skip {
+        right: @tizen-margin;
+
+        .jw-text {
+            font-size: @tizen-font-size;
+            font-weight: normal;
+        }
+    }
+
+    // Increase the thickness of the slider - slider.less
+    .jw-slider-container {
+        height: 15px;
+    }
+
+    // Increase the thickness of the slider during ad playback - ads.less
+    &.jwplayer.jw-flag-ads {
+        .jw-controlbar {
+            .jw-slider-time {
+                .jw-slider-container {
+                    height: 10px;
+                }
+            }
+        }
+    }
+
+    // Recenter and resize slider tool and hide other tooltips - tooltip.less
+    .jw-tooltip {
+        display: none;
+    }
+
+    .jw-time-tip {
+        .jw-text {
+            font-size: @tizen-font-size;
+        }
+    }
+
+    .jw-tooltip-time {
+        .jw-overlay {
+            top: 0;
+            left: 0;
+        }
+    }
+
+    // Increase settings menu text size, Settings menu - settings-menu.less
+    .jw-settings-menu {
+        bottom: 225px;
+        right: @tizen-margin;
+        max-height: none;
+        max-width: none;
+        height: 35%;
+        width: 25%;
+
+        .jw-settings-topbar:not(.jw-nested-menu-open) {
+            .jw-icon-inline {
+                .square(90px);
+                display: flex;
+
+                .jw-svg-icon {
+                    .square(50px);
+                }
+            }
+        }
+
+        .jw-settings-back {
+            min-width: 60px;
+            display: flex;
+        }
+    }
+
+    .jw-settings-content-item-value {
+        font-size: 1em;
+    }
+
+    .jw-settings-submenu {
+        .jw-settings-content-item {
+            font-size: 1.5em;
+            padding: 11px 15px 11px 30px;
+
+            .jw-settings-item-active::before {
+                justify-content: flex-end;
+            }
+
+            .jw-auto-label {
+                font-size: 0.85em;
+                padding-left: 10px;
+            }
+        }
+
+        .jw-settings-value-wrapper {
+            .jw-svg-icon-arrow-right {
+                width: 15px;
+                height: 20px;
+            }
+        }
+    }
+
+    .jw-settings-topbar {
+        .jw-settings-topbar-text {
+            font-size: 1.65em;
+            font-weight: bold;
+        }
+
+        .jw-settings-close {
+            display: flex;
+        }
+
+        &.jw-nested-menu-open {
+            .jw-svg-icon-close {
+                .square(50px);
+            }
+
+            .jw-svg-icon-arrow-left {
+                .square(35px);
+            }
+        }
+    }
+
+    // Set max-height so that captions don't appear too low - captions.less
+    video::-webkit-media-text-track-container {
+        max-height: calc(100% - 100px);
+    }
+
+    // Move captions above control bar when it's showing
+    &.jwplayer:not(.jw-flag-controls-hidden):not(.jw-state-playing),
+    &.jwplayer.jw-flag-media-audio.jw-state-playing,
+    &.jwplayer.jw-state-playing:not(.jw-flag-user-inactive):not(.jw-flag-controls-hidden) {
+        // Style duplication below prevents compiler bug resulting in lost styles.
+        video::-webkit-media-text-track-container {
+            max-height: calc(100% - 300px);
+        }
+    }
+}
+
+// Fade back button with control bar - controlbar.less
+.jw-flag-ads-vpaid,
+.jw-flag-user-inactive.jw-state-playing,
+.jw-flag-user-inactive.jw-state-buffering {
+    &:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
+        .jw-icon-back {
+            visibility: hidden;
+            pointer-events: none;
+            opacity: 0;
+            transition-delay: 0s, 250ms;
+        }
+    }
+}

@@ -14,7 +14,7 @@
         display: flex;
     }
 
-    .jw-breakpoint-7 & {
+    .jw-breakpoint-7 &:not(.jw-tizen-app &) {
         bottom: 130px;
         right: 60px;
         max-height: none;
@@ -183,7 +183,7 @@
         }
     }
 
-    .jw-breakpoint-7 & {
+    .jw-breakpoint-7 &:not(.jw-tizen-app &) {
         .jw-settings-content-item {
             font-size: 1em;
             padding: 11px 15px 11px 30px;
