@@ -270,6 +270,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
             this.removeTracksListener(_videotag.textTracks, 'addtrack', this.addTrackHandler);
 
+            if (this.videoLoad) {
+                _videotag.load = this.videoLoad;
+            }
+
             // Prevent sideloaded tracks from showing during ad playback
             if (_shouldToggleTrackOnDetach()) {
                 this.disableTextTrack();
@@ -282,6 +286,23 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             this.seeking = false;
             // In case the video tag was modified while we shared it
             _videotag.loop = false;
+
+            // override load so that it's not used to reset the video tag by external JavaScript (iOS ads)
+            if (OS.iOS && !this.videoLoad) {
+                const videoLoad = this.videoLoad = _videotag.load;
+                _videotag.load = function() {
+                    if (_videotag.src === location.href) {
+                        _setVideotagSource(_levels[_currentQuality]);
+                        if (_this.state === STATE_PLAYING) {
+                            _videotag.play();
+                        }
+                        _this.trigger(WARNING, new PlayerError(null, HTML5_BASE_WARNING + 5,
+                            new Error('video.load() was called after setting video.src to empty while playing video')));
+                        return;
+                    }
+                    return videoLoad.call(_videotag);
+                };
+            }
 
             // If there was a showing sideloaded track disabled in detached, re-enable it
             if (_shouldToggleTrackOnDetach()) {
@@ -651,6 +672,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         const { addTrackHandler, cueChangeHandler, textTrackChangeHandler } = _this;
         const textTracks = _videotag.textTracks;
         _this.off();
+        if (_this.videoLoad) {
+            _videotag.load = _this.videoLoad;
+        }
         _beforeResumeHandler = noop;
         _removeListeners(MediaEvents, _videotag);
         _this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
