@@ -51,7 +51,7 @@ export function startPlayback (element, { muted }) {
         }
     }
 
-    // Resolve autoplay for Tizen applications and browsers
+    // Resolve autoplay for Tizen
     if (OS.tizen) {
         return Promise.resolve();
     }
@@ -59,7 +59,6 @@ export function startPlayback (element, { muted }) {
     // Configure element.
     element.muted = muted;
     element.src = URL.createObjectURL(videoBlob);
-
 
     // Start playback.
     return element.play() || createPlayPromise(element);
