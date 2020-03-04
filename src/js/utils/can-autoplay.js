@@ -60,6 +60,10 @@ export function startPlayback (element, { muted }) {
     element.muted = muted;
     element.src = URL.createObjectURL(videoBlob);
 
+    if (OS.tizen) {
+        element.crossOrigin = 'anonymous';
+    }
+
     // Start playback.
     return element.play() || createPlayPromise(element);
 }
