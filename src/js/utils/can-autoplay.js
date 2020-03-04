@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 import createPlayPromise from '../providers/utils/play-promise';
+import { OS } from '../environment/environment';
 
 // Use webkitURL or mozURL as a backup if URL was overwritten
 const URL = (global => global.URL && global.URL.createObjectURL ?
@@ -52,6 +53,10 @@ export function startPlayback (element, { muted }) {
     // Configure element.
     element.muted = muted;
     element.src = URL.createObjectURL(videoBlob);
+
+    if (OS.tizen) {
+        element.crossOrigin = 'anonymous';
+    }
 
     // Start playback.
     return element.play() || createPlayPromise(element);
