@@ -51,7 +51,7 @@ export function startPlayback (element, { muted }) {
         }
     }
 
-    // Resolve autoplay for Tizen
+    // Resolve autoplay for Tizen applications and browsers
     if (OS.tizen) {
         return Promise.resolve();
     }
@@ -60,9 +60,6 @@ export function startPlayback (element, { muted }) {
     element.muted = muted;
     element.src = URL.createObjectURL(videoBlob);
 
-    if (OS.tizen) {
-        element.crossOrigin = 'anonymous';
-    }
 
     // Start playback.
     return element.play() || createPlayPromise(element);
