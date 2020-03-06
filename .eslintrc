@@ -203,7 +203,7 @@
                 "@typescript-eslint/no-misused-new": "error",
                 "@typescript-eslint/no-namespace": "error",
                 "@typescript-eslint/no-non-null-assertion": "warn",
-                "@typescript-eslint/no-this-alias": "error",
+                "@typescript-eslint/no-this-alias": "warn",
                 "@typescript-eslint/no-var-requires": "error",
                 "@typescript-eslint/no-unused-vars": "error",
                 "@typescript-eslint/prefer-namespace-keyword": "error",

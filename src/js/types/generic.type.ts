@@ -23,3 +23,5 @@ export type Menu = GenericObject;
 export type Tooltip = GenericObject;
 
 export type Localization = GenericObject;
+
+export type TextTrackLike = any;

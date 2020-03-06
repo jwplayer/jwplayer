@@ -11,9 +11,38 @@
 
 // Mixin module modified into a class which can be extended
 
-const slice = [].slice;
+type EventsAction = 'on'|'once'|'off'|'trigger';
 
-export default class Events {
+type EventListenerDictionary = {
+    [name: string]: EventListener;
+}
+
+type EventListenersDictionary = {
+    [name: string]: Array<EventListener>;
+}
+
+type EventListener = {
+    callback: EventCallback;
+    context: any;
+}
+
+type EventCallback = {
+    (): void;
+    _callback?: () => void;
+};
+
+interface EventsInterface {
+    on: (name: string | EventListenerDictionary, callback: EventCallback, context?: any) => EventsInterface;
+    trigger: (name: string, ...args: any[]) => EventsInterface;
+}
+
+export default class Events implements EventsInterface {
+    static on;
+    static once;
+    static off;
+    static trigger;
+
+    private _events?: EventListenersDictionary;
 
     /**
      * Adds an event listener.
@@ -22,13 +51,13 @@ export default class Events {
      * @param {any} [context] - The context to apply to the callback's function invocation.
      * @returns {any} `this` context for chaining.
      */
-    on(name, callback, context) {
+    on(name: string | EventListenerDictionary, callback: EventCallback, context?: any): Events {
         if (!eventsApi(this, 'on', name, [callback, context]) || !callback) {
             return this;
         }
         const _events = this._events || (this._events = {});
         const events = _events[name] || (_events[name] = []);
-        events.push({ callback: callback, context: context });
+        events.push({ callback, context });
         return this;
     }
 
@@ -40,17 +69,18 @@ export default class Events {
      * @param {any} [context] - The context to apply to the callback's function invocation.
      * @returns {any} `this` context for chaining.
      */
-    once(name, callback, context) {
+    once(name: string | EventListenerDictionary, callback: EventCallback, context?: any): Events {
         if (!eventsApi(this, 'once', name, [callback, context]) || !callback) {
             return this;
         }
         let count = 0;
         const self = this;
-        const onceCallback = function () {
+        const onceCallback = function (this: any): void {
             if (count++) {
                 return;
             }
             self.off(name, onceCallback);
+            // eslint-disable-next-line prefer-rest-params
             callback.apply(this, arguments);
         };
         onceCallback._callback = callback;
@@ -64,7 +94,7 @@ export default class Events {
      * @param {any} [context] - If null, all callbacks with that function will be removed.
      * @returns {any} `this` context for chaining.
      */
-    off(name, callback, context) {
+    off(name?: string | EventListenerDictionary, callback?: EventCallback, context?: any): Events {
         if (!this._events || !eventsApi(this, 'off', name, [callback, context])) {
             return this;
         }
@@ -77,7 +107,7 @@ export default class Events {
             name = names[i];
             const events = this._events[name];
             if (events) {
-                const retain = this._events[name] = [];
+                const retain: Array<EventListener> = this._events[name] = [];
                 if (callback || context) {
                     for (let j = 0, k = events.length; j < k; j++) {
                         const ev = events[j];
@@ -100,14 +130,14 @@ export default class Events {
      * passed the same arguments as `trigger`, apart from the event name
      * (unless you're listening on `"all"`, which will cause your callback to
      * receive the true name of the event as the first argument).
-     * @param {string} [name] - The event name.
+     * @param {string} name - The event name.
+     * @param {...any} args - Event callback arguments.
      * @returns {any} `this` context for chaining.
      */
-    trigger(name) {
+    trigger(name: string, ...args: any[]): Events {
         if (!this._events) {
             return this;
         }
-        const args = slice.call(arguments, 1);
         if (!eventsApi(this, 'trigger', name, args)) {
             return this;
         }
@@ -117,6 +147,7 @@ export default class Events {
             triggerEvents(events, args, this);
         }
         if (allEvents) {
+            // eslint-disable-next-line prefer-rest-params
             triggerEvents(allEvents, arguments, this);
         }
         return this;
@@ -125,14 +156,14 @@ export default class Events {
     /**
      * "Safe" version of `trigger` that causes each callback's execution
      * to be wrapped in a try-catch block
-     * @param {string} [name] - The event name.
+     * @param {string} name - The event name.
+     * @param {...any} args - Event callback arguments.
      * @returns {any} `this` context for chaining.
      */
-    triggerSafe(name) {
+    triggerSafe(name: string, ...args: any[]): Events {
         if (!this._events) {
             return this;
         }
-        const args = slice.call(arguments, 1);
         if (!eventsApi(this, 'trigger', name, args)) {
             return this;
         }
@@ -142,6 +173,7 @@ export default class Events {
             triggerEvents(events, args, this, name);
         }
         if (allEvents) {
+            // eslint-disable-next-line prefer-rest-params
             triggerEvents(allEvents, arguments, this, name);
         }
         return this;
@@ -166,7 +198,7 @@ const eventSplitter = /\s+/;
 // Implement fancy features of the Events API such as multiple event
 // names `"change blur"` and jQuery-style event maps `{change: action}`
 // in terms of the existing API.
-function eventsApi(obj, action, name, rest) {
+function eventsApi(obj: Events, action: EventsAction, name: string | EventListenerDictionary | undefined, rest: any[]): name is string {
     if (!name) {
         return true;
     }
@@ -174,6 +206,7 @@ function eventsApi(obj, action, name, rest) {
     if (typeof name === 'object') {
         for (let key in name) {
             if (Object.prototype.hasOwnProperty.call(name, key)) {
+                // eslint-disable-next-line prefer-spread
                 obj[action].apply(obj, [key, name[key]].concat(rest));
             }
         }
@@ -183,6 +216,7 @@ function eventsApi(obj, action, name, rest) {
     if (eventSplitter.test(name)) {
         const names = name.split(eventSplitter);
         for (let i = 0, l = names.length; i < l; i++) {
+            // eslint-disable-next-line prefer-spread
             obj[action].apply(obj, [names[i]].concat(rest));
         }
         return false;
@@ -190,7 +224,7 @@ function eventsApi(obj, action, name, rest) {
     return true;
 }
 
-function triggerEvents(events, args, context, catchExceptionsForName) {
+function triggerEvents(events: Array<EventListener>, args: any[] | IArguments, context: any, catchExceptionsForName?: string): void {
     let i = -1;
     const l = events.length;
     while (++i < l) {

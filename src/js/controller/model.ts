@@ -5,9 +5,17 @@ import { STATE_IDLE } from 'events/events';
 import { isValidNumber, isNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
+import { StreamType } from '../providers/utils/stream-type';
+import { DefaultProvider, GenericObject, PlaylistItemType, TextTrackLike } from '../types/generic.type';
+import { QualityLevel } from '../providers/data-normalizer';
 
 // Represents the state of the player
 class Model extends SimpleModel {
+    private _provider: DefaultProvider | null;
+    private providerController: Providers | null;
+
+    // These properties are assigned as attribute getters
+    public mediaModel!: MediaModel;
 
     constructor() {
         super();
@@ -18,7 +26,7 @@ class Model extends SimpleModel {
         });
     }
 
-    setup(config) {
+    setup(config?: GenericObject): Model {
         config = config || {};
         this._normalizeConfig(config);
         Object.assign(this.attributes, config, INITIAL_PLAYER_STATE);
@@ -27,7 +35,7 @@ class Model extends SimpleModel {
         return this;
     }
 
-    getConfiguration() {
+    getConfiguration(): GenericObject {
         const config = this.clone();
         const mediaModelAttributes = config.mediaModel.attributes;
         Object.keys(INITIAL_MEDIA_STATE).forEach(key => {
@@ -39,7 +47,7 @@ class Model extends SimpleModel {
         return config;
     }
 
-    persistQualityLevel(quality, levels) {
+    persistQualityLevel(quality: number, levels: Array<QualityLevel>): void {
         const currentLevel = levels[quality] || {};
         const { label } = currentLevel;
         // Default to null if bitrate is bad, or when the quality to persist is "auto" (bitrate is undefined in this case)
@@ -48,7 +56,7 @@ class Model extends SimpleModel {
         this.set('qualityLabel', label);
     }
 
-    setActiveItem(index) {
+    setActiveItem(index: number): void {
         const item = this.get('playlist')[index];
         this.resetItem(item);
         this.attributes.playlistItem = null;
@@ -58,7 +66,7 @@ class Model extends SimpleModel {
         this.set('playlistItem', item);
     }
 
-    setMediaModel(mediaModel) {
+    setMediaModel(mediaModel?: MediaModel): void {
         if (this.mediaModel && this.mediaModel !== mediaModel) {
             this.mediaModel.off();
         }
@@ -68,7 +76,7 @@ class Model extends SimpleModel {
         syncPlayerWithMediaModel(mediaModel);
     }
 
-    destroy() {
+    destroy(): void {
         this.attributes._destroyed = true;
         this.off();
         if (this._provider) {
@@ -77,22 +85,22 @@ class Model extends SimpleModel {
         }
     }
 
-    getVideo() {
+    getVideo(): void {
         return this._provider;
     }
 
-    setFullscreen(state) {
+    setFullscreen(state: boolean): void {
         state = !!state;
         if (state !== this.get('fullscreen')) {
             this.set('fullscreen', state);
         }
     }
 
-    getProviders() {
+    getProviders(): Providers | null {
         return this.providerController;
     }
 
-    setVolume(volume) {
+    setVolume(volume?: number): void {
         if (!isValidNumber(volume)) {
             return;
         }
@@ -104,11 +112,11 @@ class Model extends SimpleModel {
         }
     }
 
-    getMute() {
+    getMute(): boolean {
         return this.get('autostartMuted') || this.get('mute');
     }
 
-    setMute(mute) {
+    setMute(mute: boolean): void {
         if (mute === undefined) {
             mute = !(this.getMute());
         }
@@ -120,24 +128,24 @@ class Model extends SimpleModel {
         }
     }
 
-    setStreamType(streamType) {
+    setStreamType(streamType: StreamType): void {
         this.set('streamType', streamType);
         if (streamType === 'LIVE') {
             this.setPlaybackRate(1);
         }
     }
 
-    setProvider(provider) {
+    setProvider(provider: DefaultProvider): void {
         this._provider = provider;
         syncProviderProperties(this, provider);
     }
 
-    resetProvider() {
+    resetProvider(): void {
         this._provider = null;
         this.set('provider', undefined);
     }
 
-    setPlaybackRate(playbackRate) {
+    setPlaybackRate(playbackRate?: number): void {
         if (!isNumber(playbackRate)) {
             return;
         }
@@ -156,7 +164,7 @@ class Model extends SimpleModel {
         }
     }
 
-    persistCaptionsTrack() {
+    persistCaptionsTrack(): void {
         const track = this.get('captionsTrack');
 
         if (track) {
@@ -168,7 +176,7 @@ class Model extends SimpleModel {
     }
 
 
-    setVideoSubtitleTrack(trackIndex, tracks) {
+    setVideoSubtitleTrack(trackIndex: number, tracks: Array<TextTrackLike>): void {
         this.set('captionsIndex', trackIndex);
         /*
          * Tracks could have changed even if the index hasn't.
@@ -179,14 +187,14 @@ class Model extends SimpleModel {
         }
     }
 
-    persistVideoSubtitleTrack(trackIndex, tracks) {
+    persistVideoSubtitleTrack(trackIndex: number, tracks: Array<TextTrackLike>): void {
         this.setVideoSubtitleTrack(trackIndex, tracks);
         this.persistCaptionsTrack();
     }
 
     // Mobile players always wait to become viewable.
     // Desktop players must have autostart set to viewable
-    setAutoStart(autoStart) {
+    setAutoStart(autoStart?: boolean | 'viewable'): void {
         if (autoStart !== undefined) {
             this.set('autostart', autoStart);
         }
@@ -195,7 +203,7 @@ class Model extends SimpleModel {
         this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
     }
 
-    resetItem(item) {
+    resetItem(item: PlaylistItemType): void {
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
         const mediaModel = this.mediaModel;
@@ -206,14 +214,14 @@ class Model extends SimpleModel {
         mediaModel.set('duration', duration);
     }
 
-    persistBandwidthEstimate(bwEstimate) {
+    persistBandwidthEstimate(bwEstimate?: number): void {
         if (!isValidNumber(bwEstimate)) {
             return;
         }
         this.set('bandwidthEstimate', bwEstimate);
     }
 
-    _normalizeConfig(cfg) {
+    _normalizeConfig(cfg: GenericObject): void {
         const floating = cfg.floating;
 
         if (floating && !!floating.disabled) {
@@ -222,7 +230,7 @@ class Model extends SimpleModel {
     }
 }
 
-const syncProviderProperties = (model, provider) => {
+const syncProviderProperties = (model: Model, provider: DefaultProvider) => {
     model.set('provider', provider.getName());
     if (model.get('instreamMode') === true) {
         provider.instreamMode = true;
@@ -242,7 +250,7 @@ const syncProviderProperties = (model, provider) => {
     model.set('renderCaptionsNatively', provider.renderNatively);
 };
 
-function syncPlayerWithMediaModel(mediaModel) {
+function syncPlayerWithMediaModel(mediaModel: MediaModel): void {
     // Sync player state with mediaModel state
     const mediaState = mediaModel.get('mediaState');
     mediaModel.trigger('change:mediaState', mediaModel, mediaState, mediaState);
@@ -258,7 +266,7 @@ class MediaModel extends SimpleModel {
         });
     }
 
-    srcReset() {
+    srcReset(): void {
         Object.assign(this.attributes, {
             setup: false,
             started: false,
