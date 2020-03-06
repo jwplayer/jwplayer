@@ -1,5 +1,9 @@
 import { isValidNumber } from 'utils/underscore';
 
+export type ErrorCode = number;
+
+export type ErrorKey = string;
+
 /** @module */
 
 /**
@@ -161,7 +165,12 @@ export const MSG_TECHNICAL_ERROR = 'technicalError';
  * @param {sourceError} [Error] - The lower level error, caught by the player, which resulted in this error.
  */
 export class PlayerError {
-    constructor(key, code, sourceError = null) {
+    code: ErrorCode;
+    sourceError: Error | PlayerError | null;
+    key: ErrorKey | null = null;
+    message: string | null = null;
+
+    constructor(key: ErrorKey | null, code: ErrorCode, sourceError: Error | PlayerError | null = null) {
         this.code = isValidNumber(code) ? code : 0;
         this.sourceError = sourceError;
         if (key) {
@@ -169,10 +178,10 @@ export class PlayerError {
         }
     }
 
-    static logMessage(code) {
+    static logMessage(code: ErrorCode): string {
         const suffix = code % 1000;
         const prefix = Math.floor((code - suffix) / 1000);
-        let codeStr = code;
+        let codeStr = code.toString();
 
         if (suffix >= 400 && suffix < 600) {
             codeStr = `${prefix}400-${prefix}599`;
@@ -184,7 +193,7 @@ export class PlayerError {
     }
 }
 
-export function convertToPlayerError(key, code, error) {
+export function convertToPlayerError(key: ErrorKey | null, code: ErrorCode, error: Error | PlayerError): PlayerError {
     if (!(error instanceof PlayerError) || !error.code) {
         // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
         return new PlayerError(key, code, error);
@@ -192,13 +201,13 @@ export function convertToPlayerError(key, code, error) {
     return error;
 }
 
-export function composePlayerError(error, superCode) {
+export function composePlayerError(error: Error | PlayerError, superCode: number): PlayerError {
     const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, superCode, error);
-    playerError.code = (error && error.code || 0) + superCode;
+    playerError.code = (error && (error instanceof PlayerError) && error.code || 0) + superCode;
     return playerError;
 }
 
-export function getPlayAttemptFailedErrorCode(error) {
+export function getPlayAttemptFailedErrorCode(error: Error): ErrorCode {
     const { name, message } = error;
     switch (name) {
         case 'AbortError':
