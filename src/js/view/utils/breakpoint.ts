@@ -1,6 +1,6 @@
 import { replaceClass } from 'utils/dom';
 
-export function getBreakpoint(width) {
+export function getBreakpoint(width: number): number {
     let breakpoint = -1;
 
     if (width >= 1280) {
@@ -24,7 +24,7 @@ export function getBreakpoint(width) {
     return breakpoint;
 }
 
-export function setBreakpoint(playerElement, breakpointNumber) {
+export function setBreakpoint(playerElement: HTMLElement, breakpointNumber: number): void {
     const breakpointClass = 'jw-breakpoint-' + breakpointNumber;
     replaceClass(playerElement, /jw-breakpoint--?\d+/, breakpointClass);
 }

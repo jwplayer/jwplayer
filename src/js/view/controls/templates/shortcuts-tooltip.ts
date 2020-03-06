@@ -1,7 +1,14 @@
-export default (shortcuts, title) => {
+import { HTMLTemplateString } from 'types/generic.type';
+
+type ShortcutDisplayOpts = {
+    description: string;
+    key: string;
+}
+
+export default (shortcuts: Array<ShortcutDisplayOpts>, title: string): HTMLTemplateString => {
     //  Iterate all shortcuts to create list of them.
 
-    const list = shortcuts.map((shortcut) => {
+    const list = shortcuts.map((shortcut: ShortcutDisplayOpts) => {
         return (
             `<div class="jw-shortcuts-row jw-reset">` +
                 `<span class="jw-shortcuts-description jw-reset">${shortcut.description}</span>` +

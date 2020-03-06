@@ -1,4 +1,6 @@
-export default (className = '', orientation = '') => {
+import { HTMLTemplateString } from 'types/generic.type';
+
+export default (className = '', orientation = ''): HTMLTemplateString => {
     return (
         `<div class="${className} ${orientation} jw-reset" aria-hidden="true">` +
             `<div class="jw-slider-container jw-reset">` +

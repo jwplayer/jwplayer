@@ -1,6 +1,8 @@
+import { CoreModel } from 'types/generic.type';
+
 export const CONTROLBAR_ONLY_HEIGHT = 44;
 
-export const isAudioMode = function(model) {
+export const isAudioMode = function(model: CoreModel): boolean {
     const playerHeight = model.get('height');
     if (model.get('aspectratio')) {
         return false;
@@ -16,5 +18,5 @@ export const isAudioMode = function(model) {
         return false;
     }
 
-    return verticalPixels && verticalPixels <= CONTROLBAR_ONLY_HEIGHT;
+    return !!(verticalPixels && verticalPixels <= CONTROLBAR_ONLY_HEIGHT);
 };
