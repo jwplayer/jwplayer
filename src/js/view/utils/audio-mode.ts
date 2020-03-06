@@ -1,4 +1,4 @@
-import { CoreModel } from 'types/generic.type';
+import type { CoreModel } from 'types/generic.type';
 
 export const CONTROLBAR_ONLY_HEIGHT = 44;
 

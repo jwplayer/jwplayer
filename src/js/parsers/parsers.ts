@@ -1,5 +1,5 @@
 import { trim } from 'utils/strings';
-import { PageNode } from 'types/generic.type';
+import type { PageNode } from 'types/generic.type';
 
 export function localName(node: PageNode): string {
     let name = '';

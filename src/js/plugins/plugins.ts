@@ -1,6 +1,6 @@
 import PluginsLoader from 'plugins/loader';
 import PluginsModel from 'plugins/model';
-import { CoreModel, PlayerAPI, GenericObject } from 'types/generic.type';
+import type { CoreModel, PlayerAPI, GenericObject } from 'types/generic.type';
 
 declare global {
     interface Window { jwplayerPluginJsonp: Function }

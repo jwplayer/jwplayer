@@ -1,4 +1,4 @@
-import { HTMLTemplateString } from 'types/generic.type';
+import type { HTMLTemplateString } from 'types/generic.type';
 
 export default (id: string, ariaLabel: string): HTMLTemplateString => {
     return (

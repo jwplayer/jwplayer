@@ -1,4 +1,4 @@
-import { GenericObject } from 'types/generic.type';
+import type { GenericObject } from 'types/generic.type';
 
 function execResult(array: RegExpExecArray | null, index: number): string | undefined {
     let result: string | undefined;
