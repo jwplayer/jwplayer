@@ -9,6 +9,9 @@ As contributors and maintainers of this repo, we'll do our best to help you out 
 ## Official Support
 This guide is focused specifically for developers contributing towards this open-source project. If you pay for JW Player, you're entitled to direct help from our support team [here](https://support.jwplayer.com/customer/portal/emails/new).
 
+## Player Translations
+We are unable to accept contributions to player translations (in [/src/assets/translations](https://github.com/jwplayer/jwplayer/tree/master/src/assets/translations)) via GitHub. Instead, please go to [the feedback form in the translation support article](https://support.jwplayer.com/articles/translate-video-player-text). There you can submit both feedback on existing languages, such as improvements and typos, and request a new language to be supported. We will follow up with your feedback via email.
+
 ## Bug Reports
 A bug is a *demonstrable* problem caused by code in the repository. Bug reports are very helpful! If you think you've found a bug in the player we'd love to know about it (and fix it).
 
@@ -76,7 +79,6 @@ In the repository's current state certain changes are not compatible with our re
 #### Current Acceptable Contributions
 * Bugfixes
 * Typos/Clarity improvements
-* Localization additions
 * Enhancement _suggestions_
 
 #### First Timers
@@ -114,14 +116,13 @@ Feature requests are also welcome, but may not fit within the scope of the playe
 
 ### How Do I Submit A (Good) Feature Request?
 
-Feature suggestions are initially tracked as [GitHub issues](https://guides.github.com/features/issues/). Once the finer details of the feature are finalized, it is marked as `answered` and subsequently transferred to our internal backlog. Any additional updates to the request will be communicated via the initial issue and the issue may be reopened as needed.
+Feature suggestions are initially tracked as [GitHub issues](https://guides.github.com/features/issues/). Once any questions have been resolved, it is marked as `answered` and subsequently transferred to our internal backlog. Any additional updates to the request will be communicated via the initial issue and the issue may be reopened as needed. Please use the bullets below to format and guide your submission.
 
-* **Use a clear and descriptive title** for the issue to identify the suggestion.
-* **Provide a step-by-step description of the suggested feature** in as many details as possible.
-* **Provide specific examples to demonstrate the steps**. Include copy/pasteable snippets which you use in those examples, as [Markdown code blocks](https://help.github.com/articles/markdown-basics/#multiple-lines).
-* **Describe the current behavior** and **explain which behavior you expected to see instead** and why.
-* **Explain why this feature would be useful** to most JW Player users and isn't something that can or should be implemented in a fork or using the API.
-* **List some other video players or applications where this feature exists.**
+* **Title** Use a clear and descriptive title for the issue to identify the suggestion.
+* **Problem** Describe the problem you're trying to solve. Include the business goals driving this need. Explain why this feature would be useful to other JW Player users and isn't something that can or should be implemented in a fork or using the API. Please provide as much information as possible, as this is the most important section.
+* **Current solutions/workarounds** How would you solve these problems today, even partially? What have you already tried? You can also talk list some other video players or applications where this feature already exists.
+* **Proposed solutions (optional)** Feel free to make a specific suggestion of how you'd solve the problem. We love hearing suggestions, though we may not implement them literally.
+* **Resources** Links/additional materials section. Do you have any research on this ask? Can you point us to any relevant documentation or articles that will help us understand your request?
 
 ## Questions/Discussions
 We love to answer questions and talk with developers! Feel free to ask questions via [gitter](https://gitter.im/jwplayer/jwplayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge), the [video-dev-slack](https://video-dev.slack.com/messages/general/whats_new/), or by [creating an issue](https://github.com/jwplayer/jwplayer/issues/new) . And if you're in the NYC area, you can come and meet us and other video devs in the flesh  at the [Video Tech NYC Meetup](https://www.meetup.com/Video-Tech-NYC/).
