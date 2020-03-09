@@ -1,5 +1,32 @@
-const colorValues = ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', 'ff00ff', '#00ffff'];
-const fontValues = [
+export interface CaptionsLocalization {
+    subtitleSettings: string;
+    color: string;
+    fontOpacity: string;
+    userFontScale: string;
+    fontFamily: string;
+    edgeStyle: string;
+    backgroundColor: string;
+    backgroundOpacity: string;
+    windowColor: string;
+    windowOpacity: string;
+    white: string;
+    black: string;
+    red: string;
+    green: string;
+    blue: string;
+    yellow: string;
+    magenta: string;
+    cyan: string;
+    none: string;
+    raised: string;
+    depressed: string;
+    uniform: string;
+    dropShadow: string;
+}
+
+const colorValues: string[] = ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', 'ff00ff', '#00ffff'];
+
+const fontValues: string[] = [
     'Arial', 
     'Courier', 
     'Georgia', 
@@ -11,13 +38,13 @@ const fontValues = [
     'Verdana'
 ];
 
-const opacityOptions = ['100%', '75%', '50%', '25%', '0%'];
-const opacityValues = [100, 75, 50, 25, 0];
+const opacityOptions: string[] = ['100%', '75%', '50%', '25%', '0%'];
+const opacityValues: number[] = [100, 75, 50, 25, 0];
 
-let colors;
-let fonts;
+let colors: string[] | undefined;
+let fonts: string[] | undefined;
 
-export const captionStyleItems = (localization) => [
+export const captionStyleItems = (localization: CaptionsLocalization) => [
     {
         name: 'color',
         label: localization.color,
@@ -86,15 +113,16 @@ export const captionStyleItems = (localization) => [
     },
 ];
 
-export const normalizeKey = (sourceEventKey) => sourceEventKey && sourceEventKey.replace(/(Arrow|ape)/, '');
+export const normalizeKey = (sourceEventKey?: string): string | undefined => 
+    sourceEventKey && sourceEventKey.replace(/(Arrow|ape)/, '');
 
-const colorOptions = (localization) => {
+const colorOptions = (localization: CaptionsLocalization): string[] => {
     const { white, black, red, green, blue, yellow, magenta, cyan } = localization;
     colors = [ white, black, red, green, blue, yellow, magenta, cyan ];
     return colors;
 };
 
-const fontOptions = (localization) => {
+const fontOptions = (localization: CaptionsLocalization): string[] => {
     const { none, raised, depressed, uniform, dropShadow } = localization;
     fonts = [ none, raised, depressed, uniform, dropShadow];
     return fonts;

@@ -1,9 +1,14 @@
-import button from 'view/controls/components/button';
+import button, { Button } from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import { createElement } from 'utils/dom';
+import { Tooltip, Menu } from 'types/generic.type';
 
-const categoryButton = (menu) => {
+type CategoryButton = Button & {
+    tooltip?: Tooltip;
+};
+
+const categoryButton: (menu: Menu) => CategoryButton | undefined = (menu) => {
     const { name, title } = menu;
     const icons = {
         captions: 'cc-off',
@@ -17,7 +22,7 @@ const categoryButton = (menu) => {
         return;
     }
 
-    const menuCategoryButton = button(
+    const menuCategoryButton: CategoryButton = button(
         `jw-settings-${name} jw-submenu-${name}`, 
         (event) => {
             menu.open(event);
@@ -32,9 +37,11 @@ const categoryButton = (menu) => {
     buttonElement.setAttribute('aria-expanded', 'false');
     buttonElement.setAttribute('aria-haspopup', 'true');
     buttonElement.setAttribute('aria-controls', menu.el.id);
+
     if (!('ontouchstart' in window)) {
         menuCategoryButton.tooltip = SimpleTooltip(buttonElement, name, title);
     }
+
     menuCategoryButton.ui.directSelect = true;
     return menuCategoryButton;
 };
