@@ -1,7 +1,24 @@
 import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
+import helpers from 'utils/helpers';
+import { PlayerAPI } from 'types/generic.type';
 
-export default function (icon, apiAction, ariaText, svgIcons) {
+export type Button = {
+    ui: UI;
+    element: () => HTMLElement;
+    toggle: (condition: any) => void;
+    show: () => void;
+    hide: () => void;
+}
+
+export type ButtonName = string;
+
+export default function (
+    icon: string, 
+    apiAction: (value: unknown) => PlayerAPI, 
+    ariaText: string, 
+    svgIcons: Array<SVGElement|string>
+): Button {
     const element = document.createElement('div');
     element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
     element.setAttribute('role', 'button');
@@ -13,7 +30,7 @@ export default function (icon, apiAction, ariaText, svgIcons) {
 
     element.style.display = 'none';
 
-    const ui = new UI(element).on('click tap enter', apiAction || function() {});
+    const ui: UI = new UI(element).on('click tap enter', apiAction || helpers.noop);
 
     if (svgIcons) {
         Array.prototype.forEach.call(svgIcons, svgIcon => {
@@ -27,21 +44,22 @@ export default function (icon, apiAction, ariaText, svgIcons) {
 
     return {
         ui,
-        element: function() {
+        element: function(): HTMLElement {
             return element;
         },
-        toggle: function(m) {
+        toggle: function(this: Button, m: any): void {
             if (m) {
                 this.show();
             } else {
                 this.hide();
             }
         },
-        show: function() {
+        show: function(): void {
             element.style.display = '';
         },
-        hide: function() {
+        hide: function(): void {
             element.style.display = 'none';
         }
     };
 }
+

@@ -1,7 +1,17 @@
 import ARROW_RIGHT_ICON from 'assets/SVG/arrow-right.svg';
-export const itemTemplate = (content) => `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${content}" dir="auto">${content}</button>`;
+import { HTMLTemplateString } from 'types/generic.type';
 
-export const itemMenuTemplate = ({ name, label, currentSelection }) => {
+export interface MenuItem {
+    name: string;
+    label: string; 
+    currentSelection: string;
+    [key: string]: any;
+}
+
+export const itemTemplate = (content: string): HTMLTemplateString => `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${content}" dir="auto">${content}</button>`;
+
+export const itemMenuTemplate = ({ label, name, currentSelection }: MenuItem): HTMLTemplateString => {
+
     return (
         `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${label}" aria-controls="jw-settings-submenu-${name}" dir="auto" aria-haspopup="true">` +
             `${label}` +
@@ -13,7 +23,7 @@ export const itemMenuTemplate = ({ name, label, currentSelection }) => {
     );
 };
 
-export const itemRadioButtonTemplate = (content) => {
+export const itemRadioButtonTemplate = (content: string): HTMLTemplateString => {
     return (
         `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${content}" role="menuitemradio" aria-checked="false" dir="auto">` +
             `${content}` +

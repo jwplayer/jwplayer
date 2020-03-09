@@ -68,7 +68,7 @@ const noop = () => {
     // noop
 };
 
-const helpers: GenericObject = Object.assign({}, parser, validator, playerutils, {
+const helpers: { [key: string]: () => any } = Object.assign({}, parser, validator, playerutils, {
     addClass,
     hasClass,
     removeClass,

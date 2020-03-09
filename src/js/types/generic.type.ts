@@ -17,3 +17,9 @@ export type PlayerAPI = any;
 export type PlaylistItemSource = any;
 
 export type DefaultProvider = any;
+
+export type Menu = GenericObject;
+
+export type Tooltip = GenericObject;
+
+export type Localization = GenericObject;
