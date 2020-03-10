@@ -1,13 +1,61 @@
 import { OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
-import { STATE_IDLE } from 'events/events';
+import { InternalPlayerState, STATE_IDLE } from 'events/events';
 import { isValidNumber, isNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
 import { StreamType } from '../providers/utils/stream-type';
 import { DefaultProvider, GenericObject, PlaylistItemType, TextTrackLike } from '../types/generic.type';
 import { QualityLevel } from '../providers/data-normalizer';
+import Item from 'playlist/item';
+
+type AutoStart = boolean | 'viewable';
+
+type PlayerModelAttributes = {
+    _destroyed: boolean;
+    audioMode: boolean;
+    autostart: AutoStart;
+    autostartMuted: boolean;
+    bandwidthEstimate: number;
+    bitrateSelection: number | null;
+    captionLabel: string;
+    captionsIndex: number;
+    captionsTrack: TextTrackLike;
+    controlsEnabled: boolean;
+    defaultPlaybackRate: number;
+    dvrSeekLimit: number;
+    flashBlocked: boolean;
+    flashThrottle?: boolean;
+    fullscreen: boolean;
+    instreamMode: boolean;
+    item: number;
+    itemMeta: GenericObject;
+    itemReady: boolean;
+    mediaModel: MediaModel;
+    minDvrWindow: number;
+    mute: boolean;
+    nextUp: Item;
+    playbackRate: number;
+    playlist: PlaylistItemType[];
+    playlistItem: PlaylistItemType | null;
+    playOnViewable: boolean;
+    playRejected: boolean;
+    provider: DefaultProvider;
+    qualityLabel: string;
+    renderCaptionsNatively: boolean;
+    state: InternalPlayerState;
+    streamType: StreamType;
+    supportsPlaybackRate: boolean;
+    volume: number;
+}
+
+interface Model {
+    readonly attributes: Partial<PlayerModelAttributes>;
+    addAttributes(attributes: Partial<PlayerModelAttributes>): void;
+    get<K extends keyof PlayerModelAttributes>(attr: K): PlayerModelAttributes[K];
+    set<K extends keyof PlayerModelAttributes>(attr: K, val: PlayerModelAttributes[K]): void;
+}
 
 // Represents the state of the player
 class Model extends SimpleModel {
@@ -59,7 +107,7 @@ class Model extends SimpleModel {
     setActiveItem(index: number): void {
         const item = this.get('playlist')[index];
         this.resetItem(item);
-        this.attributes.playlistItem = null;
+        (this.attributes as PlayerModelAttributes).playlistItem = null;
         this.set('item', index);
         this.set('minDvrWindow', item.minDvrWindow);
         this.set('dvrSeekLimit', item.dvrSeekLimit);
@@ -77,7 +125,7 @@ class Model extends SimpleModel {
     }
 
     destroy(): void {
-        this.attributes._destroyed = true;
+        (this.attributes as PlayerModelAttributes)._destroyed = true;
         this.off();
         if (this._provider) {
             this._provider.off(null, null, this);
@@ -194,12 +242,12 @@ class Model extends SimpleModel {
 
     // Mobile players always wait to become viewable.
     // Desktop players must have autostart set to viewable
-    setAutoStart(autoStart?: boolean | 'viewable'): void {
+    setAutoStart(autoStart?: AutoStart): void {
         if (autoStart !== undefined) {
             this.set('autostart', autoStart);
         }
 
-        const autoStartOnMobile = OS.mobile && this.get('autostart');
+        const autoStartOnMobile = !!(OS.mobile && this.get('autostart'));
         this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
     }
 
@@ -208,7 +256,7 @@ class Model extends SimpleModel {
         const duration = item ? seconds(item.duration) : 0;
         const mediaModel = this.mediaModel;
         this.set('playRejected', false);
-        this.attributes.itemMeta = {};
+        (this.attributes as PlayerModelAttributes).itemMeta = {};
         mediaModel.set('position', position);
         mediaModel.set('currentTime', 0);
         mediaModel.set('duration', duration);
@@ -252,9 +300,29 @@ const syncProviderProperties = (model: Model, provider: DefaultProvider) => {
 
 function syncPlayerWithMediaModel(mediaModel: MediaModel): void {
     // Sync player state with mediaModel state
-    const mediaState = mediaModel.get('mediaState');
+    const mediaState: InternalPlayerState = mediaModel.get('mediaState');
     mediaModel.trigger('change:mediaState', mediaModel, mediaState, mediaState);
 }
+
+type MediaModelAttributes = {
+    buffer: number;
+    currentTime: number;
+    duration: number;
+    mediaState: InternalPlayerState;
+    position: number;
+    preloaded: boolean;
+    setup: boolean;
+    started: boolean;
+    visualQuality: GenericObject | null;
+}
+
+interface MediaModel {
+    readonly attributes: Partial<MediaModelAttributes>;
+    addAttributes(attributes: Partial<MediaModelAttributes>): void;
+    get<K extends keyof MediaModelAttributes>(attr: K): MediaModelAttributes[K];
+    set<K extends keyof MediaModelAttributes>(attr: K, val: MediaModelAttributes[K]): void;
+}
+
 
 // Represents the state of the provider/media element
 class MediaModel extends SimpleModel {

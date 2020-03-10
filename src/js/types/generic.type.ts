@@ -24,4 +24,8 @@ export type Tooltip = GenericObject;
 
 export type Localization = GenericObject;
 
-export type TextTrackLike = any;
+export type TextTrackLike = TextTrack & {
+    _id: string;
+    data: Array<any>;
+    name: string;
+};
