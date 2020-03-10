@@ -1,5 +1,5 @@
 import Events from 'utils/backbone.events';
-import { GenericObject } from '../types/generic.type';
+import type { GenericObject } from '../types/generic.type';
 
 type ModelAttributes = {
     [name: string]: any;

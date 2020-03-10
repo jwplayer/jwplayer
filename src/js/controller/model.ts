@@ -5,12 +5,14 @@ import { InternalPlayerState, STATE_IDLE } from 'events/events';
 import { isValidNumber, isNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
-import { StreamType } from '../providers/utils/stream-type';
-import { DefaultProvider, GenericObject, PlaylistItemType, TextTrackLike } from '../types/generic.type';
-import { QualityLevel } from '../providers/data-normalizer';
-import Item from 'playlist/item';
+import type { StreamType } from '../providers/utils/stream-type';
+import type { DefaultProvider, GenericObject, PlaylistItemType, TextTrackLike } from '../types/generic.type';
+import type { QualityLevel } from '../providers/data-normalizer';
+import type Item from 'playlist/item';
 
 type AutoStart = boolean | 'viewable';
+export type PauseReason = 'external' | 'interaction' | 'viewable';
+export type PlayReason = 'autostart' | 'external' | 'interaction' | 'playlist' | 'related-auto' | 'related-interaction';
 
 type PlayerModelAttributes = {
     _destroyed: boolean;
@@ -36,10 +38,12 @@ type PlayerModelAttributes = {
     minDvrWindow: number;
     mute: boolean;
     nextUp: Item;
+    pauseReason: PauseReason;
     playbackRate: number;
     playlist: PlaylistItemType[];
     playlistItem: PlaylistItemType | null;
     playOnViewable: boolean;
+    playReason: PlayReason;
     playRejected: boolean;
     provider: DefaultProvider;
     qualityLabel: string;
@@ -47,6 +51,7 @@ type PlayerModelAttributes = {
     state: InternalPlayerState;
     streamType: StreamType;
     supportsPlaybackRate: boolean;
+    viewable?: number;
     volume: number;
 }
 

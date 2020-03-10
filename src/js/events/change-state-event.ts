@@ -1,32 +1,43 @@
-import { STATE_IDLE, STATE_LOADING, STATE_STALLED, STATE_BUFFERING, STATE_COMPLETE, STATE_ERROR } from 'events/events';
-import type { CoreModel } from 'types/generic.type';
+import {
+    STATE_IDLE,
+    STATE_LOADING,
+    STATE_STALLED,
+    STATE_BUFFERING,
+    STATE_COMPLETE,
+    STATE_ERROR,
+    InternalPlayerState
+} from 'events/events';
+import type Model from '../controller/model';
+import type { PauseReason, PlayReason } from '../controller/model';
 
 interface StateChangeEvent {
     type: string;
-    newstate: string;
-    oldstate: string;
-    reason: string;
-    playReason?: string;
-    pauseReason?: string;
+    newstate: StateChangeEventState;
+    oldstate: StateChangeEventState;
+    reason: InternalPlayerState;
+    playReason?: PlayReason;
+    pauseReason?: PauseReason;
 }
+
+type StateChangeEventState = Exclude<InternalPlayerState, 'complete' | 'error'>;
 
 // The api should dispatch an idle event when the model's state changes to complete
 // This is to avoid conflicts with the complete event and to maintain legacy event flow
-function normalizeApiState(newstate: string): string {
+function normalizeApiState(newstate: InternalPlayerState): StateChangeEventState {
     if (newstate === STATE_COMPLETE || newstate === STATE_ERROR) {
-        return STATE_IDLE;
+        return STATE_IDLE as StateChangeEventState;
     }
-    return newstate;
+    return newstate as StateChangeEventState;
 }
 
-function normalizeReason(newstate: string, reason: string): string {
+function normalizeReason(newstate: InternalPlayerState, reason: InternalPlayerState): InternalPlayerState {
     if (newstate === STATE_BUFFERING) {
         return reason === STATE_STALLED ? reason : STATE_LOADING;
     }
     return reason;
 }
 
-export default function ChangeStateEvent(this: any, model: CoreModel, newstate: string, oldstate: string): void {
+export default function ChangeStateEvent(this: any, model: Model, newstate: InternalPlayerState, oldstate: InternalPlayerState): void {
     newstate = normalizeApiState(newstate);
     oldstate = normalizeApiState(oldstate);
     // do not dispatch idle a second time after complete

@@ -1,8 +1,8 @@
-import type { CoreModel } from 'types/generic.type';
+import type SimpleModel from 'model/simplemodel';
 
 export const CONTROLBAR_ONLY_HEIGHT = 44;
 
-export const isAudioMode = function(model: CoreModel): boolean {
+export const isAudioMode = function(model: SimpleModel): boolean {
     const playerHeight = model.get('height');
     if (model.get('aspectratio')) {
         return false;
