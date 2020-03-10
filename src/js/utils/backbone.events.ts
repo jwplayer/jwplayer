@@ -31,12 +31,7 @@ type EventCallback = {
     _callback?: () => void;
 };
 
-interface EventsInterface {
-    on: (name: string | EventListenerDictionary, callback: EventCallback, context?: any) => EventsInterface;
-    trigger: (name: string, ...args: any[]) => EventsInterface;
-}
-
-export default class Events implements EventsInterface {
+export default class Events {
     static on;
     static once;
     static off;
