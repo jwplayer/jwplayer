@@ -1,21 +1,10 @@
 import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
-import { GenericObject } from 'types/generic.type';
+import { GenericObject, SourceObj, SeekRange } from 'types/generic.type';
 
 const noop: () => void = function(): void { /* noop */ };
 const returnFalse: () => boolean = (() => false);
 const getNameResult: { name: string } = { name: 'default' };
 const returnName: () => { name: string } = (() => getNameResult);
-
-type SeekRangeType = {
-    start: number;
-    end: number;
-};
-
-type SourceType = {
-    type: string;
-    mimeType: string;
-};
-
 interface DefaultProvider {
     state?: string;
     supports: () => boolean;
@@ -54,7 +43,7 @@ interface DefaultProvider {
     getCurrentAudioTrack: () => void;
     setCurrentAudioTrack: () => void;
 
-    getSeekRange: () => SeekRangeType;
+    getSeekRange: () => SeekRange;
 
     setPlaybackRate: () => void;
     getPlaybackRate: () => number;
@@ -68,7 +57,7 @@ interface DefaultProvider {
 
     setState: (state: string) => void;
 
-    sendMediaType: (sources: Array<SourceType>) => void;
+    sendMediaType: (sources: Array<SourceObj>) => void;
 
     getDuration: () => number;
 
@@ -132,7 +121,7 @@ const DefaultProvider: DefaultProvider = {
     getCurrentAudioTrack: noop,
     setCurrentAudioTrack: noop,
 
-    getSeekRange: function(): SeekRangeType {
+    getSeekRange: function(): SeekRange {
         return {
             start: 0,
             end: this.getDuration()
@@ -165,7 +154,7 @@ const DefaultProvider: DefaultProvider = {
         });
     },
 
-    sendMediaType: function(this: DefaultProvider, sources: Array<SourceType>): void {
+    sendMediaType: function(this: DefaultProvider, sources: Array<SourceObj>): void {
         const { type, mimeType } = sources[0];
 
         const isAudioFile = (type === 'aac' || type === 'mp3' || type === 'mpeg' ||
