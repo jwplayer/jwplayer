@@ -113,11 +113,6 @@ export default class Controls extends Events {
             }
         };
 
-        const isTizenApp = model.get('isTizenApp');
-        if (isTizenApp) {
-            addClass(this.playerContainer, 'jw-tizen-app');
-        }
-
         // Display Buttons
         if (!this.displayContainer) {
             const displayContainer = new DisplayContainer(model, api);
@@ -176,17 +171,6 @@ export default class Controls extends Events {
             if (floatingConfig.dismissible !== false) {
                 addClass(this.playerContainer, 'jw-floating-dismissible');
             }
-        }
-
-        // Add Return Button for Tizen App
-        if (isTizenApp) {
-            const returnButton = button('jw-icon-back', () => {
-                this.trigger('backClick');
-                document.removeEventListener('keydown', handleTizenKeydown);
-            }, 'Return', [cloneIcon('arrow-left')]);
-    
-            this.div.prepend(returnButton.element());
-            returnButton.show();
         }
 
         // Controlbar
@@ -291,6 +275,10 @@ export default class Controls extends Events {
         setupUnmuteAutoplay(model);
 
         // Keyboard Commands
+        this.keyboardCommands = {
+            adjustSeek: adjustSeek
+        };
+
         function adjustSeek(amount) {
             let min = 0;
             let max = model.get('duration');
@@ -308,127 +296,6 @@ export default class Controls extends Events {
             const newVol = between(model.get('volume') + amount, 0, 100);
             api.setVolume(newVol);
         }
-
-        const handleTizenKeydown = (evt) => {
-            // If controls are not showing, show them unless the return key was clicked
-            if (!this.showing) {
-                if (evt.keyCode === 10009) {
-                    this.trigger('backClick');
-                    document.removeEventListener('keydown', handleTizenKeydown);
-                    return;
-                }
-                this.userActive();
-                return;
-            }
-
-            const activeElement = document.activeElement;
-            const adMode = this.instreamState;
-
-            const isPlayerOrBodyActive = (activeElement.id && activeElement.id === 'player') || 
-                activeElement.tagName === 'BODY';
-
-            if (isPlayerOrBodyActive) {
-                activeElement.querySelector('.jw-icon-playback').focus();
-                return;
-            }
-
-            let nextEl = activeElement.nextElementSibling;
-            let prevEl = activeElement.previousElementSibling;
-            let focusEl;
-
-            // The only tim emoving left/right is in controlbar
-            if (activeElement.parentElement.classList.contains('jw-button-container')) {
-                while (nextEl && (nextEl.style.display === 'none' || nextEl.classList.contains('jw-icon-volume')
-                    || nextEl.getAttribute('role') !== 'button')) {
-                    nextEl = nextEl.nextElementSibling;
-                }
-                while (prevEl && (prevEl.style.display === 'none' || prevEl.classList.contains('jw-icon-volume')
-                    || prevEl.getAttribute('role') !== 'button')) {
-                    prevEl = prevEl.previousElementSibling;
-                }
-            }
-
-            const isComplete = model.get('state') === 'complete';
-
-            switch (evt.keyCode) {
-                case 37: // left-arrow
-                    if (adMode && activeElement.classList.contains('jw-skip')) {
-                        focusEl = document.querySelector('.jw-icon-playback');
-                        break;
-                    }
-
-                    if (activeElement.classList.contains('jw-slider-time') && !adMode) {
-                        adjustSeek(-5);
-                    } else {    
-                        focusEl = prevEl;
-                    }
-                    break;
-                case 39: // right-arrow
-                    if (adMode && activeElement.classList.contains('jw-icon-playback')) {
-                        focusEl = document.querySelector('.jw-skip');
-                        break;
-                    }
-
-                    if (activeElement.classList.contains('jw-slider-time') && !adMode) {
-                        adjustSeek(5);
-                    } else {
-                        focusEl = nextEl;
-                    }
-                    break;
-                case 38: // up-arrow
-                    if (adMode && activeElement.classList.contains('jw-icon-playback')) {
-                        focusEl = document.querySelector('.jw-icon-back');
-                        break;
-                    }
-
-
-                    if (activeElement.classList.contains('jw-slider-time')) {
-                        focusEl = document.querySelector('.jw-icon-back');
-                    }
-                    if (activeElement.parentElement.classList.contains('jw-button-container')) {
-                        focusEl = document.querySelector('.jw-slider-time');
-                    }
-                    if (isComplete) {
-                        if (activeElement.classList.contains('jw-slider-time')) {
-                            focusEl = document.querySelector('.jw-icon-display');
-                        }
-                        if (activeElement.classList.contains('jw-icon-display')) {
-                            focusEl = document.querySelector('.jw-icon-back');
-                        }
-                    }
-                    break;
-                case 40: // down-arrow
-                    if (adMode && activeElement.classList.contains('jw-icon-back')) {
-                        focusEl = document.querySelector('.jw-icon-playback');
-                        break;
-                    }
-
-                    if (activeElement.classList.contains('jw-icon-back')) {
-                        focusEl = document.querySelector('.jw-slider-time');
-                    }
-                    if (activeElement.classList.contains('jw-slider-time')) {
-                        focusEl = document.querySelector('.jw-icon-playback');
-                    }
-                    if (isComplete) {
-                        if (activeElement.classList.contains('jw-icon-back')) {
-                            focusEl = document.querySelector('.jw-icon-display');
-                        }
-                        if (activeElement.classList.contains('jw-icon-display')) {
-                            focusEl = document.querySelector('.jw-slider-time');
-                        }
-                    }
-                    break;
-                case 10009: // return
-                    this.userInactive();
-                    break;
-                default:
-                    break;
-            }
-
-            if (focusEl) {
-                focusEl.focus();
-            }
-        };
 
         const handleKeydown = (evt) => {
             // If Meta keys return
@@ -532,14 +399,8 @@ export default class Controls extends Events {
                 return false;
             }
         };
-
-        if (isTizenApp) {
-            document.addEventListener('keydown', handleTizenKeydown);
-            this.keydownCallback = handleTizenKeydown;
-        } else {
-            this.playerContainer.addEventListener('keydown', handleKeydown);
-            this.keydownCallback = handleKeydown;
-        }
+        this.playerContainer.addEventListener('keydown', handleKeydown);
+        this.keydownCallback = handleKeydown;
 
         const handleKeyup = (evt) => {
             switch (evt.keyCode) {
@@ -591,6 +452,12 @@ export default class Controls extends Events {
             this.onRemoveShortcutsDescription = onRemoveShortcutsDescription;
         }
 
+        // Enable Tizen specific controls
+        if (model.get('isTizenApp')) {
+            addClass(this.playerContainer, 'jw-tizen-app');
+            this.enableTizenControls(api, model);
+        }
+
         // Show controls when enabled
         this.userActive();
 
@@ -598,6 +465,148 @@ export default class Controls extends Events {
         this.addBackdrop();
 
         model.set('controlsEnabled', true);
+    }
+
+    /* Want to move to controls/tv/tizen-controls.js which extends controls.js */
+    enableTizenControls(api, model) {
+        addClass(this.playerContainer, 'jw-tizen-app');
+    
+        // Add Return Button for Tizen App
+        const returnButton = button('jw-icon-back', () => {
+            this.trigger('backClick');
+            document.removeEventListener('keydown', handleKeydown);
+        }, 'Return', [cloneIcon('arrow-left')]);
+
+        this.div.prepend(returnButton.element());
+        returnButton.show();
+    
+        const handleKeydown = (evt) => {
+            // If controls are not showing, show them unless the return key was clicked
+            if (!this.showing) {
+                if (evt.keyCode === 10009) {
+                    this.trigger('backClick');
+                    document.removeEventListener('keydown', handleKeydown);
+                    return;
+                }
+                this.userActive();
+                return;
+            }
+    
+            const activeElement = document.activeElement;
+            const adMode = this.instreamState;
+    
+            const isPlayerOrBodyActive = (activeElement.id && activeElement.id === 'player') || 
+                activeElement.tagName === 'BODY';
+    
+            if (isPlayerOrBodyActive) {
+                activeElement.querySelector('.jw-icon-playback').focus();
+                return;
+            }
+    
+            let nextEl = activeElement.nextElementSibling;
+            let prevEl = activeElement.previousElementSibling;
+            let focusEl;
+    
+            // The only time moving left/right is in controlbar
+            if (activeElement.parentElement.classList.contains('jw-button-container')) {
+                while (nextEl && (nextEl.style.display === 'none' || nextEl.classList.contains('jw-icon-volume')
+                    || nextEl.getAttribute('role') !== 'button')) {
+                    nextEl = nextEl.nextElementSibling;
+                }
+                while (prevEl && (prevEl.style.display === 'none' || prevEl.classList.contains('jw-icon-volume')
+                    || prevEl.getAttribute('role') !== 'button')) {
+                    prevEl = prevEl.previousElementSibling;
+                }
+            }
+    
+            const isComplete = model.get('state') === 'complete';
+    
+            switch (evt.keyCode) {
+                case 37: // left-arrow
+                    if (adMode && activeElement.classList.contains('jw-skip')) {
+                        focusEl = document.querySelector('.jw-icon-playback');
+                        break;
+                    }
+    
+                    if (activeElement.classList.contains('jw-slider-time') && !adMode) {
+                        this.keyboardCommands.adjustSeek(-5);
+                    } else {    
+                        focusEl = prevEl;
+                    }
+                    break;
+                case 39: // right-arrow
+                    if (adMode && activeElement.classList.contains('jw-icon-playback')) {
+                        focusEl = document.querySelector('.jw-skip');
+                        break;
+                    }
+    
+                    if (activeElement.classList.contains('jw-slider-time') && !adMode) {
+                        this.keyboardCommands.adjustSeek(5);
+                    } else {
+                        focusEl = nextEl;
+                    }
+                    break;
+                case 38: // up-arrow
+                    if (adMode && activeElement.classList.contains('jw-icon-playback')) {
+                        focusEl = document.querySelector('.jw-icon-back');
+                        break;
+                    }
+    
+    
+                    if (activeElement.classList.contains('jw-slider-time')) {
+                        focusEl = document.querySelector('.jw-icon-back');
+                    }
+                    if (activeElement.parentElement.classList.contains('jw-button-container')) {
+                        focusEl = document.querySelector('.jw-slider-time');
+                    }
+                    if (isComplete) {
+                        if (activeElement.classList.contains('jw-slider-time')) {
+                            focusEl = document.querySelector('.jw-icon-display');
+                        }
+                        if (activeElement.classList.contains('jw-icon-display')) {
+                            focusEl = document.querySelector('.jw-icon-back');
+                        }
+                    }
+                    break;
+                case 40: // down-arrow
+                    if (adMode && activeElement.classList.contains('jw-icon-back')) {
+                        focusEl = document.querySelector('.jw-icon-playback');
+                        break;
+                    }
+    
+                    if (activeElement.classList.contains('jw-icon-back')) {
+                        focusEl = document.querySelector('.jw-slider-time');
+                    }
+                    if (activeElement.classList.contains('jw-slider-time')) {
+                        focusEl = document.querySelector('.jw-icon-playback');
+                    }
+                    if (isComplete) {
+                        if (activeElement.classList.contains('jw-icon-back')) {
+                            focusEl = document.querySelector('.jw-icon-display');
+                        }
+                        if (activeElement.classList.contains('jw-icon-display')) {
+                            focusEl = document.querySelector('.jw-slider-time');
+                        }
+                    }
+                    break;
+                case 10009: // return
+                    this.userInactive();
+                    break;
+                default:
+                    break;
+            }
+    
+            if (focusEl) {
+                focusEl.focus();
+            }
+        };
+
+        if (this.keydownCallback) {
+            this.playerContainer.removeEventListener('keydown', this.keydownCallback);
+        }
+
+        document.addEventListener('keydown', handleKeydown);
+        this.keydownCallback = handleKeydown;
     }
 
     addControls() {
