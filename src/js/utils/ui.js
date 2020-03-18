@@ -66,6 +66,9 @@ export default class UI extends Events {
     }
 
     destroy() {
+        if (!this.el) {
+            return;
+        }
         this.off();
         if (USE_POINTER_EVENTS) {
             releasePointerCapture(this);
