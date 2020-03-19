@@ -5,10 +5,10 @@ import { InternalPlayerState, STATE_IDLE } from 'events/events';
 import { isValidNumber, isNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
-import type { StreamType } from '../providers/utils/stream-type';
-import type { DefaultProvider, GenericObject, PlaylistItemType, TextTrackLike } from '../types/generic.type';
-import type { QualityLevel } from '../providers/data-normalizer';
-import type Item from 'playlist/item';
+import type { StreamType } from 'providers/utils/stream-type';
+import type { DefaultProvider, GenericObject, TextTrackLike } from 'types/generic.type';
+import type { QualityLevel } from 'providers/data-normalizer';
+import type PlaylistItem from 'playlist/item';
 
 type AutoStart = boolean | 'viewable';
 export type PauseReason = 'external' | 'interaction' | 'viewable';
@@ -37,11 +37,11 @@ type PlayerModelAttributes = {
     mediaModel: MediaModel;
     minDvrWindow: number;
     mute: boolean;
-    nextUp: Item;
+    nextUp: PlaylistItem;
     pauseReason: PauseReason;
     playbackRate: number;
-    playlist: PlaylistItemType[];
-    playlistItem: PlaylistItemType | null;
+    playlist: PlaylistItem[];
+    playlistItem: PlaylistItem | null;
     playOnViewable: boolean;
     playReason: PlayReason;
     playRejected: boolean;
@@ -256,7 +256,7 @@ class Model extends SimpleModel {
         this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
     }
 
-    resetItem(item: PlaylistItemType): void {
+    resetItem(item: PlaylistItem): void {
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
         const mediaModel = this.mediaModel;

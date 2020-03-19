@@ -1,6 +1,4 @@
-import type { GenericObject } from 'types/generic.type';
-
-interface PlaylistItemTrack extends GenericObject {
+export interface PlaylistItemTrack {
     file?: string;
     kind: 'captions' | 'metadata' | 'thumbnails' | 'chapters';
     default: boolean;
@@ -22,13 +20,13 @@ function validTrackKind(tk: string): boolean {
  * @property {boolean} default - Enable the track by default.
  */
 
-const Track = function(config?: PlaylistItemTrack): PlaylistItemTrack | undefined {
+const Track = function(config?: Partial<PlaylistItemTrack>): PlaylistItemTrack | undefined {
     // File is the only required attr
     if (!config || !config.file) {
         return;
     }
 
-    const trackConfig = Object.assign({}, {
+    const trackConfig: PlaylistItemTrack = Object.assign({}, {
         kind: 'captions',
         'default': false
     }, config);
