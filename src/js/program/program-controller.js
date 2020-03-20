@@ -337,7 +337,7 @@ class ProgramController extends Events {
         const backgroundMediaController = background.currentMedia;
         if (!backgroundMediaController) {
             return;
-        } else if (mediaController) {
+        } else if (mediaController && mediaController !== backgroundMediaController) {
             // An existing media controller means that we've changed the active item
             // The current background media is no longer relevant, so destroy it
             this._destroyMediaController(backgroundMediaController);
@@ -457,7 +457,7 @@ class ProgramController extends Events {
      */
     _destroyActiveMedia() {
         const { mediaController, model } = this;
-        if (!mediaController) {
+        if (!mediaController || !mediaController.provider) {
             return;
         }
 
