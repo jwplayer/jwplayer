@@ -6,10 +6,11 @@ class Cue {
         this.time = time;
         this.text = text;
         this.el = document.createElement('div');
-        this.el.className = 'jw-cue jw-reset';
+        let cssClasses = 'jw-cue jw-reset';
         if (cueType && typeof cueType === 'string') {
-            this.el.className += ` jw-cue-type-${cueType}`;
+            cssClasses += ` jw-cue-type-${cueType}`;
         }
+        this.el.className = cssClasses;
     }
 
     align(duration) {
