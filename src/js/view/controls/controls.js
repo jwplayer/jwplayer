@@ -23,6 +23,7 @@ require('css/controls.less');
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 // Keys which bypass keyboard shortcuts being off
 const ALWAYS_ALLOWED_KEYS = [27];
+let shouldFocusOnInactive = false;
 
 ErrorContainer.cloneIcon = cloneIcon;
 instances.forEach(api => {
@@ -102,7 +103,7 @@ export default class Controls extends Events {
 
         const touchMode = model.get('touchMode');
 
-        const focusPlayerElement = () => {
+        this.focusPlayerElement = () => {
             if (model.get('isFloating')) {
                 this.wrapperElement.querySelector('video').focus();
             } else {
@@ -118,7 +119,7 @@ export default class Controls extends Events {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
                 api.playToggle(reasonInteraction());
-                focusPlayerElement();
+                this.focusPlayerElement();
             });
 
             this.div.appendChild(displayContainer.element());
@@ -132,14 +133,14 @@ export default class Controls extends Events {
                 //  Focus modal close button on open
                 this.div.querySelector('.jw-info-close').focus();
             } else {
-                focusPlayerElement();
+                this.focusPlayerElement();
             }
         });
         //  Add keyboard shortcuts if not on mobi;e
         if (!OS.mobile) {
             this.shortcutsTooltip = new ShortcutsTooltip(this.wrapperElement, api, model, visible => {
                 if (!visible) {
-                    focusPlayerElement();
+                    this.focusPlayerElement();
                 }
             });
         }
@@ -173,7 +174,10 @@ export default class Controls extends Events {
         // Controlbar
         const controlbar = this.controlbar = new Controlbar(api, model,
             this.playerContainer.querySelector('.jw-hidden-accessibility'));
-        controlbar.on(USER_ACTION, () => this.userActive());
+        controlbar.on(USER_ACTION, () => {
+            shouldFocusOnInactive = true;
+            this.userActive();
+        });
         controlbar.on('nextShown', function (data) {
             this.trigger('nextShown', data);
         }, this);
@@ -217,7 +221,7 @@ export default class Controls extends Events {
             if (!visible && isKeyEvent && settingsButton) {
                 settingsButton.element().focus();
             } else if (evt) {
-                focusPlayerElement();
+                this.focusPlayerElement();
             }
         });
         settingsMenu.on('captionStylesOpened', () => this.trigger('captionStylesOpened'));
@@ -305,6 +309,7 @@ export default class Controls extends Events {
                     if (model.get('fullscreen')) {
                         api.setFullscreen(false);
                         this.playerContainer.blur();
+                        shouldFocusOnInactive = false;
                         this.userInactive();
                     } else {
                         const related = api.getPlugin('related');
@@ -412,6 +417,7 @@ export default class Controls extends Events {
 
         // Hide controls when focus leaves the player
         const blurCallback = (evt) => {
+            shouldFocusOnInactive = false;
             const focusedElement = evt.relatedTarget || document.querySelector(':focus');
             if (!focusedElement) {
                 return;
@@ -610,6 +616,11 @@ export default class Controls extends Events {
         this.showing = false;
         addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
+
+        if (shouldFocusOnInactive) {
+            this.focusPlayerElement();
+            shouldFocusOnInactive = false;
+        }
     }
 
     addBackdrop() {
