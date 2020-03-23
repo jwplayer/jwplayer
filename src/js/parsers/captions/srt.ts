@@ -1,5 +1,5 @@
 import { seconds, trim } from 'utils/strings';
-import { CaptionEntryData } from './captions';
+import { CaptionEntryData } from './captions.types';
 
 // Component that loads and parses an SRT file
 
