@@ -1,6 +1,6 @@
 import { seconds, trim } from 'utils/strings';
 import { PlayerError } from 'api/errors';
-import { CaptionEntryData } from './captions.types';
+import type { CaptionEntryData } from './captions.types';
 
 // Component that loads and parses an DFXP file
 

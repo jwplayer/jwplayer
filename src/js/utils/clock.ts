@@ -1,5 +1,5 @@
 import { now as getTime } from 'utils/date';
-import { GenericObject } from '../types/generic.type';
+import type { GenericObject } from '../types/generic.type';
 
 const performance: Performance | GenericObject = window.performance || {
     timing: {}
