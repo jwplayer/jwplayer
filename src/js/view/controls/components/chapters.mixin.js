@@ -2,11 +2,14 @@ import { ajax } from 'utils/ajax';
 import srt from 'parsers/captions/srt';
 
 class Cue {
-    constructor (time, text) {
+    constructor (time, text, cueType) {
         this.time = time;
         this.text = text;
         this.el = document.createElement('div');
         this.el.className = 'jw-cue jw-reset';
+        if (cueType && typeof cueType === 'string') {
+            this.el.className += ` jw-cue-type-${cueType}`;
+        }
     }
 
     align(duration) {
@@ -43,7 +46,7 @@ const ChaptersMixin = {
     chaptersFailed: function () {},
 
     addCue: function (obj) {
-        this.cues.push(new Cue(obj.begin, obj.text));
+        this.cues.push(new Cue(obj.begin, obj.text, obj.cueType));
     },
 
     drawCues: function () {
