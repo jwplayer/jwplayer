@@ -1,8 +1,8 @@
 import { normalizePlaylistItem } from 'playlist/playlist';
 // Type only imports
 import Item from 'playlist/item';
-import Model from 'controller/model';
-import ApiPublic from 'api/api';
+import type Model from 'controller/model';
+import type ApiPublic from 'api/api';
 
 type AsyncCallback = (item: Item, index: number) => Promise<Item | void> | void;
 

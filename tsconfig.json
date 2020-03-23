@@ -8,7 +8,8 @@
         "noImplicitThis": true,
         "noUnusedLocals": true,
         "strictPropertyInitialization": true,
-        "noEmit": true
+        "noEmit": true,
+        "importsNotUsedAsValues": "error"
     },
     "include": [
         "src/js"
