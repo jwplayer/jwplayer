@@ -954,9 +954,12 @@ WebVTT.processCues = function (window, cues, overlay, updateBoxPosition) {
     }());
 };
 
-let webVttExport = window.WebVTT;
-if (!webVttExport) {
-    window.WebVTT = webVttExport = WebVTT;
+// We want to always use our polyfill in player, but should respect what is on the
+// window unless it is not present
+let webVttExport = WebVTT;
+
+if (!window.WebVTT) {
+    window.WebVTT = webVttExport;
 }
 
 export default webVttExport;
