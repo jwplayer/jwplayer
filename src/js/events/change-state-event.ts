@@ -1,5 +1,5 @@
 import { STATE_IDLE, STATE_LOADING, STATE_STALLED, STATE_BUFFERING, STATE_COMPLETE, STATE_ERROR } from 'events/events';
-import { CoreModel } from 'types/generic.type';
+import type { CoreModel } from 'types/generic.type';
 
 interface StateChangeEvent {
     type: string;

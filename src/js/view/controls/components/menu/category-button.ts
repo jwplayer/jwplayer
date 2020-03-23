@@ -2,7 +2,7 @@ import button, { Button } from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import { createElement } from 'utils/dom';
-import { Tooltip, Menu } from 'types/generic.type';
+import type { Tooltip, Menu } from 'types/generic.type';
 
 type CategoryButton = Button & {
     tooltip?: Tooltip;
@@ -23,11 +23,11 @@ const categoryButton: (menu: Menu) => CategoryButton | undefined = (menu) => {
     }
 
     const menuCategoryButton: CategoryButton = button(
-        `jw-settings-${name} jw-submenu-${name}`, 
+        `jw-settings-${name} jw-submenu-${name}`,
         (event) => {
             menu.open(event);
-        }, 
-        title, 
+        },
+        title,
         [(menu.icon && createElement(menu.icon)) || cloneIcon(icon)]
     );
 

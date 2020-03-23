@@ -1,7 +1,7 @@
 import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
 import helpers from 'utils/helpers';
-import { PlayerAPI } from 'types/generic.type';
+import type { PlayerAPI } from 'types/generic.type';
 
 export type Button = {
     ui: UI;
@@ -14,9 +14,9 @@ export type Button = {
 export type ButtonName = string;
 
 export default function (
-    icon: string, 
-    apiAction: (value: unknown) => PlayerAPI, 
-    ariaText: string, 
+    icon: string,
+    apiAction: (value: unknown) => PlayerAPI,
+    ariaText: string,
     svgIcons: Array<SVGElement|string>
 ): Button {
     const element = document.createElement('div');

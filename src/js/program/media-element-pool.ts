@@ -1,5 +1,5 @@
 import { MEDIA_POOL_SIZE } from 'program/program-constants';
-import { GenericObject } from 'types/generic.type';
+import type { GenericObject } from 'types/generic.type';
 
 export interface MediaElementPoolInt {
     primed: () => boolean;

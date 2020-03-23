@@ -1,9 +1,9 @@
 import ARROW_RIGHT_ICON from 'assets/SVG/arrow-right.svg';
-import { HTMLTemplateString } from 'types/generic.type';
+import type { HTMLTemplateString } from 'types/generic.type';
 
 export interface MenuItem {
     name: string;
-    label: string; 
+    label: string;
     currentSelection: string;
     [key: string]: any;
 }

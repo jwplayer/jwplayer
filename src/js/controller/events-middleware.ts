@@ -1,4 +1,4 @@
-import { GenericObject, CoreModel } from 'types/generic.type';
+import type { GenericObject, CoreModel } from 'types/generic.type';
 
 export default function middleware(model: CoreModel, type: string, currentState: GenericObject): GenericObject {
     let newState: GenericObject = currentState;

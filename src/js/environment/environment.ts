@@ -21,7 +21,7 @@ import {
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
 import { memoize } from 'utils/underscore';
-import { GenericObject } from 'types/generic.type';
+import type { GenericObject } from 'types/generic.type';
 
 const userAgent: string = navigator.userAgent;
 const noop: () => void = () => {

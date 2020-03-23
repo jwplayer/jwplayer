@@ -1,6 +1,6 @@
 import { BANDWIDTH_ESTIMATE } from 'events/events';
 import { isValidNumber } from 'utils/underscore';
-import { DefaultProvider } from 'types/generic.type';
+import type { DefaultProvider } from 'types/generic.type';
 
 export type BandwidthMonitor = {
     start: () => void;

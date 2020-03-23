@@ -1,4 +1,4 @@
-import { GenericObject, PageNode, PlaylistItemType } from 'types/generic.type';
+import type { GenericObject, PageNode, PlaylistItemType } from 'types/generic.type';
 
 import { localName, textContent, getChildNode, numChildren } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';

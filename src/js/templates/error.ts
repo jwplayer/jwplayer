@@ -1,4 +1,4 @@
-import { HTMLTemplateString } from 'types/generic.type';
+import type { HTMLTemplateString } from 'types/generic.type';
 
 export default (id: string, message: string, errorCode: string, code: string): HTMLTemplateString => {
     const detail: string = code ? (`(${errorCode}: ${code})`).replace(/\s+/g, '&nbsp;') : '';

@@ -1,4 +1,4 @@
-import { GenericObject } from '../types/generic.type';
+import type { GenericObject } from '../types/generic.type';
 
 // Adds properties to the first object from the rest
 // Does not add properties which exist anywhere in the object or it's prototype chain (no shadowing, no overriding)

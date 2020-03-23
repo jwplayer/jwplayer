@@ -1,12 +1,12 @@
 import button, { Button } from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
-import { Menu, Localization } from 'types/generic.type';
+import type { Menu, Localization } from 'types/generic.type';
 
 export default (settingsMenu: Menu, localization: Localization): Button => {
     const closeButton: Button = button(
-        'jw-settings-close', 
-        (e) => settingsMenu.close(e), 
-        localization.close, 
+        'jw-settings-close',
+        (e) => settingsMenu.close(e),
+        localization.close,
         [cloneIcon('close')]
     );
 

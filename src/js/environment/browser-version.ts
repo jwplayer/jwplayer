@@ -1,4 +1,4 @@
-import { GenericObject } from 'types/generic.type';
+import type { GenericObject } from 'types/generic.type';
 
 export function browserVersion(browserEnvironment: GenericObject, agent: string): GenericObject {
     let version: string | undefined;

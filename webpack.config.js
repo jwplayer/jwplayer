@@ -78,7 +78,9 @@ const webpackConfig = {
                         babelrc: false,
                         presets: [
                             ['@babel/preset-env', { loose: true, modules: false }],
-                            '@babel/preset-typescript'
+                            ["@babel/preset-typescript", {
+                                "onlyRemoveTypeImports": true
+                            }]
                         ],
                         plugins: [
                             {

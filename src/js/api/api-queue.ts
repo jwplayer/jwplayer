@@ -1,4 +1,4 @@
-import { PlayerAPI } from 'types/generic.type';
+import type { PlayerAPI } from 'types/generic.type';
 
 type CommandType = {
     command: string;

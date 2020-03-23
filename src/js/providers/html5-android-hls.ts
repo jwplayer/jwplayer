@@ -1,5 +1,5 @@
 import { OS, Browser } from 'environment/environment';
-import { PlaylistItemSource } from 'types/generic.type';
+import type { PlaylistItemSource } from 'types/generic.type';
 
 export function isAndroidHls(source: PlaylistItemSource): boolean | null {
     if (source.type === 'hls' && OS.android) {
