@@ -2,48 +2,50 @@
 
 // States
 
+export type InternalPlayerState = 'buffering' | 'idle' | 'complete' | 'paused' | 'playing' | 'error' | 'loading' | 'stalled';
+
 /**
  * The user pressed play, but sufficient data to start playback has not yet loaded.
    The buffering icon is visible in the display.
 */
-export const STATE_BUFFERING = 'buffering';
+export const STATE_BUFFERING: InternalPlayerState = 'buffering';
 
 /**
  * Either playback has not started or playback was stopped due to a stop() call or an error.
    In this state, either the play or the error icon is visible in the display.
 */
-export const STATE_IDLE = 'idle';
+export const STATE_IDLE: InternalPlayerState = 'idle';
 
 /**
  * Playback has ended. The replay icon is visible in the display.
 */
-export const STATE_COMPLETE = 'complete';
+export const STATE_COMPLETE: InternalPlayerState = 'complete';
 
 /**
  * The video is currently paused. The play icon is visible in the display.
 */
-export const STATE_PAUSED = 'paused';
+export const STATE_PAUSED: InternalPlayerState = 'paused';
 
 /**
  * The video is currently playing. No icon is visible in the display.
 */
-export const STATE_PLAYING = 'playing';
+export const STATE_PLAYING: InternalPlayerState = 'playing';
 
 /**
  * Playback was stopped due to an error.
    In this state the error icon and a message are visible in the display.
 */
-export const STATE_ERROR = 'error';
+export const STATE_ERROR: InternalPlayerState = 'error';
 
 /**
  * The user pressed play, but media has not yet loaded.
 */
-export const STATE_LOADING = 'loading';
+export const STATE_LOADING: InternalPlayerState = 'loading';
 
 /**
  * The user pressed play, but data is not being loaded.
 */
-export const STATE_STALLED = 'stalled';
+export const STATE_STALLED: InternalPlayerState = 'stalled';
 
 // Touch Events
 

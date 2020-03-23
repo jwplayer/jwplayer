@@ -1,6 +1,7 @@
 import PluginsLoader from 'plugins/loader';
 import PluginsModel from 'plugins/model';
-import type { CoreModel, PlayerAPI, GenericObject } from 'types/generic.type';
+import type { PlayerAPI, GenericObject } from 'types/generic.type';
+import type SimpleModel from '../model/simplemodel';
 
 declare global {
     interface Window { jwplayerPluginJsonp: Function }
@@ -17,13 +18,13 @@ export const registerPlugin = function(name: string, minimumVersion: string, plu
     }
 };
 
-export default function loadPlugins(model: CoreModel, api: PlayerAPI): Promise<GenericObject> {
+export default function loadPlugins(model: SimpleModel, api: PlayerAPI): Promise<GenericObject> {
     const pluginsConfig = model.get('plugins');
 
     window.jwplayerPluginJsonp = registerPlugin;
 
-    const pluginLoader = model.pluginLoader =
-        model.pluginLoader || new PluginsLoader();
+    const pluginLoader = (model as any).pluginLoader =
+        (model as any).pluginLoader || new PluginsLoader();
 
     return pluginLoader.load(api, pluginsModel, pluginsConfig, model).then(results => {
         if (model.attributes._destroyed) {

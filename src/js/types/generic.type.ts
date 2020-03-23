@@ -1,7 +1,5 @@
 export type GenericObject = { [key: string]: any };
 
-export type CoreModel = any;
-
 export type PageNode = (Element | ChildNode) & {
     baseName?: string;
     localName?: string;
@@ -23,3 +21,9 @@ export type Menu = GenericObject;
 export type Tooltip = GenericObject;
 
 export type Localization = GenericObject;
+
+export type TextTrackLike = TextTrack & {
+    _id: string;
+    data: Array<any>;
+    name: string;
+};
