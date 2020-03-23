@@ -6,8 +6,6 @@ export type PageNode = (Element | ChildNode) & {
     text?: string;
 };
 
-export type PlaylistItemType = any;
-
 export type HTMLTemplateString = string;
 
 export type PlayerAPI = any;

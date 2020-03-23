@@ -1,17 +1,16 @@
-import type { GenericObject, PageNode, PlaylistItemType } from 'types/generic.type';
-
 import { localName, textContent, getChildNode, numChildren } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
-import mediaParser from 'parsers/mediaparser';
+import mediaParser, { PlaylistMRSSItem } from 'parsers/mediaparser';
 import parseEntry from 'parsers/jwparser';
 import PlaylistItem from 'playlist/item';
+import type { PageNode } from 'types/generic.type';
 
 /**
 * Parse an RSS feed and translate it to playlistItems.
 */
 
-type FeedDataArray = HTMLElement[] & {
-    feedData?: GenericObject;
+type FeedDataArray = PlaylistItem[] & {
+    feedData?: Record<string, string>;
 };
 
 export default function parseRss(dat: PageNode): FeedDataArray {
@@ -38,16 +37,8 @@ export default function parseRss(dat: PageNode): FeedDataArray {
 }
 
 // Translate RSS item to playlist item.
-function parseItem(obj: PageNode): PlaylistItemType {
-    const item: {
-        file?: string;
-        title?: string;
-        mediaid?: string;
-        date?: string;
-        description?: string;
-        link?: string;
-        tags?: string;
-    } = {};
+function parseItem(obj: PageNode): PlaylistItem {
+    const item: PlaylistMRSSItem = {};
     for (let i = 0; i < obj.childNodes.length; i++) {
         const node: PageNode = obj.childNodes[i];
         const name = localName(node);

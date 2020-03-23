@@ -4,37 +4,44 @@ import parseRss from 'parsers/rssparser';
 import { ajax } from 'utils/ajax';
 import Events from 'utils/backbone.events';
 import { PlayerError, MSG_CANT_PLAY_VIDEO } from 'api/errors';
+import type { PageNode } from 'types/generic.type';
 
-const PlaylistLoader = function() {
+interface PlaylistLoaderInterface extends Events {
+    load(playlistfile: string): void;
+    destroy(): void;
+}
+
+const PlaylistLoader = function(this: PlaylistLoaderInterface): void {
     const _this = Object.assign(this, Events);
 
-    this.load = function(playlistfile) {
+    this.load = function(playlistfile: string): void {
         ajax(playlistfile, playlistLoaded, (message, file, url, error) => {
             playlistError(error);
         });
     };
 
-    this.destroy = function() {
+    this.destroy = function(): void {
         this.off();
     };
 
-    function playlistLoaded(loadedEvent) {
+    // TODO: Type `loadedEvent` ajax oncomplete callback event object
+    function playlistLoaded(loadedEvent: { responseXML?: Document | null; responseText: string }): void {
         try {
             const childNodes = loadedEvent.responseXML ? loadedEvent.responseXML.childNodes : null;
-            let rss = '';
+            let rss: PageNode | null = null;
             let jsonObj;
             if (childNodes) {
                 for (let i = 0; i < childNodes.length; i++) {
-                    rss = childNodes[i];
+                    rss = childNodes[i] as ChildNode;
                     // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
                     if (rss.nodeType !== 8) {
                         break;
                     }
                 }
-                if (localName(rss) === 'xml') {
+                if (rss && localName(rss) === 'xml') {
                     rss = rss.nextSibling;
                 }
-                if (localName(rss) === 'rss') {
+                if (rss && localName(rss) === 'rss') {
                     const rssPlaylist = parseRss(rss);
                     jsonObj = Object.assign({ playlist: rssPlaylist }, rssPlaylist.feedData);
                 }
@@ -63,7 +70,7 @@ const PlaylistLoader = function() {
         }
     }
 
-    function playlistError(error) {
+    function playlistError(error: PlayerError | Error): void {
         if (!error.code) {
             error = new PlayerError(MSG_CANT_PLAY_VIDEO, 0);
         }

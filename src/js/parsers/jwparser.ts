@@ -1,22 +1,37 @@
 import { localName, textContent } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
 import { serialize } from 'utils/parser';
+import type { PlaylistMRSSItemWithMedia, PlaylistMRSSSource, PlaylistMRSSTrack } from 'parsers/mediaparser';
+import type { PageNode } from 'types/generic.type';
 
 /*
 * Parse a feed item for JWPlayer content.
 */
 
-const parseEntry = function (obj, itm) {
+export type PlaylistFeedItemWithMedia = Omit<PlaylistMRSSItemWithMedia, 'sources' | 'tracks'> & {
+    sources: PlaylistMRSSSource[];
+    tracks: PlaylistMRSSTrack[];
+};
+
+export type PlaylistFeedSource = Omit<PlaylistMRSSSource, 'default'> & {
+    default: boolean;
+};
+
+export type PlaylistFeedTrack = Omit<PlaylistMRSSTrack, 'default'> & {
+    default: boolean;
+};
+
+const parseEntry = function (obj: PageNode, itm: PlaylistMRSSItemWithMedia): PlaylistFeedItemWithMedia {
     const PREFIX = 'jwplayer';
     const def = 'default';
     const label = 'label';
     const file = 'file';
     const type = 'type';
-    const sources = [];
-    const tracks = [];
+    const sources: PlaylistMRSSSource[] = [];
+    const tracks: PlaylistMRSSTrack[] = [];
 
     for (let i = 0; i < obj.childNodes.length; i++) {
-        const node = obj.childNodes[i];
+        const node = obj.childNodes[i] as Element;
         if (node.prefix === PREFIX) {
             const _localName = localName(node);
             if (_localName === 'source') {
@@ -54,12 +69,13 @@ const parseEntry = function (obj, itm) {
     if (sources.length) {
         itm.sources = [];
         for (let i = 0; i < sources.length; i++) {
-            if (sources[i].file.length > 0) {
-                sources[i][def] = (sources[i][def] === 'true');
-                if (!sources[i].label.length) {
-                    delete sources[i].label;
+            const source = sources[i] as PlaylistFeedSource;
+            if (source.file.length > 0) {
+                source[def] = (sources[i][def] === 'true');
+                if (!source.label) {
+                    delete source.label;
                 }
-                itm.sources.push(sources[i]);
+                itm.sources.push(source);
             }
         }
     }
@@ -67,17 +83,18 @@ const parseEntry = function (obj, itm) {
     if (tracks.length) {
         itm.tracks = [];
         for (let i = 0; i < tracks.length; i++) {
-            if (tracks[i].file.length > 0) {
-                tracks[i][def] = (tracks[i][def] === 'true') ? true : false;
-                tracks[i].kind = (!tracks[i].kind.length) ? 'captions' : tracks[i].kind;
-                if (!tracks[i].label.length) {
-                    delete tracks[i].label;
+            const track = tracks[i] as PlaylistFeedTrack;
+            if (track.file && track.file.length > 0) {
+                track[def] = (tracks[i][def] === 'true');
+                track.kind = (!tracks[i].kind.length) ? 'captions' : tracks[i].kind;
+                if (!track.label) {
+                    delete track.label;
                 }
-                itm.tracks.push(tracks[i]);
+                itm.tracks.push(track);
             }
         }
     }
-    return itm;
+    return itm as PlaylistFeedItemWithMedia;
 };
 
 export default parseEntry;
