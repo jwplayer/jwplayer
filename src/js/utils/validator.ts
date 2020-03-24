@@ -40,7 +40,7 @@ export function isFileProtocol(): boolean {
  * @param {string} type - The type of the media parsed from a feed or the file extension.
  * @returns {boolean} Is `file` an RTMP link or does `type` equal 'rtmp'?
  */
-export function isRtmp(file: string, type: string): boolean {
+export function isRtmp(file: string, type?: string): boolean {
     return (file.indexOf('rtmp:') === 0 || type === 'rtmp');
 }
 
@@ -49,7 +49,7 @@ export function isRtmp(file: string, type: string): boolean {
  * @param {string} type - The type of the media parsed from a feed or the media url.
  * @returns {boolean} Is `path` a YouTube link or does `type` equal 'youtube'?
  */
-export function isYouTube(path: string, type: string): boolean {
+export function isYouTube(path: string, type?: string): boolean {
     return (type === 'youtube') || (/^(http|\/\/).*(youtube\.com|youtu\.be)\/.+/).test(path);
 }
 

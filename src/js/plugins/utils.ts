@@ -1,14 +1,16 @@
+import type { PluginObj, GenericObject, PlayerAPI } from 'types/generic.type';
+
 // Extract a plugin name from a string
-export const getPluginName = function(url) {
+export const getPluginName = function(url: string): string {
     // Regex locates the characters after the last slash, until it encounters a dash.
     return url.replace(/^(.*\/)?([^-]*)-?.*\.(js)$/, '$2');
 };
 
-export function getPluginErrorCode(/* pluginUrl */) {
+export function getPluginErrorCode(/* pluginURL: string */): number {
     return 305000;
 }
 
-export function configurePlugin(pluginObj, pluginConfig, api) {
+export function configurePlugin(pluginObj: PluginObj, pluginConfig: GenericObject, api: PlayerAPI): PluginObj {
     const pluginName = pluginObj.name;
 
     const div = document.createElement('div');

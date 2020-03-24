@@ -1,8 +1,15 @@
 import { PlayerError } from 'api/errors';
 import { configurePlugin, getPluginErrorCode } from 'plugins/utils';
+import type { PlayerAPI, GenericObject, PluginObj } from 'types/generic.type';
+import type SimpleModel from 'model/simplemodel';
+import type { PluginModelInt } from './model';
 
-const PluginLoader = function () {
-    this.load = function (api, pluginsModel, pluginsConfig, model) {
+export interface PluginLoaderInt {
+    load: (api: PlayerAPI, pluginsModel: PluginModelInt, pluginsConfig: GenericObject, model: SimpleModel) => PluginObj | PlayerError;
+}
+
+const PluginLoader = function (this: PluginLoaderInt): void {
+    this.load = function (api: PlayerAPI, pluginsModel: PluginModelInt, pluginsConfig: GenericObject, model: SimpleModel): PluginObj | PlayerError {
         // Must be a hash map
         if (!pluginsConfig || typeof pluginsConfig !== 'object') {
             return Promise.resolve();
@@ -19,13 +26,12 @@ const PluginLoader = function () {
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
                     if (!error.code) {
-                        return new PlayerError(null, getPluginErrorCode(pluginUrl), error);
+                        return new PlayerError(null, getPluginErrorCode(/* pluginUrl */), error);
                     }
                     return error;
                 });
             }));
     };
-
 };
 
 export default PluginLoader;
