@@ -2,14 +2,14 @@ import { PlayerError } from 'api/errors';
 import { configurePlugin, getPluginErrorCode } from 'plugins/utils';
 import type { PlayerAPI, GenericObject, PluginObj } from 'types/generic.type';
 import type SimpleModel from 'model/simplemodel';
-import type { PluginModelInt } from './model';
+import type PluginModel from './model';
 
 export interface PluginLoaderInt {
-    load: (api: PlayerAPI, pluginsModel: PluginModelInt, pluginsConfig: GenericObject, model: SimpleModel) => PluginObj | PlayerError;
+    load: (api: PlayerAPI, pluginsModel: PluginModel, pluginsConfig: GenericObject, model: SimpleModel) => PluginObj | PlayerError;
 }
 
 const PluginLoader = function (this: PluginLoaderInt): void {
-    this.load = function (api: PlayerAPI, pluginsModel: PluginModelInt, pluginsConfig: GenericObject, model: SimpleModel): PluginObj | PlayerError {
+    this.load = function (api: PlayerAPI, pluginsModel: PluginModel, pluginsConfig: GenericObject, model: SimpleModel): PluginObj | PlayerError {
         // Must be a hash map
         if (!pluginsConfig || typeof pluginsConfig !== 'object') {
             return Promise.resolve();
