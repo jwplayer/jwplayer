@@ -174,7 +174,8 @@ export default class Controls extends Events {
         const controlbar = this.controlbar = new Controlbar(api, model,
             this.playerContainer.querySelector('.jw-hidden-accessibility'));
         controlbar.on(USER_ACTION, () => {
-            this.once('userInactive', () => this.focusPlayerElement(), this);
+            this.off('userInactive', this.focusPlayerElement, this);
+            this.once('userInactive', this.focusPlayerElement, this);
             this.userActive();
         });
         controlbar.on('nextShown', function (data) {
@@ -415,7 +416,7 @@ export default class Controls extends Events {
 
         // Hide controls when focus leaves the player
         const blurCallback = (evt) => {
-            this.off('userInactive', null, this);
+            this.off('userInactive', this.focusPlayerElement, this);
             const focusedElement = evt.relatedTarget || document.querySelector(':focus');
             if (!focusedElement) {
                 return;
