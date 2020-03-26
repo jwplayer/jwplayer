@@ -11,10 +11,10 @@ import type { DrmConfig } from 'types/generic.type';
  * @property {string} label - The quality label to be used with multiple mp4/webm sources.
  */
 
-export type PlaylistItemSource = {
-    type: string;
+export type PlaylistItemSource = Omit<PlaylistItemConfig, 'default'|'type'> & {
     default: boolean;
-} & PlaylistItemConfig;
+    type: string;
+};
 
 type PlaylistItemConfig = {
     aestoken?: string;
