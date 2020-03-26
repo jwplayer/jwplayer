@@ -164,13 +164,14 @@ export const MSG_TECHNICAL_ERROR = 'technicalError';
  * @param {code} [ErrorCode] - The error code.
  * @param {sourceError} [Error] - The lower level error, caught by the player, which resulted in this error.
  */
-export class PlayerError {
-    code: ErrorCode;
-    sourceError: Error | PlayerError | null;
+export class PlayerError extends Error {
+    message: string = '';
     key: ErrorKey | null = null;
-    message: string | null = null;
+    code: ErrorCode;
+    sourceError?: Error;
 
-    constructor(key: ErrorKey | null, code: ErrorCode, sourceError: Error | PlayerError | null = null) {
+    constructor(key: ErrorKey | null, code: ErrorCode, sourceError?: Error) {
+        super();
         this.code = isValidNumber(code) ? code : 0;
         this.sourceError = sourceError;
         if (key) {
@@ -193,7 +194,7 @@ export class PlayerError {
     }
 }
 
-export function convertToPlayerError(key: ErrorKey | null, code: ErrorCode, error: Error | PlayerError): PlayerError {
+export function convertToPlayerError(key: ErrorKey | null, code: ErrorCode, error: Error): PlayerError {
     if (!(error instanceof PlayerError) || !error.code) {
         // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
         return new PlayerError(key, code, error);
@@ -201,7 +202,7 @@ export function convertToPlayerError(key: ErrorKey | null, code: ErrorCode, erro
     return error;
 }
 
-export function composePlayerError(error: Error | PlayerError, superCode: number): PlayerError {
+export function composePlayerError(error: Error, superCode: number): PlayerError {
     const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, superCode, error);
     playerError.code = (error && (error instanceof PlayerError) && error.code || 0) + superCode;
     return playerError;
