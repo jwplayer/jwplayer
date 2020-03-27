@@ -6,7 +6,7 @@ import { isValidNumber, isNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
 import type { StreamType } from 'providers/utils/stream-type';
-import type { DefaultProvider, GenericObject, TextTrackLike } from 'types/generic.type';
+import type { DefaultProvider, GenericObject, TextTrackLike, Localization } from 'types/generic.type';
 import type { QualityLevel } from 'providers/data-normalizer';
 import type PlaylistItem from 'playlist/item';
 
@@ -30,10 +30,13 @@ type PlayerModelAttributes = {
     flashBlocked: boolean;
     flashThrottle?: boolean;
     fullscreen: boolean;
+    height: number | string;
+    id: string;
     instreamMode: boolean;
     item: number;
     itemMeta: GenericObject;
     itemReady: boolean;
+    localization: Localization;
     mediaModel: MediaModel;
     minDvrWindow: number;
     mute: boolean;
@@ -53,6 +56,7 @@ type PlayerModelAttributes = {
     supportsPlaybackRate: boolean;
     viewable?: number;
     volume: number;
+    width: number | string;
 }
 
 interface Model {

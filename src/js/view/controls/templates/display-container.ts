@@ -1,7 +1,7 @@
 import displayIconTemplate from 'view/controls/templates/display-icon';
-import type { HTMLTemplateString, GenericObject } from 'types/generic.type';
+import type { HTMLTemplateString, Localization } from 'types/generic.type';
 
-export default (localization: GenericObject): HTMLTemplateString => {
+export default (localization: Localization): HTMLTemplateString => {
     return (
         `<div class="jw-display jw-reset">` +
             `<div class="jw-display-container jw-reset">` +

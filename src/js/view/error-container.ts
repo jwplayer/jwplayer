@@ -1,10 +1,10 @@
 import errorContainerTemplate from 'templates/error';
 import { createElement } from 'utils/dom';
 import { style } from 'utils/css';
-import type { CoreModel } from 'types/generic.type';
+import type Model from 'controller/model';
 import type { PlayerError } from 'api/errors';
 
-export default function ErrorContainer(model: CoreModel, error: PlayerError): HTMLElement {
+export default function ErrorContainer(model: Model, error: PlayerError): HTMLElement {
     const { message, code } = error;
     const html = errorContainerTemplate(model.get('id'), message, model.get('localization').errors.errorCode, code.toString());
     const width = model.get('width');
