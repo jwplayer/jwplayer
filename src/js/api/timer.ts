@@ -9,11 +9,31 @@ import { dateTime } from 'utils/clock';
  * @property {object} sums - Lists total event/state duration by event/state name
  */
 
+type TimerMetric = {
+    [key: string]: number;
+}
+
+export type TimerMetrics = {
+    counts: TimerMetric;
+    events: TimerMetric;
+    sums: TimerMetric;
+}
+
 /**
  * The Timer used to measure player and playlist item QoE
  * @class Timer
  */
-const Timer = function() {
+
+type Timer = {
+    start: (methodName: string) => void;
+    end: (methodName: string) => void;
+    dump: () => TimerMetrics;
+    tick: (event: string) => void;
+    clear: (event: string) => void;
+    between: (left: string, right: string) => number | null;
+}
+
+const Timer = function(): Timer {
     const startTimes = {};
     const sum = {};
     const counts = {};
@@ -31,7 +51,7 @@ const Timer = function() {
          * @param {string} methodName - The method or player state name.
          * @returns {void}
          */
-        start: function(methodName) {
+        start: function(methodName: string): void {
             startTimes[methodName] = dateTime();
             counts[methodName] = counts[methodName] + 1 || 1;
         },
@@ -42,7 +62,7 @@ const Timer = function() {
          * @param {string} methodName - The method or player state name.
          * @returns {void}
          */
-        end: function(methodName) {
+        end: function(methodName: string): void {
             if (!startTimes[methodName]) {
                 return;
             }
@@ -57,7 +77,7 @@ const Timer = function() {
          * @instance
          * @returns {TimerMetrics} The timing and count of all "tick" events tracked thus far.
          */
-        dump: function() {
+        dump: function(): TimerMetrics {
             // Add running sum of latest method
             // This lets `jwplayer().qoe().item.sums` return a tally of running playing/paused time
             const runningSums = Object.assign({}, sum);
@@ -83,7 +103,7 @@ const Timer = function() {
          * @param {string} event - The event name.
          * @returns {void}
          */
-        tick: function(event) {
+        tick: function(event: string): void {
             ticks[event] = dateTime();
         },
 
@@ -94,7 +114,7 @@ const Timer = function() {
          * @param {string} event - The event name.
          * @returns {void}
          */
-        clear: function(event) {
+        clear: function(event: string): void {
             delete ticks[event];
         },
 
@@ -106,7 +126,7 @@ const Timer = function() {
          * @param {string} right - The second event name.
          * @returns {number|null} The time between events, or null if not found.
          */
-        between: function(left, right) {
+        between: function(left: string, right: string): number | null {
             if (ticks[right] && ticks[left]) {
                 return ticks[right] - ticks[left];
             }

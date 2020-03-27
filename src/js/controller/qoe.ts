@@ -1,4 +1,6 @@
 import {
+    InternalPlayerState,
+    TimeEvent,
     PLAYLIST_ITEM,
     MEDIA_PLAY_ATTEMPT,
     PROVIDER_FIRST_FRAME,
@@ -7,15 +9,28 @@ import {
     MEDIA_VISUAL_QUALITY
 } from 'events/events';
 import Timer from 'api/timer';
+import type Model from 'controller/model';
+import type { MediaModel } from 'controller/model';
+import type { ProgramController } from 'program/program-controller';
+
+type QoeModel = Model & {
+    _qoeItem: Timer & {
+        getFirstFrame: () => number | null;
+    };
+    _triggerFirstFrame: () => void;
+    _onTime: (evt: TimeEvent) => void;
+    _onPlayAttempt: () => void;
+    _onTabVisible?: (modelChanged: Model, activeTab: boolean) => void;
+}
 
 const TAB_HIDDEN = 'tabHidden';
 const TAB_VISIBLE = 'tabVisible';
 
 // This is to provide a first frame event even when
 //  a provider does not give us one.
-const onTimeIncreasesGenerator = (function(callback) {
+const onTimeIncreasesGenerator = (function(callback: () => void): (evt: TimeEvent) => void {
     let lastVal = 0;
-    return function (evt) {
+    return function (evt: TimeEvent): void {
         const pos = evt.position;
         if (pos > lastVal) {
             callback();
@@ -26,21 +41,21 @@ const onTimeIncreasesGenerator = (function(callback) {
     };
 });
 
-function unbindFirstFrameEvents(model, programController) {
+function unbindFirstFrameEvents(model: QoeModel, programController: ProgramController): void {
     programController.off(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
     programController.off(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
     programController.off(MEDIA_TIME, model._onTime);
     model.off('change:activeTab', model._onTabVisible);
 }
 
-function trackFirstFrame(model, programController) {
+function trackFirstFrame(model: QoeModel, programController: ProgramController): void {
     if (model._onTabVisible) {
         unbindFirstFrameEvents(model, programController);
     }
 
     // When it occurs, send the event, and unbind all listeners
     let once = false;
-    model._triggerFirstFrame = function() {
+    model._triggerFirstFrame = function(): void {
         if (once) {
             return;
         }
@@ -67,12 +82,12 @@ function trackFirstFrame(model, programController) {
 
     model._onTime = onTimeIncreasesGenerator(model._triggerFirstFrame);
 
-    model._onPlayAttempt = function() {
+    model._onPlayAttempt = function(): void {
         model._qoeItem.tick(MEDIA_PLAY_ATTEMPT);
     };
 
     // track visibility change
-    model._onTabVisible = function(modelChanged, activeTab) {
+    model._onTabVisible = function(modelChanged: QoeModel, activeTab: boolean): void {
         if (activeTab) {
             model._qoeItem.tick(TAB_VISIBLE);
         } else {
@@ -86,30 +101,32 @@ function trackFirstFrame(model, programController) {
     programController.on(MEDIA_TIME, model._onTime);
 }
 
-const initQoe = function(initialModel, programController) {
-    function onMediaModel(model, mediaModel, oldMediaModel) {
+const initQoe = function(initialModel: Model, programController: ProgramController): void {
+    function onMediaModel(model: QoeModel, mediaModel: MediaModel, oldMediaModel: MediaModel): void {
         // finish previous item
         if (model._qoeItem && oldMediaModel) {
             model._qoeItem.end(oldMediaModel.get('mediaState'));
         }
         // reset item level qoe
-        model._qoeItem = new Timer();
-        model._qoeItem.getFirstFrame = function() {
-            const time = this.between(MEDIA_PLAY_ATTEMPT, MEDIA_FIRST_FRAME);
-            // If time between the tab becoming visible and first frame is valid
-            // and less than the time since play attempt, play was not attempted until the tab became visible
-            const timeActive = this.between(TAB_VISIBLE, MEDIA_FIRST_FRAME);
-            if (timeActive > 0 && timeActive < time) {
-                return timeActive;
+        model._qoeItem = {
+            ...Timer(),
+            getFirstFrame: function(): number | null {
+                const time = this.between(MEDIA_PLAY_ATTEMPT, MEDIA_FIRST_FRAME);
+                // If time between the tab becoming visible and first frame is valid
+                // and less than the time since play attempt, play was not attempted until the tab became visible
+                const timeActive = this.between(TAB_VISIBLE, MEDIA_FIRST_FRAME);
+                if (timeActive && time && timeActive > 0 && timeActive < time) {
+                    return timeActive;
+                }
+                return time;
             }
-            return time;
         };
         model._qoeItem.tick(PLAYLIST_ITEM);
         model._qoeItem.start(mediaModel.get('mediaState'));
 
         trackFirstFrame(model, programController);
 
-        mediaModel.on('change:mediaState', function (changeMediaModel, newstate, oldstate) {
+        mediaModel.on('change:mediaState', function(changeMediaModel: MediaModel, newstate: InternalPlayerState, oldstate: InternalPlayerState): void {
             if (newstate !== oldstate) {
                 model._qoeItem.end(oldstate);
                 model._qoeItem.start(newstate);
