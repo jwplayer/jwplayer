@@ -4,6 +4,8 @@ import { extension } from 'utils/strings';
 import { PlayerError } from 'api/errors';
 import { getPluginErrorCode } from 'plugins/utils';
 
+// Note please replace the Plugin generic type when this file is typed
+
 const PLUGIN_PATH_TYPE_ABSOLUTE = 0;
 const PLUGIN_PATH_TYPE_RELATIVE = 1;
 const PLUGIN_PATH_TYPE_CDN = 2;

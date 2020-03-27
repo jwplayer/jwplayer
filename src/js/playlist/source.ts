@@ -1,5 +1,6 @@
 import { isYouTube, isRtmp } from 'utils/validator';
 import { trim, extension } from 'utils/strings';
+import type { DrmConfig } from 'types/generic.type';
 
 /**
  * A media source variant present in a playlist item
@@ -10,14 +11,39 @@ import { trim, extension } from 'utils/strings';
  * @property {string} label - The quality label to be used with multiple mp4/webm sources.
  */
 
-const Source = function(config) {
+export type PlaylistItemSource = Omit<PlaylistItemConfig, 'default'|'type'> & {
+    default: boolean;
+    type: string;
+};
+
+type PlaylistItemConfig = {
+    aestoken?: string;
+    androidhls?: boolean;
+    default?: boolean;
+    drm?: DrmConfig;
+    file: string;
+    height?: number;
+    hlsjsdefault?: boolean;
+    label?: string;
+    liveSyncDuration?: number;
+    mediaTypes?: Array<string>;
+    mimeType?: string;
+    onXhrOpen?: () => void;
+    safarihlsjs?: boolean;
+    type?: string;
+    width?: number;
+    withCredentials?: boolean;
+}
+
+const Source = function(config?: PlaylistItemConfig): PlaylistItemSource | void {
     // file is the only hard requirement
     if (!config || !config.file) {
         return;
     }
 
-    const source = Object.assign({}, {
-        'default': false
+    const source: PlaylistItemSource = Object.assign({}, {
+        'default': false,
+        type: ''
     }, config);
 
     // normalize for odd strings
@@ -26,10 +52,11 @@ const Source = function(config) {
     // regex to check if mimetype is given
     const mimetypeRegEx = /^[^/]+\/(?:x-)?([^/]+)$/;
 
-    if (mimetypeRegEx.test(source.type)) {
+    const sType = source.type;
+    if (mimetypeRegEx.test(sType)) {
         // if type is given as a mimetype
-        source.mimeType = source.type;
-        source.type = source.type.replace(mimetypeRegEx, '$1');
+        source.mimeType = sType;
+        source.type = sType.replace(mimetypeRegEx, '$1');
     }
 
     // check if the source is youtube or rtmp
@@ -67,7 +94,7 @@ const Source = function(config) {
     }
 
     // remove empty strings
-    Object.keys(source).forEach(function(key) {
+    Object.keys(source).forEach(function(key: string): void {
         if (source[key] === '') {
             delete source[key];
         }

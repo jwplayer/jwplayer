@@ -10,8 +10,6 @@ export type HTMLTemplateString = string;
 
 export type PlayerAPI = any;
 
-export type PlaylistItemSource = any;
-
 export type DefaultProvider = any;
 
 export type Menu = GenericObject;
@@ -19,6 +17,10 @@ export type Menu = GenericObject;
 export type Tooltip = GenericObject;
 
 export type Localization = GenericObject;
+
+export type DrmConfig = GenericObject;
+
+export type PluginObj = GenericObject;
 
 export type TextTrackLike = TextTrack & {
     _id: string;
