@@ -28,7 +28,7 @@ const PluginLoader = function (this: PluginLoaderInt): void {
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
                     if (!error.code) {
-                        return new PlayerError(null, getPluginErrorCode(/* pluginUrl */), error);
+                        return new PlayerError(null, getPluginErrorCode(pluginUrl), error);
                     }
                     return error;
                 });
