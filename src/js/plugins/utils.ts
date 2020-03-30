@@ -6,7 +6,8 @@ export const getPluginName = function(url: string): string {
     return url.replace(/^(.*\/)?([^-]*)-?.*\.(js)$/, '$2');
 };
 
-export function getPluginErrorCode(/* pluginURL: string */): number {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function getPluginErrorCode(pluginURL: string): number {
     return 305000;
 }
 
