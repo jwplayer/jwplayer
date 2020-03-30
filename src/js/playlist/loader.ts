@@ -71,7 +71,7 @@ const PlaylistLoader = function(this: PlaylistLoaderInterface): void {
     }
 
     function playlistError(error: PlayerError | Error): void {
-        if (!error.code) {
+        if (error instanceof PlayerError && !error.code) {
             error = new PlayerError(MSG_CANT_PLAY_VIDEO, 0);
         }
         _this.trigger(ERROR, error);

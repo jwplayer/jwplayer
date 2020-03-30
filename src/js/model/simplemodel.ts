@@ -53,7 +53,7 @@ export default class SimpleModel extends Events {
         return cloned;
     }
 
-    change(name: string, callback: () => void, context?: any): SimpleModel {
+    change(name: string, callback: (...args: any[]) => void, context?: any): SimpleModel {
         // Register a change handler and immediately invoke the callback with the current value
         this.on('change:' + name, callback, context);
         const currentVal = this.get(name);

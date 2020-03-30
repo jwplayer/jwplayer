@@ -1,6 +1,6 @@
 import type { HTMLTemplateString } from 'types/generic.type';
 
-export default (id: string, message: string, errorCode: string, code: string): HTMLTemplateString => {
+export default (id: string, message: string | undefined, errorCode: string, code: string): HTMLTemplateString => {
     const detail: string = code ? (`(${errorCode}: ${code})`).replace(/\s+/g, '&nbsp;') : '';
     return (
         `<div id="${id}" class="jw-error jw-reset">` +

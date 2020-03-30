@@ -1,4 +1,6 @@
-export default (header = '', title = '', duration = '', closeAriaLabel = '') => {
+import type { HTMLTemplateString } from 'types/generic.type';
+
+export default (header = '', title = '', duration = '', closeAriaLabel = ''): HTMLTemplateString => {
     return (
         `<div class="jw-nextup jw-background-color jw-reset">` +
              `<div class="jw-nextup-tooltip jw-reset">` +
