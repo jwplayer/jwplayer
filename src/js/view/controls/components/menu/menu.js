@@ -124,7 +124,7 @@ export default class Menu extends Events {
         return backButton;
     }
     createTopbar() {
-        const topbar = createElement(`<div class="jw-submenu-topbar"></div>`);
+        const topbar = createElement(`<div class="jw-reset jw-submenu-topbar"></div>`);
         const itemsContainer = this.itemsContainer.el;
         const settingsMenu = this.mainMenu;
         const categoryButton = this.categoryButton;
