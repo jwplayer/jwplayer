@@ -1,6 +1,4 @@
 import {
-    InternalPlayerState,
-    TimeEvent,
     PLAYLIST_ITEM,
     MEDIA_PLAY_ATTEMPT,
     PROVIDER_FIRST_FRAME,
@@ -9,22 +7,37 @@ import {
     MEDIA_VISUAL_QUALITY
 } from 'events/events';
 import Timer from 'api/timer';
+import type {
+    TimeEvent,
+    InternalPlayerState
+} from 'events/events';
 import type Model from 'controller/model';
 import type { MediaModel } from 'controller/model';
 import type { ProgramController } from 'program/program-controller';
 
-type QoeModel = Model & {
-    _qoeItem: Timer & {
-        getFirstFrame: () => number | null;
-    };
+const TAB_HIDDEN = 'tabHidden';
+const TAB_VISIBLE = 'tabVisible';
+
+interface QoeModel extends Model {
+    _qoeItem: QoeItem;
     _triggerFirstFrame: () => void;
     _onTime: (evt: TimeEvent) => void;
     _onPlayAttempt: () => void;
     _onTabVisible?: (modelChanged: Model, activeTab: boolean) => void;
 }
 
-const TAB_HIDDEN = 'tabHidden';
-const TAB_VISIBLE = 'tabVisible';
+class QoeItem extends Timer {
+    getFirstFrame(): number | null {
+        const time = this.between(MEDIA_PLAY_ATTEMPT, MEDIA_FIRST_FRAME);
+        // If time between the tab becoming visible and first frame is valid
+        // and less than the time since play attempt, play was not attempted until the tab became visible
+        const timeActive = this.between(TAB_VISIBLE, MEDIA_FIRST_FRAME);
+        if (timeActive && time && timeActive > 0 && timeActive < time) {
+            return timeActive;
+        }
+        return time;
+    }
+}
 
 // This is to provide a first frame event even when
 //  a provider does not give us one.
@@ -108,19 +121,7 @@ const initQoe = function(initialModel: Model, programController: ProgramControll
             model._qoeItem.end(oldMediaModel.get('mediaState'));
         }
         // reset item level qoe
-        model._qoeItem = {
-            ...Timer(),
-            getFirstFrame: function(): number | null {
-                const time = this.between(MEDIA_PLAY_ATTEMPT, MEDIA_FIRST_FRAME);
-                // If time between the tab becoming visible and first frame is valid
-                // and less than the time since play attempt, play was not attempted until the tab became visible
-                const timeActive = this.between(TAB_VISIBLE, MEDIA_FIRST_FRAME);
-                if (timeActive && time && timeActive > 0 && timeActive < time) {
-                    return timeActive;
-                }
-                return time;
-            }
-        };
+        model._qoeItem = new QoeItem();
         model._qoeItem.tick(PLAYLIST_ITEM);
         model._qoeItem.start(mediaModel.get('mediaState'));
 
