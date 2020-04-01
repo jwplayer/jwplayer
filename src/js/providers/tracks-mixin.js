@@ -391,9 +391,6 @@ function clearMetaCues() {
 
 function clearTracks() {
     cancelXhr(this._itemTracks);
-    if (this.renderNatively) {
-        _removeCues(this.renderNatively, this.video.textTracks);
-    }
 
     const { _tracksById } = this;
     if (_tracksById) {
@@ -403,7 +400,7 @@ function clearTracks() {
                 if (this.cueChangeHandler) {
                     metadataTrack.removeEventListener('cuechange', this.cueChangeHandler);
                 }
-                _removeCues(this.renderNatively, [metadataTrack]);
+                _removeCues(this.renderNatively, [metadataTrack], true);
             }
         });
     }
@@ -418,9 +415,10 @@ function clearTracks() {
     this._activeCues = {};
     this._cues = {};
     if (this.renderNatively) {
+        const tracks = this.video.textTracks;
         // Removing listener first to ensure that removing cues does not trigger it unnecessarily
-        this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
-        _removeCues(this.renderNatively, this.video.textTracks);
+        this.removeTracksListener(tracks, 'change', this.textTrackChangeHandler);
+        _removeCues(this.renderNatively, tracks, true);
     }
 }
 
@@ -597,7 +595,7 @@ function insertCueInOrder(track, vttCue) {
     track.mode = mode;
 }
 
-function _removeCues(renderNatively, tracks) {
+function _removeCues(renderNatively, tracks, removeCustomAttributes) {
     if (tracks && tracks.length) {
         each(tracks, function(track) {
             // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
@@ -620,7 +618,12 @@ function _removeCues(renderNatively, tracks) {
             if (!track.embedded) {
                 track.mode = 'disabled';
             }
-            track.inuse = false;
+            if (removeCustomAttributes) {
+                delete track.inuse;
+                delete track._id;
+            } else {
+                track.inuse = false;
+            }
         });
     }
 }
