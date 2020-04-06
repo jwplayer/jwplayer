@@ -321,13 +321,7 @@ function View(_api, _model) {
     this.init = function() {
         this.updateBounds();
 
-        const ampController = _model._model.attributes.ampController;
-
-        if (!ampController || OS.iOS || Browser.safari) {
-            _model.on('change:fullscreen', _fullscreen);
-        } else {
-            _model.on('change:fullscreen', _fullscreenAmp);
-        }
+        _model.on('change:fullscreen', _fullscreen);
         _model.on('change:activeTab', updateVisibility);
         _model.on('change:fullscreen', updateVisibility);
         _model.on('change:intersectionRatio', updateVisibility);
@@ -613,9 +607,11 @@ function View(_api, _model) {
         if (state && _controls && model.get('autostartMuted')) {
             _controls.unmuteAutoplay(_api, model);
         }
+        const AMPController = _model._model.attributes.ampController;
+        const AMPControlsFullscreen = AMPController && !OS.iOS && !Browser.safari;
 
         if (fullscreenHelpers.supportsDomFullscreen()) {
-            if (state) {
+            if (state && !AMPControlsFullscreen) {
                 fullscreenHelpers.requestFullscreen();
             } else {
                 fullscreenHelpers.exitFullscreen();
@@ -633,26 +629,6 @@ function View(_api, _model) {
             }
         }
     };
-
-    function _fullscreenAmp(model, state) {
-        // Unmute the video so volume can be adjusted with native controls in fullscreen
-        if (state && _controls && model.get('autostartMuted')) {
-            _controls.unmuteAutoplay(_api, model);
-        }
-        if (fullscreenHelpers.supportsDomFullscreen()) {
-            _toggleDOMFullscreen(_playerElement, state);
-        } else if (_isIE) {
-            _toggleDOMFullscreen(_playerElement, state);
-        } else {
-            // Request media element fullscreen (iOS)
-            const instream = model.get('instream');
-            const instreamProvider = instream ? instream.provider : null;
-            const provider = model.getVideo() || instreamProvider;
-            if (provider && provider.setFullscreen) {
-                provider.setFullscreen(state);
-            }
-        }
-    }
 
     function getPlayerSizeStyles(playerWidth, playerHeight, resetAspectMode) {
         const styles = {
