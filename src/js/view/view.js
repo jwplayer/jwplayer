@@ -607,7 +607,8 @@ function View(_api, _model) {
         if (state && _controls && model.get('autostartMuted')) {
             _controls.unmuteAutoplay(_api, model);
         }
-        const AMPController = _model._model.attributes.ampController;
+
+        const AMPController = _model.get('ampController');
         const AMPControlsFullscreen = AMPController && !OS.iOS && !Browser.safari;
 
         if (fullscreenHelpers.supportsDomFullscreen()) {
