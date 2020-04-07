@@ -607,6 +607,7 @@ function View(_api, _model) {
         if (state && _controls && model.get('autostartMuted')) {
             _controls.unmuteAutoplay(_api, model);
         }
+
         if (fullscreenHelpers.supportsDomFullscreen()) {
             if (state) {
                 fullscreenHelpers.requestFullscreen();
