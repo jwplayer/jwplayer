@@ -1,7 +1,12 @@
 import { version } from 'version';
 import { isFileProtocol } from 'utils/validator';
 
-export const getScriptPath = function(scriptName) {
+declare global {
+    const __SELF_HOSTED__: boolean;
+    const __REPO__: string;
+}
+
+export const getScriptPath = function(scriptName: string): string {
     const scripts = document.getElementsByTagName('script');
     for (let i = 0; i < scripts.length; i++) {
         const src = scripts[i].src;
@@ -16,7 +21,7 @@ export const getScriptPath = function(scriptName) {
 };
 
 // Gets the repository location from which modules and plugins are loaded by default
-export const repo = function () {
+export const repo = function (): string {
     if (__SELF_HOSTED__) {
         return getScriptPath('jwplayer.js');
     }
@@ -27,7 +32,7 @@ export const repo = function () {
 };
 
 // Is the player at least a minimum required version?
-export const versionCheck = function (target) {
+export const versionCheck = function (target: string): boolean {
     const tParts = ('0' + target).split(/\W/);
     const jParts = version.split(/\W/);
     const tMajor = parseFloat(tParts[0]);
@@ -42,7 +47,7 @@ export const versionCheck = function (target) {
     return true;
 };
 
-export const loadFrom = function () {
+export const loadFrom = function (): string {
     if (__DEBUG__ || __SELF_HOSTED__) {
         return getScriptPath('jwplayer.js');
     }

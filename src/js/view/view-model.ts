@@ -1,8 +1,15 @@
 import SimpleModel from 'model/simplemodel';
+import type Model from 'controller/model';
+import type { MediaModel, PlayerModelAttributes, MediaModelAttributes } from 'controller/model';
+import type { DefaultProvider, GenericObject } from 'types/generic.type';
 
 const changeEventRegEx = /^change:(.+)$/;
 
-function dispatchDiffChangeEvents(viewModel, newAttributes, oldAttributes) {
+function dispatchDiffChangeEvents(
+    viewModel: PlayerViewModel | ViewModel,
+    newAttributes: Partial<MediaModelAttributes | PlayerModelAttributes>,
+    oldAttributes: Partial<MediaModelAttributes | PlayerModelAttributes>
+): void {
     Object.keys(newAttributes).forEach((attr) => {
         if (attr in newAttributes && newAttributes[attr] !== oldAttributes[attr]) {
             viewModel.trigger(`change:${attr}`, viewModel, newAttributes[attr], oldAttributes[attr]);
@@ -10,15 +17,17 @@ function dispatchDiffChangeEvents(viewModel, newAttributes, oldAttributes) {
     });
 }
 
-function removeListeners(instance, viewModel) {
+function removeListeners(instance: Model | MediaModel |null, viewModel: ViewModel | PlayerViewModel | null): void {
     if (instance) {
         instance.off(null, null, viewModel);
     }
 }
 
-class PlayerViewModel extends SimpleModel {
+export class PlayerViewModel extends SimpleModel {
+    _model: Model;
+    _mediaModel: MediaModel | null;
 
-    constructor(playerModel, eventFilter) {
+    constructor(playerModel: Model, eventFilter?: (type: string, objectOrEvent: GenericObject, value: any, previousValue: any) => void) {
         super();
 
         this._model = playerModel;
@@ -45,7 +54,7 @@ class PlayerViewModel extends SimpleModel {
         }, this);
     }
 
-    set mediaModel(mediaModel) {
+    set mediaModel(mediaModel: MediaModel) {
         const previousMediaModel = this._mediaModel;
         removeListeners(previousMediaModel, this);
 
@@ -63,23 +72,23 @@ class PlayerViewModel extends SimpleModel {
         }
     }
 
-    get(attr) {
+    get(attr: keyof PlayerModelAttributes | keyof MediaModelAttributes): any {
         const mediaModel = this._mediaModel;
         if (mediaModel && attr in mediaModel.attributes) {
-            return mediaModel.get(attr);
+            return mediaModel.get(attr as keyof MediaModelAttributes);
         }
-        return this._model.get(attr);
+        return this._model.get(attr as keyof PlayerModelAttributes);
     }
 
-    set(attr, val) {
+    set(attr: keyof PlayerModelAttributes, val: any): void {
         return this._model.set(attr, val);
     }
 
-    getVideo() {
+    getVideo(): DefaultProvider | null {
         return this._model.getVideo();
     }
 
-    destroy() {
+    destroy(): void {
         removeListeners(this._model, this);
         removeListeners(this._mediaModel, this);
         this.off();
@@ -87,7 +96,10 @@ class PlayerViewModel extends SimpleModel {
 }
 
 export default class ViewModel extends PlayerViewModel {
-    constructor(playerModel) {
+    _instreamModel: Model | null;
+    _playerViewModel: PlayerViewModel;
+
+    constructor(playerModel: Model) {
         super(playerModel, (type) => {
             // Do not propagate attribute changes from the player model for attributes present in instream
             const instreamModel = this._instreamModel;
@@ -111,11 +123,11 @@ export default class ViewModel extends PlayerViewModel {
         }, this);
     }
 
-    get player() {
+    get player(): PlayerViewModel {
         return this._playerViewModel;
     }
 
-    set instreamModel(instreamModel) {
+    set instreamModel(instreamModel: Model) {
         const previousInstream = this._instreamModel;
         removeListeners(previousInstream, this);
 
@@ -148,19 +160,19 @@ export default class ViewModel extends PlayerViewModel {
         }
     }
 
-    get(attr) {
+    get(attr: keyof PlayerModelAttributes | keyof MediaModelAttributes): any {
         const mediaModel = this._mediaModel;
         if (mediaModel && attr in mediaModel.attributes) {
-            return mediaModel.get(attr);
+            return mediaModel.get(attr as keyof MediaModelAttributes);
         }
         const instreamModel = this._instreamModel;
         if (instreamModel && attr in instreamModel.attributes) {
-            return instreamModel.get(attr);
+            return instreamModel.get(attr as keyof PlayerModelAttributes);
         }
-        return this._model.get(attr);
+        return this._model.get(attr as keyof PlayerModelAttributes);
     }
 
-    getVideo() {
+    getVideo(): DefaultProvider | null {
         const instreamModel = this._instreamModel;
         if (instreamModel && instreamModel.getVideo()) {
             return instreamModel.getVideo();
@@ -168,7 +180,7 @@ export default class ViewModel extends PlayerViewModel {
         return super.getVideo();
     }
 
-    destroy() {
+    destroy(): void {
         super.destroy();
         removeListeners(this._instreamModel, this);
     }
