@@ -243,7 +243,7 @@ function View(_api, _model) {
         displayClickHandler = clickHandlerHelper(_api, _model, _videoLayer);
 
         focusHelper = new UI(_playerElement).on('click', function() {});
-        fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
+        fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler, _model);
 
         _model.on('change:hideAdsControls', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
@@ -607,12 +607,8 @@ function View(_api, _model) {
         if (state && _controls && model.get('autostartMuted')) {
             _controls.unmuteAutoplay(_api, model);
         }
-
-        const AMPController = _model.get('ampController');
-        const AMPControlsFullscreen = AMPController && !OS.iOS && !Browser.safari;
-
         if (fullscreenHelpers.supportsDomFullscreen()) {
-            if (state && !AMPControlsFullscreen) {
+            if (state) {
                 fullscreenHelpers.requestFullscreen();
             } else {
                 fullscreenHelpers.exitFullscreen();
