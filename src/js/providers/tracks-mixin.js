@@ -149,14 +149,17 @@ function setTextTracks(tracks) {
     }
 
     if (this.renderNatively) {
+        const textTracks = this.video.textTracks;
         // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
-        this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-        this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
+        let handler = this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
+        this.removeTracksListener(textTracks, 'change', handler);
+        this.addTracksListener(textTracks, 'change', handler);
 
         if (Browser.edge || Browser.firefox || Browser.safari) {
             // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
-            this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-            this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
+            handler = this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
+            this.removeTracksListener(textTracks, 'addtrack', handler);
+            this.addTracksListener(textTracks, 'addtrack', handler);
         }
     }
 
@@ -481,7 +484,10 @@ function textTrackChangeHandler() {
 }
 
 // Used in MS Edge to get tracks from the videotag as they're added
-function addTrackHandler() {
+function addTrackHandler(e) {
+    if (e.track && e.track._id) {
+        return;
+    }
     this.setTextTracks(this.video.textTracks);
 }
 
