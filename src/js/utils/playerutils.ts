@@ -1,11 +1,6 @@
 import { version } from 'version';
 import { isFileProtocol } from 'utils/validator';
 
-declare global {
-    const __SELF_HOSTED__: boolean;
-    const __REPO__: string;
-}
-
 export const getScriptPath = function(scriptName: string): string {
     const scripts = document.getElementsByTagName('script');
     for (let i = 0; i < scripts.length; i++) {

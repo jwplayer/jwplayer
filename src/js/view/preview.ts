@@ -1,8 +1,8 @@
 import { style } from 'utils/css';
-import type Model from 'controller/model';
+import type ViewModel from './view-model';
 
 class Preview {
-    model: Model;
+    model: ViewModel;
     image: HTMLImageElement | null;
     el?: HTMLElement;
     hasZoomThumbnail?: boolean;
@@ -12,7 +12,7 @@ class Preview {
     zoomThumbnailTimeout?: number;
     playerAspectRatio?: number;
 
-    constructor(_model: Model) {
+    constructor(_model: ViewModel) {
         this.model = _model;
         this.image = null;
     }

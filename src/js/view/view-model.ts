@@ -1,7 +1,7 @@
 import SimpleModel from 'model/simplemodel';
 import type Model from 'controller/model';
 import type { MediaModel, PlayerModelAttributes, MediaModelAttributes } from 'controller/model';
-import type { DefaultProvider, GenericObject } from 'types/generic.type';
+import type { DefaultProvider, GenericObject, AdProgramController } from 'types/generic.type';
 
 const changeEventRegEx = /^change:(.+)$/;
 
@@ -17,7 +17,7 @@ function dispatchDiffChangeEvents(
     });
 }
 
-function removeListeners(instance: Model | MediaModel |null, viewModel: ViewModel | PlayerViewModel | null): void {
+function removeListeners(instance: Model | AdProgramController | null, viewModel: ViewModel | PlayerViewModel | null): void {
     if (instance) {
         instance.off(null, null, viewModel);
     }
@@ -96,7 +96,7 @@ export class PlayerViewModel extends SimpleModel {
 }
 
 export default class ViewModel extends PlayerViewModel {
-    _instreamModel: Model | null;
+    _instreamModel: AdProgramController | null;
     _playerViewModel: PlayerViewModel;
 
     constructor(playerModel: Model) {

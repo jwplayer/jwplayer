@@ -4,6 +4,7 @@ import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
 import SharedMediaPool from 'program/shared-media-pool';
 
+// Note replace AdProgramController in generic.type.ts when this is types
 export default class AdProgramController extends ProgramController {
     constructor(model, mediaPool) {
         super(model, mediaPool);

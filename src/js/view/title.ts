@@ -3,11 +3,10 @@ import {
     replaceInnerHtml
 } from 'utils/dom';
 import { Browser } from 'environment/environment';
-import type { PlaylistFeedItemWithMedia } from 'parsers/jwparser';
-import type { PlaylistMRSSItemWithMedia } from 'parsers/mediaparser';
 import type ViewModel from './view-model';
 import type { PlayerViewModel } from './view-model';
 import type Model from 'controller/model';
+import type { PlaylistItem } from 'types/generic.type';
 
 class Title {
     model: PlayerViewModel;
@@ -67,7 +66,7 @@ class Title {
         style(this.el, titleStyle);
     }
 
-    playlistItem(model: ViewModel, item: PlaylistMRSSItemWithMedia| PlaylistFeedItemWithMedia): void {
+    playlistItem(model: PlayerViewModel, item: PlaylistItem): void {
         if (!item) {
             return;
         }
