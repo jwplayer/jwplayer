@@ -1,5 +1,5 @@
 // Normalize width and height ending with 'px' to numbers
-export function normalizeSize(val) {
+export function normalizeSize(val: string): string {
     if (val.slice && val.slice(-2) === 'px') {
         val = val.slice(0, -2);
     }
@@ -7,7 +7,7 @@ export function normalizeSize(val) {
 }
 
 // Convert aspectratio from "W:H" to a percentage
-export function normalizeAspectRatio(ar, width) {
+export function normalizeAspectRatio(ar: string, width: number | string): string | 0 {
     if (width.toString().indexOf('%') === -1) {
         return 0;
     }

@@ -27,7 +27,7 @@ type EventListener = {
 }
 
 type EventCallback = {
-    (): void;
+    (...args: any[]): void;
     _callback?: () => void;
 };
 
