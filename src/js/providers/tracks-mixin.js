@@ -598,11 +598,14 @@ function insertCueInOrder(track, vttCue) {
 function _removeCues(renderNatively, tracks, removeCustomAttributes) {
     if (tracks && tracks.length) {
         each(tracks, function(track) {
-            // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
-            if (Browser.ie && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
+            const trackId = track._id;
+            if (removeCustomAttributes) {
+                track._id = null;
+            }
+            // Let IE, Edge and Safari handle cleanup of non-sideloaded text tracks for native rendering
+            if ((Browser.ie || Browser.safari) && renderNatively && /^(native|subtitle|cc)/.test(trackId)) {
                 return;
             }
-
             // Cues are inaccessible if the track is disabled. While hidden,
             // we can remove cues while the track is in a non-visible state
             // Set to disabled before hidden to ensure active cues disappear
@@ -618,12 +621,7 @@ function _removeCues(renderNatively, tracks, removeCustomAttributes) {
             if (!track.embedded) {
                 track.mode = 'disabled';
             }
-            if (removeCustomAttributes) {
-                delete track.inuse;
-                delete track._id;
-            } else {
-                track.inuse = false;
-            }
+            track.inuse = false;
         });
     }
 }
