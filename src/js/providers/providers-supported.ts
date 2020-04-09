@@ -1,6 +1,7 @@
 import { isAndroidHls } from 'providers/html5-android-hls';
 import { isRtmp } from 'utils/validator';
 import video from 'utils/video';
+import type { PlaylistItemSource } from 'playlist/source';
 
 const MimeTypes = {
     aac: 'audio/mp4',
@@ -29,7 +30,7 @@ const SupportsMatrix = [
     }
 ];
 
-export function supportsType(source) {
+export function supportsType(source: PlaylistItemSource): boolean {
     {
         if (isAndroidHls(source) === false) {
             return false;

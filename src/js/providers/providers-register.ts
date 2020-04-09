@@ -3,7 +3,7 @@ import ProvidersSupported from 'providers/providers-supported';
 import DefaultProvider from 'providers/default';
 import { find, matches, isFunction, defaults } from 'utils/underscore';
 
-export default function registerProvider(provider) {
+export default function registerProvider(provider: DefaultProvider): void {
     const name = provider.getName().name;
 
     // Only register the provider if it isn't registered already.  This is an issue on pages with multiple embeds.
