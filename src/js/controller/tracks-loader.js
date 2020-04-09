@@ -31,7 +31,7 @@ export function cancelXhr(tracks) {
     }
 }
 
-export function convertToVTTCues(cues) {
+function convertToVTTCues(cues) {
     // VTTCue is available natively or polyfilled where necessary
     return cues.map(cue => new VTTCue(cue.begin, cue.end, cue.text));
 }
