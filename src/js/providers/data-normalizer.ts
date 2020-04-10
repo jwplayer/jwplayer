@@ -7,7 +7,9 @@ export type QualityLevel = {
     height?: number;
 };
 
-export function qualityLevel(level: QualityLevel & GenericObject): QualityLevel {
+export type Level = QualityLevel & GenericObject;
+
+export function qualityLevel(level: Level): QualityLevel {
     return {
         bitrate: level.bitrate,
         label: level.label,
