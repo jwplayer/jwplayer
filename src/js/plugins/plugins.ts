@@ -3,10 +3,6 @@ import PluginsModel from 'plugins/model';
 import type { PlayerAPI, GenericObject } from 'types/generic.type';
 import type SimpleModel from '../model/simplemodel';
 
-declare global {
-    interface Window { jwplayerPluginJsonp: Function }
-}
-
 const pluginsModel = new PluginsModel();
 
 type PluginFuncDef = (api: PlayerAPI, config: GenericObject, div: HTMLDivElement) => void;

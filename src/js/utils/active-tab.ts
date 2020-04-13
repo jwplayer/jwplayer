@@ -1,9 +1,3 @@
-declare global {
-    interface Document {
-        webkitHidden: boolean;
-    }
-}
-
 export default (function(): () => boolean {
     if ('hidden' in document) {
         return function (): boolean {

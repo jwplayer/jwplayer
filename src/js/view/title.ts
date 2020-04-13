@@ -3,24 +3,38 @@ import {
     replaceInnerHtml
 } from 'utils/dom';
 import { Browser } from 'environment/environment';
+import type ViewModel from './view-model';
+import type { PlayerViewModel } from './view-model';
+import type Model from 'controller/model';
+import type PlaylistItem from 'playlist/item';
 
-const Title = function(_model) {
-    this.model = _model.player;
-    this.truncated = _model.get('__ab_truncated') && !Browser.ie;
-};
+class Title {
+    model: PlayerViewModel;
+    truncated: boolean;
+    el?: HTMLElement;
+    title?: HTMLElement;
+    description?: HTMLElement;
 
-Object.assign(Title.prototype, {
+    constructor(_model: ViewModel) {
+        this.model = _model.player;
+        this.truncated = _model.get('__ab_truncated') && !Browser.ie;
+    }
+
     // This is normally shown/hidden by states
     //   these are only used for when no title exists
-    hide: function() {
+    hide(): void {
         style(this.el, { display: 'none' });
-    },
-    show: function() {
+    }
+    show(): void {
         style(this.el, { display: '' });
-    },
+    }
 
-    setup: function(titleEl) {
+    setup(titleEl: HTMLElement): void {
         this.el = titleEl;
+
+        if (!this.el) {
+            return;
+        }
 
         // Perform the DOM search only once
         const arr = this.el.getElementsByTagName('div');
@@ -31,14 +45,17 @@ Object.assign(Title.prototype, {
         }
         this.model.on('change:logoWidth', this.update, this);
         this.model.change('playlistItem', this.playlistItem, this);
-    },
+    }
 
-    update: function(model) {
-        const titleStyle = {};
+    update(model: Model): void {
+        const titleStyle: {
+            paddingLeft?: number;
+            paddingRight?: number;
+        } = {};
         const logo = model.get('logo');
         if (logo) {
             // Only use Numeric or pixel ("Npx") margin values
-            const margin = 1 * ('' + logo.margin).replace('px', '');
+            const margin = 1 * parseInt(('' + logo.margin).replace('px', ''));
             const padding = model.get('logoWidth') + (isNaN(margin) ? 0 : margin + 10);
             if (logo.position === 'top-left') {
                 titleStyle.paddingLeft = padding;
@@ -47,9 +64,9 @@ Object.assign(Title.prototype, {
             }
         }
         style(this.el, titleStyle);
-    },
+    }
 
-    playlistItem: function(model, item) {
+    playlistItem(model: PlayerViewModel, item: PlaylistItem): void {
         if (!item) {
             return;
         }
@@ -68,9 +85,12 @@ Object.assign(Title.prototype, {
         } else {
             this.hide();
         }
-    },
+    }
 
-    updateText: function(title, description) {
+    updateText(title: string, description: string): void {
+        if (!this.title || !this.description) {
+            return;
+        }
         replaceInnerHtml(this.title, title);
         replaceInnerHtml(this.description, description);
 
@@ -79,11 +99,11 @@ Object.assign(Title.prototype, {
         } else {
             this.hide();
         }
-    },
+    }
 
-    element: function() {
+    element(): HTMLElement | undefined {
         return this.el;
     }
-});
+}
 
 export default Title;
