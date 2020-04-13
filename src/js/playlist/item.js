@@ -15,7 +15,6 @@ const isArray = Array.isArray;
  * @property {number} [dvrSeekLimit] - For live streams, the number of seconds away from the live edge the user is allowed to seek to
  */
 
- // Note: Replace PlaylistItem in generic.type.ts with this when this becomes typed
 const Item = function(config) {
     config = config || {};
     if (!isArray(config.tracks)) {

@@ -6,7 +6,7 @@ import { Browser } from 'environment/environment';
 import type ViewModel from './view-model';
 import type { PlayerViewModel } from './view-model';
 import type Model from 'controller/model';
-import type { PlaylistItem } from 'types/generic.type';
+import type PlaylistItem from 'playlist/item';
 
 class Title {
     model: PlayerViewModel;

@@ -22,10 +22,6 @@ export type DrmConfig = GenericObject;
 
 export type PluginObj = GenericObject;
 
-export type PlaylistItem = GenericObject;
-
-export type AdProgramController = GenericObject;
-
 export type TextTrackLike = TextTrack & {
     _id: string;
     data: Array<any>;

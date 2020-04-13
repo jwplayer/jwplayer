@@ -1,7 +1,8 @@
 import SimpleModel from 'model/simplemodel';
 import type Model from 'controller/model';
 import type { MediaModel, PlayerModelAttributes, MediaModelAttributes } from 'controller/model';
-import type { DefaultProvider, GenericObject, AdProgramController } from 'types/generic.type';
+import type { DefaultProvider, GenericObject } from 'types/generic.type';
+import type AdProgramController from 'program/ad-program-controller';
 
 const changeEventRegEx = /^change:(.+)$/;
 
