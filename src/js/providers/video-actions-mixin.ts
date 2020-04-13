@@ -11,6 +11,7 @@ export interface VideoActionsInt {
     resize(this: ProviderWithMixins, width: number, height: number, stretching: string): void;
     getContainer(): HTMLElement | null;
     setContainer(this: ProviderWithMixins, element: HTMLElement): void;
+    removeFromContainer(this: ProviderWithMixins): void;
     remove(this: ProviderWithMixins): void;
     atEdgeOfLiveStream(this: ProviderWithMixins): boolean;
 }
@@ -106,13 +107,18 @@ const VideoActionsMixin: VideoActionsInt = {
         }
     },
 
+    removeFromContainer(this: ProviderWithMixins): void {
+        const { container, video } = this;
+        this.container = null;
+        if (container && container === video.parentNode) {
+            container.removeChild(video);
+        }
+    },
+
     remove(this: ProviderWithMixins): void {
         this.stop();
         this.destroy();
-        const container = this.container;
-        if (container && container === this.video.parentNode) {
-            container.removeChild(this.video);
-        }
+        this.removeFromContainer();
     },
 
     atEdgeOfLiveStream(this: ProviderWithMixins): boolean {

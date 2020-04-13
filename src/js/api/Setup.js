@@ -1,4 +1,5 @@
-import loadCoreBundle from 'api/core-loader';
+import { loadCore } from 'api/core-loader';
+import { loadCoreBundle } from 'api/core-bundle-loader';
 import loadPlugins from 'plugins/plugins';
 import {
     loadProvider,
@@ -30,8 +31,10 @@ const Setup = function(_model) {
 
         const pluginsPromise = loadPlugins(_model, api);
 
+        const corePromise = __HEADLESS__ ? loadCore(_model) : loadCoreBundle(_model);
+
         const setup = Promise.all([
-            loadCoreBundle(_model),
+            corePromise,
             pluginsPromise,
             loadProvider(_model),
             loadModules(_model, api),

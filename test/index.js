@@ -1,5 +1,5 @@
 // Bundle files chunked by webpack
-import ProvidersLoaded from 'providers/providers-loaded';
+import { ProvidersLoaded } from 'providers/providers-loaded';
 import html5 from 'providers/html5';
 import 'parsers/captions/vttparser';
 import 'view/controls/controls';

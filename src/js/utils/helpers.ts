@@ -109,4 +109,25 @@ const helpers: { [key: string]: () => any } = Object.assign({}, parser, validato
     noop
 });
 
+if (__HEADLESS__) {
+    Object.assign(helpers, {
+        addClass: noop,
+        hasClass: noop,
+        removeClass: noop,
+        replaceClass: noop,
+        toggleClass: noop,
+        classList: () => [],
+        createElement: (html) => document.createElement(html),
+        emptyElement: noop,
+        addStyleSheet: noop,
+        openLink:
+            (link, target, additionalOptions) =>
+                console.error(`[headless] utils.openLink(${link}, ${target}, ${additionalOptions})`),
+        replaceInnerHtml: noop,
+        css: noop,
+        clearCss: noop,
+        style: noop,
+        transform: noop
+    });
+}
 export default helpers;

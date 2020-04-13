@@ -32,6 +32,11 @@ class ProgramController extends Events {
         this.asyncItems = [];
         this.itemSetContext = 0;
 
+        if (__HEADLESS__) {
+            // Headless player will call setContainer with an empty object or null to signal whether it should display content
+            model.set('mediaContainer', {});
+        }
+
         if (!this.backgroundLoading) {
             // If background loading is not supported, set the shared media element
             model.set('mediaElement', this.mediaPool.getPrimedElement());

@@ -18,11 +18,13 @@ export default function MediaElementPool(): MediaElementPoolInt {
     const maxPrimedTags = MEDIA_POOL_SIZE;
     const elements: HTMLVideoElement[] = [];
     const pool: HTMLVideoElement[] = [];
-    for (let i = 0; i < maxPrimedTags; i++) {
-        const mediaElement = createMediaElement();
-        elements.push(mediaElement);
-        pool.push(mediaElement);
-        primeMediaElementForPlayback(mediaElement);
+    if (!__HEADLESS__) {
+        for (let i = 0; i < maxPrimedTags; i++) {
+            const mediaElement = createMediaElement();
+            elements.push(mediaElement);
+            pool.push(mediaElement);
+            primeMediaElementForPlayback(mediaElement);
+        }
     }
 
     // Reserve an element exclusively for ads

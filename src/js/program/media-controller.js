@@ -202,9 +202,13 @@ export default class MediaController extends Events {
         if (!this.attached) {
             return false;
         }
-        // A provider without a video tag cannot be backgrounded
         const provider = this.provider;
+        if (__HEADLESS__) {
+            // A headless provider that does not return a container is backgrounded
+            return !provider.getContainer();
+        }
         if (!provider.video) {
+            // A provider without a video tag cannot be backgrounded
             return false;
         }
         // A backgrounded provider does not have a parent container, or has one, but without the media tag as a child
@@ -256,7 +260,7 @@ export default class MediaController extends Events {
     set background(shouldBackground) {
         const provider = this.provider;
         // A provider without a video tag must use attach and detach
-        if (!provider.video) {
+        if (!provider.video && !__HEADLESS__) {
             if (shouldBackground) {
                 this.detach();
             } else {
@@ -273,7 +277,11 @@ export default class MediaController extends Events {
             if (!this.background) {
                 this.thenPlayPromise.cancel();
                 this.pause();
-                container.removeChild(provider.video);
+                if (provider.removeFromContainer) {
+                    provider.removeFromContainer();
+                } else {
+                    container.removeChild(provider.video);
+                }
                 this.container = null;
             }
         } else {

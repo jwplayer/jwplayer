@@ -74,6 +74,9 @@ function extractLanguage(doc) {
 }
 
 export function getLanguage() {
+    if (__HEADLESS__) {
+        return navigator.language || 'en';
+    }
     let language = extractLanguage(document);
     if (!language && isIframe()) {
         try {

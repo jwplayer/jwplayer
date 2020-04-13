@@ -11,3 +11,4 @@ declare interface Document {
 
 declare const __SELF_HOSTED__: boolean;
 declare const __REPO__: string;
+declare const __HEADLESS__: boolean;

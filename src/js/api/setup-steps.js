@@ -2,11 +2,11 @@ import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist, wrapPlaylistIndex } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
-import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError, PlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER,
     ERROR_LOADING_TRANSLATIONS, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE } from 'api/errors';
 import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation } from 'utils/language';
+import { bundleContainsProviders } from 'api/core-loader';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -54,6 +54,10 @@ export function loadProvider(_model) {
         } catch (e) {
             e.code += SETUP_ERROR_LOADING_PLAYLIST;
             throw e;
+        }
+
+        if (__HEADLESS__) {
+            return Promise.resolve();
         }
 
         const providersManager = _model.getProviders();
