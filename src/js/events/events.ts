@@ -1,8 +1,27 @@
 /** @module */
 
+import type { GenericObject } from 'types/generic.type';
+
 // States
 
 export type InternalPlayerState = 'buffering' | 'idle' | 'complete' | 'paused' | 'playing' | 'error' | 'loading' | 'stalled';
+
+// Event Types
+
+export type TimeEvent = {
+   position: number;
+   duration?: number;
+   currentTime?: number;
+   seekRange?: {
+      start: number;
+      end: number;
+   };
+   metadata?: GenericObject & {
+      currentTime: number;
+   };
+   type?: string;
+   viewable?: number | boolean;
+}
 
 /**
  * The user pressed play, but sufficient data to start playback has not yet loaded.

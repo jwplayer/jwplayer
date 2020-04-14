@@ -14,7 +14,9 @@ type AutoStart = boolean | 'viewable';
 export type PauseReason = 'external' | 'interaction' | 'viewable';
 export type PlayReason = 'autostart' | 'external' | 'interaction' | 'playlist' | 'related-auto' | 'related-interaction';
 
-type PlayerModelAttributes = {
+export type PlayerModelAttributes = {
+    _abZoomThumbnail?: boolean;
+    __ab_truncated?: boolean;
     _destroyed: boolean;
     audioMode: boolean;
     autostart: AutoStart;
@@ -26,6 +28,8 @@ type PlayerModelAttributes = {
     captionsTrack: TextTrackLike;
     controlsEnabled: boolean;
     defaultPlaybackRate: number;
+    displaytitle: string;
+    displaydescription: string;
     dvrSeekLimit: number;
     flashBlocked: boolean;
     flashThrottle?: boolean;
@@ -33,10 +37,19 @@ type PlayerModelAttributes = {
     height: number | string;
     id: string;
     instreamMode: boolean;
+    isFloating?: boolean;
     item: number;
     itemMeta: GenericObject;
     itemReady: boolean;
     localization: Localization;
+    logo?: {
+        file: string;
+        hide?: boolean;
+        link?: string;
+        margin?: number;
+        position?: string;
+    };
+    logoWidth: number;
     mediaModel: MediaModel;
     minDvrWindow: number;
     mute: boolean;
@@ -142,7 +155,7 @@ class Model extends SimpleModel {
         }
     }
 
-    getVideo(): void {
+    getVideo(): DefaultProvider | null {
         return this._provider;
     }
 
@@ -313,7 +326,7 @@ function syncPlayerWithMediaModel(mediaModel: MediaModel): void {
     mediaModel.trigger('change:mediaState', mediaModel, mediaState, mediaState);
 }
 
-type MediaModelAttributes = {
+export type MediaModelAttributes = {
     buffer: number;
     currentTime: number;
     duration: number;

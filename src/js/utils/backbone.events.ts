@@ -27,7 +27,7 @@ type EventListener = {
 }
 
 type EventCallback = {
-    (): void;
+    (...args: any[]): void;
     _callback?: () => void;
 };
 
@@ -89,7 +89,7 @@ export default class Events {
      * @param {any} [context] - If null, all callbacks with that function will be removed.
      * @returns {any} `this` context for chaining.
      */
-    off(name?: string | EventListenerDictionary, callback?: EventCallback, context?: any): Events {
+    off(name?: string | EventListenerDictionary | null, callback?: EventCallback | null, context?: any): Events {
         if (!this._events || !eventsApi(this, 'off', name, [callback, context])) {
             return this;
         }
@@ -193,7 +193,7 @@ const eventSplitter = /\s+/;
 // Implement fancy features of the Events API such as multiple event
 // names `"change blur"` and jQuery-style event maps `{change: action}`
 // in terms of the existing API.
-function eventsApi(obj: Events, action: EventsAction, name: string | EventListenerDictionary | undefined, rest: any[]): name is string {
+function eventsApi(obj: Events, action: EventsAction, name: string | EventListenerDictionary | undefined | null, rest: any[]): name is string {
     if (!name) {
         return true;
     }

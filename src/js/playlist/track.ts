@@ -1,10 +1,13 @@
 export interface PlaylistItemTrack {
+    _id?: string;
     file?: string;
     kind: 'captions' | 'metadata' | 'thumbnails' | 'chapters';
+    data?: (VTTCue | TextTrackCue)[];
     default: boolean;
     name?: string;
     label?: string;
     language?: string;
+    source?: 'mpegts'; // Legacy Flash provider attribute
 }
 
 const VALID_TRACK_KINDS = ['captions', 'metadata', 'thumbnails', 'chapters'];
