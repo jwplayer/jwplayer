@@ -97,7 +97,7 @@ export function hasRedundantLabels(levels: ProviderLevel[]): boolean {
 }
 
 function checkForLevelDuplicates(levels: ProviderLevel[], dupKeys: string[]): boolean {
-    return levels.some(function (this: GenericObject, level: Partial<ProviderLevel>): boolean {
+    return levels.some(function (this: GenericObject, level: ProviderLevel): boolean {
         let key: any;
         for (let i = 0; i < dupKeys.length; i++) {
             // Take the passed keys which are used to detect duplicates and
