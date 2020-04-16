@@ -1,13 +1,16 @@
-import type { GenericObject } from 'types/generic.type';
-
-export type QualityLevel = {
+interface Level {
     label: string;
-    bitrate?: number;
-    width?: number;
     height?: number;
-};
+    width?: number;
+    bitrate?: number;
+}
 
-export type Level = QualityLevel & GenericObject;
+export type QualityLevel = Level;
+
+export interface ProviderLevel extends Omit<Level, 'label'> {
+    label?: string;
+    bandwidth?: number;
+}
 
 export function qualityLevel(level: Level): QualityLevel {
     return {

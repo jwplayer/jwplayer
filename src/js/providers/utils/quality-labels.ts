@@ -1,4 +1,4 @@
-import type { Level } from 'providers/data-normalizer';
+import type { ProviderLevel } from 'providers/data-normalizer';
 import type { GenericObject } from 'types/generic.type';
 
 type QualityLabels = {
@@ -6,12 +6,12 @@ type QualityLabels = {
 };
 
 // Try and find a corresponding custom label. If there are no custom labels, create one using height, bandwidth, or both
-export function generateLabel(level: Partial<Level>, qualityLabels: QualityLabels | null, redundant: boolean): string {
+export function generateLabel(level: ProviderLevel | undefined, qualityLabels: QualityLabels | null, redundant?: boolean): string {
     if (!level) {
         return '';
     }
     // flash provider uses bitrate instead of bandwidth
-    const bandwidth = parseFloat(level.bitrate || level.bandwidth);
+    const bandwidth = level.bitrate || level.bandwidth || 0;
     // flash provider, in some cases, will create its own label. Prefer it over creating a new label
     return getCustomLabel(qualityLabels, bandwidth) ||
         level.label ||
@@ -19,7 +19,7 @@ export function generateLabel(level: Partial<Level>, qualityLabels: QualityLabel
 }
 
 // Prefer creating a label with height with a fallback to bandwidth. Make a label using both if redundant
-export function createLabel(height: number | undefined, bandwidth: number | undefined, redundant: boolean): string {
+function createLabel(height?: number, bandwidth?: number, redundant?: boolean): string {
     if (!height && !bandwidth) {
         return '';
     }
@@ -44,7 +44,7 @@ export function createLabel(height: number | undefined, bandwidth: number | unde
 
 // Ensures that we're able to find a custom label. As long as there is at least 1 quality label and a defined
 // bandwidth, a quality label will always be found. Return null otherwise
-export function getCustomLabel(qualityLabels: QualityLabels | null, bandwidth?: number): string | null {
+function getCustomLabel(qualityLabels?: QualityLabels | null, bandwidth?: number): string | null {
     let label: string | null = null;
 
     if (bandwidth && qualityLabels) {
@@ -61,20 +61,18 @@ export function getCustomLabel(qualityLabels: QualityLabels | null, bandwidth?: 
 }
 
 // Finds the bandwidth with the smallest difference from the target bandwidth
-export function findClosestBandwidth(bandwidths: string[], targetBandwidth: number): string | null {
+function findClosestBandwidth(bandwidths: string[], targetBandwidth: number): string | null {
     let closest: string | null = null;
     let smallestDiff = Infinity;
     let curDiff: number;
 
-    if (Array.isArray(bandwidths)) {
-        bandwidths.forEach(cur => {
-            curDiff = Math.abs(parseFloat(cur) - targetBandwidth);
-            if (curDiff < smallestDiff) {
-                closest = cur;
-                smallestDiff = curDiff;
-            }
-        });
-    }
+    bandwidths.forEach(cur => {
+        curDiff = Math.abs(parseFloat(cur) - targetBandwidth);
+        if (curDiff < smallestDiff) {
+            closest = cur;
+            smallestDiff = curDiff;
+        }
+    });
 
     return closest;
 }
@@ -84,22 +82,22 @@ export function toKbps(bandwidth: number): number {
 }
 
 // Use an empty object as the context and populate it like a hash map
-export function hasRedundantLevels(levels: Partial<Level>[]): boolean {
+export function hasRedundantLevels(levels: ProviderLevel[]): boolean {
     if (!Array.isArray(levels)) {
         return false;
     }
     return checkForLevelDuplicates(levels, ['height', 'bitrate', 'bandwidth']);
 }
 
-export function hasRedundantLabels(levels: Partial<Level>[]): boolean {
+export function hasRedundantLabels(levels: ProviderLevel[]): boolean {
     if (!Array.isArray(levels)) {
         return false;
     }
     return checkForLevelDuplicates(levels, ['label']);
 }
 
-function checkForLevelDuplicates(levels: Partial<Level>[], dupKeys: string[]): boolean {
-    return levels.some(function (this: GenericObject, level: Partial<Level>): boolean | undefined {
+function checkForLevelDuplicates(levels: ProviderLevel[], dupKeys: string[]): boolean {
+    return levels.some(function (this: GenericObject, level: Partial<ProviderLevel>): boolean {
         let key: any;
         for (let i = 0; i < dupKeys.length; i++) {
             // Take the passed keys which are used to detect duplicates and
@@ -113,7 +111,7 @@ function checkForLevelDuplicates(levels: Partial<Level>[], dupKeys: string[]): b
         if (!key) {
             return false;
         }
-        const foundDuplicate = this[key];
+        const foundDuplicate = this[key] || false;
         this[key] = true;
         return foundDuplicate;
     }, {});

@@ -1,10 +1,6 @@
-import _ from 'utils/underscore';
 import {
     hasRedundantLevels,
     generateLabel,
-    createLabel,
-    getCustomLabel,
-    findClosestBandwidth,
     hasRedundantLabels,
     toKbps
 } from 'providers/utils/quality-labels';
@@ -17,109 +13,108 @@ describe('quality-labels', function() {
         3000: 'high',
     };
 
-    const bandwidths = _.keys(customLabels);
+    describe('generateLabel', function() {
+        // flash provider only
+        it('should use label property if it exists and there are no custom labels', function() {
+            const level = { label: '360px' };
+            const actual = generateLabel(level, null, false);
+            expect(actual).to.equal('360px');
+        });
 
-    describe('createLabel', function() {
-        it('creates a label using height when available', function() {
+        // flash provider only
+        it('should not use label property if it exists and there are custom labels', function() {
+            const level = { label: '360px', bitrate: 2000000 };
+            const actual = generateLabel(level, customLabels, false);
+            expect(actual).to.equal('medium');
+        });
+
+        it('should get custom label when bandwidth exactly matches a custom lable key', function() {
+            const level = { bitrate: 2000000 };
+            const expected = 'medium';
+            const actual = generateLabel(level, customLabels, false);
+            expect(actual).to.equal(expected);
+        });
+
+        it('should get custom label when bandwidth rounds to a custom label key', function() {
+            const level = { bitrate: 2000004 };
+            const expected = 'medium';
+            const actual = generateLabel(level, customLabels, false);
+            expect(actual).to.equal(expected);
+        });
+
+        it('should get closest custom label when bandwidth is between two custom label keys', function() {
+            const level = { bitrate: 2200000 };
+            const expected = 'medium';
+            const actual = generateLabel(level, customLabels, false);
+            expect(actual).to.equal(expected);
+        });
+
+        it('should get the largest custome label when bandwidth is greater than every custom label key', function() {
+            const level = { bitrate: 9999999 };
+            const expected = 'high';
+            const actual = generateLabel(level, customLabels, false);
+            expect(actual).to.equal(expected);
+        });
+
+        it('should get the lowest custom label when bandwidth is less than every custom label key', function() {
+            const level = { bitrate: 1 };
+            const expected = 'low';
+            const actual = generateLabel(level, customLabels, false);
+            expect(actual).to.equal(expected);
+        });
+
+        it('should create a label with height when available and custom labels are empty', function() {
+            const level = { height: 360 };
             const expected = '360p';
-            const actual = createLabel(360, undefined, false);
-            expect(expected).to.equal(actual);
+            const actual = generateLabel(level, {}, false);
+            expect(actual).to.equal(expected);
         });
 
-        it('creates a label using bandwidth when height is not available', function() {
-            const expected = '1337 kbps';
-            const actual = createLabel(undefined, 1337000, false);
-            expect(expected).to.equal(actual);
-        });
-
-        it('does not add parentheses to bandwidth when redundant is true and height is not available', function() {
-            const expected = '1337 kbps';
-            const actual = createLabel(undefined, 1337000, true);
-            expect(expected).to.equal(actual);
-        });
-
-        it('includes bandwidth string when redundant argument is true', function() {
-            const expected = '360p (1337 kbps)';
-            const actual = createLabel(360, 1337000, true);
-            expect(expected).to.equal(actual);
-        });
-
-        it('returns an empty string when height and bandwidth are not available', function() {
+        it('should retun an empty string when bandwidth is undefined', function() {
             const expected = '';
-            const actual = createLabel(undefined, undefined, false);
-            expect(expected).to.equal(actual);
-        });
-    });
-
-
-    describe('getCustomLabel', function() {
-        it('gets custom label when bandwidth exactly matches a key', function() {
-            const expected = 'medium';
-            const actual = getCustomLabel(customLabels, 2000000);
-            expect(expected).to.equal(actual);
+            const actual = generateLabel(undefined, customLabels, undefined);
+            expect(actual).to.equal(expected);
         });
 
-        it('gets custom label when bandwidth rounds to a key', function() {
-            const expected = 'medium';
-            const actual = getCustomLabel(customLabels, 2000004);
-            expect(expected).to.equal(actual);
+        // Uses createLabel when qualityLabels and label property are not provided
+        it('should create a label using height when available', function() {
+            const level = { height: 360 };
+            const expected = '360p';
+            const actual = generateLabel(level, null, false);
+            expect(actual).to.equal(expected);
         });
 
-        it('retuns null when no custom labels are given', function() {
-            const expected = null;
-            const actual = getCustomLabel(null, 4000000);
-            expect(expected).to.equal(actual);
+        it('should create a label using bandwidth when height is not available', function() {
+            const level = { bitrate: 1337000 };
+            const expected = '1337 kbps';
+            const actual = generateLabel(level, null, false);
+            expect(actual).to.equal(expected);
         });
 
-        it('retuns null when custom labels are empty', function() {
-            const expected = null;
-            const actual = getCustomLabel({}, 4000000);
-            expect(expected).to.equal(actual);
+        it('should create a label that does not add parentheses to bandwidth when redundant is true and height is not available', function() {
+            const level = { bitrate: 1337000 };
+            const expected = '1337 kbps';
+            const actual = generateLabel(level, null, true);
+            expect(actual).to.equal(expected);
         });
 
-        it('retuns null when bandwidth is undefined', function() {
-            const expected = null;
-            const actual = getCustomLabel(customLabels, undefined);
-            expect(expected).to.equal(actual);
-        });
-    });
-
-
-    describe('findClosestBandwidth', function() {
-        it('retuns null when no bandwidths are given', function() {
-            const expected = null;
-            const actual = findClosestBandwidth([], 4000);
-            expect(expected).to.equal(actual);
+        it('should create a label that includes bandwidth string when redundant argument is true', function() {
+            const level = { height: 360, bitrate: 1337000 };
+            const expected = '360p (1337 kbps)';
+            const actual = generateLabel(level, null, true);
+            expect(actual).to.equal(expected);
         });
 
-        it('returns null when bandwidths are not an array', function() {
-            const expected = null;
-            const actual = findClosestBandwidth({ medium: 4000 }, 4000);
-            expect(expected).to.equal(actual);
+        it('should return an empty string when height and bandwidth are not available and custom labels are empty', function() {
+            const expected = '';
+            const actual = generateLabel(undefined, {}, false);
+            expect(actual).to.equal(expected);
         });
 
-        it('finds the quality label with closest to the target bandwidth when between two bandwidths', function() {
-            const expected = '2000';
-            const actual = findClosestBandwidth(bandwidths, 2200);
-            expect(expected).to.equal(actual);
-        });
-
-        it('finds the quality label closest to the target bandwidth when exactly matching a bandwidth', function() {
-            const expected = '1000';
-            const actual = findClosestBandwidth(bandwidths, 1000);
-            expect(expected).to.equal(actual);
-        });
-
-        it('chooses the top label when the target bandwidth is greater than every bandwidth', function() {
-            const expected = '3000';
-            const actual = findClosestBandwidth(bandwidths, 9999999);
-            expect(expected).to.equal(actual);
-        });
-
-        it('chooses the lowest label when the target bandwidth is less than every bandwidth', function() {
-            const expected = '1000';
-            const actual = findClosestBandwidth(bandwidths, 1);
-            expect(expected).to.equal(actual);
+        it('should return an empty string when height and bandwidth are not available', function() {
+            const expected = '';
+            const actual = generateLabel(undefined, null, false);
+            expect(actual).to.equal(expected);
         });
     });
 
@@ -186,22 +181,6 @@ describe('quality-labels', function() {
             const levels = { height: 100, notHeight: 100 };
             const actual = hasRedundantLevels(levels);
             expect(actual).to.equal(false);
-        });
-
-        describe('generateLabel', function() {
-            // flash provider only
-            it('should use label property if it exists and there are no custom labels', function() {
-                const level = { label: '360px' };
-                const actual = generateLabel(level, null, false);
-                expect(actual).to.equal('360px');
-            });
-
-            // flash provider only
-            it('should not use label property if it exists and there are custom labels', function() {
-                const level = { label: '360px', bitrate: 2000000 };
-                const actual = generateLabel(level, customLabels, false);
-                expect(actual).to.equal('medium');
-            });
         });
     });
 
