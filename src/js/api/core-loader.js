@@ -1,5 +1,5 @@
 import Item from 'playlist/item';
-import { fixSources } from 'playlist/playlist';
+import { fixSources, wrapPlaylistIndex } from 'playlist/playlist';
 import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import { ControlsLoader } from 'controller/controls-loader';
@@ -59,7 +59,8 @@ export function requiresPolyfills() {
 export function requiresProvider(model, providerName) {
     const playlist = model.get('playlist');
     if (Array.isArray(playlist) && playlist.length) {
-        const sources = fixSources(Item(playlist[0]), model);
+        const wrappedIndex = wrapPlaylistIndex(model.get('item'), playlist.length);
+        const sources = fixSources(Item(playlist[wrappedIndex]), model);
         for (let i = 0; i < sources.length; i++) {
             const source = sources[i];
             const providersManager = model.getProviders();

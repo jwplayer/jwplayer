@@ -101,6 +101,7 @@ describe('ProgramController', function () {
 
     const createProgramController = function (customTestConfigOptions) {
         const config = Object.assign({}, defaultConfig, {
+            item: 0,
             playlist: defaultPlaylist.slice(0),
             mediaContainer: document.createElement('div'),
         }, customTestConfigOptions || {});
