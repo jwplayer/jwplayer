@@ -6,7 +6,7 @@ type QualityLabels = {
 };
 
 // Try and find a corresponding custom label. If there are no custom labels, create one using height, bandwidth, or both
-export function generateLabel(level: ProviderLevel | undefined, qualityLabels: QualityLabels | null, redundant?: boolean): string {
+export function generateLabel(level?: ProviderLevel, qualityLabels?: QualityLabels | null, redundant?: boolean): string {
     if (!level) {
         return '';
     }
