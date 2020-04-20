@@ -1,21 +1,28 @@
 import { serialize } from 'utils/parser';
 import ApiSettings from 'api/api-settings';
+import type { GenericObject } from 'types/generic.type';
+import type { MediaModel } from 'controller/model';
 
 let storage = {
-    removeItem: function() {}
+    removeItem: function(itemName: string) {
+        // No unused arguments.
+        itemName;
+    }
 };
 
 try {
     storage = window.localStorage || storage;
 } catch (e) {/* ignore */}
 
-function Storage(namespace, persistItems) {
-    this.namespace = namespace;
-    this.items = persistItems;
-}
+class Storage {
+    namespace: string;
+    items: any[];
+    constructor(namespace: string, persistItems: GenericObject[]) {
+        this.namespace = namespace;
+        this.items = persistItems;
+    }
 
-Object.assign(Storage.prototype, {
-    getAllItems() {
+    getAllItems(): GenericObject {
         return this.items.reduce((memo, key) => {
             const val = storage[`${this.namespace}.${key}`];
             if (val) {
@@ -23,8 +30,9 @@ Object.assign(Storage.prototype, {
             }
             return memo;
         }, {});
-    },
-    track(model) {
+    }
+
+    track(model: MediaModel): void {
         this.items.forEach((key) => {
             model.on(`change:${key}`, (changeModel, value) => {
                 try {
@@ -40,12 +48,13 @@ Object.assign(Storage.prototype, {
                 }
             });
         });
-    },
-    clear() {
+    }
+
+    clear(): void {
         this.items.forEach((key) => {
             storage.removeItem(`${this.namespace}.${key}`);
         });
     }
-});
+}
 
 export default Storage;

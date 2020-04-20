@@ -6,9 +6,10 @@ import type { CaptionEntryData } from './captions.types';
 
 type ParagraphNodes = HTMLCollectionOf<Element & { text?: string }>;
 
-export default function Dfxp(xmlDoc: XMLDocument): CaptionEntryData[] {
+export default function Dfxp(xmlDoc: XMLDocument | null): CaptionEntryData[] {
     if (!xmlDoc) {
         parseError(306007);
+        return [];
     }
 
     const _captions: CaptionEntryData[] = [];

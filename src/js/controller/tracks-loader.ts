@@ -4,17 +4,22 @@ import { ajax } from 'utils/ajax';
 import { localName } from 'parsers/parsers';
 import srt from 'parsers/captions/srt';
 import dfxp from 'parsers/captions/dfxp';
-import { composePlayerError, convertToPlayerError, ERROR_LOADING_CAPTIONS } from 'api/errors';
+import { composePlayerError, convertToPlayerError, ERROR_LOADING_CAPTIONS, PlayerError } from 'api/errors';
+import type { GenericObject } from 'types/generic.type';
 
-export function loadFile(track, successHandler, errorHandler) {
-    track.xhr = ajax(track.file, function(xhr) {
+export function loadFile(
+    track: GenericObject, 
+    successHandler: (...args: any[]) => void, 
+    errorHandler: (err: PlayerError) => void
+): void {
+    track.xhr = ajax(track.file, function(xhr: XMLHttpRequest): void {
         xhrSuccess(xhr, track, successHandler, errorHandler);
-    }, (key, url, xhr, error) => {
+    }, (key: string, url: string, xhr: XMLHttpRequest, error: Error): void => {
         errorHandler(composePlayerError(error, ERROR_LOADING_CAPTIONS));
     });
 }
 
-export function cancelXhr(tracks) {
+export function cancelXhr(tracks: GenericObject[] | null): void {
     if (tracks) {
         tracks.forEach(track => {
             const xhr = track.xhr;
@@ -31,12 +36,17 @@ export function cancelXhr(tracks) {
     }
 }
 
-function convertToVTTCues(cues) {
+function convertToVTTCues(cues: GenericObject[]): VTTCue[] {
     // VTTCue is available natively or polyfilled where necessary
     return cues.map(cue => new VTTCue(cue.begin, cue.end, cue.text));
 }
 
-function xhrSuccess(xhr, track, successHandler, errorHandler) {
+function xhrSuccess(
+    xhr: XMLHttpRequest, 
+    track: GenericObject, 
+    successHandler: (cues: VTTCue[]) => void, 
+    errorHandler: (err: PlayerError) => void
+): void {
     let xmlRoot = xhr.responseXML ? xhr.responseXML.firstChild : null;
     let cues;
     let vttCues;
@@ -47,7 +57,7 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
             xmlRoot = xmlRoot.nextSibling;
         }
         // Ignore all comments
-        while (xmlRoot.nodeType === xmlRoot.COMMENT_NODE) {
+        while (xmlRoot && xmlRoot.nodeType === xmlRoot.COMMENT_NODE) {
             xmlRoot = xmlRoot.nextSibling;
         }
     }
@@ -64,14 +74,15 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
             const responseText = xhr.responseText;
             if (responseText.indexOf('WEBVTT') >= 0) {
                 // make VTTCues from VTT track
-                loadVttParser().then(VTTParser => {
+                loadVttParser().then((VTTParser: (window: Window, decoder?: () => GenericObject) => void): void => {
+                
                     const parser = new VTTParser(window);
                     vttCues = [];
-                    parser.oncue = function(cue) {
+                    parser.oncue = function(cue: GenericObject): void {
                         vttCues.push(cue);
                     };
 
-                    parser.onflush = function() {
+                    parser.onflush = function(): void {
                         delete track.xhr;
                         successHandler(vttCues);
                     };
@@ -96,8 +107,11 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
     }
 }
 
-function loadVttParser() {
-    return require.ensure(['parsers/captions/vttparser'], function (require) {
-        return require('parsers/captions/vttparser').default;
-    }, chunkLoadWarningHandler(301131), 'vttparser');
+function loadVttParser(): any {
+    return require.ensure(['parsers/captions/vttparser'], 
+        function (require: NodeRequire): (window: Window, decoder: () => GenericObject) => {} {
+            return require('parsers/captions/vttparser').default;
+        }, 
+        chunkLoadWarningHandler(301131), 'vttparser'
+    );
 }
