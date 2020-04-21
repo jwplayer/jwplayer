@@ -9,7 +9,6 @@ type ParagraphNodes = HTMLCollectionOf<Element & { text?: string }>;
 export default function Dfxp(xmlDoc: XMLDocument | null): CaptionEntryData[] {
     if (!xmlDoc) {
         parseError(306007);
-        return [];
     }
 
     const _captions: CaptionEntryData[] = [];
@@ -70,6 +69,6 @@ export default function Dfxp(xmlDoc: XMLDocument | null): CaptionEntryData[] {
     return _captions;
 }
 
-function parseError(code: number): void {
+function parseError(code: number): never {
     throw new PlayerError(null, code);
 }
