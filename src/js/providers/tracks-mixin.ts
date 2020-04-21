@@ -4,7 +4,7 @@ import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { MEDIA_META_CUE_PARSED, MEDIA_META, WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
-import type { DefaultProvider, GenericObject, TextTrackLike, MetadataEvent } from 'types/generic.type';
+import type { DefaultProvider, TextTrackLike, MetadataEvent } from 'types/generic.type';
 import type { PlaylistItemTrack } from 'playlist/track';
 
 type TrackCue = (VTTCue | DataCue | TextTrackCue) & {
@@ -48,7 +48,7 @@ type FlashCue = {
 
 // Used across all providers for loading tracks and handling browser track-related events
 interface TracksMixin extends DefaultProvider {
-    _itemTracks: GenericObject[] | null;
+    _itemTracks: PlaylistItemTrack[] | null;
     _textTracks: TextTrackLike[] | null;
     _currentTextTrackIndex: number;
     _tracksById: TracksRecord | null;

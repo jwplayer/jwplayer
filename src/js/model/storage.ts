@@ -4,10 +4,8 @@ import type { GenericObject } from 'types/generic.type';
 import type { MediaModel } from 'controller/model';
 
 let storage = {
-    removeItem: function(itemName: string) {
-        // No unused arguments.
-        itemName;
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    removeItem: function(itemName: string): void {}
 };
 
 try {
