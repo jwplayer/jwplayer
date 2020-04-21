@@ -1,9 +1,5 @@
-type Resolve = () => void;
-
-type Reject = (reason: DOMException) => void;
-
 export default function createPlayPromise(video: HTMLVideoElement): Promise<void> {
-    return new Promise(function(resolve: Resolve, reject: Reject): void {
+    return new Promise(function(resolve: () => void, reject: (reason: DOMException) => void): void {
         if (video.paused) {
             return reject(new DOMException('play() failed.', 'NotAllowedError'));
         }
