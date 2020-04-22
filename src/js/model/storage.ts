@@ -1,7 +1,7 @@
 import { serialize } from 'utils/parser';
 import ApiSettings from 'api/api-settings';
 import type { GenericObject } from 'types/generic.type';
-import type { MediaModel } from 'controller/model';
+import type SimpleModel from 'model/simplemodel';
 
 let storage = {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
@@ -30,7 +30,7 @@ class Storage {
         }, {});
     }
 
-    track(model: MediaModel): void {
+    track(model: SimpleModel): void {
         this.items.forEach((key) => {
             model.on(`change:${key}`, (changeModel, value) => {
                 try {
