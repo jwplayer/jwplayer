@@ -1,11 +1,5 @@
 export const FEED_SHOWN_ID_LENGTH = 12;
 
-declare global {
-    interface Window {
-        msCrypto: Crypto;
-    }   
-}
-
 // Taken from the Analytics repo (src/js/utils/general_utils.ts)
 function randomAlphaNumericString(): string {
     try {
