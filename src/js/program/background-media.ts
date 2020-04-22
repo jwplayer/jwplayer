@@ -1,8 +1,23 @@
 import type Item from 'playlist/item';
+import type MediaController from 'program/media-controller';
 
 interface MediaObject {
     item: Item;
-    loadPromise: Promise<any>;
+    loadPromise: Promise<MediaController>;
+}
+
+interface BackgroundMedia {
+    setNext: (item: Item, loadPromise: Promise<any>) => void;
+    isNext: (item: Item) => boolean;
+    updateNext: (item: Item) => void;
+    clearNext: () => void;
+    nextLoadPromise: {
+        get: () => Promise<MediaController> | null;
+    };
+    currentMedia: {
+        get: () => MediaController;
+        set: (mediaController: MediaController) => void;
+    };
 }
 /**
  * A simple data structure for containing both of the background loading objects.
@@ -18,12 +33,12 @@ interface MediaObject {
  * @property {Promise} nextMedia - A promise representing the media loading in the background. Resolves with the mediaController.
  * @constructor
  */
-export default function BackgroundMedia(): object {
-    let currentMedia: MediaObject | null = null;
+export default function BackgroundMedia(): BackgroundMedia {
+    let currentMedia: MediaController | null = null;
     let nextMedia: MediaObject | null = null;
 
     return Object.defineProperties({
-        setNext(item: Item, loadPromise: Promise<any>): void {
+        setNext(item: Item, loadPromise: Promise<MediaController>): void {
             nextMedia = { item, loadPromise };
         },
         isNext(item: Item): boolean {
@@ -39,15 +54,15 @@ export default function BackgroundMedia(): object {
         }
     }, {
         nextLoadPromise: {
-            get(): Promise<any> | null {
+            get(): Promise<MediaController> | null {
                 return nextMedia ? nextMedia.loadPromise : null;
             }
         },
         currentMedia: {
-            get(): MediaObject | null {
+            get(): MediaController | null {
                 return currentMedia;
             },
-            set(mediaController: MediaObject): void {
+            set(mediaController: MediaController | null): void {
                 currentMedia = mediaController;
             }
         }
