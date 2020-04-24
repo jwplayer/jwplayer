@@ -1,10 +1,83 @@
 import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
-import { GenericObject, SourceObj, SeekRange } from 'types/generic.type';
+import type { GenericObject, SourceObj, SeekRange } from 'types/generic.type';
+import type { TracksMixin } from 'providers/tracks-mixin';
+import type { VideoActionsInt } from 'providers/video-actions-mixin';
+import type { VideoAttachedInt } from 'providers/video-attached-mixin';
+import type Events from 'utils/backbone.events';
 
 const noop: () => void = function(): void { /* noop */ };
 const returnFalse: () => boolean = (() => false);
 const getNameResult: { name: string } = { name: 'default' };
 const returnName: () => { name: string } = (() => getNameResult);
+
+export interface ImplementedProvider {
+    video: HTMLVideoElement;
+    instreamMode: boolean;
+    supportsPlaybackRate: boolean;
+    stop(): void;
+    destroy(): void; // frees memory
+    isLive(): boolean;
+    setCurrentSubtitleTrack?(trackID: number): void;
+    getBandwidthEstimate: () => number | null;
+
+    setPlaybackRate: (rate: number) => void;
+    getName: () => { name: string };
+
+    // old methods
+    state?: string;
+    supports: () => boolean;
+    play: () => void;
+    pause: () => void;
+    preload: () => void;
+    load: () => void;
+    volume: () => void;
+    mute: () => void;
+    seek: () => void;
+    resize: () => void;
+    remove: () => void; // removes from page
+
+    setVisibility: () => void;
+    setFullscreen: () => void;
+    getFullscreen: () => boolean;
+    supportsFullscreen: () => boolean;
+
+    // If setContainer has been set; this returns the element.
+    //  It's value is used to determine if we should remove the <video> element when setting a new provider.
+    getContainer: () => void;
+
+    // Sets the parent element; causing provider to append <video> into it
+    setContainer: () => void;
+
+    getQualityLevels: () => void;
+    getCurrentQuality: () => void;
+    setCurrentQuality: () => void;
+
+    getAudioTracks: () => void;
+
+    getCurrentAudioTrack: () => void;
+    setCurrentAudioTrack: () => void;
+
+    getSeekRange: () => SeekRange;
+
+    getPlaybackRate: () => number;
+    getLiveLatency: () => number | null;
+    setControls: () => void;
+
+    attachMedia: () => void;
+    detachMedia: () => void;
+    init: () => void;
+
+    setState: (state: string) => void;
+
+    sendMediaType: (sources: Array<SourceObj>) => void;
+
+    getDuration: () => number;
+
+    trigger: (evt: string, obj: GenericObject) => void;
+}
+
+export type ProviderWithMixins = ImplementedProvider & TracksMixin & VideoActionsInt & VideoAttachedInt & Events;
+
 interface DefaultProvider {
     state?: string;
     supports: () => boolean;

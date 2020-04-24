@@ -10,8 +10,6 @@ export type HTMLTemplateString = string;
 
 export type PlayerAPI = any;
 
-export type DefaultProvider = any;
-
 export type Menu = GenericObject;
 
 export type Tooltip = GenericObject;

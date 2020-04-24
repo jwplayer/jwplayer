@@ -1,6 +1,11 @@
-import type { GenericObject } from 'types/generic.type';
+export interface VideoAttachedInt {
+    eventsOn_(): void;
+    eventsOff_(): void;
+    attachMedia(): void;
+    detachMedia(): void;
+}
 
-const VideoAttachedMixin: GenericObject = {
+const VideoAttachedMixin: VideoAttachedInt = {
 
     eventsOn_(): void {
         // noop

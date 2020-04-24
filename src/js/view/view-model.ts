@@ -1,8 +1,9 @@
 import SimpleModel from 'model/simplemodel';
 import type Model from 'controller/model';
 import type { MediaModel, PlayerModelAttributes, MediaModelAttributes } from 'controller/model';
-import type { DefaultProvider, GenericObject } from 'types/generic.type';
+import type { GenericObject } from 'types/generic.type';
 import type AdProgramController from 'program/ad-program-controller';
+import type { ProviderWithMixins } from 'providers/default';
 
 const changeEventRegEx = /^change:(.+)$/;
 
@@ -85,7 +86,7 @@ export class PlayerViewModel extends SimpleModel {
         return this._model.set(attr, val);
     }
 
-    getVideo(): DefaultProvider | null {
+    getVideo(): ProviderWithMixins | null {
         return this._model.getVideo();
     }
 
@@ -173,7 +174,7 @@ export default class ViewModel extends PlayerViewModel {
         return this._model.get(attr as keyof PlayerModelAttributes);
     }
 
-    getVideo(): DefaultProvider | null {
+    getVideo(): ProviderWithMixins | null {
         const instreamModel = this._instreamModel;
         if (instreamModel && instreamModel.getVideo()) {
             return instreamModel.getVideo();
