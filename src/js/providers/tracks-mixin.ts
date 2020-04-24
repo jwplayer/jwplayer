@@ -47,6 +47,11 @@ type FlashCue = {
     useDTS?: boolean;
 }
 
+export type SimpleAudioTrack = {
+    name: string;
+    language: string;
+}
+
 // Used across all providers for loading tracks and handling browser track-related events
 export interface TracksMixin {
     _itemTracks: GenericObject[] | null;
@@ -65,7 +70,7 @@ export interface TracksMixin {
     cueChangeHandler: ((this: ProviderWithMixins, e: Event) => void) | null;
     _initTextTracks: () => void;
     addTracksListener: (tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any) => void;
-    removeTracksListener: (tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any) => void;
+    removeTracksListener: (tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: ((e?: any) => any) | null) => void;
     clearTracks: () => void;
     clearMetaCues: () => void;
     clearCueData: (trackId: string) => void;
@@ -74,19 +79,19 @@ export interface TracksMixin {
     getCurrentTextTrack: () => TextTrackLike | void;
     getSubtitlesTrack: () => number;
     addTextTracks: (tracksArray: PlaylistItemTrack[]) => TextTrackLike[];
-    setTextTracks: (tracks: TextTrackList) => void;
     addTrackListeners: (tracks: TextTrackList) => void;
+    setTextTracks: (tracks: TextTrackList | TextTrackLike[] | null) => void;
     setupSideloadedTracks: (itemTracks: PlaylistItemTrack[]) => void;
     setSubtitlesTrack: (menuIndex: number) => void;
     addCuesToTrack: (cueData: FlashCuesData) => void;
     addCaptionsCue: (cueData: FlashCue) => void;
     createCue: (start: number, end: number | undefined, content: string) => VTTCue | TextTrackCue;
-    addVTTCue: (cueData: AddCueData, cacheKey: string) => TrackCue | null;
+    addVTTCue: (cueData: AddCueData, cacheKey?: string) => TrackCue | null;
     addVTTCuesToTrack: (track: TextTrackLike, vttCues: TrackCue[]) => void;
     parseNativeID3Cues: (cues: TextTrackCueList, previousCues: TrackCue[]) => void;
     triggerActiveCues: (currentActiveCues: TrackCue[], previousActiveCues: TrackCue[]) => void;
     ensureMetaTracksActive: () => void;
-    _cacheVTTCue: (track: TextTrackLike, vttCue: TrackCue, cacheKey: string) => boolean;
+    _cacheVTTCue: (track: TextTrackLike, vttCue: TrackCue, cacheKey?: string) => boolean;
     _addTrackToList: (track: TextTrackLike) => void;
     _createTrack: (itemTrack: PlaylistItemTrack) => TextTrackLike;
     _clearSideloadedTextTracks(): void;
@@ -134,11 +139,11 @@ const Tracks: TracksMixin = {
             tracks['on' + eventType] = handler;
         }
     },
-    removeTracksListener(tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any): void {
+    removeTracksListener(tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: ((e?: any) => any) | null): void {
         if (!tracks) {
             return;
         }
-        if (tracks.removeEventListener) {
+        if (tracks.removeEventListener && handler) {
             tracks.removeEventListener(eventType, handler);
         } else {
             tracks['on' + eventType] = null;
@@ -264,7 +269,7 @@ const Tracks: TracksMixin = {
         }
         return textTracks;
     },
-    setTextTracks(this: ProviderWithMixins, tracks: TextTrackList): void {
+    setTextTracks(this: ProviderWithMixins, tracks: TextTrackList | TextTrackLike[] | null): void {
         this._currentTextTrackIndex = -1;
         if (!tracks) {
             return;
@@ -527,7 +532,7 @@ const Tracks: TracksMixin = {
         const cueEnd = Math.max(end || 0, start + 0.25);
         return new MetaCue(start, cueEnd, content);
     },
-    addVTTCue(this: ProviderWithMixins, cueData: AddCueData, cacheKey: string): TrackCue | null {
+    addVTTCue(this: ProviderWithMixins, cueData: AddCueData, cacheKey?: string): TrackCue | null {
         if (!this._tracksById) {
             this._initTextTracks();
         }
@@ -651,7 +656,7 @@ const Tracks: TracksMixin = {
             }
         }
     },
-    _cacheVTTCue(track: TextTrackLike, vttCue: TrackCue, cacheKey: string): boolean {
+    _cacheVTTCue(track: TextTrackLike, vttCue: TrackCue, cacheKey?: string): boolean {
         const trackKind = track.kind;
         const trackId = track._id as string;
         const _cachedVTTCues = this._cachedVTTCues as CachedCuesRecord;

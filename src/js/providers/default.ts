@@ -4,6 +4,7 @@ import type { TracksMixin } from 'providers/tracks-mixin';
 import type { VideoActionsInt } from 'providers/video-actions-mixin';
 import type { VideoAttachedInt } from 'providers/video-attached-mixin';
 import type Events from 'utils/backbone.events';
+import type PlaylistItem from 'playlist/item';
 
 const noop: () => void = function(): void { /* noop */ };
 const returnFalse: () => boolean = (() => false);
@@ -11,35 +12,53 @@ const getNameResult: { name: string } = { name: 'default' };
 const returnName: () => { name: string } = (() => getNameResult);
 
 export interface ImplementedProvider {
+    state?: string;
     video: HTMLVideoElement;
     instreamMode: boolean;
     supportsPlaybackRate: boolean;
-    stop(): void;
-    destroy(): void; // frees memory
-    isLive(): boolean;
-    setCurrentSubtitleTrack?(trackID: number): void;
+    seeking: boolean;
+    stallTime: number;
+
+    supports: () => boolean;
+    play: () => Promise<void>;
+    pause: () => void;
+
+    init: (item: PlaylistItem) => void;
+    preload: (item: PlaylistItem) => void;
+    load: (item: PlaylistItem) => void;
+    stop: () => void;
+    destroy: () => void; // frees memory
+    isLive: () => boolean;
+    setCurrentSubtitleTrack?: (trackID: number) => void;
     getBandwidthEstimate: () => number | null;
 
     setPlaybackRate: (rate: number) => void;
     getName: () => { name: string };
+    getCurrentTime: () => number;
 
-    // old methods
-    state?: string;
-    supports: () => boolean;
-    play: () => void;
-    pause: () => void;
-    preload: () => void;
-    load: () => void;
-    volume: () => void;
-    mute: () => void;
-    seek: () => void;
-    resize: () => void;
-    remove: () => void; // removes from page
+    seek: (seekPos: number) => void;
 
-    setVisibility: () => void;
-    setFullscreen: () => void;
+    setVisibility: (isVisible: boolean) => void;
+
+    setFullscreen: (isFullscreen: boolean) => void;
     getFullscreen: () => boolean;
     supportsFullscreen: () => boolean;
+
+    // to be updated when maria's work merges
+    getQualityLevels: () => void;
+    getCurrentQuality: () => number;
+    setCurrentQuality: (qualityLevel: number) => void;
+
+    getCurrentAudioTrack: () => number;
+    setCurrentAudioTrack: (at: number) => void;
+
+    // old methods
+
+    volume: () => void;
+    mute: () => void;
+
+    resize: () => void;
+    remove: () => void; // removes from page
 
     // If setContainer has been set; this returns the element.
     //  It's value is used to determine if we should remove the <video> element when setting a new provider.
@@ -48,14 +67,7 @@ export interface ImplementedProvider {
     // Sets the parent element; causing provider to append <video> into it
     setContainer: () => void;
 
-    getQualityLevels: () => void;
-    getCurrentQuality: () => void;
-    setCurrentQuality: () => void;
-
     getAudioTracks: () => void;
-
-    getCurrentAudioTrack: () => void;
-    setCurrentAudioTrack: () => void;
 
     getSeekRange: () => SeekRange;
 
@@ -65,7 +77,6 @@ export interface ImplementedProvider {
 
     attachMedia: () => void;
     detachMedia: () => void;
-    init: () => void;
 
     setState: (state: string) => void;
 

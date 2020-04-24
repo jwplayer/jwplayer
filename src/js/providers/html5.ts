@@ -11,14 +11,17 @@ import VideoAttached from 'providers/video-attached-mixin';
 import { isDvr } from 'providers/utils/stream-type';
 import { style } from 'utils/css';
 import { emptyElement } from 'utils/dom';
-import DefaultProvider from 'providers/default';
+import DefaultProvider, { ProviderWithMixins } from 'providers/default';
 import Events from 'utils/backbone.events';
-import Tracks from 'providers/tracks-mixin';
+import Tracks, { SimpleAudioTrack } from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
 import { map, isFinite } from 'utils/underscore';
 import { now } from 'utils/date';
 import { PlayerError, MSG_LIVE_STREAM_DOWN, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
+import type { GenericObject, SeekRange } from 'types/generic.type';
+import type PlaylistItem from 'playlist/item';
+import type { PlaylistItemSource } from 'playlist/source';
 
 /** @module */
 
@@ -41,22 +44,32 @@ const HTML5_BASE_WARNING = 324000;
 
 const clearTimeout = window.clearTimeout;
 const _name = 'html5';
-const noop = function () {};
+const noop: () => void = function (): void { /* noop */ };
 
-function _setupListeners(eventsHash, videoTag) {
+function _setupListeners(eventsHash: GenericObject, videoTag: HTMLVideoElement): void {
     Object.keys(eventsHash).forEach(eventName => {
         videoTag.removeEventListener(eventName, eventsHash[eventName]);
         videoTag.addEventListener(eventName, eventsHash[eventName]);
     });
 }
 
-function _removeListeners(eventsHash, videoTag) {
+function _removeListeners(eventsHash: GenericObject, videoTag: HTMLVideoElement): void {
     Object.keys(eventsHash).forEach(eventName => {
         videoTag.removeEventListener(eventName, eventsHash[eventName]);
     });
 }
 
-function VideoProvider(_playerId, _playerConfig, mediaElement) {
+interface HTML5Provider extends ProviderWithMixins {
+    currentTime: number;
+    retries: number;
+    maxRetries: number;
+    loadAndParseHlsMetadata: boolean;
+    startDateTime: number;
+    setStartDateTime: (time: number) => void;
+    videoLoad: (this: HTMLVideoElement) => void;
+}
+
+function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: GenericObject, mediaElement: HTMLVideoElement): HTML5Provider {
     const _this = this;
 
     // Current media state
@@ -82,7 +95,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     // The following issues need to be addressed before we enable native rendering in Edge:
     // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8120475/
     // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12079271/
-    function renderNatively (configRenderNatively) {
+    function renderNatively (configRenderNatively: boolean): boolean {
         if (OS.iOS || Browser.safari) {
             return true;
         }
@@ -90,12 +103,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     const MediaEvents = {
-        progress() {
+        progress(): void {
             VideoEvents.progress.call(_this);
             checkStaleStream();
         },
 
-        timeupdate() {
+        timeupdate(): void {
             if (_this.currentTime >= 0) {
                 // Reset error retries after concurrent timeupdate events
                 _this.retries = 0;
@@ -114,13 +127,13 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
         resize: checkVisualQuality,
 
-        ended() {
+        ended(): void {
             _currentQuality = -1;
             clearTimeouts();
             VideoEvents.ended.call(_this);
         },
 
-        loadedmetadata() {
+        loadedmetadata(): void {
             let duration = _this.getDuration();
             if (_androidHls && duration === Infinity) {
                 duration = 0;
@@ -136,21 +149,21 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             checkVisualQuality();
         },
 
-        durationchange() {
+        durationchange(): void {
             if (_androidHls) {
                 return;
             }
             VideoEvents.progress.call(_this);
         },
 
-        loadeddata() {
+        loadeddata(): void {
             checkStartDateTime();
             VideoEvents.loadeddata.call(_this);
             _setAudioTracks(_videotag.audioTracks);
             _checkDelayedSeek(_this.getDuration());
         },
 
-        canplay() {
+        canplay(): void {
             _canSeek = true;
             if (!_androidHls) {
                 _setMediaType();
@@ -159,9 +172,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             VideoEvents.canplay.call(_this);
         },
 
-        seeking() {
+        seeking(): void {
             const offset = _seekToTime !== null ? timeToPosition(_seekToTime) : _this.getCurrentTime();
-            const position = timeToPosition(_timeBeforeSeek);
+            const position = timeToPosition(_timeBeforeSeek as number);
             _timeBeforeSeek = _seekToTime;
             _seekToTime = null;
             _delayedSeek = 0;
@@ -172,12 +185,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             });
         },
 
-        seeked() {
+        seeked(): void {
             VideoEvents.seeked.call(_this);
             _this.ensureMetaTracksActive();
         },
 
-        waiting() {
+        waiting(): void{
             if (_this.seeking) {
                 _this.setState(STATE_LOADING);
             } else if (_this.state === STATE_PLAYING) {
@@ -189,17 +202,17 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             }
         },
 
-        webkitbeginfullscreen(e) {
+        webkitbeginfullscreen(e: Event): void {
             _iosFullscreenState = true;
             _sendFullscreen(e);
         },
 
-        webkitendfullscreen(e) {
+        webkitendfullscreen(e: Event): void {
             _iosFullscreenState = false;
             _sendFullscreen(e);
         },
 
-        error() {
+        error(): void {
             const { video } = _this;
             const error = video.error;
             const errorCode = (error && error.code) || -1;
@@ -241,7 +254,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             );
         }
     };
-    Object.keys(VideoEvents).forEach(eventName => {
+    Object.keys(VideoEvents).forEach((eventName: string) => {
         if (!MediaEvents[eventName]) {
             const mixinEventHandler = VideoEvents[eventName];
             MediaEvents[eventName] = (e) => {
@@ -252,13 +265,13 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     Object.assign(this, Events, VideoAction, VideoAttached, Tracks, {
         renderNatively: renderNatively(_playerConfig.renderCaptionsNatively),
-        eventsOn_() {
+        eventsOn_(): void {
             _setupListeners(MediaEvents, _videotag);
         },
-        eventsOff_() {
+        eventsOff_(): void {
             _removeListeners(MediaEvents, _videotag);
         },
-        detachMedia() {
+        detachMedia(): void {
             VideoAttached.detachMedia.call(_this);
             clearTimeouts();
             // Stop listening to track changes so disabling the current track doesn't update the model
@@ -274,7 +287,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 this.disableTextTrack();
             }
         },
-        attachMedia() {
+        attachMedia(): void {
             VideoAttached.attachMedia.call(_this);
             _canSeek = false;
             // If we were mid-seek when detached, we want to allow it to resume
@@ -285,7 +298,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             // override load so that it's not used to reset the video tag by external JavaScript (iOS ads)
             if (OS.iOS && !this.videoLoad) {
                 const videoLoad = this.videoLoad = _videotag.load;
-                _videotag.load = function() {
+                _videotag.load = function(): void {
                     if (_videotag.src === location.href) {
                         _setVideotagSource(_levels[_currentQuality]);
                         if (_this.state === STATE_PLAYING) {
@@ -309,13 +322,14 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             }
             this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
         },
-        isLive() {
+        isLive(): boolean {
             return _videotag.duration === Infinity;
         }
     });
 
     const _videotag = mediaElement;
-    const visualQuality = { level: {} };
+    // wait for maria's quality level changes to merge
+    const visualQuality: GenericObject = { level: {} };
     // Prefer the config timeout, which is allowed to be 0 and null by default
     const _staleStreamDuration =
         _playerConfig.liveTimeout !== null
@@ -324,27 +338,27 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     let _canSeek = false; // true on valid time event
     let _delayedSeek = 0;
-    let _seekToTime = null;
-    let _timeBeforeSeek = null;
+    let _seekToTime: number | null = null;
+    let _timeBeforeSeek: number | null = null;
     let _levels;
     let _currentQuality = -1;
     let _iosFullscreenState = false;
     let _beforeResumeHandler = noop;
-    let _audioTracks = null;
+    let _audioTracks: SimpleAudioTrack[] | null = null;
     let _currentAudioTrackIndex = -1;
     let _staleStreamTimeout = -1;
     let _stale = false;
-    let _lastEndOfBuffer = null;
-    let _androidHls = false;
-    let dvrEnd = null;
-    let dvrPosition = null;
+    let _lastEndOfBuffer: number | null = null;
+    let _androidHls: boolean | null = false;
+    let dvrEnd: number | null = null;
+    let dvrPosition: number | null = null;
     let dvrUpdatedTime = 0;
 
     this.video = _videotag;
     this.supportsPlaybackRate = true;
     this.startDateTime = 0;
 
-    function checkVisualQuality() {
+    function checkVisualQuality(): void {
         const level = visualQuality.level;
         if (level.width !== _videotag.videoWidth || level.height !== _videotag.videoHeight) {
             // Exit if we're not certain that the stream is audio or the level is unknown
@@ -365,9 +379,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     }
 
-    function checkStartDateTime() {
-        if (_videotag.getStartDate) {
-            const startDate = _videotag.getStartDate();
+    function checkStartDateTime(): void {
+        const vtag = _videotag as GenericObject;
+        if (vtag.getStartDate) {
+            const startDate = vtag.getStartDate();
             const startDateTime = startDate.getTime ? startDate.getTime() : NaN;
             if (startDateTime !== _this.startDateTime && !isNaN(startDateTime)) {
                 _this.setStartDateTime(startDateTime);
@@ -375,7 +390,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     }
 
-    _this.setStartDateTime = function(startDateTime) {
+    _this.setStartDateTime = function(startDateTime: number): void {
         _this.startDateTime = startDateTime;
         const programDateTime = new Date(startDateTime).toISOString();
         let { start, end } = _this.getSeekRange();
@@ -391,19 +406,19 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         const cue = _this.createCue(start, end, JSON.stringify(metadata));
         _this.addVTTCue({
             type: 'metadata',
-            cue,
+            cue
         });
     };
 
-    function setTimeBeforeSeek(currentTime) {
+    function setTimeBeforeSeek(currentTime: number): void {
         _timeBeforeSeek = currentTime;
     }
 
-    _this.getCurrentTime = function() {
+    _this.getCurrentTime = function(): number {
         return getPosition(_videotag.currentTime);
     };
 
-    function timeToPosition(currentTime) {
+    function timeToPosition(currentTime: number): number {
         const seekRange = _this.getSeekRange();
         if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
             return Math.min(0, currentTime - seekRange.end);
@@ -411,28 +426,28 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return currentTime;
     }
 
-    function getPosition(currentTime) {
+    function getPosition(currentTime: number): number {
         const seekRange = _this.getSeekRange();
         if (_this.isLive()) {
-            const rangeUpdated = !dvrPosition || Math.abs(dvrEnd - seekRange.end) > 1;
+            const rangeUpdated = !dvrPosition || Math.abs((dvrEnd as number) - seekRange.end) > 1;
             if (rangeUpdated) {
                 updateDvrPosition(seekRange);
                 _this.ensureMetaTracksActive();
             }
             if (isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
-                return dvrPosition;
+                return dvrPosition as number;
             }
         }
         return currentTime;
     }
 
-    function updateDvrPosition(seekRange) {
+    function updateDvrPosition(seekRange: SeekRange): void {
         dvrEnd = seekRange.end;
-        dvrPosition = Math.min(0, _videotag.currentTime - dvrEnd);
+        dvrPosition = Math.min(0, _videotag.currentTime - (dvrEnd as number));
         dvrUpdatedTime = now();
     }
 
-    _this.getDuration = function() {
+    _this.getDuration = function(): number {
         let duration = _videotag.duration;
         // Don't sent time event on Android before real duration is known
         if (_androidHls && (duration === Infinity && _videotag.currentTime === 0) || isNaN(duration)) {
@@ -449,7 +464,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return duration;
     };
 
-    _this.getSeekRange = function() {
+    _this.getSeekRange = function(): SeekRange {
         const seekRange = {
             start: 0,
             end: 0
@@ -467,8 +482,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return seekRange;
     };
 
-    _this.getLiveLatency = function() {
-        let latency = null;
+    _this.getLiveLatency = function(): number | null {
+        let latency: number | null = null;
         const end = _getSeekableEnd();
         if (_this.isLive() && end) {
             latency = end + (now() - dvrUpdatedTime) / 1000 - _videotag.currentTime;
@@ -476,17 +491,18 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return latency;
     };
 
-    function _checkDelayedSeek(duration) {
+    function _checkDelayedSeek(duration: number): void {
         // Don't seek when _delayedSeek is set to -1 in _completeLoad
         if (_delayedSeek && _delayedSeek !== -1 && duration && duration !== Infinity) {
             _this.seek(_delayedSeek);
         }
     }
 
-    function _getPublicLevels(levels) {
+    // Wait for quality levels work to merge
+    function _getPublicLevels(levels: GenericObject[]): { label: string }[] {
         let publicLevels;
         if (Array.isArray(levels) && levels.length > 0) {
-            publicLevels = levels.map(function(level, i) {
+            publicLevels = levels.map(function(level: GenericObject, i: number): { label: string } {
                 return {
                     label: level.label || i
                 };
@@ -495,14 +511,15 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return publicLevels;
     }
 
-    function setPlaylistItem(item) {
+    function setPlaylistItem(item: PlaylistItem): void {
         _this.currentTime = -1;
         minDvrWindow = item.minDvrWindow;
         _levels = item.sources;
         _currentQuality = _pickInitialQuality(_levels);
     }
 
-    function _pickInitialQuality(levels) {
+    // Wait for quality levels work to merge
+    function _pickInitialQuality(levels: GenericObject[]): number {
         let currentQuality = Math.max(0, _currentQuality);
         const label = _playerConfig.qualityLabel;
         if (levels) {
@@ -524,7 +541,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return currentQuality;
     }
 
-    function _play() {
+    function _play(): Promise<void> {
         const resumingPlayback = _videotag.paused && _videotag.played && _videotag.played.length;
         if (resumingPlayback && _this.isLive() && !isDvr(_getSeekableEnd() - _getSeekableStart(), minDvrWindow)) {
             _this.clearTracks();
@@ -533,7 +550,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return _videotag.play() || createPlayPromise(_videotag);
     }
 
-    function _completeLoad(startTime) {
+    function _completeLoad(startTime: number): void {
         _this.currentTime = -1;
         _delayedSeek = 0;
         clearTimeouts();
@@ -576,7 +593,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     // Safari has a bug where our disable of an embedded rendered track causes
     //  the track to not display when we re-attach the media. We can avoid this
     //  by only disabling the track if sideloaded in safari
-    function _shouldToggleTrackOnDetach() {
+    function _shouldToggleTrackOnDetach(): boolean | void {
         if (!Browser.safari) {
             return true;
         }
@@ -585,7 +602,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return track && track.sideloaded;
     }
 
-    function _setVideotagSource(source) {
+    function _setVideotagSource(source: PlaylistItemSource): void {
         _audioTracks = null;
         _currentAudioTrackIndex = -1;
         if (!visualQuality.reason) {
@@ -602,7 +619,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     }
 
-    function _clearVideotagSource() {
+    function _clearVideotagSource(): void {
         if (_videotag) {
             _this.disableTextTrack();
             _videotag.removeAttribute('preload');
@@ -619,7 +636,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     }
 
-    function _getSeekableStart() {
+    function _getSeekableStart(): number {
         let start = Infinity;
         ['buffered', 'seekable'].forEach(range => {
             const timeRange = _videotag[range];
@@ -635,7 +652,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return start;
     }
 
-    function _getSeekableEnd() {
+    function _getSeekableEnd(): number {
         let end = 0;
         ['buffered', 'seekable'].forEach(range => {
             const timeRange = _videotag[range];
@@ -651,7 +668,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return end;
     }
 
-    this.stop = function() {
+    this.stop = function(): void {
         clearTimeouts();
         _clearVideotagSource();
         this.clearTracks();
@@ -663,7 +680,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         this.setState(STATE_IDLE);
     };
 
-    this.destroy = function() {
+    this.destroy = function(): void {
         const { addTrackHandler, cueChangeHandler, textTrackChangeHandler } = _this;
         const textTracks = _videotag.textTracks;
         _this.off();
@@ -682,7 +699,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     };
 
-    this.init = function(item) {
+    this.init = function(item: PlaylistItem): void {
         _this.retries = 0;
         _this.maxRetries = item.adType ? 0 : 3;
         setPlaylistItem(item);
@@ -702,7 +719,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         visualQuality.reason = '';
     };
 
-    this.preload = function(item) {
+    this.preload = function(item: PlaylistItem): void {
         setPlaylistItem(item);
         const source = _levels[_currentQuality];
         const preload = source.preload || 'metadata';
@@ -712,20 +729,20 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     };
 
-    this.load = function(item) {
+    this.load = function(item: PlaylistItem): void {
         setPlaylistItem(item);
         _completeLoad(item.starttime);
         this.setupSideloadedTracks(item.tracks);
     };
 
-    this.play = function() {
+    this.play = function(): Promise<void> {
         _beforeResumeHandler();
         return _play();
     };
 
-    this.pause = function() {
+    this.pause = function(): void {
         clearTimeouts();
-        _beforeResumeHandler = function() {
+        _beforeResumeHandler = function(): void {
             const unpausing = _videotag.paused && _videotag.currentTime;
             if (unpausing && _this.isLive()) {
                 const end = _getSeekableEnd();
@@ -747,7 +764,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         _videotag.pause();
     };
 
-    this.seek = function(seekToPosition) {
+    this.seek = function(seekToPosition: number): void {
         const seekRange = _this.getSeekRange();
         let seekToTime = seekToPosition;
         if (seekToPosition < 0) {
@@ -762,7 +779,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             try {
                 _this.seeking = true;
                 if (_this.isLive() && isDvr(seekRange.end - seekRange.start, minDvrWindow)) {
-                    dvrPosition = Math.min(0, seekToTime - dvrEnd);
+                    dvrPosition = Math.min(0, seekToTime - (dvrEnd as number));
                     if (seekToPosition < 0) {
                         const timeSinceUpdate = Math.min(12, (now() - dvrUpdatedTime) / 1000);
                         seekToTime += timeSinceUpdate;
@@ -785,7 +802,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     };
 
-    function _audioTrackChangeHandler() {
+    function _audioTrackChangeHandler(): void {
         let _selectedAudioTrackIndex = -1;
         for (let i = 0; i < _videotag.audioTracks.length; i++) {
             if (_videotag.audioTracks[i].enabled) {
@@ -796,14 +813,14 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         _setCurrentAudioTrack(_selectedAudioTrackIndex);
     }
 
-    function _sendFullscreen(e) {
+    function _sendFullscreen(e: Event): void {
         _this.trigger(NATIVE_FULLSCREEN, {
             target: e.target,
             jwstate: _iosFullscreenState
         });
     }
 
-    this.setVisibility = function(state) {
+    this.setVisibility = function(state: boolean): void {
         state = !!state;
         if (state || OS.android) {
             // Changing visibility to hidden on Android < 4.2 causes
@@ -822,7 +839,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     };
 
-    this.setFullscreen = function(state) {
+    this.setFullscreen = function(state: boolean): boolean {
         state = !!state;
 
         // This implementation is for iOS and Android WebKit only
@@ -840,7 +857,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 // object can't go fullscreen
                 return false;
             }
-            return _this.getFullScreen();
+            return _this.getFullscreen();
         }
 
         const exitFullscreen =
@@ -853,11 +870,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return state;
     };
 
-    _this.getFullScreen = function() {
+    _this.getFullscreen = function(): boolean {
         return _iosFullscreenState || !!_videotag.webkitDisplayingFullscreen;
     };
 
-    this.setCurrentQuality = function(quality) {
+    this.setCurrentQuality = function(quality: number): void {
         if (_currentQuality === quality) {
             return;
         }
@@ -881,27 +898,27 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     };
 
-    this.setPlaybackRate = function(playbackRate) {
+    this.setPlaybackRate = function(playbackRate: number): void {
         // Set defaultPlaybackRate so that we do not send ratechange events when setting src
         _videotag.playbackRate = _videotag.defaultPlaybackRate = playbackRate;
     };
 
-    this.getPlaybackRate = function() {
+    this.getPlaybackRate = function(): number {
         return _videotag.playbackRate;
     };
 
-    this.getCurrentQuality = function() {
+    this.getCurrentQuality = function(): number {
         return _currentQuality;
     };
 
-    this.getQualityLevels = function() {
+    this.getQualityLevels = function(): GenericObject[] {
         if (Array.isArray(_levels)) {
             return _levels.map(level => qualityLevel(level));
         }
         return [];
     };
 
-    this.getName = function() {
+    this.getName = function(): { name: string } {
         return { name: _name };
     };
     this.setCurrentAudioTrack = _setCurrentAudioTrack;
@@ -910,7 +927,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     this.getCurrentAudioTrack = _getCurrentAudioTrack;
 
-    function _setAudioTracks(tracks) {
+    function _setAudioTracks(tracks: AudioTrackList): void {
         _audioTracks = null;
         if (!tracks) {
             return;
@@ -926,7 +943,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 _currentAudioTrackIndex = 0;
                 tracks[_currentAudioTrackIndex].enabled = true;
             }
-            _audioTracks = map(tracks, function(track) {
+            _audioTracks = map(tracks, function(track: AudioTrack): SimpleAudioTrack {
                 const _track = {
                     name: track.label || track.language,
                     language: track.language
@@ -940,7 +957,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     }
 
-    function _setCurrentAudioTrack(index) {
+    function _setCurrentAudioTrack(index: number): void {
         if (_videotag && _videotag.audioTracks && _audioTracks &&
             index > -1 && index < _videotag.audioTracks.length && index !== _currentAudioTrackIndex) {
             _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
@@ -951,15 +968,15 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     }
 
-    function _getAudioTracks() {
+    function _getAudioTracks(): SimpleAudioTrack[] {
         return _audioTracks || [];
     }
 
-    function _getCurrentAudioTrack() {
+    function _getCurrentAudioTrack(): number {
         return _currentAudioTrackIndex;
     }
 
-    function isAudioStream() {
+    function isAudioStream(): boolean | undefined {
         if (_videotag.readyState < 2) {
             return;
         }
@@ -967,7 +984,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return _videotag.videoHeight === 0;
     }
 
-    function _setMediaType() {
+    function _setMediaType(): void {
         let isAudio = isAudioStream();
         if (typeof isAudio !== 'undefined') {
             const mediaType = isAudio ? 'audio' : 'video';
@@ -976,7 +993,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     // If we're live and the buffer end has remained the same for some time, mark the stream as stale and check if the stream is over
-    function checkStaleStream() {
+    function checkStaleStream(): void {
         // Never kill a stale live stream if the timeout was configured to 0
         if (_staleStreamDuration === 0) {
             return;
@@ -987,7 +1004,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         // Don't end if we have noting buffered yet, or cannot get any information about the buffer
         if (live && endOfBuffer && _lastEndOfBuffer === endOfBuffer) {
             if (_staleStreamTimeout === -1) {
-                _staleStreamTimeout = setTimeout(function () {
+                _staleStreamTimeout = setTimeout(function(): void {
                     _stale = true;
                     checkStreamEnded();
                 }, _staleStreamDuration);
@@ -1000,7 +1017,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         _lastEndOfBuffer = endOfBuffer;
     }
 
-    function checkStreamEnded() {
+    function checkStreamEnded(): boolean {
         if (_stale && _this.atEdgeOfLiveStream()) {
             _this.trigger(
                 MEDIA_ERROR,
@@ -1012,15 +1029,17 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return false;
     }
 
-    function clearTimeouts() {
+    function clearTimeouts(): void {
         clearTimeout(_staleStreamTimeout);
         _staleStreamTimeout = -1;
     }
+
+    return this;
 }
 
 Object.assign(VideoProvider.prototype, DefaultProvider);
 
-VideoProvider.getName = function() {
+VideoProvider.getName = function(): { name: string } {
     return { name: 'html5' };
 };
 
