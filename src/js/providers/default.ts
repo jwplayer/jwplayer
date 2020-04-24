@@ -1,6 +1,6 @@
 import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
 import type { GenericObject, SourceObj, SeekRange } from 'types/generic.type';
-import type { TracksMixin } from 'providers/tracks-mixin';
+import type { TracksMixin, SimpleAudioTrack } from 'providers/tracks-mixin';
 import type { VideoActionsInt } from 'providers/video-actions-mixin';
 import type { VideoAttachedInt } from 'providers/video-attached-mixin';
 import type Events from 'utils/backbone.events';
@@ -52,39 +52,18 @@ export interface ImplementedProvider {
     getCurrentAudioTrack: () => number;
     setCurrentAudioTrack: (at: number) => void;
 
-    // old methods
-
-    volume: () => void;
-    mute: () => void;
-
-    resize: () => void;
-    remove: () => void; // removes from page
-
-    // If setContainer has been set; this returns the element.
-    //  It's value is used to determine if we should remove the <video> element when setting a new provider.
-    getContainer: () => void;
-
-    // Sets the parent element; causing provider to append <video> into it
-    setContainer: () => void;
-
-    getAudioTracks: () => void;
+    getAudioTracks: () => SimpleAudioTrack[];
 
     getSeekRange: () => SeekRange;
 
     getPlaybackRate: () => number;
     getLiveLatency: () => number | null;
     setControls: () => void;
-
-    attachMedia: () => void;
-    detachMedia: () => void;
-
     setState: (state: string) => void;
 
     sendMediaType: (sources: Array<SourceObj>) => void;
 
     getDuration: () => number;
-
-    trigger: (evt: string, obj: GenericObject) => void;
 }
 
 export type ProviderWithMixins = ImplementedProvider & TracksMixin & VideoActionsInt & VideoAttachedInt & Events;
