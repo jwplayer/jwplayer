@@ -1,14 +1,14 @@
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import { addClass, createElement } from 'utils/dom';
-import type Model from 'controller/model';
 import type { PlayerAPI } from 'types/generic.type';
+import type ViewModel from 'view/view-model';
 
 export default class PlayDisplayIcon extends Events {
     icon: Element | null;
     el: HTMLElement;
     ui: UI;
-    constructor(_model: Model, api: PlayerAPI, element: HTMLElement) {
+    constructor(_model: ViewModel, api: PlayerAPI, element: HTMLElement) {
         super();
         const localization = _model.get('localization');
         const iconDisplay = element.querySelector('.jw-icon') as HTMLElement;
@@ -19,7 +19,7 @@ export default class PlayDisplayIcon extends Events {
             this.trigger(evt.type);
         });
 
-        _model.on('change:state', (model: Model, newState: string): void => {
+        _model.on('change:state', (model: ViewModel, newState: string): void => {
             let newStateLabel;
             switch (newState) {
                 case 'buffering':

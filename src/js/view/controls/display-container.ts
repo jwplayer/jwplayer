@@ -4,9 +4,9 @@ import PlayDisplayIcon from 'view/controls/play-display-icon';
 import NextDisplayIcon from 'view/controls/next-display-icon';
 import { cloneIcons } from 'view/controls/icons';
 import { createElement } from 'utils/dom';
-import type Model from 'controller/model';
 import type { PlayerAPI } from 'types/generic.type';
 import type { Button } from './components/button';
+import type ViewModel from 'view/view-model';
 
 type Constructor<T extends {}> = new (...args: any[]) => T;
 type ButtonHolder = { [key: string]: Button | NextDisplayIcon };
@@ -16,7 +16,7 @@ export default class DisplayContainer {
     container: Element | null;
     buttons: ButtonHolder;
 
-    constructor(model: Model, api: PlayerAPI) {
+    constructor(model: ViewModel, api: PlayerAPI) {
         this.el = createElement(displayContainerTemplate(model.get('localization')));
 
         const container = this.el.querySelector('.jw-display-controls') as HTMLElement;
@@ -50,7 +50,7 @@ function addButton(
     ButtonClass: Constructor<Button> | Constructor<NextDisplayIcon>,
     container: HTMLElement,
     buttons: ButtonHolder,
-    model: Model,
+    model: ViewModel,
     api: PlayerAPI
 ): void {
     const buttonElement = container.querySelector(`.jw-display-icon-${name}`);
