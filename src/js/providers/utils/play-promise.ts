@@ -1,7 +1,12 @@
+type PlayPromiseError = Omit<DOMException, 'name' | 'code'> & {
+    name: string;
+    code: number;
+};
+
 export default function createPlayPromise(video: HTMLVideoElement): Promise<void> {
-    return new Promise(function(resolve: () => void, reject: (reason: DOMException) => void): void {
+    return new Promise(function(resolve: () => void, reject: (reason: PlayPromiseError) => void): void {
         if (video.paused) {
-            return reject(new DOMException('play() failed.', 'NotAllowedError'));
+            return reject(playPromiseError('NotAllowedError', 0, 'play() failed.'));
         }
         const removeEventListeners = function(): void {
             video.removeEventListener('play', playListener);
@@ -23,12 +28,18 @@ export default function createPlayPromise(video: HTMLVideoElement): Promise<void
             } else {
                 const message = `The play() request was interrupted by a "${e.type}" event.`;
                 if (e.type === 'error') {
-                    reject(new DOMException(message, 'NotSupportedError'));
-                } else {
-                    reject(new DOMException(message, 'AbortError'));
+                    return reject(playPromiseError('NotSupportedError', 9, message));
                 }
+                return reject(playPromiseError('AbortError', 20, message));
             }
         };
         video.addEventListener('play', playListener);
     });
+}
+
+function playPromiseError(name: string, code: number, message: string): PlayPromiseError {
+    const error = new Error(message) as PlayPromiseError;
+    error.name = name;
+    error.code = code;
+    return error;
 }
