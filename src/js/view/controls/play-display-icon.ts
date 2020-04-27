@@ -1,12 +1,17 @@
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import { addClass, createElement } from 'utils/dom';
+import type Model from 'controller/model';
+import type { PlayerAPI } from 'types/generic.type';
 
 export default class PlayDisplayIcon extends Events {
-    constructor(_model, api, element) {
+    icon: Element | null;
+    el: HTMLElement;
+    ui: UI;
+    constructor(_model: Model, api: PlayerAPI, element: HTMLElement) {
         super();
         const localization = _model.get('localization');
-        const iconDisplay = element.querySelector('.jw-icon');
+        const iconDisplay = element.querySelector('.jw-icon') as HTMLElement;
 
         this.icon = iconDisplay;
         this.el = element;
@@ -14,7 +19,7 @@ export default class PlayDisplayIcon extends Events {
             this.trigger(evt.type);
         });
 
-        _model.on('change:state', (model, newState) => {
+        _model.on('change:state', (model: Model, newState: string): void => {
             let newStateLabel;
             switch (newState) {
                 case 'buffering':
@@ -51,7 +56,7 @@ export default class PlayDisplayIcon extends Events {
         }
     }
 
-    element() {
+    element(): HTMLElement {
         return this.el;
     }
 }

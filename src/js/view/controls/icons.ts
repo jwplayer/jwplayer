@@ -25,9 +25,9 @@ import CLOSE_ICON from 'assets/SVG/close.svg';
 import JW_LOGO from 'assets/SVG/jw-logo.svg';
 import svgParse from 'utils/svgParser';
 
-let collection = null;
+let collection: XMLDocument | null = null;
 
-export function cloneIcon(name) {
+export function cloneIcon(name: string): Node | null {
     const icon = getCollection().querySelector(nameToClass(name));
     if (icon) {
         return clone(icon);
@@ -38,7 +38,7 @@ export function cloneIcon(name) {
     return null;
 }
 
-export function cloneIcons(names) {
+export function cloneIcons(names: string): Node[] {
     const icons = getCollection().querySelectorAll(names.split(',').map(nameToClass).join(','));
     if (__DEBUG__ && !icons.length) {
         throw new Error('Icons not found ' + names);
@@ -46,22 +46,22 @@ export function cloneIcons(names) {
     return Array.prototype.map.call(icons, icon => clone(icon));
 }
 
-function nameToClass(name) {
+function nameToClass(name: string): string {
     return `.jw-svg-icon-${name}`;
 }
 
-function clone(icon) {
+function clone(icon: Node): Node {
     return icon.cloneNode(true);
 }
 
-function getCollection() {
+function getCollection(): XMLDocument {
     if (!collection) {
         collection = parseCollection();
     }
     return collection;
 }
 
-function parseCollection() {
+function parseCollection(): XMLDocument {
     return svgParse('<xml>' +
         BUFFER_ICON +
         REPLAY_ICON +
