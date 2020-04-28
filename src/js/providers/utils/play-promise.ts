@@ -1,3 +1,4 @@
+// These properties must be redefined because they are readonly on DOMException
 type PlayPromiseError = Omit<DOMException, 'name' | 'code'> & {
     name: string;
     code: number;
