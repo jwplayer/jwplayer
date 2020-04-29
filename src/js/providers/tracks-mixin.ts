@@ -73,6 +73,7 @@ interface TracksMixin extends DefaultProvider {
     getSubtitlesTrack: () => number;
     addTextTracks: (tracksArray: PlaylistItemTrack[]) => TextTrackLike[];
     setTextTracks: (tracks: TextTrackList) => void;
+    addTrackListeners: (tracks: TextTrackList) => void;
     setupSideloadedTracks: (itemTracks: PlaylistItemTrack[]) => void;
     setSubtitlesTrack: (menuIndex: number) => void;
     addCuesToTrack: (cueData: FlashCuesData) => void;
@@ -297,7 +298,7 @@ const Tracks: TracksMixin = {
 
             for (i; i < len; i++) {
                 const track = tracks[i] as TextTrackLike;
-                let trackId = track._id;
+                let trackId: string = track._id || '';
                 if (!trackId) {
                     if (track.kind === 'captions' || track.kind === 'metadata') {
                         trackId = track._id = 'native' + track.kind + i;
@@ -341,7 +342,9 @@ const Tracks: TracksMixin = {
                         continue;
                     }
 
-                    track.mode = mode;
+                    if (mode !== 'disabled' || trackId.indexOf('nativecaptions') !== 0) {
+                        track.mode = mode;
+                    }
 
                     // Parsed cues may not have been added to this track yet
                     if (_cuesByTrackId[trackId] && !_cuesByTrackId[trackId].loaded) {
@@ -359,24 +362,26 @@ const Tracks: TracksMixin = {
         }
 
         if (this.renderNatively) {
-            const textTracks = this.video.textTracks;
-            // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
-            let handler = this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-            this.removeTracksListener(textTracks, 'change', handler);
-            this.addTracksListener(textTracks, 'change', handler);
-
-            if (Browser.edge || Browser.firefox) {
-                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox,
-                // NOT Safari! Handling this event in Safari 12 and lower results in captions not rendering after
-                // instream or live restart (JW8-10815, JW8-11006)
-                handler = this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-                this.removeTracksListener(textTracks, 'addtrack', handler);
-                this.addTracksListener(textTracks, 'addtrack', handler);
-            }
+            this.addTrackListeners(tracks);
         }
 
         if (this._textTracks && this._textTracks.length) {
             this.trigger('subtitlesTracks', { tracks: this._textTracks });
+        }
+    },
+    addTrackListeners(tracks: TextTrackList): void {
+        // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
+        let handler = this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
+        this.removeTracksListener(tracks, 'change', handler);
+        this.addTracksListener(tracks, 'change', handler);
+
+        if (Browser.edge || Browser.firefox) {
+            // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox,
+            // NOT Safari! Handling this event in Safari 12 and lower results in captions not rendering after
+            // instream or live restart (JW8-10815, JW8-11006)
+            handler = this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
+            this.removeTracksListener(tracks, 'addtrack', handler);
+            this.addTracksListener(tracks, 'addtrack', handler);
         }
     },
     setupSideloadedTracks(itemTracks: PlaylistItemTrack[]): void {

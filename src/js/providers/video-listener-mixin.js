@@ -13,6 +13,10 @@ import { between } from 'utils/math';
 
 const VideoListenerMixin = {
     canplay() {
+        // If we're not rendering natively text tracks will be provided from another source - don't duplicate them here
+        if (this.renderNatively) {
+            this.setTextTracks(this.video.textTracks);
+        }
         this.trigger(MEDIA_BUFFER_FULL);
     },
 
@@ -36,6 +40,9 @@ const VideoListenerMixin = {
             metadata.drm = drmUsed;
         }
         this.trigger(MEDIA_META, metadata);
+    },
+
+    loadeddata() {
     },
 
     timeupdate() {
@@ -163,13 +170,6 @@ const VideoListenerMixin = {
         this.streamBitrate = -1;
         if (this.state !== STATE_IDLE && this.state !== STATE_COMPLETE) {
             this.trigger(MEDIA_COMPLETE);
-        }
-    },
-
-    loadeddata () {
-        // If we're not rendering natively text tracks will be provided from another source - don't duplicate them here
-        if (this.renderNatively) {
-            this.setTextTracks(this.video.textTracks);
         }
     }
 };
