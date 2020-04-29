@@ -111,6 +111,8 @@ const Tracks: TracksMixin = {
         this._metaCuesByTextTime = {};
         this._cuesByTrackId = {};
         this._cachedVTTCues = {};
+        this._cues = {};
+        this._activeCues = {};
         this._unknownCount = 0;
     },
     addTracksListener(tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any): void {
