@@ -148,7 +148,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             VideoEvents.loadeddata.call(_this);
             _setAudioTracks(_videotag.audioTracks);
             _checkDelayedSeek(_this.getDuration());
-            checkVisualQuality();
         },
 
         canplay() {
@@ -156,11 +155,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             if (!_androidHls) {
                 _setMediaType();
             }
-            if (Browser.ie && Browser.version.major === 9) {
-                // In IE9, set tracks here since they are not ready
-                // on load
-                _this.setTextTracks(_this._textTracks);
-            }
+            checkVisualQuality();
             VideoEvents.canplay.call(_this);
         },
 
