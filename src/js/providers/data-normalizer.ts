@@ -3,6 +3,7 @@ interface Level {
     height?: number;
     width?: number;
     bitrate?: number;
+    default?: boolean;
 }
 
 export type QualityLevel = Level;

@@ -1,4 +1,4 @@
-import { qualityLevel } from 'providers/data-normalizer';
+import { qualityLevel, QualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import {
@@ -499,7 +499,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     }
 
     // Wait for quality levels work to merge
-    function _getPublicLevels(levels: GenericObject[]): { label: string }[] {
+    function _getPublicLevels(levels: QualityLevel[]): { label: string }[] {
         let publicLevels;
         if (Array.isArray(levels) && levels.length > 0) {
             publicLevels = levels.map(function(level: GenericObject, i: number): { label: string } {
@@ -518,8 +518,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         _currentQuality = _pickInitialQuality(_levels);
     }
 
-    // Wait for quality levels work to merge
-    function _pickInitialQuality(levels: GenericObject[]): number {
+    function _pickInitialQuality(levels: QualityLevel[]): number {
         let currentQuality = Math.max(0, _currentQuality);
         const label = _playerConfig.qualityLabel;
         if (levels) {
@@ -911,7 +910,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         return _currentQuality;
     };
 
-    this.getQualityLevels = function(): GenericObject[] {
+    this.getQualityLevels = function(): QualityLevel[] {
         if (Array.isArray(_levels)) {
             return _levels.map(level => qualityLevel(level));
         }

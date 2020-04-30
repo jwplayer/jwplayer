@@ -5,6 +5,7 @@ import type { VideoActionsInt } from 'providers/video-actions-mixin';
 import type { VideoAttachedInt } from 'providers/video-attached-mixin';
 import type Events from 'utils/backbone.events';
 import type PlaylistItem from 'playlist/item';
+import type { QualityLevel } from './data-normalizer';
 
 const noop: () => void = function(): void { /* noop */ };
 const returnFalse: () => boolean = (() => false);
@@ -44,8 +45,7 @@ export interface ImplementedProvider {
     getFullscreen: () => boolean;
     supportsFullscreen: () => boolean;
 
-    // to be updated when maria's work merges
-    getQualityLevels: () => void;
+    getQualityLevels: () => QualityLevel[];
     getCurrentQuality: () => number;
     setCurrentQuality: (qualityLevel: number) => void;
 

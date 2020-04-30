@@ -79,7 +79,7 @@ export interface TracksMixin {
     getCurrentTextTrack: () => TextTrackLike | void;
     getSubtitlesTrack: () => number;
     addTextTracks: (tracksArray: PlaylistItemTrack[]) => TextTrackLike[];
-    addTrackListeners: (tracks: TextTrackList) => void;
+    addTrackListeners: (tracks: TextTrackList | TextTrackLike[]) => void;
     setTextTracks: (tracks: TextTrackList | TextTrackLike[] | null) => void;
     setupSideloadedTracks: (itemTracks: PlaylistItemTrack[]) => void;
     setSubtitlesTrack: (menuIndex: number) => void;
