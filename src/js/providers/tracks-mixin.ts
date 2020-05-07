@@ -79,8 +79,8 @@ export interface TracksMixin {
     getCurrentTextTrack: () => TextTrackLike | void;
     getSubtitlesTrack: () => number;
     addTextTracks: (tracksArray: PlaylistItemTrack[]) => TextTrackLike[];
-    addTrackListeners: (tracks: TextTrackList | TextTrackLike[]) => void;
-    setTextTracks: (tracks: TextTrackList | TextTrackLike[] | null) => void;
+    addTrackListeners: (tracks: TextTrackList) => void;
+    setTextTracks: (tracks: TextTrackList | null) => void;
     setupSideloadedTracks: (itemTracks: PlaylistItemTrack[]) => void;
     setSubtitlesTrack: (menuIndex: number) => void;
     addCuesToTrack: (cueData: FlashCuesData) => void;
@@ -269,7 +269,7 @@ const Tracks: TracksMixin = {
         }
         return textTracks;
     },
-    setTextTracks(this: ProviderWithMixins, tracks: TextTrackList | TextTrackLike[] | null): void {
+    setTextTracks(this: ProviderWithMixins, tracks: TextTrackList | null): void {
         this._currentTextTrackIndex = -1;
         if (!tracks) {
             return;
@@ -371,7 +371,7 @@ const Tracks: TracksMixin = {
         }
 
         if (this.renderNatively) {
-            this.addTrackListeners(tracks);
+            this.addTrackListeners(tracks as TextTrackList);
         }
 
         if (this._textTracks && this._textTracks.length) {

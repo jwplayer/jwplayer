@@ -1,11 +1,12 @@
 import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
-import type { GenericObject, SourceObj } from 'types/generic.type';
+import type { GenericObject } from 'types/generic.type';
 import type { TracksMixin, SimpleAudioTrack } from 'providers/tracks-mixin';
 import type { VideoActionsInt } from 'providers/video-actions-mixin';
 import type { VideoAttachedInt } from 'providers/video-attached-mixin';
 import type Events from 'utils/backbone.events';
 import type PlaylistItem from 'playlist/item';
 import type { QualityLevel } from './data-normalizer';
+import type { PlaylistItemSource } from 'playlist/source';
 
 const noop: () => void = function(): void { /* noop */ };
 const returnFalse: () => boolean = (() => false);
@@ -67,7 +68,7 @@ interface InternalProvider {
     setControls: () => void;
     setState: (state: string) => void;
 
-    sendMediaType: (sources: Array<SourceObj>) => void;
+    sendMediaType: (sources: Array<PlaylistItemSource>) => void;
 
     getDuration: () => number;
 }
@@ -144,7 +145,7 @@ interface DefaultProvider {
 
     setState: (state: string) => void;
 
-    sendMediaType: (sources: Array<SourceObj>) => void;
+    sendMediaType: (sources: Array<PlaylistItemSource>) => void;
 
     getDuration: () => number;
 
@@ -241,7 +242,7 @@ const DefaultProvider: DefaultProvider = {
         });
     },
 
-    sendMediaType: function(this: DefaultProvider, sources: Array<SourceObj>): void {
+    sendMediaType: function(this: DefaultProvider, sources: Array<PlaylistItemSource>): void {
         const { type, mimeType } = sources[0];
 
         const isAudioFile = (type === 'aac' || type === 'mp3' || type === 'mpeg' ||
