@@ -69,7 +69,7 @@ interface HTML5Provider extends ProviderWithMixins {
     videoLoad: (this: HTMLVideoElement) => void;
 }
 
-function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: GenericObject, mediaElement: HTMLVideoElement): HTML5Provider {
+function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: GenericObject, mediaElement: HTMLVideoElement): void {
     const _this = this;
 
     // Current media state
@@ -1032,8 +1032,6 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         clearTimeout(_staleStreamTimeout);
         _staleStreamTimeout = -1;
     }
-
-    return this;
 }
 
 Object.assign(VideoProvider.prototype, DefaultProvider);
