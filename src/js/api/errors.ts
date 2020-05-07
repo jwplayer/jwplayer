@@ -168,9 +168,9 @@ export class PlayerError {
     message?: string;
     key?: ErrorKey;
     code: ErrorCode;
-    sourceError: PlayerError | Error | null;
+    sourceError: PlayerError | Error | MediaError | null;
 
-    constructor(key: ErrorKey | null, code: ErrorCode, sourceError?: PlayerError | Error) {
+    constructor(key: ErrorKey | null, code: ErrorCode, sourceError?: PlayerError | Error | MediaError | null) {
         this.code = isValidNumber(code) ? code : 0;
         this.sourceError = sourceError || null;
         if (key) {
