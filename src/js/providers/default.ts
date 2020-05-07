@@ -89,6 +89,8 @@ export interface ImplementedProvider extends InternalProvider {
     on(name: string, callback: Function, context?: any): ImplementedProvider;
     off(name: string | null, callback?: Function | null, context?: any): ImplementedProvider;
     trigger(evt: string, obj: GenericObject): void;
+
+    prototype: Omit<ImplementedProvider, 'prototype'>;
 }
 
 export type ProviderWithMixins = InternalProvider & TracksMixin & VideoActionsInt & VideoAttachedInt & Events;
