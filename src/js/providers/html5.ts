@@ -11,7 +11,7 @@ import VideoAttached from 'providers/video-attached-mixin';
 import { isDvr } from 'providers/utils/stream-type';
 import { style } from 'utils/css';
 import { emptyElement } from 'utils/dom';
-import DefaultProvider, { ProviderWithMixins } from 'providers/default';
+import DefaultProvider, { ProviderWithMixins, SeekRange } from 'providers/default';
 import Events from 'utils/backbone.events';
 import Tracks, { SimpleAudioTrack } from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
@@ -19,7 +19,7 @@ import createPlayPromise from 'providers/utils/play-promise';
 import { map, isFinite } from 'utils/underscore';
 import { now } from 'utils/date';
 import { PlayerError, MSG_LIVE_STREAM_DOWN, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
-import type { GenericObject, SeekRange } from 'types/generic.type';
+import type { GenericObject } from 'types/generic.type';
 import type PlaylistItem from 'playlist/item';
 import type { PlaylistItemSource } from 'playlist/source';
 

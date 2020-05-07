@@ -41,8 +41,3 @@ export type SourceObj = {
     type: string;
     mimeType: string;
 };
-
-export type SeekRange = {
-    start: number;
-    end: number;
-};

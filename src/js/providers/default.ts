@@ -1,5 +1,5 @@
 import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
-import type { GenericObject, SourceObj, SeekRange } from 'types/generic.type';
+import type { GenericObject, SourceObj } from 'types/generic.type';
 import type { TracksMixin, SimpleAudioTrack } from 'providers/tracks-mixin';
 import type { VideoActionsInt } from 'providers/video-actions-mixin';
 import type { VideoAttachedInt } from 'providers/video-attached-mixin';
@@ -12,13 +12,19 @@ const returnFalse: () => boolean = (() => false);
 const getNameResult: { name: string } = { name: 'default' };
 const returnName: () => { name: string } = (() => getNameResult);
 
-export interface ImplementedProvider {
+export type SeekRange = {
+    start: number;
+    end: number;
+};
+
+interface InternalProvider {
     state?: string;
     video: HTMLVideoElement;
     instreamMode: boolean;
     supportsPlaybackRate: boolean;
     seeking: boolean;
     stallTime: number;
+    renderNatively: boolean;
 
     supports: () => boolean;
     play: () => Promise<void>;
@@ -66,7 +72,25 @@ export interface ImplementedProvider {
     getDuration: () => number;
 }
 
-export type ProviderWithMixins = ImplementedProvider & TracksMixin & VideoActionsInt & VideoAttachedInt & Events;
+export interface ImplementedProvider extends InternalProvider {
+    volume(vol: number): void;
+    mute(state: string): void;
+    resize(width: number, height: number, stretching: string): void;
+
+    getContainer(): HTMLElement | null;
+    setContainer(element: HTMLElement): void;
+
+    remove(): void;
+
+    attachMedia: () => void;
+    detachMedia: () => void;
+
+    on(name: string, callback: Function, context?: any): ImplementedProvider;
+    off(name: string | null, callback?: Function | null, context?: any): ImplementedProvider;
+    trigger(evt: string, obj: GenericObject): void;
+}
+
+export type ProviderWithMixins = InternalProvider & TracksMixin & VideoActionsInt & VideoAttachedInt & Events;
 
 interface DefaultProvider {
     state?: string;

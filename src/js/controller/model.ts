@@ -9,7 +9,7 @@ import type { StreamType } from 'providers/utils/stream-type';
 import type { GenericObject, TextTrackLike, Localization } from 'types/generic.type';
 import type { QualityLevel } from 'providers/data-normalizer';
 import type PlaylistItem from 'playlist/item';
-import type { ProviderWithMixins } from 'providers/default';
+import type { ImplementedProvider } from 'providers/default';
 
 type AutoStart = boolean | 'viewable';
 export type PauseReason = 'external' | 'interaction' | 'viewable';
@@ -85,7 +85,7 @@ interface Model {
 
 // Represents the state of the player
 class Model extends SimpleModel {
-    private _provider: ProviderWithMixins | null;
+    private _provider: ImplementedProvider | null;
     private providerController: Providers | null;
 
     // These properties are assigned as attribute getters
@@ -159,7 +159,7 @@ class Model extends SimpleModel {
         }
     }
 
-    getVideo(): ProviderWithMixins | null {
+    getVideo(): ImplementedProvider | null {
         return this._provider;
     }
 
@@ -209,7 +209,7 @@ class Model extends SimpleModel {
         }
     }
 
-    setProvider(provider: ProviderWithMixins): void {
+    setProvider(provider: ImplementedProvider): void {
         this._provider = provider;
         syncProviderProperties(this, provider);
     }
@@ -304,7 +304,7 @@ class Model extends SimpleModel {
     }
 }
 
-const syncProviderProperties = (model: Model, provider: ProviderWithMixins) => {
+const syncProviderProperties = (model: Model, provider: ImplementedProvider) => {
     model.set('provider', provider.getName());
     if (model.get('instreamMode') === true) {
         provider.instreamMode = true;
