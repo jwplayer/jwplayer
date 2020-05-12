@@ -14,8 +14,8 @@ try {
 
 class Storage {
     namespace: string;
-    items: any[];
-    constructor(namespace: string, persistItems: GenericObject[]) {
+    items: string[];
+    constructor(namespace: string, persistItems: string[]) {
         this.namespace = namespace;
         this.items = persistItems;
     }

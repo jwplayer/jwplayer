@@ -110,7 +110,7 @@ function xhrSuccess(
     }
 }
 
-function loadVttParser(): any {
+function loadVttParser(): VTTParser {
     return require.ensure(['parsers/captions/vttparser'], 
         function (require: NodeRequire): Promise<VTTParser> {
             return require('parsers/captions/vttparser').default;

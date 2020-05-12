@@ -1,13 +1,13 @@
 import type { TextTrackLike } from 'types/generic.type';
 import type { PlaylistItemTrack } from 'playlist/track';
 
-export type Track = (TextTrackLike | PlaylistItemTrack) & {
+type Track = (TextTrackLike | PlaylistItemTrack) & {
     default?: any;
     defaulttrack?: any;
     file?: any;
 };
 
-export type TrackLabel = { 
+type TrackLabel = { 
     label: string;
     unknownCount: number; 
 };
