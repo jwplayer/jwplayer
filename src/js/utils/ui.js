@@ -21,12 +21,6 @@ const LONG_PRESS_DELAY = 500;
 let longPressTimeout;
 let lastInteractionListener;
 
-if (OS.iOS && OS.version.major < 11) {
-    const body = self.document.body;
-    // When controls are disabled iOS 10 does not dispatch media element touchstart/end events without this line
-    body.ontouchstart = body.ontouchstart || function() {};
-}
-
 export default class UI extends Events {
 
     constructor(element, options) {
@@ -250,6 +244,13 @@ const eventRegisters = {
         initInteractionListeners(ui);
     },
     tap(ui) {
+        if (OS.iOS && OS.version.major < 11) {
+            const body = document.body;
+            if (body) {
+                // When controls are disabled iOS 10 does not dispatch media element touchstart/end events without this line
+                body.ontouchstart = body.ontouchstart || function() {};
+            }
+        }
         initInteractionListeners(ui);
     },
     doubleTap(ui) {

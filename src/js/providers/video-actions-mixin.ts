@@ -1,15 +1,28 @@
 import { Browser, OS } from 'environment/environment';
 import { style, transform } from 'utils/css';
 import endOfRange from 'utils/time-ranges';
+import type { ProviderWithMixins } from './default';
+import type { GenericObject } from 'types/generic.type';
 
-const VideoActionsMixin = {
+export interface VideoActionsInt {
+    container: HTMLElement | null;
+    volume(this: ProviderWithMixins, vol: number): void;
+    mute(this: ProviderWithMixins, state: string): void;
+    resize(this: ProviderWithMixins, width: number, height: number, stretching: string): void;
+    getContainer(): HTMLElement | null;
+    setContainer(this: ProviderWithMixins, element: HTMLElement): void;
+    remove(this: ProviderWithMixins): void;
+    atEdgeOfLiveStream(this: ProviderWithMixins): boolean;
+}
+
+const VideoActionsMixin: VideoActionsInt = {
     container: null,
 
-    volume(vol) {
+    volume(this: ProviderWithMixins, vol: number): void {
         this.video.volume = Math.min(Math.max(0, vol / 100), 1);
     },
 
-    mute(state) {
+    mute(this: ProviderWithMixins, state: string): void {
         this.video.muted = !!state;
         if (!this.video.muted) {
             // Remove muted attribute once user unmutes so the video element doesn't get
@@ -18,13 +31,13 @@ const VideoActionsMixin = {
         }
     },
 
-    resize(width, height, stretching) {
+    resize(this: ProviderWithMixins, width: number, height: number, stretching: string): void {
         const { video } = this;
         const { videoWidth, videoHeight } = video;
         if (!width || !height || !videoWidth || !videoHeight) {
             return;
         }
-        const styles = {
+        const styles: GenericObject = {
             objectFit: '',
             width: '',
             height: ''
@@ -82,18 +95,18 @@ const VideoActionsMixin = {
         style(video, styles);
     },
 
-    getContainer() {
+    getContainer(): HTMLElement | null {
         return this.container;
     },
 
-    setContainer(element) {
+    setContainer(this: ProviderWithMixins, element: HTMLElement): void {
         this.container = element;
         if (this.video.parentNode !== element) {
             element.appendChild(this.video);
         }
     },
 
-    remove() {
+    remove(this: ProviderWithMixins): void {
         this.stop();
         this.destroy();
         const container = this.container;
@@ -102,7 +115,7 @@ const VideoActionsMixin = {
         }
     },
 
-    atEdgeOfLiveStream() {
+    atEdgeOfLiveStream(this: ProviderWithMixins): boolean {
         if (!this.isLive()) {
             return false;
         }

@@ -4,7 +4,8 @@ import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { MEDIA_META_CUE_PARSED, MEDIA_META, WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
-import type { DefaultProvider, TextTrackLike, MetadataEvent } from 'types/generic.type';
+import type { TextTrackLike, MetadataEvent } from 'types/generic.type';
+import type { ProviderWithMixins } from './default';
 import type { PlaylistItemTrack } from 'playlist/track';
 
 type TrackCue = (VTTCue | DataCue | TextTrackCue) & {
@@ -46,8 +47,13 @@ type FlashCue = {
     useDTS?: boolean;
 }
 
+export type SimpleAudioTrack = {
+    name: string;
+    language: string;
+}
+
 // Used across all providers for loading tracks and handling browser track-related events
-interface TracksMixin extends DefaultProvider {
+export interface TracksMixin {
     _itemTracks: PlaylistItemTrack[] | null;
     _textTracks: TextTrackLike[] | null;
     _currentTextTrackIndex: number;
@@ -61,9 +67,10 @@ interface TracksMixin extends DefaultProvider {
     textTrackChangeHandler: ((this: TracksMixin) => void) | null;
     addTrackHandler: ((this: TracksMixin, e: TrackEvent) => void) | null;
     renderNatively: boolean;
+    cueChangeHandler: ((this: ProviderWithMixins, e: Event) => void) | null;
     _initTextTracks: () => void;
     addTracksListener: (tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any) => void;
-    removeTracksListener: (tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any) => void;
+    removeTracksListener: (tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: ((e?: any) => any) | null) => void;
     clearTracks: () => void;
     clearMetaCues: () => void;
     clearCueData: (trackId: string) => void;
@@ -72,18 +79,19 @@ interface TracksMixin extends DefaultProvider {
     getCurrentTextTrack: () => TextTrackLike | void;
     getSubtitlesTrack: () => number;
     addTextTracks: (tracksArray: PlaylistItemTrack[]) => TextTrackLike[];
-    setTextTracks: (tracks: TextTrackList) => void;
+    addTrackListeners: (tracks: TextTrackList) => void;
+    setTextTracks: (tracks: TextTrackList | null) => void;
     setupSideloadedTracks: (itemTracks: PlaylistItemTrack[]) => void;
     setSubtitlesTrack: (menuIndex: number) => void;
     addCuesToTrack: (cueData: FlashCuesData) => void;
     addCaptionsCue: (cueData: FlashCue) => void;
     createCue: (start: number, end: number | undefined, content: string) => VTTCue | TextTrackCue;
-    addVTTCue: (cueData: AddCueData, cacheKey: string) => TrackCue | null;
+    addVTTCue: (cueData: AddCueData, cacheKey?: string) => TrackCue | null;
     addVTTCuesToTrack: (track: TextTrackLike, vttCues: TrackCue[]) => void;
     parseNativeID3Cues: (cues: TextTrackCueList, previousCues: TrackCue[]) => void;
     triggerActiveCues: (currentActiveCues: TrackCue[], previousActiveCues: TrackCue[]) => void;
     ensureMetaTracksActive: () => void;
-    _cacheVTTCue: (track: TextTrackLike, vttCue: TrackCue, cacheKey: string) => boolean;
+    _cacheVTTCue: (track: TextTrackLike, vttCue: TrackCue, cacheKey?: string) => boolean;
     _addTrackToList: (track: TextTrackLike) => void;
     _createTrack: (itemTrack: PlaylistItemTrack) => TextTrackLike;
     _clearSideloadedTextTracks(): void;
@@ -110,9 +118,11 @@ const Tracks: TracksMixin = {
         this._metaCuesByTextTime = {};
         this._cuesByTrackId = {};
         this._cachedVTTCues = {};
+        this._cues = {};
+        this._activeCues = {};
         this._unknownCount = 0;
     },
-    addTracksListener(tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any): void {
+    addTracksListener(this: ProviderWithMixins, tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any): void {
         if (!tracks) {
             return;
         }
@@ -129,17 +139,17 @@ const Tracks: TracksMixin = {
             tracks['on' + eventType] = handler;
         }
     },
-    removeTracksListener(tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any): void {
+    removeTracksListener(tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: ((e?: any) => any) | null): void {
         if (!tracks) {
             return;
         }
-        if (tracks.removeEventListener) {
+        if (tracks.removeEventListener && handler) {
             tracks.removeEventListener(eventType, handler);
         } else {
             tracks['on' + eventType] = null;
         }
     },
-    clearTracks(): void {
+    clearTracks(this: ProviderWithMixins): void {
         cancelXhr(this._itemTracks);
 
         const { _tracksById } = this;
@@ -223,7 +233,7 @@ const Tracks: TracksMixin = {
     getSubtitlesTrack(): number {
         return this._currentTextTrackIndex;
     },
-    addTextTracks(tracksArray: PlaylistItemTrack[]): TextTrackLike[] {
+    addTextTracks(this: ProviderWithMixins, tracksArray: PlaylistItemTrack[]): TextTrackLike[] {
         const textTracks: TextTrackLike[] = [];
         if (!tracksArray) {
             return textTracks;
@@ -259,7 +269,7 @@ const Tracks: TracksMixin = {
         }
         return textTracks;
     },
-    setTextTracks(tracks: TextTrackList): void {
+    setTextTracks(this: ProviderWithMixins, tracks: TextTrackList | null): void {
         this._currentTextTrackIndex = -1;
         if (!tracks) {
             return;
@@ -297,7 +307,7 @@ const Tracks: TracksMixin = {
 
             for (i; i < len; i++) {
                 const track = tracks[i] as TextTrackLike;
-                let trackId = track._id;
+                let trackId: string = track._id || '';
                 if (!trackId) {
                     if (track.kind === 'captions' || track.kind === 'metadata') {
                         trackId = track._id = 'native' + track.kind + i;
@@ -341,7 +351,9 @@ const Tracks: TracksMixin = {
                         continue;
                     }
 
-                    track.mode = mode;
+                    if (mode !== 'disabled' || trackId.indexOf('nativecaptions') !== 0) {
+                        track.mode = mode;
+                    }
 
                     // Parsed cues may not have been added to this track yet
                     if (_cuesByTrackId[trackId] && !_cuesByTrackId[trackId].loaded) {
@@ -359,24 +371,26 @@ const Tracks: TracksMixin = {
         }
 
         if (this.renderNatively) {
-            const textTracks = this.video.textTracks;
-            // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
-            let handler = this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-            this.removeTracksListener(textTracks, 'change', handler);
-            this.addTracksListener(textTracks, 'change', handler);
-
-            if (Browser.edge || Browser.firefox) {
-                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox,
-                // NOT Safari! Handling this event in Safari 12 and lower results in captions not rendering after
-                // instream or live restart (JW8-10815, JW8-11006)
-                handler = this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-                this.removeTracksListener(textTracks, 'addtrack', handler);
-                this.addTracksListener(textTracks, 'addtrack', handler);
-            }
+            this.addTrackListeners(tracks as TextTrackList);
         }
 
         if (this._textTracks && this._textTracks.length) {
             this.trigger('subtitlesTracks', { tracks: this._textTracks });
+        }
+    },
+    addTrackListeners(tracks: TextTrackList): void {
+        // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
+        let handler = this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
+        this.removeTracksListener(tracks, 'change', handler);
+        this.addTracksListener(tracks, 'change', handler);
+
+        if (Browser.edge || Browser.firefox) {
+            // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox,
+            // NOT Safari! Handling this event in Safari 12 and lower results in captions not rendering after
+            // instream or live restart (JW8-10815, JW8-11006)
+            handler = this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
+            this.removeTracksListener(tracks, 'addtrack', handler);
+            this.addTracksListener(tracks, 'addtrack', handler);
         }
     },
     setupSideloadedTracks(itemTracks: PlaylistItemTrack[]): void {
@@ -402,7 +416,7 @@ const Tracks: TracksMixin = {
             this.addTextTracks(itemTracks);
         }
     },
-    setSubtitlesTrack(menuIndex: number): void {
+    setSubtitlesTrack(this: ProviderWithMixins, menuIndex: number): void {
         if (!this.renderNatively) {
             if (this.setCurrentSubtitleTrack) {
                 this.setCurrentSubtitleTrack(menuIndex - 1);
@@ -474,7 +488,7 @@ const Tracks: TracksMixin = {
         track.data = track.data || [];
         Array.prototype.push.apply(track.data, vttCues);
     },
-    addCaptionsCue(cueData: FlashCuesData & FlashCue): void {
+    addCaptionsCue(this: ProviderWithMixins, cueData: FlashCuesData & FlashCue): void {
         if (!cueData.text || !cueData.begin || !cueData.end || !this._metaCuesByTextTime) {
             return;
         }
@@ -518,7 +532,7 @@ const Tracks: TracksMixin = {
         const cueEnd = Math.max(end || 0, start + 0.25);
         return new MetaCue(start, cueEnd, content);
     },
-    addVTTCue(cueData: AddCueData, cacheKey: string): TrackCue | null {
+    addVTTCue(this: ProviderWithMixins, cueData: AddCueData, cacheKey?: string): TrackCue | null {
         if (!this._tracksById) {
             this._initTextTracks();
         }
@@ -585,7 +599,7 @@ const Tracks: TracksMixin = {
             _addCueToTrack(this.renderNatively, textTrack, cue);
         }
     },
-    parseNativeID3Cues(cues: TextTrackCueList, previousCues: TrackCue[]): void {
+    parseNativeID3Cues(this: ProviderWithMixins, cues: TextTrackCueList, previousCues: TrackCue[]): void {
         const lastCue = cues[cues.length - 1] as TrackCueParsed;
         if (previousCues && previousCues.length === cues.length &&
             (lastCue._parsed || cuesMatch(previousCues[previousCues.length - 1], lastCue))) {
@@ -609,7 +623,7 @@ const Tracks: TracksMixin = {
             this.trigger(MEDIA_META_CUE_PARSED, event);
         });
     },
-    triggerActiveCues(currentActiveCues: TrackCue[], previousActiveCues: TrackCue[]): void {
+    triggerActiveCues(this: ProviderWithMixins, currentActiveCues: TrackCue[], previousActiveCues: TrackCue[]): void {
         const dataCues = currentActiveCues.filter((cue) => {
             // Prevent duplicate meta events for cues that were active in the previous "cuechange" event
             if (previousActiveCues && previousActiveCues.some(prevCue => cuesMatch(cue, prevCue))) {
@@ -629,7 +643,7 @@ const Tracks: TracksMixin = {
             this.trigger(MEDIA_META, event);
         }
     },
-    ensureMetaTracksActive(): void {
+    ensureMetaTracksActive(this: ProviderWithMixins): void {
         // Safari sometimes disables metadata tracks after seeking. It does this without warning,
         // breaking API metadata event functionality.
         // Ensure metadata tracks are enabled in "hidden" mode.
@@ -642,7 +656,7 @@ const Tracks: TracksMixin = {
             }
         }
     },
-    _cacheVTTCue(track: TextTrackLike, vttCue: TrackCue, cacheKey: string): boolean {
+    _cacheVTTCue(track: TextTrackLike, vttCue: TrackCue, cacheKey?: string): boolean {
         const trackKind = track.kind;
         const trackId = track._id as string;
         const _cachedVTTCues = this._cachedVTTCues as CachedCuesRecord;
@@ -689,7 +703,7 @@ const Tracks: TracksMixin = {
         (this._textTracks as TextTrackLike[]).push(track);
         (this._tracksById as TracksRecord)[track._id as string] = track;
     },
-    _createTrack(itemTrack: PlaylistItemTrack): TextTrackLike {
+    _createTrack(this: ProviderWithMixins, itemTrack: PlaylistItemTrack): TextTrackLike {
         let track;
         const labelInfo = createLabel(itemTrack, this._unknownCount);
         const label = labelInfo.label;
@@ -702,7 +716,7 @@ const Tracks: TracksMixin = {
             track = findWhere(tracks, { label: label });
 
             if (!track) {
-                track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
+                track = this.video.addTextTrack(itemTrack.kind as TextTrackKind, label, itemTrack.language || '');
             }
 
             track.default = itemTrack.default;
@@ -736,7 +750,7 @@ const Tracks: TracksMixin = {
     }
 };
 
-function textTrackChangeHandler(this: TracksMixin): void {
+function textTrackChangeHandler(this: ProviderWithMixins): void {
     const textTracks = this.video.textTracks;
     const inUseTracks = filter(textTracks, function (track: TextTrackLike): boolean {
         return (track.inuse || !track._id) && _kindSupported(track.kind);
@@ -781,7 +795,7 @@ function _tracksModified(this: TracksMixin, inUseTracks: TextTrackLike[]): boole
 }
 
 // Used in MS Edge to get tracks from the videotag as they're added
-function addTrackHandler(this: TracksMixin, e: TrackEvent): void {
+function addTrackHandler(this: ProviderWithMixins, e: TrackEvent): void {
     const track = e.track as TextTrackLike;
     if (track && track._id) {
         return;
@@ -789,7 +803,7 @@ function addTrackHandler(this: TracksMixin, e: TrackEvent): void {
     this.setTextTracks(this.video.textTracks);
 }
 
-function cueChangeHandler(this: TracksMixin, e: Event): void {
+function cueChangeHandler(this: ProviderWithMixins, e: Event): void {
     const track = e.target as TextTrackLike;
     const { activeCues, cues } = track;
     const trackId = track._id as string;

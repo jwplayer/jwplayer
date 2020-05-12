@@ -1,6 +1,12 @@
 import { MSG_PROTECTED_CONTENT, MSG_CANT_PLAY_VIDEO } from 'api/errors';
+import type { ErrorCode, ErrorKey } from 'api/errors';
 
-export default function parseNetworkError(baseCode, statusCode, url) {
+type NetworkError = {
+    code: ErrorCode;
+    key: ErrorKey;
+}
+
+export default function parseNetworkError(baseCode: ErrorCode, statusCode: number, url?: string): NetworkError {
     let code = baseCode + 1000;
     let key = MSG_CANT_PLAY_VIDEO;
 
@@ -19,5 +25,5 @@ export default function parseNetworkError(baseCode, statusCode, url) {
     return { code, key };
 }
 
-export const clampStatus = code => (code >= 400 && code < 600) ? code : 6;
+export const clampStatus = (code: number): number => (code >= 400 && code < 600) ? code : 6;
 

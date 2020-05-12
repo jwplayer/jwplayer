@@ -4,12 +4,22 @@ import PlayDisplayIcon from 'view/controls/play-display-icon';
 import NextDisplayIcon from 'view/controls/next-display-icon';
 import { cloneIcons } from 'view/controls/icons';
 import { createElement } from 'utils/dom';
+import type { PlayerAPI } from 'types/generic.type';
+import type { Button } from './components/button';
+import type ViewModel from 'view/view-model';
+
+type Constructor<T extends {}> = new (...args: any[]) => T;
+type ButtonHolder = { [key: string]: Button | NextDisplayIcon };
 
 export default class DisplayContainer {
-    constructor(model, api) {
+    el: HTMLElement;
+    container: Element | null;
+    buttons: ButtonHolder;
+
+    constructor(model: ViewModel, api: PlayerAPI) {
         this.el = createElement(displayContainerTemplate(model.get('localization')));
 
-        const container = this.el.querySelector('.jw-display-controls');
+        const container = this.el.querySelector('.jw-display-controls') as HTMLElement;
         const buttons = {};
 
         addButton('rewind', cloneIcons('rewind'), RewindDisplayIcon, container, buttons, model, api);
@@ -20,11 +30,11 @@ export default class DisplayContainer {
         this.buttons = buttons;
     }
 
-    element() {
+    element(): HTMLElement {
         return this.el;
     }
 
-    destroy() {
+    destroy(): void {
         const buttons = this.buttons;
         Object.keys(buttons).forEach(name => {
             if (buttons[name].ui) {
@@ -34,11 +44,19 @@ export default class DisplayContainer {
     }
 }
 
-function addButton(name, iconElements, ButtonClass, container, buttons, model, api) {
+function addButton(
+    name: string,
+    iconElements: Node[],
+    ButtonClass: Constructor<Button> | Constructor<NextDisplayIcon>,
+    container: HTMLElement,
+    buttons: ButtonHolder,
+    model: ViewModel,
+    api: PlayerAPI
+): void {
     const buttonElement = container.querySelector(`.jw-display-icon-${name}`);
-    const iconContainer = container.querySelector(`.jw-icon-${name}`);
+    const iconContainer = container.querySelector(`.jw-icon-${name}`) as HTMLElement;
     iconElements.forEach(icon => {
-        iconContainer.appendChild(icon); 
+        iconContainer.appendChild(icon);
     });
     buttons[name] = new ButtonClass(model, api, buttonElement);
 }
