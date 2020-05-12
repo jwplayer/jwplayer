@@ -12,7 +12,7 @@ import type VTTParser from 'parsers/captions/vttparser';
 
 export function loadFile(
     track: PlaylistItemTrack, 
-    successHandler: (...args: any[]) => void, 
+    successHandler: (cues: VTTCue[]) => void, 
     errorHandler: (err: PlayerError) => void
 ): void {
     track.xhr = ajax(track.file, function(xhr: XMLHttpRequest): void {
