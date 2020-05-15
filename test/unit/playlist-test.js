@@ -1,4 +1,4 @@
-import Playlist, { validatePlaylist, normalizePlaylistItem } from 'playlist/playlist';
+import Playlist, { validatePlaylist, normalizePlaylistItem, wrapPlaylistIndex } from 'playlist/playlist';
 import Item from 'playlist/item';
 import Source from 'playlist/source';
 import _ from 'test/underscore';
@@ -125,5 +125,61 @@ describe('playlist', function() {
             expect(_.isEqual(item.sources[0].file, actual.file)).to.be.true;
         });
 
+    });
+
+    describe('wrapPlaylistIndex', function () {
+        it('returns index between 0 and length - 1', function() {
+            let result = wrapPlaylistIndex(0, 1);
+            expect(result).to.equal(0);
+            result = wrapPlaylistIndex(0, 2);
+            expect(result).to.equal(0);
+            result = wrapPlaylistIndex(1, 2);
+            expect(result).to.equal(1);
+            result = wrapPlaylistIndex(24, 50);
+            expect(result).to.equal(24);
+            result = wrapPlaylistIndex(49, 50);
+            expect(result).to.equal(49);
+        });
+
+        it('wraps index < 0', function() {
+            let result = wrapPlaylistIndex(-1, 1);
+            expect(result).to.equal(0);
+            result = wrapPlaylistIndex(-1, 10);
+            expect(result).to.equal(9);
+            result = wrapPlaylistIndex(-10, 10);
+            expect(result).to.equal(0);
+        });
+
+        it('wraps index of length or greater', function() {
+            let result = wrapPlaylistIndex(1, 1);
+            expect(result).to.equal(0);
+            result = wrapPlaylistIndex(10, 10);
+            expect(result).to.equal(0);
+            result = wrapPlaylistIndex(19, 10);
+            expect(result).to.equal(9);
+        });
+
+        it('wraps index < 0 by more than length', function() {
+            let result = wrapPlaylistIndex(-1000, 1);
+            expect(result).to.equal(0);
+            result = wrapPlaylistIndex(-2001, 10);
+            expect(result).to.equal(9);
+            result = wrapPlaylistIndex(-2020, 10);
+            expect(result).to.equal(0);
+        });
+
+        it('wraps index of length or greater by more than length', function() {
+            let result = wrapPlaylistIndex(1000, 1);
+            expect(result).to.equal(0);
+            result = wrapPlaylistIndex(2001, 10);
+            expect(result).to.equal(1);
+            result = wrapPlaylistIndex(2020, 10);
+            expect(result).to.equal(0);
+        });
+
+        it('returns NaN with length of 0', function() {
+            const result = wrapPlaylistIndex(0, 0);
+            expect(result).to.be.NaN;
+        });
     });
 });
