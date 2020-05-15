@@ -47,6 +47,15 @@ export function normalizePlaylistItem(model, item, feedData) {
     return formatItem(playlistItem);
 }
 
+export function wrapPlaylistIndex(index, length) {
+    // If looping past the end, or before the beginning
+    let wrappedIndex = (parseInt(index, 10) || 0) % length;
+    if (wrappedIndex < 0) {
+        wrappedIndex += length;
+    }
+    return wrappedIndex;
+}
+
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
 
 function formatItem(item) {

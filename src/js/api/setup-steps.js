@@ -1,6 +1,6 @@
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist, wrapPlaylistIndex } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError, PlayerError,
@@ -57,7 +57,8 @@ export function loadProvider(_model) {
         }
 
         const providersManager = _model.getProviders();
-        const { provider, name } = providersManager.choose(playlist[0].sources[0]);
+        const wrappedIndex = wrapPlaylistIndex(_model.get('item'), playlist.length);
+        const { provider, name } = providersManager.choose(playlist[wrappedIndex].sources[0]);
 
         // If provider already loaded or a locally registered one, return it
         if (typeof provider === 'function') {

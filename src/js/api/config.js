@@ -28,6 +28,7 @@ export const Defaults = {
     enableShortcuts: true,
     height: 360,
     intl: {},
+    item: 0,
     language: 'en',
     liveTimeout: null,
     localization: en,
@@ -96,6 +97,15 @@ const Config = function(options, persisted) {
     config.mute = !!config.mute;
     config.language = language;
     config.intl = intl;
+
+    const playlistIndex = config.playlistIndex;
+    if (playlistIndex) {
+        config.item = playlistIndex;
+    }
+
+    if (!isNumber(config.item)) {
+        config.item = 0;
+    }
 
     // If autoPause is configured with an empty block,
     // default autoPause.viewability to true.

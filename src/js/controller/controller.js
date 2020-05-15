@@ -3,7 +3,7 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist, wrapPlaylistIndex } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -921,14 +921,9 @@ Object.assign(Controller.prototype, {
 
             const playlist = _model.get('playlist');
             const length = playlist.length;
+            const wrappedIndex = wrapPlaylistIndex(index, length);
 
-            // If looping past the end, or before the beginning
-            index = (parseInt(index, 10) || 0) % length;
-            if (index < 0) {
-                index += length;
-            }
-
-            return _programController.setActiveItem(index).catch(error => {
+            return _programController.setActiveItem(wrappedIndex).catch(error => {
                 if (error.code >= 151 && error.code <= 162) {
                     error = composePlayerError(error, ERROR_LOADING_PROVIDER);
                 }
@@ -1068,20 +1063,21 @@ Object.assign(Controller.prototype, {
         };
 
         this.setPlaylistItem = function (index, item) {
-            const asyncItemController = _programController.getAsyncItem(index);
+            const playlist = _model.get('playlist');
+            const wrappedIndex = wrapPlaylistIndex(index, playlist.length);
+            const asyncItemController = _programController.getAsyncItem(wrappedIndex);
             const newItem = asyncItemController.replace(item);
             if (!newItem) {
                 return;
             }
-            const playlist = _model.get('playlist');
-            const playlistItem = playlist[index];
+            const playlistItem = playlist[wrappedIndex];
             if (item && item !== playlistItem) {
-                _programController.asyncItems[index] = null;
+                _programController.asyncItems[wrappedIndex] = null;
                 asyncItemController.reject(new Error('Item replaced'));
             }
             // If the current item was replaced, and the player is idle, reload it
-            if (index === _model.get('item') && _model.get('state') === 'idle') {
-                this.setItemIndex(index);
+            if (wrappedIndex === _model.get('item') && _model.get('state') === 'idle') {
+                this.setItemIndex(wrappedIndex);
             }
         };
 

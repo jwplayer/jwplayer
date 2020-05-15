@@ -68,6 +68,7 @@ export default class MockModel extends SimpleModel {
             minDvrWindow: 60,
             seekRange: { start: 0, end: 0 },
             scrubbing: false,
+            item: 0,
             playlistItem: playlistItem,
             localization: en,
             logo: {
