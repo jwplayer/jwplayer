@@ -35,7 +35,8 @@ const Captions = function(_model) {
                 /* eslint-disable no-loop-func */
                 const track = tracks[i];
                 if (_kindSupported(track.kind) && !_tracksById[track._id]) {
-                    _addTrack(track, true);
+                    track.sideloaded = true;
+                    _addTrack(track);
                     loadFile(track, (vttCues) => {
                         _addVTTCuesToTrack(track, vttCues);
                     }, error => {
@@ -71,7 +72,7 @@ const Captions = function(_model) {
 
             // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
             const allTracks = Object.keys(_tracksById).map(id => _tracksById[id]);
-            _tracks = allTracks.filter(track => !track.isSideload).concat(allTracks.filter(track => !!track.isSideload));
+            _tracks = allTracks.filter(track => !track.sideloaded).concat(allTracks.filter(track => !!track.sideloaded));
         }
 
         _setCaptionsList();
@@ -85,11 +86,10 @@ const Captions = function(_model) {
         track.data = vttCues;
     }
 
-    function _addTrack(track, isSideload) {
+    function _addTrack(track) {
         track.data = track.data || [];
         track.name = track.label || track.name || track.language;
         track._id = createId(track, _tracks.length);
-        track.isSideload = isSideload;
 
         if (!track.name) {
             const labelInfo = createLabel(track, _unknownCount);
