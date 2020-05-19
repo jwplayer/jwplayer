@@ -37,9 +37,3 @@ export type MetadataEvent = {
     metadata: GenericObject;
     programDateTime?: string;
 };
-
-export type EnsurePromise = (
-    paths: string[], 
-    callback: (require: NodeRequire) => void,
-    errorCallback?: ((error: any) => void) | undefined, chunkName?: string | undefined
-) => Promise<any>; 

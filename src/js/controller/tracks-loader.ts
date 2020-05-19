@@ -9,7 +9,6 @@ import type { PlayerError } from 'api/errors';
 import type { PlaylistItemTrack } from 'playlist/track';
 import type { CaptionEntryData } from 'parsers/captions/captions.types';
 import type VTTParser from 'parsers/captions/vttparser';
-import { EnsurePromise } from 'types/generic.type';
 
 export function loadFile(
     track: PlaylistItemTrack, 
@@ -111,8 +110,8 @@ function xhrSuccess(
     }
 }
 
-function loadVttParser(): Promise<VTTParser> {
-    return (require.ensure as EnsurePromise)(['parsers/captions/vttparser'], 
+function loadVttParser(): any {
+    return require.ensure(['parsers/captions/vttparser'], 
         function (require: NodeRequire): VTTParser {
             return require('parsers/captions/vttparser').default;
         }, 
