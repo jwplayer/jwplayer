@@ -68,6 +68,9 @@ function xhrSuccess(
     try {
         if (xmlRoot && localName(xmlRoot) === 'tt') {
             // parse dfxp track
+            if (!xhr.responseXML) {
+                throw new Error('Empty XML response');
+            }
             cues = dfxp(xhr.responseXML);
             vttCues = convertToVTTCues(cues);
             delete track.xhr;
