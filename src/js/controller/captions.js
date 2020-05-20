@@ -35,6 +35,7 @@ const Captions = function(_model) {
                 /* eslint-disable no-loop-func */
                 const track = tracks[i];
                 if (_kindSupported(track.kind) && !_tracksById[track._id]) {
+                    track.sideloaded = true;
                     _addTrack(track);
                     loadFile(track, (vttCues) => {
                         _addVTTCuesToTrack(track, vttCues);
@@ -70,7 +71,8 @@ const Captions = function(_model) {
             }
 
             // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
-            _tracks = Object.keys(_tracksById).map(id => _tracksById[id]);
+            const allTracks = Object.keys(_tracksById).map(id => _tracksById[id]);
+            _tracks = allTracks.filter(track => !track.sideloaded).concat(allTracks.filter(track => !!track.sideloaded));
         }
 
         _setCaptionsList();
@@ -152,8 +154,8 @@ const Captions = function(_model) {
     function _setCaptionsList() {
         const captionsList = _captionsMenu();
         if (listIdentity(captionsList) !== listIdentity(_model.get('captionsList'))) {
-            _selectDefaultIndex(_defaultIndex);
             _model.set('captionsList', captionsList);
+            _selectDefaultIndex(_defaultIndex);
         }
     }
 
