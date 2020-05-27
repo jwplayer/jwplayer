@@ -80,7 +80,7 @@ function xhrSuccess(
             const responseText = xhr.responseText;
             if (responseText.indexOf('WEBVTT') >= 0) {
                 // make VTTCues from VTT track
-                loadVttParser().then((VttParser: (window: Window, decoder?: () => void) => void): void => {
+                loadVttParser().then((VttParser: typeof VTTParser): void => {
                 
                     const parser = new VttParser(window);
                     vttCues = [];
@@ -113,11 +113,11 @@ function xhrSuccess(
     }
 }
 
-function loadVttParser(): any {
+function loadVttParser(): Promise<typeof VTTParser> {
     return require.ensure(['parsers/captions/vttparser'], 
-        function (require: NodeRequire): VTTParser {
+        function (require: NodeRequire): typeof VTTParser {
             return require('parsers/captions/vttparser').default;
         }, 
         chunkLoadWarningHandler(301131), 'vttparser'
-    );
+    ) as unknown as Promise<typeof VTTParser>;
 }
