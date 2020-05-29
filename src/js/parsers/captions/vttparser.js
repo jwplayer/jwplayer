@@ -32,11 +32,12 @@ const whitespaceRegex = /^\s+/;
 const arrowRegex = /-->/;
 const headerRegex = /^WEBVTT([ \t].*)?$/;
 
-const VTTParser = function(window, decoder) {
+const VTTParser = function(window, decoder, syncCueParsing) {
     this.window = window;
     this.state = 'INITIAL';
     this.buffer = '';
     this.decoder = decoder || new StringDecoder();
+    this.syncCueParsing = syncCueParsing;
     this.regionList = [];
     this.maxCueBatch = 1000;
 };
@@ -343,7 +344,7 @@ VTTParser.prototype = {
         let currentCueBatch = 0;
         function processBuffer() {
             try {
-                while (self.buffer && currentCueBatch <= self.maxCueBatch) {
+                while (self.buffer && (currentCueBatch <= self.maxCueBatch || self.syncCueParsing)) {
                     // We can't parse a line until we have the full line.
                     if (!fullLineRegex.test(self.buffer)) {
                         self.flush();
