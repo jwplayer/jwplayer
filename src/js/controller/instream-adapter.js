@@ -292,7 +292,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_array && _arrayIndex + 1 < _array.length) {
             _loadNextItem();
         }
-    }
+    };
 
     /**
      * Load an Item, playing it as an insteam ad.
