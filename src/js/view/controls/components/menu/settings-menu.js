@@ -91,7 +91,7 @@ class SettingsMenu extends Menu {
         if (!this.children.audioTracks) {
             return;
         }
-        this.children.audioTracks.items[trackIndex].activate();
+        selectMenuItem(this.children.audioTracks, trackIndex);
     }
 
     onCaptionsList(model, captionsList) {
