@@ -191,9 +191,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         this.trigger(type, data);
 
         if (type === 'mediaError' || type === 'error') {
-            if (_array && _arrayIndex + 1 < _array.length) {
-                _loadNextItem();
-            }
+            this.loadNextItemOnError();
         }
     }
 
@@ -285,6 +283,16 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             this.destroy();
         }
     }
+
+    /**
+     * Called when an error occurs to load the next instream ad if it exists.
+     * @return {void}
+     */
+    this.loadNextItemOnError = function() {
+        if (_array && _arrayIndex + 1 < _array.length) {
+            _loadNextItem();
+        }
+    };
 
     /**
      * Load an Item, playing it as an insteam ad.
