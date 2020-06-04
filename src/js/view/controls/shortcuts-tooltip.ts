@@ -4,9 +4,23 @@ import UI from 'utils/ui';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { STATE_PLAYING } from 'events/events';
+import type { PlayerAPI, StringObject } from 'types/generic.type';
+import type ViewModel from 'view/view-model';
 
+type Shortcut = {
+    key: string;
+    description: string;
+}
 
-function getShortcuts(shortcuts) {
+type ShortcutsTooltip = {
+    el: HTMLElement;
+    open: () => void;
+    close: () => void;
+    destroy: () => void;
+    toggleVisibility: () => void;
+}
+
+function getShortcuts(shortcuts: StringObject): Shortcut[] {
     const {
         playPause,
         volumeToggle,
@@ -59,8 +73,12 @@ function getShortcuts(shortcuts) {
     ];
 }
 
-
-export default function (container, api, model, onVisibility) {
+export default function (
+    container: HTMLElement,
+    api: PlayerAPI,
+    model: ViewModel,
+    onVisibility: (visible: boolean) => void
+): ShortcutsTooltip {
     let isOpen = false;
     let lastState = null;
     const shortcuts = model.get('localization').shortcuts;
@@ -97,16 +115,17 @@ export default function (container, api, model, onVisibility) {
         shortcutToggleUi.destroy();
     };
 
-    const documentClickHandler = (e) => {
-        if (!/jw-shortcuts|jw-switch/.test(e.target.className)) {
+    const documentClickHandler = (e: Event) => {
+        const target = e.target as HTMLElement;
+        if (!/jw-shortcuts|jw-switch/.test(target.className)) {
             close();
         }
     };
 
-    const toggleClickHandler = (e) => {
-        const toggle = e.currentTarget;
+    const toggleClickHandler = (e: Event) => {
+        const toggle = e.currentTarget as HTMLElement;
         const isChecked = toggle.getAttribute('aria-checked') === 'true' ? false : true;
-        toggle.setAttribute('aria-checked', isChecked);
+        toggle.setAttribute('aria-checked', isChecked.toString());
         model.set('enableShortcuts', isChecked);
     };
 

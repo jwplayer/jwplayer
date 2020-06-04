@@ -3,8 +3,17 @@ import ariaLabel from 'utils/aria';
 import { toggleClass } from 'utils/dom';
 import svgParse from 'utils/svgParser';
 
-export default class TooltipIcon {
-    constructor(name, ariaText, elementShown, svgIcons) {
+interface TooltipIcon extends Events {
+    el: HTMLElement;
+    tooltip: HTMLElement;
+    openClass: string;
+    componentType: string;
+    isOpen?: boolean;
+    content?: HTMLElement | null;
+}
+
+class TooltipIcon implements Events {
+    constructor(name: string, ariaText: string | null, elementShown: boolean, svgIcons?: Node[]) {
         Object.assign(this, Events);
         this.el = document.createElement('div');
         let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
@@ -12,7 +21,9 @@ export default class TooltipIcon {
             className += ' jw-hidden';
         }
 
-        ariaLabel(this.el, ariaText);
+        if (ariaText) {
+            ariaLabel(this.el, ariaText);
+        }
 
         this.el.className = className;
         this.tooltip = document.createElement('div');
@@ -32,7 +43,7 @@ export default class TooltipIcon {
         }
     }
 
-    addContent(elem) {
+    addContent(elem: HTMLElement): void {
         if (this.content) {
             this.removeContent();
         }
@@ -41,22 +52,22 @@ export default class TooltipIcon {
         this.tooltip.appendChild(elem);
     }
 
-    removeContent() {
+    removeContent(): void {
         if (this.content) {
             this.tooltip.removeChild(this.content);
             this.content = null;
         }
     }
 
-    hasContent() {
+    hasContent(): boolean {
         return !!this.content;
     }
 
-    element() {
+    element(): HTMLElement {
         return this.el;
     }
 
-    openTooltip(evt) {
+    openTooltip(evt: Event): void {
         if (!this.isOpen) {
             this.trigger('open-' + this.componentType, evt, { isOpen: true });
             this.isOpen = true;
@@ -64,7 +75,7 @@ export default class TooltipIcon {
         }
     }
 
-    closeTooltip(evt) {
+    closeTooltip(evt: Event): void {
         if (this.isOpen) {
             this.trigger('close-' + this.componentType, evt, { isOpen: false });
             this.isOpen = false;
@@ -72,7 +83,7 @@ export default class TooltipIcon {
         }
     }
 
-    toggleOpenState(evt) {
+    toggleOpenState(evt: Event): void {
         if (this.isOpen) {
             this.closeTooltip(evt);
         } else {
@@ -80,3 +91,5 @@ export default class TooltipIcon {
         }
     }
 }
+
+export default TooltipIcon;

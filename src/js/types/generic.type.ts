@@ -14,7 +14,31 @@ export type Menu = GenericObject;
 
 export type Tooltip = GenericObject;
 
-export type Localization = GenericObject;
+export type StringObject = {
+    [key: string]: string;
+};
+
+export type Localization = {
+    close: string;
+    errors: {
+        errorCode: string;
+    };
+    next: string;
+    playback: string;
+    rewind: string;
+    shortcuts: {
+        playPause: string;
+        volumeToggle: string;
+        fullscreenToggle: string;
+        seekPercent: string;
+        increaseVolume: string;
+        decreaseVolume: string;
+        seekForward: string;
+        seekBackward: string;
+        spacebar: string;
+        captionsToggle: string;
+    };
+};
 
 export type DrmConfig = GenericObject;
 
@@ -36,4 +60,13 @@ export type MetadataEvent = {
     metadataType?: string;
     metadata: GenericObject;
     programDateTime?: string;
+};
+
+export type BoundingRect = {
+    left: number;
+    right: number;
+    width: number;
+    height: number;
+    top: number;
+    bottom: number;
 };
