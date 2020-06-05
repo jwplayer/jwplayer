@@ -28,6 +28,9 @@ function coreFactory(api, element) {
         event.setupTime = api._qoe.between('setup', 'ready');
     });
     core.on('all', (type, event) => {
+        if (__HEADLESS__ && __DEBUG__) {
+            console.log('[core trigger]', type);
+        }
         api.trigger(type, event);
     });
 
