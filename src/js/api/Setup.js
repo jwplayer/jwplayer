@@ -31,16 +31,21 @@ const Setup = function(_model) {
 
         const pluginsPromise = loadPlugins(_model, api);
 
-        const corePromise = __HEADLESS__ ? loadCore(_model) : loadCoreBundle(_model);
-
-        const setup = Promise.all([
-            corePromise,
-            pluginsPromise,
-            loadProvider(_model),
-            loadModules(_model, api),
-            loadSkin(_model),
-            loadTranslations(_model)
-        ]);
+        const setup = __HEADLESS__ ?
+            Promise.all([
+                loadCore(_model),
+                pluginsPromise,
+                loadProvider(_model),
+                new Promise((resolve) => setTimeout(resolve, 0))
+            ]) :
+            Promise.all([
+                loadCoreBundle(_model),
+                pluginsPromise,
+                loadProvider(_model),
+                loadModules(_model, api),
+                loadSkin(_model),
+                loadTranslations(_model)
+            ]);
 
         const timeout = new Promise((resolve, reject) => {
             _setupFailureTimeout = setTimeout(() => {
