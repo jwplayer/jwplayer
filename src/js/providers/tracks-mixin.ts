@@ -4,7 +4,7 @@ import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { MEDIA_META_CUE_PARSED, MEDIA_META, WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
-import type { GenericObject, TextTrackLike, MetadataEvent } from 'types/generic.type';
+import type { TextTrackLike, MetadataEvent } from 'types/generic.type';
 import type { ProviderWithMixins } from './default';
 import type { PlaylistItemTrack } from 'playlist/track';
 
@@ -54,7 +54,7 @@ export type SimpleAudioTrack = {
 
 // Used across all providers for loading tracks and handling browser track-related events
 export interface TracksMixin {
-    _itemTracks: GenericObject[] | null;
+    _itemTracks: PlaylistItemTrack[] | null;
     _textTracks: TextTrackLike[] | null;
     _currentTextTrackIndex: number;
     _tracksById: TracksRecord | null;

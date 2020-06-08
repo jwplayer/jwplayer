@@ -69,6 +69,6 @@ export default function Dfxp(xmlDoc: XMLDocument): CaptionEntryData[] {
     return _captions;
 }
 
-function parseError(code: number): void {
+function parseError(code: number): never {
     throw new PlayerError(null, code);
 }

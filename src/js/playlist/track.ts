@@ -8,6 +8,7 @@ export interface PlaylistItemTrack {
     label?: string;
     language?: string;
     source?: 'mpegts'; // Legacy Flash provider attribute
+    xhr?: XMLHttpRequest;
 }
 
 const VALID_TRACK_KINDS = ['captions', 'metadata', 'thumbnails', 'chapters'];
