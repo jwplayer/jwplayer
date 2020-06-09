@@ -985,8 +985,7 @@ export default function Api(element) {
             return core.getItemPromise(index);
         },
         /**
-         * Returns a boolean indicating whether or not the given JW Player is currently floating
-         * @returns {boolean}
+         * @returns {boolean} - a boolean indicating whether or not the given JW Player is currently floating
          */
         getFloating() {
             return !!core.get('isFloating');
@@ -994,6 +993,7 @@ export default function Api(element) {
         /**
          * Updates the current floating player to ensure it is always or never floating depending on the arg
          * @param {boolean} shouldFloat - whether or not the player should be floating
+         * @returns {void}
          */
         setFloating(shouldFloat) {
             core.setConfig({

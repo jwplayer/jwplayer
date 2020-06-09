@@ -33,6 +33,18 @@ export default (controller, newConfig) => {
         controller._view.resize(newConfig.width, newConfig.height);
     }
 
+    if (newConfig.floating) {
+        const currFloatCfg = model.get('floating') || {};
+        const currFloatMode = currFloatCfg.mode;
+        const newFloatCfg = Object.assign(currFloatCfg, newConfig.floating);
+        if (currFloatMode === newFloatCfg.mode) {
+            delete newConfig.floating;
+        } else {
+            newConfig.floating = newFloatCfg;
+            model.set('floating', newFloatCfg);
+        }
+    }
+
     Object.keys(newConfig).forEach((field) => {
         const newValue = newConfig[field];
         if (newValue === undefined) {
@@ -59,23 +71,14 @@ export default (controller, newConfig) => {
                 model.set(field, newValue);
                 break;
             case 'floating':
-                const currFloatCfg = model.get('floating') || {};
-                const currFloatMode = currFloatCfg.mode;
-                const newFloatCfg = Object.assign(currFloatCfg, newValue);
-                if (currFloatMode !== newFloatCfg.mode) {
-                    model.set('floating', newFloatCfg);
-                    switch(newFloatCfg.mode) {
-                        case 'always':
-                            controller._view.initFloatingBehavior();
-                            break;
-                        case 'notVisible':
-                            controller._view.initFloatingBehavior();
-                            controller._view.checkFloatIntersection();
-                            break;
-                        case 'never':
-                            controller._view.stopFloating();
-                            break;
-                    }
+                switch (newValue.mode) {
+                    case 'always':
+                    case 'never':
+                    case 'notVisible':
+                        controller._view.initFloatingBehavior();
+                        break;
+                    default:
+                        break;
                 }
                 break;
             default:

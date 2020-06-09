@@ -16,7 +16,7 @@ import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
-import FloatingCloseButton from 'view/floating-close-button';
+import FloatingCloseButton from 'view/floating/floating-close-button';
 
 require('css/controls.less');
 
