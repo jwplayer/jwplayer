@@ -58,6 +58,26 @@ export default (controller, newConfig) => {
             case 'stretching':
                 model.set(field, newValue);
                 break;
+            case 'floating':
+                const currFloatCfg = model.get('floating') || {};
+                const currFloatMode = currFloatCfg.mode;
+                const newFloatCfg = Object.assign(currFloatCfg, newValue);
+                if (currFloatMode !== newFloatCfg.mode) {
+                    model.set('floating', newFloatCfg);
+                    switch(newFloatCfg.mode) {
+                        case 'always':
+                            controller._view.initFloatingBehavior();
+                            break;
+                        case 'notVisible':
+                            controller._view.initFloatingBehavior();
+                            controller._view.checkFloatIntersection();
+                            break;
+                        case 'never':
+                            controller._view.stopFloating();
+                            break;
+                    }
+                }
+                break;
             default:
         }
     });

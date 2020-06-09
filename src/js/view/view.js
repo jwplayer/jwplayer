@@ -81,9 +81,10 @@ function View(_api, _model) {
     let _resizeContainerRequestId = -1;
     let _stateClassRequestId = -1;
 
-    let _floatingConfig = _model.get('floating');
+    const firstFloatCfg = getFloatingConfig();
+    this.dismissible = firstFloatCfg && firstFloatCfg.dismissible;
+    let floatingStoppedForever = false;
 
-    this.dismissible = _floatingConfig && _floatingConfig.dismissible;
     let _canFloat = false;
     let playerBounds = {};
 
@@ -96,6 +97,15 @@ function View(_api, _model) {
 
     function reasonInteraction() {
         return { reason: 'interaction' };
+    }
+
+    function getFloatingConfig() {
+        return _model.get('floating');
+    }
+
+    function getFloatMode() {
+        const fc = getFloatingConfig();
+        return (fc && fc.mode) || 'notVisible';
     }
 
     function fosMobileBehavior() {
@@ -157,7 +167,7 @@ function View(_api, _model) {
         _captionsRenderer.resize();
 
 
-        if (_floatingConfig) {
+        if (getFloatingConfig() && getFloatMode() === 'notVisible') {
             throttledMobileFloatScrollHandler();
         }
     };
@@ -354,10 +364,7 @@ function View(_api, _model) {
         // Triggering 'resize' resulting in player 'ready'
         _lastWidth = _lastHeight = null;
 
-        // Setup floating scroll handler
-        if (_floatingConfig && _isMobile) {
-            viewsManager.addScrollHandler(throttledMobileFloatScrollHandler);
-        }
+        this.initFloatingBehavior();
 
         this.checkResized();
     };
@@ -554,6 +561,23 @@ function View(_api, _model) {
             _api.pause(reasonInteraction());
             _api.setFullscreen(false);
             openLink(evt.link, evt.linktarget, { rel: 'noreferrer' });
+        }
+    }
+
+    this.initFloatingBehavior = function() {
+        // Don't reinitialize this behavior if the user dismissed the floating player
+        if (floatingStoppedForever) {
+            return;
+        }
+        // Setup floating scroll handler
+        viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
+        if (getFloatingConfig()) {
+            const fm = getFloatMode();
+            if (fm === 'notVisible' && _isMobile) {
+                viewsManager.addScrollHandler(throttledMobileFloatScrollHandler);
+            } else if (fm === 'always') {
+                this.startFloating();
+            }
         }
     }
 
@@ -939,18 +963,25 @@ function View(_api, _model) {
         _captionsRenderer.resize();
     };
 
-    this.setIntersection = function (entry) {
-        // Round as the IntersectionObserver polyfill sometimes returns ±0.00XXX.
-        const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
-        _model.set('intersectionRatio', intersectionRatio);
+    let _lastIntRatio;
 
-        if (_floatingConfig && !fosMobileBehavior()) {
+    this.checkFloatIntersection = function(ratio) {
+        let intersectionRatio = ratio || _lastIntRatio;
+        if (getFloatingConfig() && getFloatMode() === 'notVisible' && !fosMobileBehavior() && !floatingStoppedForever) {
             // Only start floating if player has been mostly visible at least once.
             _canFloat = _canFloat || intersectionRatio >= 0.5;
             if (_canFloat) {
                 _updateFloating(intersectionRatio);
             }
         }
+        _lastIntRatio = ratio;
+    }
+
+    this.setIntersection = function (entry) {
+        // Round as the IntersectionObserver polyfill sometimes returns ±0.00XXX.
+        const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
+        _model.set('intersectionRatio', intersectionRatio);
+        this.checkFloatIntersection(intersectionRatio);
     };
 
     function _getCurrentElement() {
@@ -961,46 +992,51 @@ function View(_api, _model) {
         // Player is 50% visible or less and no floating player already in the DOM. Player is not in iframe
         const shouldFloat = intersectionRatio < 0.5 && !isIframe();
         if (shouldFloat) {
-            const state = _model.get('state');
-            if (state !== STATE_IDLE && state !== STATE_ERROR && state !== STATE_COMPLETE && floatingPlayer === null) {
-                floatingPlayer = _playerElement;
-
-                _model.set('isFloating', true);
-
-                addClass(_playerElement, 'jw-flag-floating');
-
-                if (mobileFloatIntoPlace) {
-                    // Creates a dynamic animation where the top of the current player
-                    // Smoothly transitions into the expected floating space in the event
-                    // we can't start floating at 62px
-                    style(_wrapperElement, {
-                        transform: `translateY(-${FLOATING_TOP_OFFSET - playerBounds.top}px)`
-                    });
-
-                    setTimeout(() => {
-                        style(_wrapperElement, {
-                            transform: 'translateY(0)',
-                            transition: 'transform 150ms cubic-bezier(0, 0.25, 0.25, 1)'
-                        });
-                    });
-                }
-
-                // Copy background from preview element, fallback to image config.
-                style(_playerElement, {
-                    backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
-                });
-
-                updateFloatingSize();
-
-                if (!_model.get('instreamMode')) {
-                    _floatingUI.enable();
-                }
-
-                // Perform resize and trigger "float" event responsively to prevent layout thrashing
-                _responsiveListener();
-            }
+            _this.startFloating(mobileFloatIntoPlace);
         } else {
             _this.stopFloating(false, mobileFloatIntoPlace);
+        }
+    }
+
+    this.startFloating = function(mobileFloatIntoPlace) {
+        const state = _model.get('state');
+        const shouldFloatOnViewable = state !== STATE_IDLE && state !== STATE_ERROR && state !== STATE_COMPLETE;
+        if ((getFloatMode() !== 'notVisible' || shouldFloatOnViewable) && floatingPlayer === null) {
+            floatingPlayer = _playerElement;
+
+            _model.set('isFloating', true);
+
+            addClass(_playerElement, 'jw-flag-floating');
+
+            if (mobileFloatIntoPlace) {
+                // Creates a dynamic animation where the top of the current player
+                // Smoothly transitions into the expected floating space in the event
+                // we can't start floating at 62px
+                style(_wrapperElement, {
+                    transform: `translateY(-${FLOATING_TOP_OFFSET - playerBounds.top}px)`
+                });
+
+                setTimeout(() => {
+                    style(_wrapperElement, {
+                        transform: 'translateY(0)',
+                        transition: 'transform 150ms cubic-bezier(0, 0.25, 0.25, 1)'
+                    });
+                });
+            }
+
+            // Copy background from preview element, fallback to image config.
+            style(_playerElement, {
+                backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
+            });
+
+            updateFloatingSize();
+
+            if (!_model.get('instreamMode')) {
+                _floatingUI.enable();
+            }
+
+            // Perform resize and trigger "float" event responsively to prevent layout thrashing
+            _responsiveListener();
         }
     }
 
@@ -1027,7 +1063,7 @@ function View(_api, _model) {
 
     this.stopFloating = function(forever, mobileFloatIntoPlace) {
         if (forever) {
-            _floatingConfig = null;
+            floatingStoppedForever = true;
             viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
         }
         if (floatingPlayer === _playerElement) {
@@ -1117,7 +1153,7 @@ function View(_api, _model) {
             this.resizeListener.destroy();
             delete this.resizeListener;
         }
-        if (_floatingConfig && _isMobile) {
+        if (getFloatingConfig() && _isMobile) {
             viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
         }
     };

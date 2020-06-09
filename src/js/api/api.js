@@ -983,6 +983,24 @@ export default function Api(element) {
          */
         getPlaylistItemPromise(index) {
             return core.getItemPromise(index);
+        },
+        /**
+         * Returns a boolean indicating whether or not the given JW Player is currently floating
+         * @returns {boolean}
+         */
+        getFloating() {
+            return !!core.get('isFloating');
+        },
+        /**
+         * Updates the current floating player to ensure it is always or never floating depending on the arg
+         * @param {boolean} shouldFloat - whether or not the player should be floating
+         */
+        setFloating(shouldFloat) {
+            core.setConfig({
+                floating: {
+                    mode: shouldFloat ? 'always' : 'never'
+                }
+            });
         }
     });
 }
