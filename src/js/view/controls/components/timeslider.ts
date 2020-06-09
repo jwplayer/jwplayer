@@ -6,12 +6,23 @@ import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
 import UI from 'utils/ui';
 import Slider from 'view/controls/components/slider';
 import TooltipIcon from 'view/controls/components/tooltipicon';
-import ChaptersMixin from 'view/controls/components/chapters.mixin';
-import ThumbnailsMixin from 'view/controls/components/thumbnails.mixin';
+import ChaptersMixin, { ChaptersMixinInt, Cue } from 'view/controls/components/chapters.mixin';
+import ThumbnailsMixin, { ThumbnailsMixinInt } from 'view/controls/components/thumbnails.mixin';
+import type ViewModel from 'view/view-model';
+import type { PlayerAPI, GenericObject, TextTrackLike } from 'types/generic.type';
+import type Item from 'playlist/item';
+
+export type TimeSliderWithMixins = TimeSlider & ChaptersMixinInt & ThumbnailsMixinInt;
 
 class TimeTipIcon extends TooltipIcon {
+    text?: HTMLElement;
+    img?: HTMLElement;
+    containerWidth?: number;
+    container?: HTMLElement;
+    textLength?: number;
+    dragJustReleased?: boolean;
 
-    setup() {
+    setup(): void {
         this.text = document.createElement('span');
         this.text.className = 'jw-text jw-reset';
         this.img = document.createElement('div');
@@ -28,23 +39,26 @@ class TimeTipIcon extends TooltipIcon {
         this.addContent(wrapper);
     }
 
-    image(styles) {
+    image(styles: GenericObject): void {
         style(this.img, styles);
     }
 
-    update(txt) {
+    update(txt: string): void {
+        if (!this.text) {
+            return;
+        }
         this.text.textContent = txt;
     }
 
-    getWidth () {
+    getWidth (): number {
         if (!this.containerWidth) {
             this.setWidth();
         }
 
-        return this.containerWidth;
+        return this.containerWidth as number;
     }
 
-    setWidth (width) {
+    setWidth (width?: number): void {
         const tolerance = 16; // add a little padding so the tooltip isn't flush against the edge
 
         if (width) {
@@ -59,17 +73,29 @@ class TimeTipIcon extends TooltipIcon {
         this.containerWidth = bounds(this.container).width + tolerance;
     }
 
-    resetWidth () {
+    resetWidth (): void {
         this.containerWidth = 0;
     }
 }
 
-function reasonInteraction() {
+function reasonInteraction(): { reason: string } {
     return { reason: 'interaction' };
 }
 
 class TimeSlider extends Slider {
-    constructor(_model, _api, _timeUpdateKeeper) {
+    _model: ViewModel;
+    _api: PlayerAPI;
+    timeUpdateKeeper: HTMLElement;
+    timeTip: TimeTipIcon;
+    cues: Cue[];
+    seekThrottled: Function;
+    mobileHoverDistance: number;
+    seekTo?: number;
+    streamType?: string;
+    activeCue?: Cue | null;
+    textLength?: number;
+
+    constructor(_model: ViewModel, _api: PlayerAPI, _timeUpdateKeeper: HTMLElement) {
         super('jw-slider-time', 'horizontal');
 
         this._model = _model;
@@ -90,8 +116,8 @@ class TimeSlider extends Slider {
     }
 
     // These overwrite Slider methods
-    setup() {
-        super.setup.apply(this, arguments);
+    setup(...args: any[]): void {
+        super.setup.apply(this, args);
 
         this._model
             .on('change:duration', this.onDuration, this)
@@ -100,8 +126,8 @@ class TimeSlider extends Slider {
                 if (!this._model.get('scrubbing')) {
                     this.updateAriaText();
                 }
-            })
-            .change('position', this.onPosition, this)
+            });
+        this._model.change('position', this.onPosition, this)
             .change('buffer', this.onBuffer, this)
             .change('streamType', this.onStreamType, this);
 
@@ -123,42 +149,42 @@ class TimeSlider extends Slider {
             .on('focus', this.updateAriaText, this);
     }
 
-    update(percent) {
+    update(percent: number, ...args: any[]): void {
         this.seekTo = percent;
         this.seekThrottled();
-        super.update.apply(this, arguments);
+        super.update.apply(this, [percent, ...args]);
     }
 
-    dragStart() {
+    dragStart(...args: any[]): void {
         this._model.set('scrubbing', true);
-        super.dragStart.apply(this, arguments);
+        super.dragStart.apply(this, args);
     }
 
-    dragEnd() {
-        super.dragEnd.apply(this, arguments);
+    dragEnd(...args: any[]): void {
+        super.dragEnd.apply(this, args);
         this._model.set('scrubbing', false);
     }
 
-    onBuffer(model, pct) {
+    onBuffer(model: ViewModel, pct: number): void {
         this.updateBuffer(pct);
     }
 
-    onPosition(model, position) {
+    onPosition(model: ViewModel, position: number): void {
         this.updateTime(position, model.get('duration'));
     }
 
-    onDuration(model, duration) {
+    onDuration(this: TimeSliderWithMixins, model: ViewModel, duration: number): void {
         this.updateTime(model.get('position'), duration);
         setAttribute(this.el, 'aria-valuemin', 0);
         setAttribute(this.el, 'aria-valuemax', duration);
         this.drawCues();
     }
 
-    onStreamType(model, streamType) {
+    onStreamType(model: ViewModel, streamType: string): void {
         this.streamType = streamType;
     }
 
-    updateTime(position, duration) {
+    updateTime(position: number, duration: number): void {
         let pct = 0;
         if (duration) {
             if (this.streamType === 'DVR') {
@@ -174,7 +200,7 @@ class TimeSlider extends Slider {
         this.render(pct);
     }
 
-    onPlaylistItem(model, playlistItem) {
+    onPlaylistItem(this: TimeSliderWithMixins, model: ViewModel, playlistItem: Item): void {
         this.reset();
 
         //  If cues have been cleared from slider but exist on model, update cues.
@@ -183,18 +209,18 @@ class TimeSlider extends Slider {
             this.updateCues(null, cues);
         }
 
-        const tracks = playlistItem.tracks;
-        each(tracks, function (track) {
+        const tracks: TextTrackList = playlistItem.tracks;
+        each(tracks, function (this: TimeSliderWithMixins, track: TextTrackLike): void {
             if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
-                this.loadThumbnails(track.file);
+                this.loadThumbnails(track.file as string);
             } else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {
-                this.loadChapters(track.file);
+                this.loadChapters(track.file as string);
             }
         }, this);
     }
 
-    performSeek() {
-        const percent = this.seekTo;
+    performSeek(): void {
+        const percent = this.seekTo as number;
         const duration = this._model.get('duration');
         let position;
         if (duration === 0) {
@@ -210,7 +236,7 @@ class TimeSlider extends Slider {
         }
     }
 
-    showTimeTooltip(evt) {
+    showTimeTooltip(this: TimeSliderWithMixins, evt: GenericObject): void {
         let duration = this._model.get('duration');
         if (duration === 0) {
             return;
@@ -220,7 +246,7 @@ class TimeSlider extends Slider {
         const railBounds = bounds(this.elementRail);
         let position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
         position = between(position, 0, railBounds.width);
-        const pct = position / railBounds.width;
+        const pct: number = position / railBounds.width;
         let time = duration * pct;
 
         // For DVR we need to swap it around
@@ -237,7 +263,10 @@ class TimeSlider extends Slider {
         // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
         if (evt.pointerType === 'touch') {
             this.activeCue = this.cues.reduce((closeCue, cue) => {
-                if (Math.abs(position - (parseInt(cue.pct) / 100 * railBounds.width)) < this.mobileHoverDistance) {
+                if (
+                    Math.abs(position - (parseInt(cue.pct as string) / 100 * railBounds.width))
+                        < this.mobileHoverDistance
+                ) {
                     return cue;
                 }
                 return closeCue;
@@ -275,15 +304,15 @@ class TimeSlider extends Slider {
             // timeTip may go outside the bounds of the player. Determine the % of tolerance needed
             timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
         }
-        const safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
+        const safePct: number = parseFloat(Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3)) * 100;
         style(timeTip.el, { left: safePct + '%' });
     }
 
-    hideTimeTooltip() {
+    hideTimeTooltip(): void {
         removeClass(this.timeTip.el, 'jw-open');
     }
 
-    updateCues(model, cues) {
+    updateCues(this: TimeSliderWithMixins, model: ViewModel | null, cues: Cue[]): void {
         this.resetCues();
         if (cues && cues.length) {
             cues.forEach((ele) => {
@@ -293,7 +322,7 @@ class TimeSlider extends Slider {
         }
     }
 
-    updateAriaText() {
+    updateAriaText(): void {
         const model = this._model;
         if (model.get('seeking')) {
             return;
@@ -314,7 +343,7 @@ class TimeSlider extends Slider {
         setAttribute(sliderElement, 'aria-valuetext', ariaText);
     }
 
-    reset() {
+    reset(this: TimeSliderWithMixins): void {
         this.resetThumbnails();
         this.timeTip.resetWidth();
         this.textLength = 0;

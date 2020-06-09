@@ -55,7 +55,7 @@ class Slider extends Events {
 
     dragStart(): void {
         this.trigger('dragStart');
-        this.railBounds = getRailBounds(this.elementRail);
+        this.railBounds = getRailBounds(this.elementRail as HTMLElement);
     }
 
     dragEnd(evt: Event): void {
@@ -112,12 +112,15 @@ class Slider extends Events {
     render(percentage: number): void {
         percentage = Math.max(0, Math.min(percentage, 100));
 
+        const elThumb = this.elementThumb as HTMLElement;
+        const elProgress = this.elementRail as HTMLElement;
+
         if (this.orientation === 'horizontal') {
-            this.elementThumb.style.left = percentage + '%';
-            this.elementProgress.style.width = percentage + '%';
+            elThumb.style.left = percentage + '%';
+            elProgress.style.width = percentage + '%';
         } else {
-            this.elementThumb.style.bottom = percentage + '%';
-            this.elementProgress.style.height = percentage + '%';
+            elThumb.style.bottom = percentage + '%';
+            elProgress.style.height = percentage + '%';
         }
     }
 

@@ -1,8 +1,15 @@
 import { ajax } from 'utils/ajax';
 import srt from 'parsers/captions/srt';
+import type { TimeSliderWithMixins } from './timeslider';
+import type { GenericObject } from 'types/generic.type';
 
-class Cue {
-    constructor (time, text, cueType) {
+export class Cue {
+    time: number | string;
+    text: string;
+    el: HTMLElement;
+    pct?: number | string;
+
+    constructor (time: number, text: string, cueType: string) {
         this.time = time;
         this.text = text;
         this.el = document.createElement('div');
@@ -13,12 +20,12 @@ class Cue {
         this.el.className = cssClasses;
     }
 
-    align(duration) {
+    align(duration: number): void {
         // If a percentage, use it, else calculate the percentage
         if (this.time.toString().slice(-1) === '%') {
-            this.pct = this.time;
+            this.pct = this.time as string;
         } else {
-            const percentage = (this.time / duration) * 100;
+            const percentage = ((this.time as number) / duration) * 100;
             this.pct = percentage + '%';
         }
 
@@ -26,15 +33,24 @@ class Cue {
     }
 }
 
-const ChaptersMixin = {
+export interface ChaptersMixinInt {
+    loadChapters: (file: string) => void;
+    chaptersLoaded: (this: TimeSliderWithMixins, evt: XMLHttpRequest) => void;
+    chaptersFailed: () => void;
+    addCue: (this: TimeSliderWithMixins, obj: GenericObject) => void;
+    drawCues: (this: TimeSliderWithMixins) => void;
+    resetCues: (this: TimeSliderWithMixins) => void;
+}
 
-    loadChapters: function (file) {
+const ChaptersMixin: ChaptersMixinInt = {
+
+    loadChapters: function (file: string): void {
         ajax(file, this.chaptersLoaded.bind(this), this.chaptersFailed, {
             plainText: true
         });
     },
 
-    chaptersLoaded: function (evt) {
+    chaptersLoaded: function (this: TimeSliderWithMixins, evt: XMLHttpRequest): void {
         const data = srt(evt.responseText);
         if (Array.isArray(data)) {
             // Add chapter cues directly to model which will trigger addCue()
@@ -44,13 +60,13 @@ const ChaptersMixin = {
         }
     },
 
-    chaptersFailed: function () {},
+    chaptersFailed: function (): void { /* */ },
 
-    addCue: function (obj) {
+    addCue: function (this: TimeSliderWithMixins, obj: GenericObject): void {
         this.cues.push(new Cue(obj.begin, obj.text, obj.cueType));
     },
 
-    drawCues: function () {
+    drawCues: function (this: TimeSliderWithMixins): void {
         // We won't want to draw them until we have a duration
         const duration = this._model.get('duration');
         if (!duration || duration <= 0) {
@@ -69,8 +85,8 @@ const ChaptersMixin = {
         });
     },
 
-    resetCues: function() {
-        this.cues.forEach((cue) => {
+    resetCues: function(this: TimeSliderWithMixins): void {
+        this.cues.forEach((cue: Cue) => {
             if (cue.el.parentNode) {
                 cue.el.parentNode.removeChild(cue.el);
             }

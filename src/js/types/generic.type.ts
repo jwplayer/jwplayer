@@ -55,6 +55,7 @@ export type TextTrackLike = TextTrack & {
     sideloaded?: boolean;
     groupid?: string; // Shaka-player 'subs' tracks
     source?: 'mpegts'; // Legacy Flash provider attribute
+    file?: string;
 };
 
 export type MetadataEvent = {
