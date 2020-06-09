@@ -3,18 +3,16 @@ import ariaLabel from 'utils/aria';
 import { toggleClass } from 'utils/dom';
 import svgParse from 'utils/svgParser';
 
-interface TooltipIcon extends Events {
+export default class TooltipIcon extends Events {
     el: HTMLElement;
     tooltip: HTMLElement;
     openClass: string;
     componentType: string;
     isOpen?: boolean;
     content?: HTMLElement | null;
-}
 
-class TooltipIcon implements Events {
     constructor(name: string, ariaText: string | null, elementShown: boolean, svgIcons?: Node[]) {
-        Object.assign(this, Events);
+        super();
         this.el = document.createElement('div');
         let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
         if (!elementShown) {
@@ -91,5 +89,3 @@ class TooltipIcon implements Events {
         }
     }
 }
-
-export default TooltipIcon;

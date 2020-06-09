@@ -6,7 +6,7 @@ import { between } from 'utils/math';
 import { bounds, createElement } from 'utils/dom';
 import type { BoundingRect } from 'types/generic.type';
 
-interface Slider extends Events {
+interface Slider {
     className: string;
     orientation: string;
     ui: UI;
@@ -31,9 +31,9 @@ const getRailBounds = function(elementRail: HTMLElement): BoundingRect {
     return railBounds;
 };
 
-class Slider implements Events {
+class Slider extends Events {
     constructor(className: string, orientation: string) {
-        Object.assign(this, Events);
+        super();
         this.className = className + ' jw-background-color jw-reset';
         this.orientation = orientation;
     }

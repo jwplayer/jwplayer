@@ -124,7 +124,7 @@ export default function (
 
     const toggleClickHandler = (e: Event) => {
         const toggle = e.currentTarget as HTMLElement;
-        const isChecked = toggle.getAttribute('aria-checked') === 'true' ? false : true;
+        const isChecked = toggle.getAttribute('aria-checked') !== 'true';
         toggle.setAttribute('aria-checked', isChecked.toString());
         model.set('enableShortcuts', isChecked);
     };
