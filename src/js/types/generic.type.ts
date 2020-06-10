@@ -12,12 +12,14 @@ export type PlayerAPI = any;
 
 export type Menu = GenericObject;
 
+// Move to components/simple-tooltip.ts
 export type Tooltip = GenericObject;
 
 export type StringObject = {
     [key: string]: string;
 };
 
+// Move to utils/language.ts
 export type Localization = {
     close: string;
     errors: {
@@ -62,6 +64,7 @@ export type MetadataEvent = {
     programDateTime?: string;
 };
 
+// Move to utils/dom.ts
 export type BoundingRect = {
     left: number;
     right: number;
