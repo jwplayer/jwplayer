@@ -311,7 +311,8 @@ const eventRegisters = {
                 if (e.pointerType !== 'touch' && 'x' in e) {
                     // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
                     const overElement = document.elementFromPoint(e.x, e.y);
-                    if (!el.contains(overElement)) {
+                    const overElementFromClient = document.elementFromPoint(e.clientX, e.clientY);
+                    if (!el.contains(overElement) && !el.contains(overElementFromClient)) {
                         triggerEvent(ui, OUT, e);
                     }
                 }
