@@ -23,7 +23,7 @@ export type PlayerModelAttributes = {
     _abZoomThumbnail?: boolean;
     __ab_truncated?: boolean;
     _destroyed: boolean;
-    aspectratio: string;
+    aspectratio: string | null;
     audioMode: boolean;
     autostart: AutoStart;
     autostartMuted: boolean;

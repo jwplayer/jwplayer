@@ -1,6 +1,5 @@
 import type Model from 'controller/model';
 import type Preview from 'view/preview';
-import type View from 'view/view';
 import type { FloatConfig } from 'controller/model';
 import FloatingDragUI from 'view/floating/floating-drag-ui';
 import { OS } from 'environment/environment';
@@ -16,13 +15,14 @@ import {
     style,
 } from 'utils/css';
 import viewsManager from 'view/utils/views-manager';
+import type { BoundingRect } from 'types/generic.type';
+import { getPlayerSizeStyles } from 'view/utils/player-size';
 
 const FLOATING_TOP_OFFSET = 62;
 let _floatingPlayer: HTMLElement | null = null;
 
 export default class FloatingController {
     _playerEl: HTMLElement;
-    _parent: View;
     _wrapperEl: HTMLElement;
     _preview: Preview;
     _model: Model;
@@ -32,19 +32,22 @@ export default class FloatingController {
     _floatingStoppedForever: boolean;
     _lastIntRatio: number;
     _canFloat?: boolean;
-    boundThrottledMobileFloatScrollHandler: Function;
+    _boundThrottledMobileFloatScrollHandler: Function;
+    _playerBounds: BoundingRect;
 
-    constructor(model: Model, parent: View, elements: { player: HTMLElement; wrapper: HTMLElement; preview: Preview }) {
+    constructor(model: Model, playerBounds: BoundingRect, elements: { player: HTMLElement; wrapper: HTMLElement; preview: Preview }) {
         this._playerEl = elements.player;
         this._wrapperEl = elements.wrapper;
         this._preview = elements.preview;
         this._model = model;
-        this._parent = parent;
         this._floatingUI = new FloatingDragUI(this._wrapperEl);
         this._floatingStoppedForever = false;
         this._lastIntRatio = 0;
+        this._playerBounds = playerBounds;
 
-        this.boundThrottledMobileFloatScrollHandler = this.throttledMobileFloatScrollHandler.bind(this);
+        this._boundThrottledMobileFloatScrollHandler = this.throttledMobileFloatScrollHandler.bind(this);
+
+        this._model.change('floating', this.initFloatingBehavior.bind(this));
     }
     initFloatingBehavior(): void {
         // Don't reinitialize this behavior if the user dismissed the floating player
@@ -52,13 +55,13 @@ export default class FloatingController {
             return;
         }
         // Setup floating scroll handler
-        viewsManager.removeScrollHandler(this.boundThrottledMobileFloatScrollHandler);
+        viewsManager.removeScrollHandler(this._boundThrottledMobileFloatScrollHandler);
         if (this.getFloatingConfig()) {
             const fm = this.getFloatMode();
             if (fm === 'notVisible') {
                 if (OS.mobile) {
-                    viewsManager.addScrollHandler(this.boundThrottledMobileFloatScrollHandler);
-                    this.boundThrottledMobileFloatScrollHandler();
+                    viewsManager.addScrollHandler(this._boundThrottledMobileFloatScrollHandler);
+                    this._boundThrottledMobileFloatScrollHandler();
                 } else {
                     this.checkFloatIntersection();
                 }
@@ -68,6 +71,9 @@ export default class FloatingController {
                 this.stopFloating();
             }
         }
+    }
+    updatePlayerBounds(pb: BoundingRect): void {
+        this._playerBounds = pb;
     }
     getFloatingConfig(): FloatConfig | undefined {
         return this._model.get('floating');
@@ -89,7 +95,7 @@ export default class FloatingController {
         return state !== STATE_IDLE && state !== STATE_ERROR && state !== STATE_COMPLETE;
     }
     startFloating(mobileFloatIntoPlace?: boolean): void {
-        const playerBounds = this._parent.getPlayerBounds();
+        const playerBounds = this._playerBounds;
         if (_floatingPlayer === null) {
             _floatingPlayer = this._playerEl;
 
@@ -126,14 +132,14 @@ export default class FloatingController {
             }
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
-            this._parent.responsiveListener();
+            this._model.trigger('forceResponsiveListener', {});
         }
     }
 
     stopFloating(forever?: boolean, mobileFloatIntoPlace?: boolean): void {
         if (forever) {
             this._floatingStoppedForever = true;
-            viewsManager.removeScrollHandler(this.boundThrottledMobileFloatScrollHandler);
+            viewsManager.removeScrollHandler(this._boundThrottledMobileFloatScrollHandler);
         }
 
         if (_floatingPlayer !== this._playerEl) {
@@ -142,10 +148,10 @@ export default class FloatingController {
 
         _floatingPlayer = null;
         this._model.set('isFloating', false);
-        const playerBounds = this._parent.getPlayerBounds();
+        const playerBounds = this._playerBounds;
         const resetFloatingStyles = () => {
             removeClass(this._playerEl, 'jw-flag-floating');
-            this._parent.onAspectRatioChange(this._model, this._model.get('aspectratio'));
+            this._model.trigger('forceAspectRatioChange', {});
 
             // Wrapper should inherit from parent unless floating.
             style(this._playerEl, { backgroundImage: null }); // Reset to avoid flicker.
@@ -182,16 +188,16 @@ export default class FloatingController {
         this.disableFloatingUI();
 
         // Perform resize and trigger "float" event responsively to prevent layout thrashing
-        this._parent.responsiveListener();
+        this._model.trigger('forceResponsiveListener', {});
     }
 
     updateFloatingSize(): void {
-        const playerBounds = this._parent.getPlayerBounds();
+        const playerBounds = this._playerBounds;
         // Always use aspect ratio to determine floating player size
         // This allows us to support fixed pixel width/height or 100%*100% by matching the player container
         const width = this._model.get('width');
         const height = this._model.get('height');
-        const styles = this._parent.getPlayerSizeStyles(width);
+        const styles = getPlayerSizeStyles(this._model, width);
         styles.maxWidth = Math.min(400, playerBounds.width);
 
         if (!this._model.get('aspectratio')) {
@@ -201,11 +207,12 @@ export default class FloatingController {
             if (isNumber(width) && isNumber(height)) {
                 aspectRatio = height / width;
             }
-            this._parent.onAspectRatioChange(this._model, (aspectRatio * 100) + '%');
+            this._model.trigger('forceAspectRatioChange', { ratio: (aspectRatio * 100) + '%' });
         }
 
         style(this._wrapperEl, styles);
     }
+
     enableFloatingUI(): void {
         this._floatingUI.enable();
     }
@@ -221,7 +228,7 @@ export default class FloatingController {
         }
 
         if (this.getFloatingConfig() && OS.mobile) {
-            viewsManager.removeScrollHandler(this.boundThrottledMobileFloatScrollHandler);
+            viewsManager.removeScrollHandler(this._boundThrottledMobileFloatScrollHandler);
         }
     }
 
@@ -240,7 +247,7 @@ export default class FloatingController {
             return;
         }
         const floating = this._model.get('isFloating');
-        const pb = this._parent.getPlayerBounds();
+        const pb = this._playerBounds;
         const enoughRoomForFloat = pb.top < FLOATING_TOP_OFFSET;
         const hasCrossedThreshold = enoughRoomForFloat ?
             pb.top <= window.scrollY :
@@ -297,7 +304,7 @@ export default class FloatingController {
     }
     updateStyles(): void {
         if (!this._floatingStoppedForever && this.getFloatingConfig() && this.getFloatMode() === 'notVisible') {
-            this.boundThrottledMobileFloatScrollHandler();
+            this._boundThrottledMobileFloatScrollHandler();
         }
     }
 }

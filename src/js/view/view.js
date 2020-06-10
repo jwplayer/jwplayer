@@ -39,6 +39,7 @@ import Preview from 'view/preview';
 import Title from 'view/title';
 import FloatingController from 'view/floating/floating-controller';
 import ResizeListener from 'view/utils/resize-listener';
+import { getPlayerSizeStyles } from 'view/utils/player-size';
 
 if (!__HEADLESS__) {
     require('css/jwplayer.less');
@@ -80,12 +81,13 @@ function View(_api, _model) {
     const firstFloatCfg = _model.get('floating');
     this.dismissible = firstFloatCfg && firstFloatCfg.dismissible;
 
-    const floatingController = new FloatingController(_model, this, {
+    let playerBounds = {};
+
+    const floatingController = new FloatingController(_model, playerBounds, {
         player: _playerElement,
         wrapper: _wrapperElement,
         preview: _preview
     });
-    let playerBounds = {};
 
     let displayClickHandler;
     let fullscreenHelpers;
@@ -98,10 +100,6 @@ function View(_api, _model) {
         return { reason: 'interaction' };
     }
 
-    this.getPlayerBounds = function() {
-        return playerBounds;
-    };
-
     // Compute player size, handle DOM removal/insertion, add to views-manager
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
@@ -112,6 +110,7 @@ function View(_api, _model) {
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
         playerBounds = bounds(_playerElement);
+        floatingController.updatePlayerBounds(playerBounds);
 
         // If the container is the same size as before, return early
         if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
@@ -269,7 +268,7 @@ function View(_api, _model) {
 
         const width = _model.get('width');
         const height = _model.get('height');
-        const styles = getPlayerSizeStyles(width, height);
+        const styles = getPlayerSizeStyles(_model, width, height);
         style(_playerElement, styles);
         _model.change('aspectratio', onAspectRatioChange);
         updateContainerStyles(width, height);
@@ -311,6 +310,13 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
         }
         _model.set('inDom', inDOM);
+
+        // Floating event triggers
+        _model.on('forceAspectRatioChange', (evtArgs) => {
+            const ar = evtArgs.ratio || _model.get('aspectratio');
+            onAspectRatioChange(_model, ar);
+        });
+        _model.on('forceResponsiveListener', _responsiveListener);
     };
 
     function updateVisibility() {
@@ -496,13 +502,11 @@ function View(_api, _model) {
         style(aspectRatioContainer, {
             paddingTop: aspectratio || null
         });
-        if (_this.isSetup && aspectratio && !_model.get('isFloating')) {
-            style(_playerElement, getPlayerSizeStyles(model.get('width')));
+        if (_this.isSetup && aspectratio && !model.get('isFloating')) {
+            style(_playerElement, getPlayerSizeStyles(model, model.get('width')));
             _responsiveUpdate();
         }
     }
-
-    this.onAspectRatioChange = onAspectRatioChange;
 
     function _logoClickHandler(evt) {
         if (!evt.link) {
@@ -592,30 +596,6 @@ function View(_api, _model) {
         }
     };
 
-    function getPlayerSizeStyles(playerWidth, playerHeight, resetAspectMode) {
-        const styles = {
-            width: playerWidth
-        };
-
-        // when jwResize is called remove aspectMode and force layout
-        if (resetAspectMode && playerHeight !== undefined) {
-            _model.set('aspectratio', null);
-        }
-        if (!_model.get('aspectratio')) {
-            // If the height is a pixel value (number) greater than 0, snap it to the minimum supported height
-            // Allow zero to mean "hide the player"
-            let height = playerHeight;
-            if (isNumber(height) && height !== 0) {
-                height = Math.max(height, CONTROLBAR_ONLY_HEIGHT);
-            }
-            styles.height = height;
-        }
-
-        return styles;
-    }
-
-    this.getPlayerSizeStyles = getPlayerSizeStyles;
-
     function _resizeMedia(containerWidth, containerHeight) {
         if (!containerWidth || isNaN(1 * containerWidth)) {
             containerWidth = _model.get('containerWidth');
@@ -642,7 +622,7 @@ function View(_api, _model) {
     }
 
     this.resize = function (playerWidth, playerHeight) {
-        const styles = getPlayerSizeStyles(playerWidth, playerHeight, true);
+        const styles = getPlayerSizeStyles(_model, playerWidth, playerHeight, true);
         const widthSet = playerWidth !== undefined;
         const heightSet = playerHeight !== undefined;
 
