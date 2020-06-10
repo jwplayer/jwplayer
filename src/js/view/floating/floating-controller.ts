@@ -32,10 +32,21 @@ export default class FloatingController {
     _floatingStoppedForever: boolean;
     _lastIntRatio: number;
     _canFloat?: boolean;
+    _isMobile: boolean;
     _boundThrottledMobileFloatScrollHandler: Function;
     _playerBounds: BoundingRect;
+    _boundInitFloatingBehavior: () => void;
 
-    constructor(model: Model, playerBounds: BoundingRect, elements: { player: HTMLElement; wrapper: HTMLElement; preview: Preview }) {
+    constructor(
+        model: Model,
+        playerBounds: BoundingRect,
+        elements: {
+            player: HTMLElement;
+            wrapper: HTMLElement;
+            preview: Preview;
+        },
+        isMobile: boolean = OS.mobile
+    ) {
         this._playerEl = elements.player;
         this._wrapperEl = elements.wrapper;
         this._preview = elements.preview;
@@ -44,10 +55,12 @@ export default class FloatingController {
         this._floatingStoppedForever = false;
         this._lastIntRatio = 0;
         this._playerBounds = playerBounds;
+        this._isMobile = isMobile;
 
         this._boundThrottledMobileFloatScrollHandler = this.throttledMobileFloatScrollHandler.bind(this);
 
-        this._model.change('floating', this.initFloatingBehavior.bind(this));
+        this._boundInitFloatingBehavior = this.initFloatingBehavior.bind(this);
+        this._model.change('floating', this._boundInitFloatingBehavior);
     }
     initFloatingBehavior(): void {
         // Don't reinitialize this behavior if the user dismissed the floating player
@@ -59,7 +72,7 @@ export default class FloatingController {
         if (this.getFloatingConfig()) {
             const fm = this.getFloatMode();
             if (fm === 'notVisible') {
-                if (OS.mobile) {
+                if (this._isMobile) {
                     viewsManager.addScrollHandler(this._boundThrottledMobileFloatScrollHandler);
                     this._boundThrottledMobileFloatScrollHandler();
                 } else {
@@ -88,7 +101,7 @@ export default class FloatingController {
         }
     }
     fosMobileBehavior(): boolean {
-        return OS.mobile && !deviceIsLandscape() && !this._model.get('fullscreen');
+        return this._isMobile && !deviceIsLandscape() && !this._model.get('fullscreen');
     }
     shouldFloatOnViewable(): boolean {
         const state = this._model.get('state');
@@ -227,9 +240,11 @@ export default class FloatingController {
             _floatingPlayer = null;
         }
 
-        if (this.getFloatingConfig() && OS.mobile) {
+        if (this.getFloatingConfig() && this._isMobile) {
             viewsManager.removeScrollHandler(this._boundThrottledMobileFloatScrollHandler);
         }
+
+        this._model.off('change:floating', this._boundInitFloatingBehavior);
     }
 
     updateFloating(intersectionRatio: number, mobileFloatIntoPlace?: boolean): void {
