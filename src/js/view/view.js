@@ -225,6 +225,7 @@ function View(_api, _model) {
     this.setup = function () {
         _preview.setup(_playerElement.querySelector('.jw-preview'));
         _title.setup(_playerElement.querySelector('.jw-title'));
+        floatingController.setup();
 
         _logo = new Logo(_model);
         _logo.setup();

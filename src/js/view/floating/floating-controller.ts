@@ -60,6 +60,8 @@ export default class FloatingController {
         this._boundThrottledMobileFloatScrollHandler = this.throttledMobileFloatScrollHandler.bind(this);
 
         this._boundInitFloatingBehavior = this.initFloatingBehavior.bind(this);
+    }
+    setup(): void {
         this._model.change('floating', this._boundInitFloatingBehavior);
     }
     initFloatingBehavior(): void {

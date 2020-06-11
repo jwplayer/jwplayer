@@ -43,7 +43,6 @@ export default (controller, newConfig) => {
             delete newConfig.floating;
         } else {
             newConfig.floating = newFloatCfg;
-            model.set('floating', newFloatCfg);
         }
     }
 

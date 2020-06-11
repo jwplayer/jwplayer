@@ -82,6 +82,15 @@ describe('FloatingController', function() {
 
         expect(fc._boundThrottledMobileFloatScrollHandler).to.be.a('function')
     });
+    describe('#setup', () => {
+        it('attachs the appropriate event handlers to the model', () => {
+            const fc = createSimpleFloatController();
+            fc._model.change = sinon.spy();
+            fc.setup();
+            expect(fc._model.change.calledWith('floating', fc._boundInitFloatingBehavior)).to.be.true;
+
+        });
+    });
     describe('#initFloatingBehavior', () => {
         let managerResetMethods;
         before(() => {
