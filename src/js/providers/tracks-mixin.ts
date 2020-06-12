@@ -629,13 +629,19 @@ const Tracks: TracksMixin = {
             if (previousActiveCues && previousActiveCues.some(prevCue => cuesMatch(cue, prevCue))) {
                 return false;
             }
-            if ((cue as DataCue).data || cue.value) {
+            if ((cue as DataCue).data) {
                 return true;
             }
-            if (cue.text) {
-                const event = getTextCueMetaEvent(cue);
+            const event = cue.text ? getTextCueMetaEvent(cue) : null;
+            if (event) {
+                if (event.metadataType === 'emsg') {
+                    event.metadata.messageData = cue.value;
+                }
                 this.trigger(MEDIA_META, event);
+            } else if (cue.value) {
+                return true;
             }
+
             return false;
         });
         if (dataCues.length) {
@@ -910,14 +916,12 @@ function _kindSupported(kind: string): boolean {
     return kind === 'subtitles' || kind === 'captions';
 }
 
-function getTextCueMetaEvent(cue: TrackCue): MetadataEvent {
+function getTextCueMetaEvent(cue: TrackCue): MetadataEvent | null {
     let metadata;
     try {
         metadata = JSON.parse(cue.text);
     } catch (e) {
-        metadata = {
-            text: cue.text
-        };
+        return null;
     }
     const event: MetadataEvent = {
         metadata
