@@ -411,14 +411,13 @@ function View(_api, _model) {
     function clickHandlerHelper(api, model, videoLayer) {
         const clickHandler = new ClickHandler(model, videoLayer);
         const controls = model.get('controls');
-        const isTizenApp = model.get('isTizenApp');
         clickHandler.on({
             click: () => {
                 _this.trigger(DISPLAY_CLICK);
                 // Ensures that Firefox focuses the container not the video tag for aria compatibility
                 _getCurrentElement().focus();
 
-                if (!isTizenApp && _controls) {
+                if (_controls) {
                     if (settingsMenuVisible()) {
                         _controls.settingsMenu.close();
                     } else if (infoOverlayVisible()) {
@@ -463,7 +462,7 @@ function View(_api, _model) {
                     }
                 }
             },
-            doubleClick: () => !isTizenApp && _controls && api.setFullscreen()
+            doubleClick: () => _controls && api.setFullscreen()
         });
 
         if (!_isMobile) {
