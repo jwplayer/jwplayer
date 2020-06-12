@@ -225,7 +225,6 @@ function View(_api, _model) {
     this.setup = function () {
         _preview.setup(_playerElement.querySelector('.jw-preview'));
         _title.setup(_playerElement.querySelector('.jw-title'));
-        floatingController.setup();
 
         _logo = new Logo(_model);
         _logo.setup();
@@ -318,6 +317,8 @@ function View(_api, _model) {
             onAspectRatioChange(_model, ar);
         });
         _model.on('forceResponsiveListener', _responsiveListener);
+
+        floatingController.setup();
     };
 
     function updateVisibility() {

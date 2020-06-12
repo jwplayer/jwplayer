@@ -378,6 +378,8 @@ describe('FloatingController', function() {
                 expect(fc._wrapperEl.style.transform).to.eq('');
                 expect(fc._wrapperEl.style.transition).to.eq('');
                 expect(fc._wrapperEl.style['transition-timing-function']).to.eq('');
+
+                expect(fc.getFloatingPlayer()).to.eq(null);
             });
             describe('when mobileFloatIntoPlace is true', () => {
                 it('resets the styles after a timeout', () => {

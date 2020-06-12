@@ -37,9 +37,8 @@ export default (controller, newConfig) => {
 
     if (newConfig.floating) {
         const currFloatCfg = model.get('floating') || {};
-        const currFloatMode = currFloatCfg.mode;
         const newFloatCfg = Object.assign({}, currFloatCfg, newConfig.floating);
-        if (currFloatMode === newFloatCfg.mode || FLOAT_ENUM.indexOf(newFloatCfg.mode) === -1) {
+        if (FLOAT_ENUM.indexOf(newFloatCfg.mode) === -1) {
             delete newConfig.floating;
         } else {
             newConfig.floating = newFloatCfg;
