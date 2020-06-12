@@ -36,6 +36,10 @@ export function isTizen(): boolean {
     return userAgentMatch(/SMART-TV/);
 }
 
+export function isTizenApp(): boolean {
+    return isTizen() && userAgentMatch(/Version\//);
+}
+
 export function isChrome(): boolean {
     return userAgentMatch(/\s(?:(?:Headless)?Chrome|CriOS)\//i) && !isEdge() &&
         !userAgentMatch(/UCBrowser/i) &&
