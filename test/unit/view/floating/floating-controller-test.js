@@ -8,7 +8,6 @@ const createElementsForConstructor = () => {
     // els are not appended to the dom so should be cleaned up when test is over
     for (let i = 0; i < 3; i++) {
         const el = document.createElement('div');
-        el.classList.add('test-el');
         els.push(el);
     }
     return {
@@ -311,7 +310,7 @@ describe('FloatingController', function() {
 
                 clock.next();
                 expect(fc._wrapperEl.style.transform).to.eq('translateY(0px)');
-                expect(fc._wrapperEl.style.transition).to.eq('transform 150ms cubic-bezier(0, 0.25, 0.25, 1) 0s');
+                expect(fc._wrapperEl.style.transition).to.contain('transform 150ms cubic-bezier(0, 0.25, 0.25, 1)');
                 fc.stopFloating();
             });
         });
@@ -388,12 +387,11 @@ describe('FloatingController', function() {
                     fc._model.trigger = sinon.spy();
                     fc.startFloating(true);
                     fc.stopFloating(false, true);
-                    clock.next();
-
-                    expect(fc._wrapperEl.style.transform).to.eq('translateY(0px)');
+                    expect(fc._wrapperEl.style['transition-timing-function']).to.eq('ease-out');
 
                     clock.tick(150);
-                    expect(fc._wrapperEl.style.transform).to.eq('');
+
+                    expect(fc._wrapperEl.style['transition-timing-function']).to.eq('');
                 });
             });
         });
@@ -482,11 +480,14 @@ describe('FloatingController', function() {
             const longEl = document.createElement('div');
             longEl.style.width = '100px';
             longEl.style.height = '5000px'
-            longEl.classList.add('test-el');
-            document.body.append(longEl);
+            longEl.className = 'test-el';
+            document.body.appendChild(longEl);
         });
         after(() => {
-            document.querySelector('.test-el').remove();
+            const testEl = document.querySelector('.test-el');
+            if (testEl) {
+                document.body.removeChild(testEl);
+            }
         });
         afterEach(() => {
             window.scrollTo(0, 0);

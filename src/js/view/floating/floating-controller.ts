@@ -266,9 +266,10 @@ export default class FloatingController {
         const floating = this._model.get('isFloating');
         const pb = this._playerBounds;
         const enoughRoomForFloat = pb.top < FLOATING_TOP_OFFSET;
+        const scrollPos = window.scrollY || window.pageYOffset;
         const hasCrossedThreshold = enoughRoomForFloat ?
-            pb.top <= window.scrollY :
-            pb.top <= window.scrollY + FLOATING_TOP_OFFSET;
+            pb.top <= scrollPos :
+            pb.top <= scrollPos + FLOATING_TOP_OFFSET;
 
         if (!floating && hasCrossedThreshold) {
             this.updateFloating(0, enoughRoomForFloat);
