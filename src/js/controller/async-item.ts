@@ -1,10 +1,20 @@
 import { normalizePlaylistItem } from 'playlist/playlist';
+import { ASYNC_PLAYLIST_ITEM_REJECTED } from 'api/errors';
 // Type only imports
 import Item from 'playlist/item';
 import type Model from 'controller/model';
 import type ApiPublic from 'api/api';
 
 type AsyncCallback = (item: Item, index: number) => Promise<Item | void> | void;
+
+class AsyncItemError extends Error {
+    public code: number;
+    public sourceError: any;
+    constructor (message: string) {
+        super(message);
+        this.code = ASYNC_PLAYLIST_ITEM_REJECTED;
+    }
+}
 
 export class AsyncItemController {
     private index: number;
@@ -15,6 +25,7 @@ export class AsyncItemController {
     private reject!: (error: Error) => void;
     private async: AsyncCallback | null;
     private asyncPromise: Promise<Item | void> | null;
+    private rejected: boolean;
 
     constructor (index: number, model: Model, api: ApiPublic) {
         this.index = index;
@@ -26,10 +37,15 @@ export class AsyncItemController {
         });
         this.async = null;
         this.asyncPromise = null;
+        this.rejected = false;
     }
 
     set callback (handler: AsyncCallback) {
         this.async = handler;
+    }
+
+    get skipped (): boolean {
+        return this.rejected;
     }
 
     run (): Promise<Item> {
@@ -38,6 +54,7 @@ export class AsyncItemController {
         const playlistItem = this.getItem(index);
         if (!playlistItem) {
             const message = index === -1 ? 'No recs item' : `No playlist item at index ${index}`;
+            this.rejected = true;
             reject(new Error(message));
         }
         if (async) {
@@ -53,7 +70,12 @@ export class AsyncItemController {
                         }
                     }
                     resolve(playlistItem);
-                }).catch(reject);
+                }).catch((error) => {
+                    const setActiveItemError = new AsyncItemError('Item skipped by playlist item callback');
+                    setActiveItemError.sourceError = error;
+                    this.rejected = true;
+                    reject(setActiveItemError);
+                });
             } else {
                 this.asyncPromise = null;
             }

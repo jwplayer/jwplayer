@@ -33,6 +33,11 @@ export const SETUP_ERROR_LOADING_CORE_JS = 101000;
 export const SETUP_ERROR_LOADING_PLAYLIST = 102000;
 
 /**
+ * @enum {ErrorCode} Setup failed because the playlist failed to load.
+ */
+export const SETUP_ERROR_ASYNC_SKIPPED_PLAYLIST = 102700;
+
+/**
  * @enum {ErrorCode} An exception occurred while completing player setup.
  */
 export const ERROR_COMPLETING_SETUP = 200001;
@@ -56,6 +61,11 @@ export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
  * @enum {ErrorCode} The current playlist item has no source media.
  */
 export const ERROR_PLAYLIST_ITEM_MISSING_SOURCE = 203640;
+
+/**
+ * @enum {ErrorCode} An error occurred when switching playlist items.
+ */
+export const ASYNC_PLAYLIST_ITEM_REJECTED = 203700;
 
 /**
  * @enum {ErrorCode} Between playlist items, the required provider could not be loaded.

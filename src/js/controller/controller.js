@@ -27,8 +27,18 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
-import { composePlayerError, convertToPlayerError, getPlayAttemptFailedErrorCode, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
-    ERROR_COMPLETING_SETUP, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
+import {
+    composePlayerError,
+    convertToPlayerError,
+    getPlayAttemptFailedErrorCode,
+    MSG_CANT_PLAY_VIDEO,
+    MSG_TECHNICAL_ERROR,
+    ERROR_COMPLETING_SETUP,
+    ERROR_LOADING_PLAYLIST,
+    ERROR_LOADING_PROVIDER,
+    ERROR_LOADING_PLAYLIST_ITEM,
+    ASYNC_PLAYLIST_ITEM_REJECTED
+} from 'api/errors';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -924,6 +934,25 @@ Object.assign(Controller.prototype, {
             const wrappedIndex = wrapPlaylistIndex(index, length);
 
             return _programController.setActiveItem(wrappedIndex).catch(error => {
+                if (error.code === ASYNC_PLAYLIST_ITEM_REJECTED) {
+                    // If all items were rejected throw. This will fail setup with setupError code 102700
+                    const allSkipped = _programController.asyncItems.reduce((skipped, asyncItem) =>
+                        skipped && asyncItem.skipped, true);
+                    if (allSkipped) {
+                        throw error;
+                    }
+                    // If the last item is rejected we need to stop and complete playlist playback. Otherwise,
+                    // shouldAutoAdvance will return true because "nextUp" is out of date.
+                    // "related could not update "nextUp" since we've skipped over "playlistItem" events.
+                    // We'll need to move "nextUp" logic out of "related" and into here or the program-controller
+                    // So that "nextUp" can be updated when rejecting item playback with `setPlaylistItemCallback`.
+                    const restoreAutoAdvance = this.shouldAutoAdvance;
+                    this.shouldAutoAdvance = () => false;
+                    _completeHandler();
+                    _model.attributes.itemReady = true;
+                    this.shouldAutoAdvance = restoreAutoAdvance;
+                    return;
+                }
                 if (error.code >= 151 && error.code <= 162) {
                     error = composePlayerError(error, ERROR_LOADING_PROVIDER);
                 }
