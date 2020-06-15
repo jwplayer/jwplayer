@@ -33,7 +33,7 @@ export const SETUP_ERROR_LOADING_CORE_JS = 101000;
 export const SETUP_ERROR_LOADING_PLAYLIST = 102000;
 
 /**
- * @enum {ErrorCode} Setup failed because the playlist failed to load.
+ * @enum {ErrorCode} Setup failed because all items in the playlist were skipped by the async callback.
  */
 export const SETUP_ERROR_ASYNC_SKIPPED_PLAYLIST = 102700;
 
