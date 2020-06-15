@@ -63,7 +63,7 @@ export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
 export const ERROR_PLAYLIST_ITEM_MISSING_SOURCE = 203640;
 
 /**
- * @enum {ErrorCode} An error occurred when switching playlist items.
+ * @enum {ErrorCode} Reached the end of the playlist while skipping items via async callback.
  */
 export const ASYNC_PLAYLIST_ITEM_REJECTED = 203700;
 
