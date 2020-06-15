@@ -172,7 +172,7 @@ describe('FloatingController', function() {
 
                 expect(fc.startFloating.called).to.be.true;
             });
-        })
+        });
         describe('when float mode is never', () => {
             it('calls #stopFloating', () => {
                 const mockModel = new MockModel();
@@ -186,7 +186,31 @@ describe('FloatingController', function() {
 
                 expect(fc.stopFloating.called).to.be.true;
             });
-        })
+        });
+        it('removes the watcher for floating player variable changes', () => {
+            const currFloat = createSimpleFloatController();
+            currFloat.startFloating();
+
+            const fc = createSimpleFloatController();
+            fc._model.set('floating', {
+                mode: 'always'
+            });
+            //adds a watcher
+            fc.startFloating();
+
+            fc._model.set('floating', {
+                mode: 'notVisible'
+            });
+
+            fc.startFloating = sinon.spy();
+            fc.initFloatingBehavior();
+            expect(fc.startFloating.callCount).to.eq(0);
+            // reset currently floating player
+            currFloat.stopFloating();
+
+            // ensure we don't attempt to start floating the player
+            expect(fc.startFloating.callCount).to.eq(0);
+        });
     });
     describe('#updatePlayerBounds', () => {
         it('updates the internal player bounds of the controller', () => {
@@ -313,6 +337,26 @@ describe('FloatingController', function() {
                 expect(fc._wrapperEl.style.transition).to.contain('transform 150ms cubic-bezier(0, 0.25, 0.25, 1)');
                 fc.stopFloating();
             });
+        });
+        it('only adds one watcher to the current floatingPlayer for changes', () => {
+            //start floating to get floatingPlayer variable set
+            const currFloat = createSimpleFloatController();
+            currFloat.startFloating();
+
+            const fc = createSimpleFloatController();
+            fc._model.set('floating', {
+                mode: 'always'
+            });
+            //adds a watcher
+            fc.startFloating();
+            // should not add an additional watcher
+            fc.startFloating();
+
+            fc.startFloating = sinon.spy();
+            expect(fc.startFloating.callCount).to.eq(0);
+            // reset currently floating player
+            currFloat.stopFloating();
+            expect(fc.startFloating.callCount).to.eq(1);
         });
     });
     describe('#stopFloating', () => {
@@ -469,6 +513,26 @@ describe('FloatingController', function() {
             fc._model.off = sinon.spy();
             fc.destroy();
             expect(fc._model.off.calledWith('change:floating', fc._boundInitFloatingBehavior)).to.be.true;
+        });
+        it('removes the watcher for floating player variable changes', () => {
+            const currFloat = createSimpleFloatController();
+            currFloat.startFloating();
+
+            const fc = createSimpleFloatController();
+            fc._model.set('floating', {
+                mode: 'always'
+            });
+            //adds a watcher
+            fc.startFloating();
+            // should not add an additional watcher
+            fc.startFloating();
+
+            fc.startFloating = sinon.spy();
+            fc.destroy();
+            expect(fc.startFloating.callCount).to.eq(0);
+            // reset currently floating player
+            currFloat.stopFloating();
+            expect(fc.startFloating.callCount).to.eq(0);
         });
     });
     describe('#updateFloating', () => {

@@ -19,7 +19,42 @@ import type { BoundingRect } from 'types/generic.type';
 import { getPlayerSizeStyles } from 'view/utils/player-size';
 
 const FLOATING_TOP_OFFSET = 62;
+
 let _floatingPlayer: HTMLElement | null = null;
+const fpContainer: {
+    floatingPlayer: HTMLElement | null;
+} = {
+    floatingPlayer: _floatingPlayer
+};
+Object.defineProperty(fpContainer, 'floatingPlayer', {
+    get: () => _floatingPlayer,
+    set: (val) => {
+        if (val === _floatingPlayer) {
+            return;
+        }
+        _floatingPlayer = val;
+        const watchersToRun = watchers.concat([]);
+        watchers.length = 0;
+        watchersToRun.forEach(fc => {
+            fc.startFloating();
+        });
+    }
+});
+
+const watchers: FloatingController[] = [];
+const addFPWatcher = (fc: FloatingController) => {
+    if (watchers.indexOf(fc) !== -1) {
+        return;
+    }
+    watchers.push(fc);
+};
+
+const removeFPWatcher = (fc: FloatingController) => {
+    const watcherIDX = watchers.indexOf(fc);
+    if (watcherIDX !== -1) {
+        watchers.splice(watcherIDX, 1);
+    }
+};
 
 export default class FloatingController {
     _playerEl: HTMLElement;
@@ -71,6 +106,7 @@ export default class FloatingController {
         }
         // Setup floating scroll handler
         viewsManager.removeScrollHandler(this._boundThrottledMobileFloatScrollHandler);
+        removeFPWatcher(this);
         if (this.getFloatingConfig()) {
             const fm = this.getFloatMode();
             if (fm === 'notVisible') {
@@ -111,8 +147,8 @@ export default class FloatingController {
     }
     startFloating(mobileFloatIntoPlace?: boolean): void {
         const playerBounds = this._playerBounds;
-        if (_floatingPlayer === null) {
-            _floatingPlayer = this._playerEl;
+        if (this.getFloatingPlayer() === null) {
+            this.setFloatingPlayer(this._playerEl);
 
             this._model.set('isFloating', true);
 
@@ -148,6 +184,8 @@ export default class FloatingController {
 
             // Perform resize and trigger "float" event responsively to prevent layout thrashing
             this._model.trigger('forceResponsiveListener', {});
+        } else if (this.getFloatingPlayer() !== this._playerEl && this.getFloatMode() === 'always') {
+            addFPWatcher(this);
         }
     }
 
@@ -157,11 +195,11 @@ export default class FloatingController {
             viewsManager.removeScrollHandler(this._boundThrottledMobileFloatScrollHandler);
         }
 
-        if (_floatingPlayer !== this._playerEl) {
+        if (this.getFloatingPlayer() !== this._playerEl) {
             return;
         }
 
-        _floatingPlayer = null;
+        this.setFloatingPlayer(null);
         this._model.set('isFloating', false);
         const playerBounds = this._playerBounds;
         const resetFloatingStyles = () => {
@@ -222,6 +260,7 @@ export default class FloatingController {
             if (isNumber(width) && isNumber(height)) {
                 aspectRatio = height / width;
             }
+            // debugger;
             this._model.trigger('forceAspectRatioChange', { ratio: (aspectRatio * 100) + '%' });
         }
 
@@ -234,18 +273,22 @@ export default class FloatingController {
     disableFloatingUI(): void {
         this._floatingUI.disable();
     }
+    setFloatingPlayer(container: HTMLElement | null): void {
+        fpContainer.floatingPlayer = container;
+    }
     getFloatingPlayer(): HTMLElement | null {
-        return _floatingPlayer;
+        return fpContainer.floatingPlayer;
     }
     destroy(): void {
-        if (_floatingPlayer === this._playerEl) {
-            _floatingPlayer = null;
+        if (this.getFloatingPlayer() === this._playerEl) {
+            this.setFloatingPlayer(null);
         }
 
         if (this.getFloatingConfig() && this._isMobile) {
             viewsManager.removeScrollHandler(this._boundThrottledMobileFloatScrollHandler);
         }
 
+        removeFPWatcher(this);
         this._model.off('change:floating', this._boundInitFloatingBehavior);
     }
 
