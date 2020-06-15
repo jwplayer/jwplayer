@@ -45,7 +45,6 @@ export type PlayerModelAttributes = {
     fullscreen: boolean;
     height: number | string;
     id: string;
-    image: string;
     inDom: boolean;
     instreamMode: boolean;
     isFloating?: boolean;

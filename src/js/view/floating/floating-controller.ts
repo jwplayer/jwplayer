@@ -33,7 +33,7 @@ Object.defineProperty(fpContainer, 'floatingPlayer', {
             return;
         }
         _floatingPlayer = val;
-        const watchersToRun = watchers.concat([]);
+        const watchersToRun = watchers.slice();
         watchers.length = 0;
         watchersToRun.forEach(fc => {
             fc.startFloating();
@@ -170,10 +170,10 @@ export default class FloatingController {
                 });
             }
 
-            // Copy background from preview element, fallback to image config.
+            // Copy background from preview element
             const previewEl = this._preview.el as HTMLElement;
             style(this._playerEl, {
-                backgroundImage: previewEl.style.backgroundImage || this._model.get('image')
+                backgroundImage: previewEl.style.backgroundImage
             });
 
             this.updateFloatingSize();
@@ -260,7 +260,6 @@ export default class FloatingController {
             if (isNumber(width) && isNumber(height)) {
                 aspectRatio = height / width;
             }
-            // debugger;
             this._model.trigger('forceAspectRatioChange', { ratio: (aspectRatio * 100) + '%' });
         }
 
