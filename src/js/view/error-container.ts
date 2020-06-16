@@ -4,7 +4,12 @@ import { style } from 'utils/css';
 import type Model from 'controller/model';
 import type { PlayerError } from 'api/errors';
 
-export default function ErrorContainer(model: Model, error: PlayerError): HTMLElement {
+interface ErrorContainer {
+    (model: Model, error: PlayerError): HTMLElement;
+    cloneIcon?: (name: string) => Node | null;
+}
+
+function ErrorContainer(model: Model, error: PlayerError): HTMLElement {
     const { message, code } = error;
     const html = errorContainerTemplate(model.get('id'), message, model.get('localization').errors.errorCode, code.toString());
     const width = model.get('width');
@@ -18,3 +23,5 @@ export default function ErrorContainer(model: Model, error: PlayerError): HTMLEl
 
     return element;
 }
+
+export default ErrorContainer as ErrorContainer;
