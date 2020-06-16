@@ -21,12 +21,14 @@ export type PlayerModelAttributes = {
     _destroyed: boolean;
     audioMode: boolean;
     autostart: AutoStart;
+    autostartFailed?: boolean;
     autostartMuted: boolean;
     bandwidthEstimate: number;
     bitrateSelection: number | null;
     captionLabel: string;
     captionsIndex: number;
     captionsTrack: TextTrackLike;
+    containerWidth: number;
     controlsEnabled: boolean;
     defaultPlaybackRate: number;
     displaytitle: string;
@@ -36,6 +38,10 @@ export type PlayerModelAttributes = {
     enableShortcuts: boolean;
     flashBlocked: boolean;
     flashThrottle?: boolean;
+    floating?: {
+        disable?: boolean;
+        dismissible?: boolean;
+    };
     fullscreen: boolean;
     height: number | string;
     id: string;
@@ -57,6 +63,7 @@ export type PlayerModelAttributes = {
     minDvrWindow: number;
     mute: boolean;
     nextUp: PlaylistItem;
+    nextUpDisplay: boolean;
     pauseReason: PauseReason;
     playbackRate: number;
     playlist: PlaylistItem[];
@@ -72,6 +79,7 @@ export type PlayerModelAttributes = {
     state: InternalPlayerState;
     streamType: StreamType;
     supportsPlaybackRate: boolean;
+    touchMode: boolean;
     viewable?: number;
     volume: number;
     width: number | string;

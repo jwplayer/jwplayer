@@ -12,14 +12,6 @@ type Shortcut = {
     description: string;
 }
 
-type ShortcutsTooltip = {
-    el: HTMLElement;
-    open: () => void;
-    close: () => void;
-    destroy: () => void;
-    toggleVisibility: () => void;
-}
-
 function getShortcuts(shortcuts: StringObject): Shortcut[] {
     const {
         playPause,
@@ -73,90 +65,100 @@ function getShortcuts(shortcuts: StringObject): Shortcut[] {
     ];
 }
 
-export default function (
-    container: HTMLElement,
-    api: PlayerAPI,
-    model: ViewModel,
-    onVisibility: (visible: boolean) => void
-): ShortcutsTooltip {
-    let isOpen = false;
-    let lastState = null;
-    const shortcuts = model.get('localization').shortcuts;
-    const template = createElement(
-        shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts)
-    );
-    const settingsInteraction = { reason: 'settingsInteraction' };
-    const shortcutToggleUi = new UI(template.querySelector('.jw-switch'));
+export default class ShortcutsTooltip {
+    el: HTMLElement;
+    private _container: HTMLElement;
+    private _api: PlayerAPI;
+    private _model: ViewModel;
+    private _onVisibility: (visible: boolean) => void;
+    private isOpen: boolean;
+    private lastState: string | null;
+    private shortcutToggleUi: UI;
+    private settingsInteraction: StringObject;
 
-    const open = () => {
-        shortcutToggleUi.el.setAttribute('aria-checked', model.get('enableShortcuts'));
+    constructor(container: HTMLElement, api: PlayerAPI, model: ViewModel, onVisibility: (visible: boolean) => void) {
+        this._container = container;
+        this._api = api;
+        this._model = model;
+        this._onVisibility = onVisibility;
+        const shortcuts = model.get('localization').shortcuts;
+        this.el = createElement(
+            shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts)
+        );
+        this.shortcutToggleUi = new UI(this.el.querySelector('.jw-switch'));
+        this.isOpen = false;
+        this.lastState = null;
+        this.settingsInteraction = { reason: 'settingsInteraction' };
+        this._render();
+    }
 
-        addClass(template, 'jw-open');
-        lastState = model.get('state');
-        template.querySelector('.jw-shortcuts-close').focus();
-        document.addEventListener('click', documentClickHandler);
-        isOpen = true;
-        api.pause(settingsInteraction);
-        onVisibility(true);
-    };
+    open(): void {
+        this.shortcutToggleUi.el.setAttribute('aria-checked', this._model.get('enableShortcuts'));
 
-    const close = () => {
-        removeClass(template, 'jw-open');
-        document.removeEventListener('click', documentClickHandler);
-        isOpen = false;
-        if (lastState === STATE_PLAYING) {
-            api.play(settingsInteraction);
+        addClass(this.el, 'jw-open');
+        this.lastState = this._model.get('state');
+        const shortcutsClose = this.el.querySelector('.jw-shortcuts-close') as HTMLElement;
+        if (shortcutsClose) {
+            shortcutsClose.focus();
         }
-        onVisibility(false);
-    };
+        document.addEventListener('click', this._documentClickHandler);
+        this.isOpen = true;
+        this._api.pause(this.settingsInteraction);
+        this._onVisibility(true);
+    }
 
-    const destroy = () => {
-        close();
-        shortcutToggleUi.destroy();
-    };
+    close(): void {
+        removeClass(this.el, 'jw-open');
+        document.removeEventListener('click', this._documentClickHandler);
+        this.isOpen = false;
+        if (this.lastState === STATE_PLAYING) {
+            this._api.play(this.settingsInteraction);
+        }
+        this._onVisibility(false);
+    }
 
-    const documentClickHandler = (e: Event) => {
+    destroy(): void {
+        this.close();
+        this.shortcutToggleUi.destroy();
+    }
+
+    toggleVisibility(): void {
+        if (this.isOpen) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+
+    _documentClickHandler(e: Event): void {
         const target = e.target as HTMLElement;
         if (!/jw-shortcuts|jw-switch/.test(target.className)) {
-            close();
+            this.close();
         }
-    };
+    }
 
-    const toggleClickHandler = (e: Event) => {
+    _toggleClickHandler(e: Event): void {
         const toggle = e.currentTarget as HTMLElement;
         const isChecked = toggle.getAttribute('aria-checked') !== 'true';
         toggle.setAttribute('aria-checked', isChecked.toString());
-        model.set('enableShortcuts', isChecked);
-    };
+        this._model.set('enableShortcuts', isChecked);
+    }
 
-    const toggleVisibility = () => {
-        if (isOpen) {
-            close();
-        } else {
-            open();
-        }
-    };
-
-    const render = () => {
-        const closeButton = button('jw-shortcuts-close', close, model.get('localization').close, [cloneIcon('close')]);
+    _render(): void {
+        const closeButton = button(
+            'jw-shortcuts-close',
+            close,
+            this._model.get('localization').close,
+            [cloneIcon('close')]
+        );
 
         //  Append close button to modal.
-        prependChild(template, closeButton.element());
+        prependChild(this.el, closeButton.element());
         closeButton.show();
 
         //  Append modal to container
-        container.appendChild(template);
+        this._container.appendChild(this.el);
 
-        shortcutToggleUi.on('click tap enter', toggleClickHandler);
-    };
-
-    render();
-
-    return {
-        el: template,
-        open,
-        close,
-        destroy,
-        toggleVisibility
-    };
+        this.shortcutToggleUi.on('click tap enter', this._toggleClickHandler);
+    }
 }

@@ -7,7 +7,7 @@ import { now } from 'utils/date';
 import button from 'view/controls/components/button';
 import Controlbar from 'view/controls/controlbar';
 import DisplayContainer from 'view/controls/display-container';
-import NextUpToolTip from 'view/controls/nextuptooltip';
+import NextUpTooltip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import SettingsMenu from 'view/controls/components/menu/settings-menu.js';
 import { getBreakpoint } from 'view/utils/breakpoint';
@@ -17,6 +17,9 @@ import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
 import FloatingCloseButton from 'view/floating-close-button';
+import type { Button } from 'view/controls/components/button';
+import type { PlayerAPI } from 'types/generic.type';
+import type ViewModel from 'view/view-model';
 
 require('css/controls.less');
 
@@ -25,24 +28,158 @@ const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 const ALWAYS_ALLOWED_KEYS = [27];
 
 ErrorContainer.cloneIcon = cloneIcon;
-instances.forEach(api => {
+instances.forEach((api: PlayerAPI) => {
     if (api.getState() === STATE_ERROR) {
         const errorIconContainer = api.getContainer().querySelector('.jw-error-msg .jw-icon');
-        if (errorIconContainer && !errorIconContainer.hasChildNodes()) {
+        if (errorIconContainer && !errorIconContainer.hasChildNodes() && ErrorContainer.cloneIcon) {
             errorIconContainer.appendChild(ErrorContainer.cloneIcon('error'));
         }
     }
 });
 
-const reasonInteraction = function () {
+const reasonInteraction = () => {
     return { reason: 'interaction' };
 };
-export default class Controls extends Events {
-    constructor(context, playerContainer) {
-        super();
 
-        // Alphabetic order
-        // Any property on the prototype should be initialized here first
+interface BaseControls {
+    activeTimeout: number;
+    backdrop: HTMLElement | null;
+    context: HTMLDocument;
+    controlbar: Controlbar | null;
+    dimensions: {
+        cbHeight?: number;
+    };
+    div: HTMLElement | null;
+    inactiveTime: number;
+    instreamState: boolean | null;
+    keydownCallback: ((evt: Event) => void) | null;
+    keyupCallback: ((evt: Event) => void) | null;
+    playerContainer: HTMLElement;
+    settingsMenu: SettingsMenu | null;
+    showing: boolean;
+    userInactiveTimeout: () => void;
+    wrapperElement: HTMLElement | null;
+}
+
+abstract class BaseControls extends Events {
+    abstract enable(api: PlayerAPI, model: ViewModel): void;
+    abstract disable(model: ViewModel): void;
+
+    resetActiveTimeout(): void {
+        clearTimeout(this.activeTimeout);
+        this.activeTimeout = -1;
+        this.inactiveTime = 0;
+    }
+
+    userActive(timeout: number = ACTIVE_TIMEOUT): void {
+        if (timeout > 0) {
+            this.inactiveTime = now() + timeout;
+            if (this.activeTimeout === -1) {
+                this.activeTimeout = setTimeout(this.userInactiveTimeout, timeout);
+            }
+        } else {
+            this.resetActiveTimeout();
+        }
+        if (!this.showing) {
+            removeClass(this.playerContainer, 'jw-flag-user-inactive');
+            this.showing = true;
+            this.trigger('userActive');
+        }
+    }
+
+    userInactive(): void {
+        clearTimeout(this.activeTimeout);
+        this.activeTimeout = -1;
+        if (this.settingsMenu.visible) {
+            return;
+        }
+        this.inactiveTime = 0;
+        this.showing = false;
+        addClass(this.playerContainer, 'jw-flag-user-inactive');
+        this.trigger('userInactive');
+    }
+
+    addControls(): void {
+        // Put the controls element inside the wrapper
+        if (this.div && this.wrapperElement) {
+            this.wrapperElement.appendChild(this.div);
+        }
+    }
+
+    addBackdrop(): void {
+        // Put the backdrop element on top of overlays during instream mode
+        // otherwise keep it behind captions and on top of preview poster
+        if (this.backdrop && this.wrapperElement) {
+            const element = this.instreamState ? this.div : this.wrapperElement.querySelector('.jw-captions');
+            this.wrapperElement.insertBefore(this.backdrop, element);
+        }
+    }
+
+    removeBackdrop(): void {
+        if (this.backdrop) {
+            const parent = this.backdrop.parentNode;
+            if (parent) {
+                parent.removeChild(this.backdrop);
+            }
+        }
+    }
+
+    controlbarHeight(): number {
+        if (!this.dimensions.cbHeight) {
+            this.dimensions.cbHeight = this.controlbar.element().clientHeight as number;
+        }
+        return this.dimensions.cbHeight;
+    }
+
+    element(): HTMLElement | null {
+        return this.div;
+    }
+
+    resize(): void {
+        this.dimensions = {};
+    }
+
+    setupInstream(): void {
+        this.instreamState = true;
+        // Call Controls.userActivity to display the UI temporarily for the start of the ad
+        this.userActive();
+        this.addBackdrop();
+        if (this.settingsMenu) {
+            this.settingsMenu.close();
+        }
+        removeClass(this.playerContainer, 'jw-flag-autostart');
+        this.controlbar.elements.time.element().setAttribute('tabindex', '-1');
+    }
+
+    destroyInstream(model: ViewModel): void {
+        this.instreamState = null;
+        this.addBackdrop();
+        if (model.get('autostartMuted')) {
+            addClass(this.playerContainer, 'jw-flag-autostart');
+        }
+        this.controlbar.elements.time.element().setAttribute('tabindex', '0');
+    }
+}
+
+interface Controls extends BaseControls {
+    blurCallback: ((evt: Event) => void) | null;
+    displayContainer: DisplayContainer | null;
+    enabled: boolean;
+    focusPlayerElement: () => void;
+    infoOverlay: InfoOverlay | null;
+    logo: HTMLElement | null;
+    mute: Button | null;
+    muteChangeCallback: ((muteModel: ViewModel, val: boolean) => void) | null;
+    nextUpTooltip: NextUpTooltip | null;
+    onRemoveShortcutsDescription?: () => void;
+    rightClickMenu: RightClick | null;
+    shortcutsTooltip: ShortcutsTooltip | null;
+    unmuteCallback: (() => void) | null;
+}
+
+class Controls extends BaseControls {
+    constructor(context: HTMLDocument, playerContainer: HTMLElement) {
+        super();
         this.activeTimeout = -1;
         this.inactiveTime = 0;
         this.context = context;
@@ -55,7 +192,7 @@ export default class Controls extends Events {
         this.keyupCallback = null;
         this.blurCallback = null;
         this.mute = null;
-        this.nextUpToolTip = null;
+        this.nextUpTooltip = null;
         this.playerContainer = playerContainer;
         this.wrapperElement = playerContainer.querySelector('.jw-wrapper');
         this.rightClickMenu = null;
@@ -83,13 +220,7 @@ export default class Controls extends Events {
         };
     }
 
-    resetActiveTimeout() {
-        clearTimeout(this.activeTimeout);
-        this.activeTimeout = -1;
-        this.inactiveTime = 0;
-    }
-
-    enable(api, model) {
+    enable(api: PlayerAPI, model: ViewModel): void {
         const element = this.context.createElement('div');
         element.className = 'jw-controls jw-reset';
         this.div = element;
@@ -104,7 +235,10 @@ export default class Controls extends Events {
 
         this.focusPlayerElement = () => {
             if (model.get('isFloating')) {
-                this.wrapperElement.querySelector('video').focus();
+                const videoElement = this.wrapperElement && this.wrapperElement.querySelector('video');
+                if (videoElement) {
+                    videoElement.focus();
+                }
             } else {
                 this.playerContainer.focus();
             }
@@ -130,13 +264,16 @@ export default class Controls extends Events {
             toggleClass(this.div, 'jw-info-open', visible);
             if (visible) {
                 //  Focus modal close button on open
-                this.div.querySelector('.jw-info-close').focus();
+                const modalCloseButton = this.div && this.div.querySelector('.jw-info-close') as HTMLElement;
+                if (modalCloseButton) {
+                    modalCloseButton.focus();
+                }
             } else {
                 this.focusPlayerElement();
             }
         });
-        //  Add keyboard shortcuts if not on mobi;e
-        if (!OS.mobile) {
+        //  Add keyboard shortcuts if not on mobile
+        if (!OS.mobile && this.wrapperElement) {
             this.shortcutsTooltip = new ShortcutsTooltip(this.wrapperElement, api, model, visible => {
                 if (!visible) {
                     this.focusPlayerElement();
@@ -178,20 +315,20 @@ export default class Controls extends Events {
             this.once('userInactive', this.focusPlayerElement, this);
             this.userActive();
         });
-        controlbar.on('nextShown', function (data) {
+        controlbar.on('nextShown', (data) => {
             this.trigger('nextShown', data);
-        }, this);
+        });
         controlbar.on('adjustVolume', adjustVolume, this);
 
         // Next Up Tooltip
-        if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
-            const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
-            nextUpToolTip.on('all', this.trigger, this);
-            nextUpToolTip.setup(this.context);
-            controlbar.nextUpToolTip = nextUpToolTip;
+        if (model.get('nextUpDisplay') && !controlbar.nextUpTooltip) {
+            const nextUpTooltip = new NextUpTooltip(model, api, this.playerContainer);
+            nextUpTooltip.on('all', this.trigger, this);
+            nextUpTooltip.setup(this.context);
+            controlbar.nextUpTooltip = nextUpTooltip;
 
             // NextUp needs to be behind the controlbar to not block other tooltips
-            this.div.appendChild(nextUpToolTip.element());
+            this.div.appendChild(nextUpTooltip.element());
         }
 
         this.div.appendChild(controlbar.element());
@@ -243,7 +380,7 @@ export default class Controls extends Events {
         const setupUnmuteAutoplay = (_model) => {
             if (_model.get('autostartMuted')) {
                 const unmuteCallback = () => this.unmuteAutoplay(api, _model);
-                const muteChangeCallback = (muteModel, val) => {
+                const muteChangeCallback = (muteModel: ViewModel, val: boolean) => {
                     if (!val) {
                         unmuteCallback();
                     }
@@ -254,7 +391,9 @@ export default class Controls extends Events {
                     this.mute = button('jw-autostart-mute jw-off', unmuteCallback, _model.get('localization').unmute,
                         [cloneIcon('volume-0')]);
                     this.mute.show();
-                    this.div.appendChild(this.mute.element());
+                    if (this.div) {
+                        this.div.appendChild(this.mute.element());
+                    }
                 }
 
                 // Set mute state in the controlbar
@@ -272,7 +411,7 @@ export default class Controls extends Events {
         setupUnmuteAutoplay(model);
 
         // Keyboard Commands
-        function adjustSeek(amount) {
+        function adjustSeek(amount: number): void {
             let min = 0;
             let max = model.get('duration');
             const position = model.get('position');
@@ -285,12 +424,12 @@ export default class Controls extends Events {
             api.seek(newSeek, reasonInteraction());
         }
 
-        function adjustVolume(amount) {
+        function adjustVolume(amount: number): void {
             const newVol = between(model.get('volume') + amount, 0, 100);
             api.setVolume(newVol);
         }
 
-        const handleKeydown = (evt) => {
+        const handleKeydown = (evt: KeyboardEvent) => {
             // If Meta keys return
             if (evt.ctrlKey || evt.metaKey) {
                 // Let event bubble upwards
@@ -330,7 +469,9 @@ export default class Controls extends Events {
                     break;
                 case 13: // enter
                 case 32: // space
-                    if (document.activeElement.classList.contains('jw-switch') && evt.keyCode === 13) {
+                    if (document.activeElement &&
+                        document.activeElement.classList.contains('jw-switch') &&
+                        evt.keyCode === 13) {
                         // Let event bubble up so the spacebar can control the toggle if focused on
                         return true;
                     }
@@ -386,7 +527,7 @@ export default class Controls extends Events {
                     }
             }
 
-            if (/13|32|37|38|39|40/.test(evt.keyCode)) {
+            if (/13|32|37|38|39|40/.test(evt.keyCode.toString())) {
                 // Prevent keypresses from scrolling the screen
                 evt.preventDefault();
                 return false;
@@ -454,14 +595,9 @@ export default class Controls extends Events {
         model.set('controlsEnabled', true);
     }
 
-    addControls() {
-        // Put the controls element inside the wrapper
-        this.wrapperElement.appendChild(this.div);
-    }
-
-    disable(model) {
+    disable(model: ViewModel): void {
         const {
-            nextUpToolTip,
+            nextUpTooltip,
             settingsMenu,
             infoOverlay,
             controlbar,
@@ -479,7 +615,7 @@ export default class Controls extends Events {
         model.off(null, null, this);
         model.set('controlsEnabled', false);
 
-        if (div.parentNode) {
+        if (div && div.parentNode) {
             removeClass(playerContainer, 'jw-flag-touch');
             div.parentNode.removeChild(div);
         }
@@ -512,8 +648,8 @@ export default class Controls extends Events {
             this.displayContainer.destroy();
         }
 
-        if (nextUpToolTip) {
-            nextUpToolTip.destroy();
+        if (nextUpTooltip) {
+            nextUpTooltip.destroy();
         }
 
         if (settingsMenu) {
@@ -531,22 +667,7 @@ export default class Controls extends Events {
         this.removeBackdrop();
     }
 
-    controlbarHeight() {
-        if (!this.dimensions.cbHeight) {
-            this.dimensions.cbHeight = this.controlbar.element().clientHeight;
-        }
-        return this.dimensions.cbHeight;
-    }
-
-    element() {
-        return this.div;
-    }
-
-    resize() {
-        this.dimensions = {};
-    }
-
-    unmuteAutoplay(api, model) {
+    unmuteAutoplay(api: PlayerAPI, model: ViewModel): void {
         const autostartSucceeded = !model.get('autostartFailed');
         let mute = model.get('mute');
 
@@ -579,76 +700,16 @@ export default class Controls extends Events {
         this.userActive();
     }
 
-    mouseMove(event) {
+    mouseMove(event: MouseEvent): void {
         const insideControlbar = this.controlbar.element().contains(event.target);
-        const insideNextUp = this.controlbar.nextUpToolTip &&
-            this.controlbar.nextUpToolTip.element().contains(event.target);
-        const insideLogo = this.logo && this.logo.contains(event.target);
+        const insideNextUp = this.controlbar.nextUpTooltip &&
+            this.controlbar.nextUpTooltip.element().contains(event.target);
+        const insideLogo = this.logo && this.logo.contains(event.target as Node);
         const activeTimeout = (insideControlbar || insideNextUp || insideLogo) ? 0 : ACTIVE_TIMEOUT;
 
         this.userActive(activeTimeout);
     }
-
-    userActive(timeout = ACTIVE_TIMEOUT) {
-        if (timeout > 0) {
-            this.inactiveTime = now() + timeout;
-            if (this.activeTimeout === -1) {
-                this.activeTimeout = setTimeout(this.userInactiveTimeout, timeout);
-            }
-        } else {
-            this.resetActiveTimeout();
-        }
-        if (!this.showing) {
-            removeClass(this.playerContainer, 'jw-flag-user-inactive');
-            this.showing = true;
-            this.trigger('userActive');
-        }
-    }
-
-    userInactive() {
-        clearTimeout(this.activeTimeout);
-        this.activeTimeout = -1;
-        if (this.settingsMenu.visible) {
-            return;
-        }
-        this.inactiveTime = 0;
-        this.showing = false;
-        addClass(this.playerContainer, 'jw-flag-user-inactive');
-        this.trigger('userInactive');
-    }
-
-    addBackdrop() {
-        // Put the backdrop element on top of overlays during instream mode
-        // otherwise keep it behind captions and on top of preview poster
-        const element = this.instreamState ? this.div : this.wrapperElement.querySelector('.jw-captions');
-        this.wrapperElement.insertBefore(this.backdrop, element);
-    }
-
-    removeBackdrop() {
-        const parent = this.backdrop.parentNode;
-        if (parent) {
-            parent.removeChild(this.backdrop);
-        }
-    }
-
-    setupInstream() {
-        this.instreamState = true;
-        // Call Controls.userActivity to display the UI temporarily for the start of the ad
-        this.userActive();
-        this.addBackdrop();
-        if (this.settingsMenu) {
-            this.settingsMenu.close();
-        }
-        removeClass(this.playerContainer, 'jw-flag-autostart');
-        this.controlbar.elements.time.element().setAttribute('tabindex', '-1');
-    }
-
-    destroyInstream(model) {
-        this.instreamState = null;
-        this.addBackdrop();
-        if (model.get('autostartMuted')) {
-            addClass(this.playerContainer, 'jw-flag-autostart');
-        }
-        this.controlbar.elements.time.element().setAttribute('tabindex', '0');
-    }
 }
+
+export { BaseControls };
+export default Controls;
