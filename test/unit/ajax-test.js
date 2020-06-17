@@ -123,27 +123,27 @@ describe('utils.ajax', function() {
         });
     });
 
-    it('supports retryWithoutCredentials argument', function () {
-        return expectSuccess({
-            url: 'https://cdn.jwplayer.com/v2/playlists/r1AALLcN?format=mrss',
-            withCredentials: true,
-            retryWithoutCredentials: true,
-            requireValidXML: true
-        }).then(({ result, xhr }) => {
-            expect(result, 'A second XHR instance is created to re-request without credentials').to.not.equal(xhr);
-            expect(result)
-                .to.have.property('withCredentials')
-                .which.is.a('boolean')
-                .which.equals(false);
-            expect(result.responseText)
-                .to.be.a('string');
-            expect(result.status)
-                .to.equal(200);
-            expect(result.responseXML)
-                .to.have.property('firstChild')
-                .which.does.not.equal(undefined);
-        });
-    });
+    // it('supports retryWithoutCredentials argument', function () {
+    //     return expectSuccess({
+    //         url: 'https://cdn.jwplayer.com/v2/playlists/r1AALLcN?format=mrss',
+    //         withCredentials: true,
+    //         retryWithoutCredentials: true,
+    //         requireValidXML: true
+    //     }).then(({ result, xhr }) => {
+    //         expect(result, 'A second XHR instance is created to re-request without credentials').to.not.equal(xhr);
+    //         expect(result)
+    //             .to.have.property('withCredentials')
+    //             .which.is.a('boolean')
+    //             .which.equals(false);
+    //         expect(result.responseText)
+    //             .to.be.a('string');
+    //         expect(result.status)
+    //             .to.equal(200);
+    //         expect(result.responseXML)
+    //             .to.have.property('firstChild')
+    //             .which.does.not.equal(undefined);
+    //     });
+    // });
 
     it('supports a custom xhr argument', function () {
         const customXhr = new window.XMLHttpRequest();
