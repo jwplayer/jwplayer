@@ -32,6 +32,11 @@ class ProgramController extends Events {
         this.asyncItems = [];
         this.itemSetContext = 0;
 
+        if (__HEADLESS__) {
+            // Headless player will call setContainer with an empty object or null to signal whether it should display content
+            model.set('mediaContainer', {});
+        }
+
         if (!this.backgroundLoading) {
             // If background loading is not supported, set the shared media element
             model.set('mediaElement', this.mediaPool.getPrimedElement());
@@ -47,7 +52,7 @@ class ProgramController extends Events {
     asyncActiveItem(index) {
         const { model } = this;
         // Set the player state to buffering if there is a playlist item callback
-        const deferBufferingState = setTimeout(() => {
+        const deferBufferingState = __HEADLESS__ ? -1 : setTimeout(() => {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         }, 50);
         return this.getAsyncItem(index).run().then((playlistItem) => {

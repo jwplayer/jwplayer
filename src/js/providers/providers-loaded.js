@@ -1,2 +1,1 @@
-const ProvidersLoaded = {};
-export default ProvidersLoaded;
+export const ProvidersLoaded = {};

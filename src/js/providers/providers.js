@@ -1,26 +1,16 @@
-import ProvidersSupported from 'providers/providers-supported';
-import registerProvider from 'providers/providers-register';
-import ProvidersLoaded from 'providers/providers-loaded';
-import { chunkLoadErrorHandler } from '../api/core-loader';
+import { SupportsMatrix } from 'providers/providers-supported';
+import { ProvidersLoaded } from 'providers/providers-loaded';
+import { Loaders } from 'providers/provider-loaders';
 
 function Providers(config) {
     this.config = config || {};
 }
 
-export const Loaders = {
-    html5: function() {
-        return require.ensure(['providers/html5'], function(require) {
-            const provider = require('providers/html5').default;
-            registerProvider(provider);
-            return provider;
-        }, chunkLoadErrorHandler(152), 'provider.html5');
-    }
-};
-
 Object.assign(Providers.prototype, {
 
     load: function(providerName) {
-        const providerLoaderMethod = Loaders[providerName];
+        const providerLoaders = __HEADLESS__ ? {} : Loaders;
+        const providerLoaderMethod = providerLoaders[providerName];
         const rejectLoad = () => {
             return Promise.reject(new Error('Failed to load media'));
         };
@@ -45,9 +35,9 @@ Object.assign(Providers.prototype, {
     // Find the name of the first provider which can support the media source-type
     choose: function(source) {
         if (source === Object(source)) {
-            const count = ProvidersSupported.length;
+            const count = SupportsMatrix.length;
             for (let i = 0; i < count; i++) {
-                const provider = ProvidersSupported[i];
+                const provider = SupportsMatrix[i];
                 if (this.providerSupports(provider, source)) {
                     // prefer earlier providers
                     const priority = count - i - 1;

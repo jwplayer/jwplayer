@@ -1,4 +1,5 @@
-import Providers, { Loaders } from 'providers/providers';
+import Providers from 'providers/providers';
+import { Loaders } from 'providers/provider-loaders';
 import Source from 'playlist/source';
 import _ from 'utils/underscore';
 

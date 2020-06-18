@@ -13,6 +13,7 @@ const compileConstants = {
     __SELF_HOSTED__: true,
     __REPO__: `''`,
     __DEBUG__: false,
+    __HEADLESS__: false,
     __BUILD_VERSION__: `'${getBuildVersion()}'`,
     __FLASH_VERSION__: 18
 };
@@ -78,8 +79,8 @@ const webpackConfig = {
                         babelrc: false,
                         presets: [
                             ['@babel/preset-env', { loose: true, modules: false }],
-                            ["@babel/preset-typescript", {
-                                "onlyRemoveTypeImports": true
+                            ['@babel/preset-typescript', {
+                                onlyRemoveTypeImports: true
                             }]
                         ],
                         plugins: [

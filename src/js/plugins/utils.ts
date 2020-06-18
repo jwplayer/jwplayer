@@ -13,14 +13,19 @@ export function getPluginErrorCode(pluginURL: string): number {
 
 export function configurePlugin(pluginObj: PluginObj, pluginConfig: GenericObject, api: PlayerAPI): PluginObj {
     const pluginName = pluginObj.name;
+    const pluginOptions = Object.assign({}, pluginConfig);
+
+    if (__HEADLESS__) {
+        const pluginInstance = pluginObj.getNewInstance(api, pluginOptions);
+        api.addPlugin(pluginName, pluginInstance);
+        return pluginInstance;
+    }
 
     const div = document.createElement('div');
     div.id = api.id + '_' + pluginName;
     div.className = 'jw-plugin jw-reset';
 
-    const pluginOptions = Object.assign({}, pluginConfig);
     const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
-
     api.addPlugin(pluginName, pluginInstance);
     return pluginInstance;
 }

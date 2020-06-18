@@ -28,6 +28,9 @@ function coreFactory(api, element) {
         event.setupTime = api._qoe.between('setup', 'ready');
     });
     core.on('all', (type, event) => {
+        if (__HEADLESS__ && __DEBUG__) {
+            console.log('[core trigger]', type);
+        }
         api.trigger(type, event);
     });
 
@@ -51,7 +54,9 @@ function resetPlayer(api, core) {
     }
     api.off();
     core.playerDestroy();
-    core.getContainer().removeAttribute('data-jwplayer-id');
+    if (!__HEADLESS__) {
+        core.getContainer().removeAttribute('data-jwplayer-id');
+    }
 }
 
 /**
@@ -88,7 +93,9 @@ export default function Api(element) {
     let core = coreFactory(this, element);
 
     qoeTimer.tick('init');
-    element.setAttribute('data-jwplayer-id', playerId);
+    if (!__HEADLESS__) {
+        element.setAttribute('data-jwplayer-id', playerId);
+    }
 
     Object.defineProperties(this, /** @lends Api.prototype */ {
         /**
