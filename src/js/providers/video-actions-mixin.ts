@@ -1,7 +1,7 @@
 import { Browser, OS } from 'environment/environment';
 import { style, transform } from 'utils/css';
 import endOfRange from 'utils/time-ranges';
-import type { ProviderWithMixins } from './default';
+import type { ProviderWithMixins } from 'providers/default';
 import type { GenericObject } from 'types/generic.type';
 
 export interface VideoActionsInt {

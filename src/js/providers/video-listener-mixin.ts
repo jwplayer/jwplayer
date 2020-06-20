@@ -3,6 +3,7 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING
     MEDIA_BUFFER, MEDIA_META, MEDIA_TIME, MEDIA_SEEKED, MEDIA_VOLUME, MEDIA_MUTE, MEDIA_COMPLETE
 } from 'events/events';
 import { between } from 'utils/math';
+import type { ProviderEvents, ProviderWithMixins } from 'providers/default';
 
 // This will trigger the events required by jwplayer model to
 //  properly follow the state of the video tag
@@ -11,8 +12,23 @@ import { between } from 'utils/math';
 //  1. All functions are bound to the "this" of the provider
 //  2. The provider has an attribute "video" which is the video tag
 
-const VideoListenerMixin = {
-    canplay() {
+export interface VideoListenerInt {
+    canplay(): void;
+    play(): void;
+    loadedmetadata(): void;
+    timeupdate(): void;
+    click(evt: Event): void;
+    volumechange(): void;
+    seeked(): void;
+    playing(): void;
+    pause(): void;
+    progress(): void;
+    ratechange(): void;
+    ended(): void;
+}
+
+const VideoListenerMixin: VideoListenerInt = {
+    canplay(this: ProviderWithMixins): void {
         // If we're not rendering natively text tracks will be provided from another source - don't duplicate them here
         if (this.renderNatively) {
             this.setTextTracks(this.video.textTracks);
@@ -20,15 +36,15 @@ const VideoListenerMixin = {
         this.trigger(MEDIA_BUFFER_FULL);
     },
 
-    play() {
+    play(this: ProviderWithMixins): void {
         this.stallTime = -1;
         if (!this.video.paused && this.state !== STATE_PLAYING) {
             this.setState(STATE_LOADING);
         }
     },
 
-    loadedmetadata() {
-        const metadata = {
+    loadedmetadata(this: ProviderWithMixins): void {
+        const metadata: ProviderEvents['meta'] = {
             metadataType: 'media',
             duration: this.getDuration(),
             height: this.video.videoHeight,
@@ -42,10 +58,7 @@ const VideoListenerMixin = {
         this.trigger(MEDIA_META, metadata);
     },
 
-    loadeddata() {
-    },
-
-    timeupdate() {
+    timeupdate(this: ProviderWithMixins): void {
         const currentTime = this.video.currentTime;
         const position = this.getCurrentTime();
         const duration = this.getDuration();
@@ -62,7 +75,7 @@ const VideoListenerMixin = {
         }
 
 
-        const timeEventObject = {
+        const timeEventObject: ProviderEvents['time'] = {
             position,
             duration,
             currentTime: currentTime,
@@ -89,11 +102,11 @@ const VideoListenerMixin = {
         }
     },
 
-    click(evt) {
+    click(this: ProviderWithMixins, evt: Event): void {
         this.trigger(CLICK, evt);
     },
 
-    volumechange() {
+    volumechange(this: ProviderWithMixins): void {
         const video = this.video;
 
         this.trigger(MEDIA_VOLUME, {
@@ -105,7 +118,7 @@ const VideoListenerMixin = {
         });
     },
 
-    seeked() {
+    seeked(this: ProviderWithMixins): void {
         if (!this.seeking) {
             return;
         }
@@ -113,7 +126,7 @@ const VideoListenerMixin = {
         this.trigger(MEDIA_SEEKED);
     },
 
-    playing() {
+    playing(this: ProviderWithMixins): void {
         // When stalling, STATE_PLAYING is only set on timeupdate
         // because Safari and Firefox will fire "playing" before playback recovers from stalling
         if (this.stallTime === -1) {
@@ -123,7 +136,7 @@ const VideoListenerMixin = {
         this.trigger(PROVIDER_FIRST_FRAME);
     },
 
-    pause() {
+    pause(this: ProviderWithMixins): void {
         // Sometimes the browser will fire "complete" and then a "pause" event
         if (this.state === STATE_COMPLETE) {
             return;
@@ -141,7 +154,7 @@ const VideoListenerMixin = {
         this.setState(STATE_PAUSED);
     },
 
-    progress() {
+    progress(this: ProviderWithMixins): void {
         const dur = this.getDuration();
         if (dur <= 0 || dur === Infinity) {
             return;
@@ -161,13 +174,11 @@ const VideoListenerMixin = {
         });
     },
 
-    ratechange() {
+    ratechange(this: ProviderWithMixins): void {
         this.trigger(MEDIA_RATE_CHANGE, { playbackRate: this.video.playbackRate });
     },
 
-    ended() {
-        this.videoHeight = 0;
-        this.streamBitrate = -1;
+    ended(this: ProviderWithMixins): void {
         if (this.state !== STATE_IDLE && this.state !== STATE_COMPLETE) {
             this.trigger(MEDIA_COMPLETE);
         }

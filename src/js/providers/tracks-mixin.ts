@@ -2,10 +2,10 @@ import { loadFile, cancelXhr } from 'controller/tracks-loader';
 import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser, OS } from 'environment/environment';
-import { MEDIA_META_CUE_PARSED, MEDIA_META, WARNING } from 'events/events';
+import { MEDIA_META_CUE_PARSED, MEDIA_META, WARNING, SUBTITLES_TRACKS, SUBTITLES_TRACK_CHANGED } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
-import type { TextTrackLike, MetadataEvent } from 'types/generic.type';
-import type { ProviderWithMixins } from './default';
+import type { TextTrackLike } from 'types/generic.type';
+import type { ProviderEvents, ProviderWithMixins } from './default';
 import type { PlaylistItemTrack } from 'playlist/track';
 
 type TrackCue = (VTTCue | DataCue | TextTrackCue) & {
@@ -267,7 +267,7 @@ const Tracks: TracksMixin = {
         });
 
         if (this._textTracks && this._textTracks.length) {
-            this.trigger('subtitlesTracks', { tracks: this._textTracks });
+            this.trigger(SUBTITLES_TRACKS, { tracks: this._textTracks });
         }
         return textTracks;
     },
@@ -377,7 +377,7 @@ const Tracks: TracksMixin = {
         }
 
         if (this._textTracks && this._textTracks.length) {
-            this.trigger('subtitlesTracks', { tracks: this._textTracks });
+            this.trigger(SUBTITLES_TRACKS, { tracks: this._textTracks });
         }
     },
     addTrackListeners(tracks: TextTrackList): void {
@@ -455,7 +455,7 @@ const Tracks: TracksMixin = {
         }
 
         // Update the model index since the track change may have come from a browser event
-        this.trigger('subtitlesTrackChanged', {
+        this.trigger(SUBTITLES_TRACK_CHANGED, {
             currentTrack: this._currentTextTrackIndex + 1,
             tracks: this._textTracks
         });
@@ -504,7 +504,7 @@ const Tracks: TracksMixin = {
                 'default': false
             };
             this.addTextTracks([track]);
-            this.trigger('subtitlesTracks', { tracks: this._textTracks });
+            this.trigger(SUBTITLES_TRACKS, { tracks: this._textTracks as TextTrackLike[] });
         }
 
         let cueId;
@@ -637,6 +637,7 @@ const Tracks: TracksMixin = {
             const event = cue.text ? getTextCueMetaEvent(cue) : null;
             if (event) {
                 if (event.metadataType === 'emsg') {
+                    event.metadata = event.metadata || {};
                     event.metadata.messageData = cue.value;
                 }
                 this.trigger(MEDIA_META, event);
@@ -918,28 +919,25 @@ function _kindSupported(kind: string): boolean {
     return kind === 'subtitles' || kind === 'captions';
 }
 
-function getTextCueMetaEvent(cue: TrackCue): MetadataEvent | null {
+function getTextCueMetaEvent(cue: TrackCue): ProviderEvents['meta'] | null {
     let metadata;
     try {
         metadata = JSON.parse(cue.text);
     } catch (e) {
         return null;
     }
-    const event: MetadataEvent = {
+    const event: ProviderEvents['meta'] = {
+        metadataType: metadata.metadataType,
+        metadataTime: cue.startTime,
         metadata
     };
-    event.metadataTime = cue.startTime;
     if (metadata.programDateTime) {
         event.programDateTime = metadata.programDateTime;
-    }
-    if (metadata.metadataType) {
-        event.metadataType = metadata.metadataType;
-        delete metadata.metadataType;
     }
     return event;
 }
 
-function getId3CueMetaEvent(dataCues: TrackCueParsed[]): MetadataEvent {
+function getId3CueMetaEvent(dataCues: TrackCueParsed[]): ProviderEvents['metadataCueParsed'] {
     const metadata = parseID3(dataCues);
     const metadataTime = dataCues[0].startTime;
     return {

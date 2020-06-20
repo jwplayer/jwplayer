@@ -58,13 +58,6 @@ export type TextTrackLike = TextTrack & {
     file?: string;
 };
 
-export type MetadataEvent = {
-    metadataTime?: number;
-    metadataType?: string;
-    metadata: GenericObject;
-    programDateTime?: string;
-};
-
 // Move to utils/dom.ts
 export type BoundingRect = {
     left: number;
