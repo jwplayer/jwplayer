@@ -11,17 +11,14 @@ import { prependChild, setAttribute, toggleClass, openLink } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
-import { isLanguageRtl } from 'utils/language';
 
-function text(name, role, language) {
+function text(name, role) {
     const element = document.createElement('span');
-    element.className = 'jw-text jw-reset ' + name;
+    element.className = 'jw-text jw-reset-text ' + name;
     if (role) {
         setAttribute(element, 'role', role);
     }
-    if (language && isLanguageRtl(language)) {
-        element.style.direction = 'rtl';
-    }
+    setAttribute(element, 'dir', 'auto');
     return element;
 }
 
@@ -154,7 +151,7 @@ export default class Controlbar {
         liveButton.element().textContent = localization.liveBroadcast;
 
         const elements = this.elements = {
-            alt: text('jw-text-alt', 'status', _model.get('language')),
+            alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
                 _api.playToggle(reasonInteraction());
             }, localization.play, cloneIcons('play,pause,stop')),

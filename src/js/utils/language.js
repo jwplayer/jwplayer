@@ -100,10 +100,6 @@ export function isRtl(message) {
     return message.charCodeAt(0) === 8207 || rtlRegex.test(message);
 }
 
-export function isLanguageRtl(language) {
-    return ['ar', 'arc', 'dv', 'fa', 'ha', 'he', 'khw', 'ks', 'ku', 'ps', 'ur', 'yi'].indexOf(normalizeLanguageCode(language)) >= 0;
-}
-
 export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(normalizeLanguageCode(language)) >= 0;
 }

@@ -497,27 +497,5 @@ describe('languageUtils', function() {
             expect(Language.isRtl('\u200fإرجاع بـ10 ثواني')).to.be.true;
         });
     });
-
-    describe('isLanguageRtl', function() {
-        it('should be true when language is RTL', function() {
-            expect(Language.isLanguageRtl('ar')).to.be.true;
-            expect(Language.isLanguageRtl('ar-DZ')).to.be.true;
-            expect(Language.isLanguageRtl('he')).to.be.true;
-            expect(Language.isLanguageRtl('arc')).to.be.true;
-            expect(Language.isLanguageRtl('yi')).to.be.true;
-            expect(Language.isLanguageRtl('ur')).to.be.true;
-            expect(Language.isLanguageRtl('fa')).to.be.true;
-            expect(Language.isLanguageRtl('ps')).to.be.true;
-            expect(Language.isLanguageRtl('ku')).to.be.true;
-            expect(Language.isLanguageRtl('dv')).to.be.true;
-            expect(Language.isLanguageRtl('ha')).to.be.true;
-            expect(Language.isLanguageRtl('khw')).to.be.true;
-            expect(Language.isLanguageRtl('ks')).to.be.true;
-
-            expect(Language.isLanguageRtl('am')).to.be.false;
-            expect(Language.isLanguageRtl('fr')).to.be.false;
-            expect(Language.isLanguageRtl('en-US')).to.be.false;
-        });
-    });
 });
 
