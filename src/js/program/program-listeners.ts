@@ -1,42 +1,50 @@
 import { isValidNumber, isNumber } from 'utils/underscore';
-import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
+import {
+    PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_RATE_CHANGE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
     MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META, MEDIA_SEEK, MEDIA_SEEKED,
-    NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, BANDWIDTH_ESTIMATE, WARNING } from 'events/events';
+    NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, BANDWIDTH_ESTIMATE, WARNING, SUBTITLES_TRACKS, SUBTITLES_TRACK_CHANGED
+} from 'events/events';
+import type Model from 'controller/model';
+import type ProgramController from 'program/program-controller';
+import type MediaController from 'program/media-controller';
+import type { AllProviderEventsListener, AllProviderEvents, ProviderEvents } from 'providers/default';
+import type { PlayerError } from 'api/errors';
 
-export function ProviderListener(mediaController) {
-    return function (type, data) {
+export function ProviderListener(mediaController: MediaController): AllProviderEventsListener {
+    return function<E extends keyof AllProviderEvents>(type: E, data: AllProviderEvents[E]): void {
         const { mediaModel } = mediaController;
-        const event = Object.assign({}, data, {
+        const event: AllProviderEvents[E] & { type: E } = Object.assign({}, data, {
             type: type
         });
 
         switch (type) {
             case MEDIA_TYPE:
-                if (mediaModel.get(MEDIA_TYPE) === data.mediaType) {
+                if (mediaModel.get(MEDIA_TYPE) === (event as ProviderEvents['mediaType']).mediaType) {
                     return;
                 }
-                mediaModel.set(MEDIA_TYPE, data.mediaType);
+                mediaModel.set(MEDIA_TYPE, (event as ProviderEvents['mediaType']).mediaType);
                 break;
             case MEDIA_VISUAL_QUALITY:
                 mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
                 return;
             case MEDIA_MUTE:
                 // Only forward and queue mute changes
-                if (data[type] === mediaController.model.getMute()) {
+                if (data[MEDIA_MUTE] === mediaController.model.getMute()) {
                     return;
                 }
                 break;
             case PLAYER_STATE: {
-                if (data.newstate === STATE_IDLE) {
+                const { newstate } = data as ProviderEvents['state'];
+                if (newstate === STATE_IDLE) {
                     mediaController.thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
                 // Always fire change:mediaState to keep player model in sync
                 const previousState = mediaModel.attributes.mediaState;
-                mediaModel.attributes.mediaState = data.newstate;
-                mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
+                mediaModel.attributes.mediaState = newstate;
+                mediaModel.trigger('change:mediaState', mediaModel, newstate, previousState);
                 break;
             }
             case MEDIA_COMPLETE:
@@ -54,29 +62,29 @@ export function ProviderListener(mediaController) {
                     // A MEDIA_ERROR received before setup is a preload error
                     // We stop propagation here allow the player to try loading once more when playback is initiated
                     // MEDIA_ERROR codes are in the 200,000 range; adding 100,000 puts it in the 300,000 warning range.
-                    type = WARNING;
-                    event.code += 100000;
+                    type = WARNING as E;
+                    (event as PlayerError).code += 100000;
                 }
                 break;
             case MEDIA_META: {
-                if (!event.metadataType) {
-                    event.metadataType = 'unknown';
+                const { duration, metadataType, seekRange } = data as ProviderEvents['meta'];
+                if (!metadataType) {
+                    (event as ProviderEvents['meta']).metadataType = 'unknown';
                 }
-                const duration = data.duration;
                 if (isValidNumber(duration)) {
-                    mediaModel.set('seekRange', data.seekRange);
+                    mediaModel.set('seekRange', seekRange);
                     mediaModel.set('duration', duration);
                 }
                 break;
             }
             case MEDIA_BUFFER:
-                mediaModel.set('buffer', data.bufferPercent);
+                mediaModel.set('buffer', (data as ProviderEvents['bufferChange']).bufferPercent);
                 /* falls through to update duration while media is loaded */
             case MEDIA_TIME: {
-                mediaModel.set('seekRange', data.seekRange);
-                mediaModel.set('position', data.position);
-                mediaModel.set('currentTime', data.currentTime);
-                const duration = data.duration;
+                mediaModel.set('seekRange', (data as ProviderEvents['time']).seekRange);
+                mediaModel.set('position', (data as ProviderEvents['time']).position);
+                mediaModel.set('currentTime', (data as ProviderEvents['time']).currentTime);
+                const duration = (data as ProviderEvents['time']).duration;
                 if (isValidNumber(duration)) {
                     mediaModel.set('duration', duration);
                 }
@@ -94,23 +102,23 @@ export function ProviderListener(mediaController) {
                 break;
             }
             case MEDIA_LEVELS:
-                mediaModel.set(MEDIA_LEVELS, data.levels);
+                mediaModel.set(MEDIA_LEVELS, (data as ProviderEvents['levels']).levels);
                 /* falls through to update current level */
             case MEDIA_LEVEL_CHANGED: {
-                const { currentQuality, levels } = data;
+                const { currentQuality, levels } = data as ProviderEvents['levelsChanged'];
                 if (currentQuality > -1 && levels.length > 1) {
-                    mediaModel.set('currentLevel', parseInt(currentQuality));
+                    mediaModel.set('currentLevel', parseInt(currentQuality as any));
                 }
                 break;
             }
             case AUDIO_TRACKS:
-                mediaModel.set(AUDIO_TRACKS, data.tracks);
+                mediaModel.set(AUDIO_TRACKS, (data as ProviderEvents['audioTracks']).tracks);
                 /* falls through to update current track */
             case AUDIO_TRACK_CHANGED: {
-                const { currentTrack, tracks } = data;
+                const { currentTrack, tracks } = data as ProviderEvents['audioTrackChanged'];
 
                 if (currentTrack > -1 && tracks.length > 0 && currentTrack < tracks.length) {
-                    mediaModel.set('currentAudioTrack', parseInt(currentTrack));
+                    mediaModel.set('currentAudioTrack', parseInt(currentTrack as any));
                 }
                 break;
             }
@@ -122,8 +130,10 @@ export function ProviderListener(mediaController) {
     };
 }
 
-export function MediaControllerListener(model, programController) {
-    return function (type, data) {
+type AllMediaEventsListener = <E extends keyof AllProviderEventsListener>(type: E, data: AllProviderEventsListener[E] & { type: E }) => void;
+
+export function MediaControllerListener(model: Model, programController: ProgramController): AllMediaEventsListener {
+    return function<E extends keyof AllProviderEventsListener>(type: E, event: AllProviderEventsListener[E] & { type: E }): void {
         switch (type) {
             case PLAYER_STATE:
                 // This "return" is important because
@@ -132,42 +142,44 @@ export function MediaControllerListener(model, programController) {
                 return;
             case 'flashThrottle':
             case 'flashBlocked':
-                model.set(type, data.value);
+                model.set(type, (event as ProviderEvents['flashBlocked']).value);
                 return;
             case MEDIA_VOLUME:
-                model.set(type, data[type]);
+                model.set(MEDIA_VOLUME, event[MEDIA_VOLUME]);
                 return;
             case MEDIA_MUTE:
-                model.set(type, data[type]);
+                model.set(MEDIA_MUTE, event[MEDIA_MUTE]);
                 return;
             case MEDIA_RATE_CHANGE:
-                model.set('playbackRate', data.playbackRate);
+                model.set('playbackRate', (event as ProviderEvents['ratechange']).playbackRate);
                 return;
             case MEDIA_META: {
-                Object.assign(model.get('itemMeta'), data.metadata);
+                Object.assign(model.get('itemMeta'), (event as ProviderEvents['meta']).metadata);
                 break;
             }
             case MEDIA_LEVEL_CHANGED:
-                model.persistQualityLevel(data.currentQuality, data.levels);
+                model.persistQualityLevel((event as ProviderEvents['levelsChanged']).currentQuality,
+                    (event as ProviderEvents['levelsChanged']).levels);
                 break;
-            case 'subtitlesTrackChanged':
-                model.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
+            case SUBTITLES_TRACK_CHANGED:
+                model.persistVideoSubtitleTrack((event as ProviderEvents['subtitlesTrackChanged']).currentTrack,
+                    (event as ProviderEvents['subtitlesTrackChanged']).tracks);
                 break;
             case MEDIA_TIME:
             case MEDIA_SEEK:
             case MEDIA_SEEKED:
             case NATIVE_FULLSCREEN:
-            case 'subtitlesTracks':
+            case SUBTITLES_TRACKS:
             case 'subtitlesTracksData':
-                model.trigger(type, data);
+                model.trigger(type, event);
                 break;
             case BANDWIDTH_ESTIMATE: {
-                model.persistBandwidthEstimate(data.bandwidthEstimate);
+                model.persistBandwidthEstimate((event as ProviderEvents['bandwidthEstimate']).bandwidthEstimate);
                 return;
             }
             default:
         }
 
-        programController.trigger(type, data);
+        programController.trigger(type, event);
     };
 }

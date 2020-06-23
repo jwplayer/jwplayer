@@ -48,7 +48,7 @@ export type ProviderEvents = {
         seekRange?: SeekRange;
     };
     [Event.MEDIA_META]: {
-        metadataType: 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity';
+        metadataType: 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity' | 'unknown';
         metadataTime?: number;
         metadata?: GenericObject;
         programDateTime?: string;
@@ -130,6 +130,8 @@ export type ProviderEvents = {
     [Event.CLICK]: Event;
     [Event.WARNING]: PlayerError;
     [Event.MEDIA_ERROR]: PlayerError;
+    flashThrottle: { value: any };
+    flashBlocked: { value: any };
 }
 
 type ProviderEventNotifications = {
@@ -215,6 +217,9 @@ export interface ImplementedProvider extends InternalProvider {
 
     prototype: Omit<ImplementedProvider, 'prototype'>;
 }
+
+export type AllProviderEvents = ProviderEvents & ProviderEventNotifications;
+export type AllProviderEventsListener = <E extends keyof AllProviderEvents>(type: E, data: AllProviderEvents[E]) => void;
 
 export type ProviderWithMixins = TracksMixin & VideoActionsInt & VideoAttachedInt & VideoListenerInt & ImplementedProvider & {
     drmUsed?: 'widevine' | 'playready' | 'clearkey' | null;
