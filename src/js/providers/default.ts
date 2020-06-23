@@ -34,9 +34,6 @@ export type ProviderEvents = {
     [Event.BANDWIDTH_ESTIMATE]: {
         bandwidthEstimate: number;
     };
-    [Event.MEDIA_SEEK]: {
-        position: number; offset: number;
-    };
     [Event.MEDIA_META_CUE_PARSED]: {
         metadataType: 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity';
         metadataTime?: number;
@@ -58,29 +55,6 @@ export type ProviderEvents = {
         seekRange?: SeekRange;
         drm?: 'widevine' | 'playready' | 'clearkey' | null;
     };
-    [Event.MEDIA_VISUAL_QUALITY]: {
-        reason: 'auto';
-        mode: 'auto' | 'manual';
-        bitrate: number;
-        level: {
-            width: number;
-            height: number;
-            index: number;
-            label: string;
-        };
-    };
-    [Event.MEDIA_LEVELS]: {
-        levels: {
-            label: string;
-        }[];
-        currentQuality: number;
-    };
-    [Event.MEDIA_LEVEL_CHANGED]: {
-        levels: {
-            label: string;
-        }[];
-        currentQuality: number;
-    };
     [Event.MEDIA_BUFFER]: {
         bufferPercent: number;
         position: number;
@@ -99,8 +73,35 @@ export type ProviderEvents = {
             mpegts?: number;
         };
     };
+    [Event.MEDIA_SEEK]: {
+        position: number;
+        offset: number;
+    };
     [Event.MEDIA_RATE_CHANGE]: {
         playbackRate: number;
+    };
+    [Event.MEDIA_VISUAL_QUALITY]: {
+        reason: 'initial choice' | 'auto' | 'api';
+        mode: 'auto' | 'manual';
+        bitrate: number;
+        level: {
+            width: number;
+            height: number;
+            index: number;
+            label: string;
+        };
+    };
+    [Event.MEDIA_LEVELS]: {
+        currentQuality: number;
+        levels: {
+            label: string;
+        }[];
+    };
+    [Event.MEDIA_LEVEL_CHANGED]: {
+        currentQuality: number;
+        levels: {
+            label: string;
+        }[];
     };
     [Event.AUDIO_TRACKS]: {
         currentTrack: number;
