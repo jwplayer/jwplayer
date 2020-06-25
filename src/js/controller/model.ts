@@ -33,6 +33,7 @@ export type PlayerModelAttributes = {
     displaydescription: string;
     dvrSeekLimit: number;
     displayPlaybackLabel: boolean;
+    enableShortcuts: boolean;
     flashBlocked: boolean;
     flashThrottle?: boolean;
     fullscreen: boolean;

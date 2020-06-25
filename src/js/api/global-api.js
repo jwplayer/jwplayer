@@ -1,7 +1,7 @@
-import availableProviders from 'providers/providers-supported';
+import { SupportsMatrix } from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 
 export default {
-    availableProviders,
+    availableProviders: SupportsMatrix,
     registerProvider
 };

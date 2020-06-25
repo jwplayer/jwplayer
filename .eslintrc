@@ -11,7 +11,8 @@
         "__REPO__": false,
         "__SELF_HOSTED__": false,
         "__DEBUG__": false,
-        "__BUILD_VERSION__": false
+        "__BUILD_VERSION__": false,
+        "__HEADLESS__": false
     },
     "parserOptions": {
         "sourceType": "module"
@@ -27,8 +28,12 @@
             "error",
             {
                 "name": "VTTCue",
-                "message": "import VTTCue from 'parsers/captions/vttcue'"
+                "message": "import VTTCue from 'os/parsers/captions/vttcue'"
             }
+        ],
+        "no-restricted-properties": [2,
+            { "property": "findIndex" },  // Intended to block usage of Array.prototype.findIndex
+            { "property": "find" }        // Intended to block usage of Array.prototype.find
         ],
         "no-for-of-loops/no-for-of-loops": 2,
         "no-unsanitized/method": 2,

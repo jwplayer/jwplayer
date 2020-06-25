@@ -41,8 +41,9 @@ import Title from 'view/title';
 import FloatingDragUI from 'view/floating-drag-ui';
 import ResizeListener from 'view/utils/resize-listener';
 
-
-require('css/jwplayer.less');
+if (!__HEADLESS__) {
+    require('css/jwplayer.less');
+}
 
 let ControlsModule;
 

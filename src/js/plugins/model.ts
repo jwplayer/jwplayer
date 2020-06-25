@@ -9,7 +9,7 @@ class PluginModel {
     setupPlugin(url: string): Promise<PluginObj> {
         const registeredPlugin = this.getPlugin(url);
         if (registeredPlugin) {
-            if (registeredPlugin.url !== url) {
+            if (registeredPlugin.url !== url && !__HEADLESS__) {
                 log(`JW Plugin "${getPluginName(url)}" already loaded from "${registeredPlugin.url}". Ignoring "${url}."`);
             }
             return registeredPlugin.promise;
