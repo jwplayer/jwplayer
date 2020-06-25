@@ -1,7 +1,7 @@
 import { loadFile, cancelXhr } from 'controller/tracks-loader';
 import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
-import { Browser } from 'environment/environment';
+import { Browser, OS } from 'environment/environment';
 import { MEDIA_META_CUE_PARSED, MEDIA_META, WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
 import type { TextTrackLike, MetadataEvent } from 'types/generic.type';
@@ -211,12 +211,13 @@ const Tracks: TracksMixin = {
     disableTextTrack(): void {
         const track = this.getCurrentTextTrack();
         if (track) {
-            // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
-            track.mode = 'disabled';
+            // IOS native captions does not remove the active cue from the dom when the track is disabled, so we must hide it
             const trackId = track._id;
-            if (trackId && trackId.indexOf('nativecaptions') === 0) {
+            if ((trackId && trackId.indexOf('nativecaptions') === 0) || (this.renderNatively && OS.iOS)) {
                 track.mode = 'hidden';
             }
+            // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
+            track.mode = 'disabled';
         }
     },
     enableTextTrack(): void {
