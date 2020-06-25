@@ -14,10 +14,11 @@ import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 
 function text(name, role) {
     const element = document.createElement('span');
-    element.className = 'jw-text jw-reset ' + name;
+    element.className = 'jw-text jw-reset-text ' + name;
     if (role) {
         setAttribute(element, 'role', role);
     }
+    setAttribute(element, 'dir', 'auto');
     return element;
 }
 

@@ -31,13 +31,15 @@ const noop: () => void = () => {
 function supportsPassive(): boolean {
     let passiveOptionRead = false;
 
-    try {
-        const opts: GenericObject = Object.defineProperty({}, 'passive', {
-            get: () => (passiveOptionRead = true)
-        });
-        window.addEventListener('testPassive', noop, opts);
-        window.removeEventListener('testPassive', noop, opts);
-    } catch (e) {/* noop */}
+    if (!__HEADLESS__) {
+        try {
+            const opts: GenericObject = Object.defineProperty({}, 'passive', {
+                get: () => (passiveOptionRead = true)
+            });
+            window.addEventListener('testPassive', noop, opts);
+            window.removeEventListener('testPassive', noop, opts);
+        } catch (e) {/* noop */}
+    }
 
     return passiveOptionRead;
 }
@@ -184,7 +186,7 @@ Object.defineProperties(Features, {
         enumerable: true
     },
     backgroundLoading: {
-        get: memoize(() => !(OS.iOS || Browser.safari || OS.tizen)),
+        get: memoize(() => __HEADLESS__ || !(OS.iOS || Browser.safari || OS.tizen)),
         enumerable: true
     }
 });

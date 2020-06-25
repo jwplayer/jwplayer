@@ -4,34 +4,47 @@ import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import { between } from 'utils/math';
 import { bounds, createElement } from 'utils/dom';
+import type { BoundingRect } from 'types/generic.type';
 
-const getRailBounds = function(elementRail) {
+interface Slider {
+    className: string;
+    orientation: string;
+    ui: UI;
+    el: HTMLElement;
+    elementRail: HTMLElement;
+    elementBuffer: HTMLElement;
+    elementProgress: HTMLElement;
+    elementThumb: HTMLElement;
+    railBounds?: BoundingRect;
+}
+
+const getRailBounds = function(elementRail: HTMLElement): BoundingRect {
     const railBounds = bounds(elementRail);
     // Partial workaround of Android 'inert-visual-viewport'
     // https://bugs.chromium.org/p/chromium/issues/detail?id=489206
     const pageXOffset = window.pageXOffset;
-    if (pageXOffset && OS.android && document.body.parentElement.getBoundingClientRect().left >= 0) {
+    if (pageXOffset && OS.android && document.body.parentElement &&
+        document.body.parentElement.getBoundingClientRect().left >= 0) {
         railBounds.left -= pageXOffset;
         railBounds.right -= pageXOffset;
     }
     return railBounds;
 };
 
-export default class Slider {
-    constructor(className, orientation) {
-        Object.assign(this, Events);
-
+class Slider extends Events {
+    constructor(className: string, orientation: string) {
+        super();
         this.className = className + ' jw-background-color jw-reset';
         this.orientation = orientation;
     }
 
-    setup() {
+    setup(): void {
         this.el = createElement(sliderTemplate(this.className, 'jw-slider-' + this.orientation));
 
-        this.elementRail = this.el.getElementsByClassName('jw-slider-container')[0];
-        this.elementBuffer = this.el.getElementsByClassName('jw-buffer')[0];
-        this.elementProgress = this.el.getElementsByClassName('jw-progress')[0];
-        this.elementThumb = this.el.getElementsByClassName('jw-knob')[0];
+        this.elementRail = this.el.getElementsByClassName('jw-slider-container')[0] as HTMLElement;
+        this.elementBuffer = this.el.getElementsByClassName('jw-buffer')[0] as HTMLElement;
+        this.elementProgress = this.el.getElementsByClassName('jw-progress')[0] as HTMLElement;
+        this.elementThumb = this.el.getElementsByClassName('jw-knob')[0] as HTMLElement;
 
         this.ui = new UI(this.element(), { preventScrolling: true })
             .on('dragStart', this.dragStart, this)
@@ -40,20 +53,20 @@ export default class Slider {
             .on('click tap', this.tap, this);
     }
 
-    dragStart() {
+    dragStart(): void {
         this.trigger('dragStart');
         this.railBounds = getRailBounds(this.elementRail);
     }
 
-    dragEnd(evt) {
-        this.dragMove(evt);
+    dragEnd(evt: Event): void {
+        this.dragMove(evt as MouseEvent);
         this.trigger('dragEnd');
     }
 
-    dragMove(evt) {
+    dragMove(evt: MouseEvent): boolean {
         const railBounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail);
-        let dimension;
-        let percentage;
+        let dimension: number;
+        let percentage: number;
 
         if (this.orientation === 'horizontal') {
             dimension = evt.pageX;
@@ -82,21 +95,21 @@ export default class Slider {
         return false;
     }
 
-    tap(evt) {
+    tap(evt: Event): void {
         this.railBounds = getRailBounds(this.elementRail);
-        this.dragMove(evt);
+        this.dragMove(evt as MouseEvent);
     }
 
-    limit(percentage) {
+    limit(percentage: number): number {
         // modules that extend Slider can set limits on the percentage (TimeSlider)
         return percentage;
     }
 
-    update(percentage) {
+    update(percentage: number): void {
         this.trigger('update', { percentage: percentage });
     }
 
-    render(percentage) {
+    render(percentage: number): void {
         percentage = Math.max(0, Math.min(percentage, 100));
 
         if (this.orientation === 'horizontal') {
@@ -108,11 +121,13 @@ export default class Slider {
         }
     }
 
-    updateBuffer(percentage) {
+    updateBuffer(percentage: number): void {
         this.elementBuffer.style.width = percentage + '%';
     }
 
-    element() {
+    element(): HTMLElement {
         return this.el;
     }
 }
+
+export default Slider;

@@ -27,8 +27,18 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
-import { composePlayerError, convertToPlayerError, getPlayAttemptFailedErrorCode, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
-    ERROR_COMPLETING_SETUP, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
+import {
+    composePlayerError,
+    convertToPlayerError,
+    getPlayAttemptFailedErrorCode,
+    MSG_CANT_PLAY_VIDEO,
+    MSG_TECHNICAL_ERROR,
+    ERROR_COMPLETING_SETUP,
+    ERROR_LOADING_PLAYLIST,
+    ERROR_LOADING_PROVIDER,
+    ERROR_LOADING_PLAYLIST_ITEM,
+    ASYNC_PLAYLIST_ITEM_REJECTED
+} from 'api/errors';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -77,15 +87,23 @@ Object.assign(Controller.prototype, {
 
         const _backgroundLoading = _model.get('backgroundLoading');
 
-        const viewModel = new ViewModel(_model);
+        if (__HEADLESS__) {
+            _model.attributes.visibility = 1.0;
+        } else {
+            const viewModel = new ViewModel(_model);
 
-        _view = this._view = new View(_api, viewModel);
-        _view.on('all', (type, event) => {
-            if (event && event.doNotForward) {
-                return;
-            }
-            _trigger(type, event);
-        }, _this);
+            _view = this._view = new View(_api, viewModel);
+            _view.on('all', (type, event) => {
+                if (event && event.doNotForward) {
+                    return;
+                }
+                _trigger(type, event);
+            }, _this);
+
+            viewModel.on('viewSetup', (viewElement) => {
+                showView(this, viewElement);
+            });
+        }
 
         const _programController = this._programController = new ProgramController(_model, mediaPool, _api._publicApi);
         updateProgramSoundSettings();
@@ -210,26 +228,27 @@ Object.assign(Controller.prototype, {
         });
 
         // Ensure captionsList event is raised after playlistItem
-        _captions = new Captions(_model);
-        _captions.on('all', _trigger, _this);
-
-        viewModel.on('viewSetup', (viewElement) => {
-            showView(this, viewElement);
-        });
+        if (!__HEADLESS__) {
+            _captions = new Captions(_model);
+            _captions.on('all', _trigger, _this);
+        }
 
         this.playerReady = function() {
+            if (__HEADLESS__) {
+                playerReadyNotify();
+            } else {
+                // Fire 'ready' once the view has resized so that player width and height are available
+                // (requires the container to be in the DOM)
+                _view.once(RESIZE, () => {
+                    try {
+                        playerReadyNotify();
+                    } catch (error) {
+                        _this.triggerError(convertToPlayerError(MSG_TECHNICAL_ERROR, ERROR_COMPLETING_SETUP, error));
+                    }
+                });
 
-            // Fire 'ready' once the view has resized so that player width and height are available
-            // (requires the container to be in the DOM)
-            _view.once(RESIZE, () => {
-                try {
-                    playerReadyNotify();
-                } catch (error) {
-                    _this.triggerError(convertToPlayerError(MSG_TECHNICAL_ERROR, ERROR_COMPLETING_SETUP, error));
-                }
-            });
-
-            _view.init();
+                _view.init();
+            }
         };
 
         function playerReadyNotify() {
@@ -340,7 +359,7 @@ Object.assign(Controller.prototype, {
             if (_model.get('state') === 'idle' && _model.get('autostart') === false) {
                 // If video has not been primed on Android, test that video will play before preloading
                 // This ensures we always prime the tag on play when necessary
-                if (!mediaPool.primed() && OS.android) {
+                if (!__HEADLESS__ && !mediaPool.primed() && OS.android) {
                     const video = mediaPool.getTestElement();
                     const muted = _this.getMute();
                     Promise.resolve().then(() => startPlayback(video, { muted })).then(() => {
@@ -572,7 +591,8 @@ Object.assign(Controller.prototype, {
 
             // Detect and store browser autoplay setting in the model.
             const adConfig = _model.get('advertising');
-            canAutoplay(mediaPool, {
+            const autoPlayCheck = __HEADLESS__ ? Promise.resolve.bind(Promise) : canAutoplay;
+            autoPlayCheck(mediaPool, {
                 cancelable: checkAutoStartCancelable,
                 muted: _this.getMute(),
                 allowMuted: adConfig ? adConfig.autoplayadsmuted : true
@@ -580,7 +600,7 @@ Object.assign(Controller.prototype, {
                 _model.set('canAutoplay', result);
 
                 // Only apply autostartMuted on un-muted autostart attempt.
-                if (result === AUTOPLAY_MUTED && !_this.getMute()) {
+                if (result === (__HEADLESS__ || AUTOPLAY_MUTED) && !_this.getMute()) {
                     _model.set('autostartMuted', true);
                     updateProgramSoundSettings();
 
@@ -590,7 +610,7 @@ Object.assign(Controller.prototype, {
                     });
                 }
 
-                if (_this.getMute() && _model.get('enableDefaultCaptions')) {
+                if (_captions && _this.getMute() && _model.get('enableDefaultCaptions')) {
                     _captions.selectDefaultIndex(1);
                 }
 
@@ -601,7 +621,7 @@ Object.assign(Controller.prototype, {
                     _actionOnAttach = null;
                 });
             }).catch(error => {
-                _model.set('canAutoplay', AUTOPLAY_DISABLED);
+                _model.set('canAutoplay', (__HEADLESS__ || AUTOPLAY_DISABLED));
                 _model.set('autostart', false);
                 // Emit event unless test was explicitly canceled.
                 if (!checkAutoStartCancelable.cancelled()) {
@@ -809,11 +829,11 @@ Object.assign(Controller.prototype, {
         }
 
         function _getCurrentCaptions() {
-            return _captions.getCurrentIndex();
+            return _captions ? _captions.getCurrentIndex() : -1;
         }
 
         function _getCaptionsList() {
-            return _captions.getCaptionsList();
+            return _captions ? _captions.getCaptionsList() : [];
         }
 
         /* Used for the InStream API */
@@ -852,6 +872,8 @@ Object.assign(Controller.prototype, {
                 state = !_model.get('fullscreen');
             }
 
+            // TODO: rather than the player responding to this state change this should be view / provider based with
+            //  Promise resolution for modern browsers
             _model.set('fullscreen', state);
             if (_this._instreamAdapter && _this._instreamAdapter._adModel) {
                 _this._instreamAdapter._adModel.set('fullscreen', state);
@@ -862,6 +884,9 @@ Object.assign(Controller.prototype, {
             _programController
                 .on('all', _trigger, _this)
                 .on('subtitlesTracks', (e) => {
+                    if (!_captions) {
+                        return;
+                    }
                     _captions.setSubtitlesTracks(e.tracks);
                     const defaultCaptionsIndex = _captions.getCurrentIndex();
 
@@ -924,6 +949,25 @@ Object.assign(Controller.prototype, {
             const wrappedIndex = wrapPlaylistIndex(index, length);
 
             return _programController.setActiveItem(wrappedIndex).catch(error => {
+                if (error.code === ASYNC_PLAYLIST_ITEM_REJECTED) {
+                    // If all items were rejected throw. This will fail setup with setupError code 102700
+                    const allSkipped = _programController.asyncItems.reduce((skipped, asyncItem) =>
+                        skipped && asyncItem.skipped, true);
+                    if (allSkipped) {
+                        throw error;
+                    }
+                    // If the last item is rejected we need to stop and complete playlist playback. Otherwise,
+                    // shouldAutoAdvance will return true because "nextUp" is out of date.
+                    // "related could not update "nextUp" since we've skipped over "playlistItem" events.
+                    // We'll need to move "nextUp" logic out of "related" and into here or the program-controller
+                    // So that "nextUp" can be updated when rejecting item playback with `setPlaylistItemCallback`.
+                    const restoreAutoAdvance = this.shouldAutoAdvance;
+                    this.shouldAutoAdvance = () => false;
+                    _completeHandler();
+                    _model.attributes.itemReady = true;
+                    this.shouldAutoAdvance = restoreAutoAdvance;
+                    return;
+                }
                 if (error.code >= 151 && error.code <= 162) {
                     error = composePlayerError(error, ERROR_LOADING_PROVIDER);
                 }
@@ -1020,15 +1064,29 @@ Object.assign(Controller.prototype, {
         };
 
         // View passthroughs
-        this.resize = _view.resize;
-        this.getSafeRegion = _view.getSafeRegion;
-        this.setCaptions = _view.setCaptions;
+        if (__HEADLESS__) {
+            // These should be overridden by the app using the headless player
+            this.resize = this.setCaptions = function() {};
+            this.getSafeRegion = () => ({
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0
+            });
+        } else {
+            this.resize = _view.resize;
+            this.getSafeRegion = _view.getSafeRegion;
+            this.setCaptions = _view.setCaptions;
+        }
 
         this.checkBeforePlay = function() {
             return _beforePlay;
         };
 
         this.setControls = function (mode) {
+            if (__HEADLESS__) {
+                return;
+            }
             if (!isBoolean(mode)) {
                 mode = !_model.get('controls');
             }
@@ -1130,7 +1188,9 @@ Object.assign(Controller.prototype, {
         // Add commands from CoreLoader to queue
         apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
-        _view.setup();
+        if (_view) {
+            _view.setup();
+        }
     },
     get(property) {
         if (property in INITIAL_MEDIA_STATE) {

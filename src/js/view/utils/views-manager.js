@@ -76,22 +76,24 @@ function onScroll(e) {
     });
 }
 
-document.addEventListener('visibilitychange', onVisibilityChange);
-document.addEventListener('webkitvisibilitychange', onVisibilityChange);
-
-if (isAndroidChrome && hasOrientation) {
-    window.screen.orientation.addEventListener('change', onOrientationChange);
-}
-
-window.addEventListener('beforeunload', () => {
-    document.removeEventListener('visibilitychange', onVisibilityChange);
-    document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
-    window.removeEventListener('scroll', onScroll);
+if (!__HEADLESS__) {
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 
     if (isAndroidChrome && hasOrientation) {
-        window.screen.orientation.removeEventListener('change', onOrientationChange);
+        window.screen.orientation.addEventListener('change', onOrientationChange);
     }
-});
+
+    window.addEventListener('beforeunload', () => {
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+        document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
+        window.removeEventListener('scroll', onScroll);
+
+        if (isAndroidChrome && hasOrientation) {
+            window.screen.orientation.removeEventListener('change', onOrientationChange);
+        }
+    });
+}
 
 export default {
     add: function(view) {

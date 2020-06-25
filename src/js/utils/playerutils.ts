@@ -2,13 +2,15 @@ import { version } from 'version';
 import { isFileProtocol } from 'utils/validator';
 
 export const getScriptPath = function(scriptName: string): string {
-    const scripts = document.getElementsByTagName('script');
-    for (let i = 0; i < scripts.length; i++) {
-        const src = scripts[i].src;
-        if (src) {
-            const index = src.lastIndexOf('/' + scriptName);
-            if (index >= 0) {
-                return src.substr(0, index + 1);
+    if (!__HEADLESS__) {
+        const scripts = document.getElementsByTagName('script');
+        for (let i = 0; i < scripts.length; i++) {
+            const src = scripts[i].src;
+            if (src) {
+                const index = src.lastIndexOf('/' + scriptName);
+                if (index >= 0) {
+                    return src.substr(0, index + 1);
+                }
             }
         }
     }

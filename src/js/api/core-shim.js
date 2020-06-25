@@ -12,9 +12,11 @@ import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
 import UI, { getElementWindow } from 'utils/ui';
-import { PlayerError, composePlayerError, convertToPlayerError,
+import {
+    PlayerError, composePlayerError, convertToPlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_PROMISE_API_CONFLICT, SETUP_ERROR_UNKNOWN,
-    MSG_TECHNICAL_ERROR } from 'api/errors';
+    MSG_TECHNICAL_ERROR, ASYNC_PLAYLIST_ITEM_REJECTED, SETUP_ERROR_ASYNC_SKIPPED_PLAYLIST
+} from 'api/errors';
 // Import modules used by core and related (TODO: move related loading into core/controls)
 import 'view/utils/views-manager';
 import 'view/utils/resize-listener';
@@ -98,15 +100,17 @@ Object.assign(CoreShim.prototype, {
 
         // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
         let mediaPool = MediaElementPool();
-        if (!model.get('backgroundLoading')) {
-            mediaPool = SharedMediaPool(mediaPool.getPrimedElement(), mediaPool);
-        }
+        if (!__HEADLESS__) {
+            if (!model.get('backgroundLoading')) {
+                mediaPool = SharedMediaPool(mediaPool.getPrimedElement(), mediaPool);
+            }
 
-        const primeUi = new UI(getElementWindow(this.originalContainer)).once('gesture', () => {
-            mediaPool.prime();
-            this.preload();
-            primeUi.destroy();
-        });
+            const primeUi = new UI(getElementWindow(this.originalContainer)).once('gesture', () => {
+                mediaPool.prime();
+                this.preload();
+                primeUi.destroy();
+            });
+        }
 
         model.on('change:errorEvent', logError);
 
@@ -148,7 +152,8 @@ Object.assign(CoreShim.prototype, {
             // Set the active playlist item after plugins are loaded and the view is setup
             return this.updatePlaylist(coreModel.get('playlist'), coreModel.get('feedData'))
                 .catch(error => {
-                    throw composePlayerError(error, SETUP_ERROR_LOADING_PLAYLIST);
+                    const code = error.code === ASYNC_PLAYLIST_ITEM_REJECTED ? SETUP_ERROR_ASYNC_SKIPPED_PLAYLIST : SETUP_ERROR_LOADING_PLAYLIST;
+                    throw composePlayerError(error, code);
                 });
         }).then(() => {
             if (!this.setup) {
@@ -287,7 +292,7 @@ function setupError(core, api, error) {
 
         const contextual = model.get('contextual');
         // Remove (and hide) the player if it failed to set up in contextual mode; otherwise, show the error view
-        if (!contextual) {
+        if (!contextual && !__HEADLESS__) {
             const errorContainer = ErrorContainer(core, playerError);
             if (ErrorContainer.cloneIcon) {
                 errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
