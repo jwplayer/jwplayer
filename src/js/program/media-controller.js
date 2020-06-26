@@ -251,6 +251,10 @@ export default class MediaController extends Events {
 
         this.item = item;
         this.provider.init(item);
+        if (__HEADLESS__) {
+            this.provider.mute(this.model.getMute());
+            this.provider.volume(this.model.get('volume'));
+        }
     }
 
     set audioTrack(index) {
