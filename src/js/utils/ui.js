@@ -162,6 +162,7 @@ function initInteractionListeners(ui) {
 
     const interactEndHandler = (e) => {
         clearTimeout(longPressTimeout);
+        console.log('interaction end', ui.el);
         if (!ui.el) {
             return;
         }
@@ -311,6 +312,7 @@ const eventRegisters = {
                 if (e.pointerType !== 'touch' && 'clientX' in e) {
                     // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
                     const overElement = document.elementFromPoint(e.clientX, e.clientY);
+                    console.log('here out', !el.contains(overElement), overElement);
                     if (!el.contains(overElement)) {
                         triggerEvent(ui, OUT, e);
                     }
