@@ -211,13 +211,14 @@ const Tracks: TracksMixin = {
     disableTextTrack(): void {
         const track = this.getCurrentTextTrack();
         if (track) {
+            // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
+            track.mode = 'disabled';
+
             // IOS native captions does not remove the active cue from the dom when the track is disabled, so we must hide it
             const trackId = track._id;
             if ((trackId && trackId.indexOf('nativecaptions') === 0) || (this.renderNatively && OS.iOS)) {
                 track.mode = 'hidden';
             }
-            // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
-            track.mode = 'disabled';
         }
     },
     enableTextTrack(): void {
