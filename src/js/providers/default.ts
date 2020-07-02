@@ -189,7 +189,7 @@ interface InternalProvider {
 
     getPlaybackRate: () => number;
     getLiveLatency: () => number | null;
-    setControls: () => void;
+    setControls: (bool?: boolean) => void;
     setState: (state: InternalPlayerState) => void;
 
     sendMediaType: (sources: Array<PlaylistItemSource>) => void;
