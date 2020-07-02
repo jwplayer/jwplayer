@@ -91,7 +91,7 @@ class SettingsMenu extends Menu {
         if (!this.children.audioTracks) {
             return;
         }
-        this.children.audioTracks.items[trackIndex].activate();
+        selectMenuItem(this.children.audioTracks, trackIndex);
     }
 
     onCaptionsList(model, captionsList) {
@@ -353,6 +353,7 @@ class SettingsMenu extends Menu {
         const shouldShowGear = 
             !!children.quality || 
             !!children.playbackRates || 
+            !!children.audioTracks ||
             Object.keys(children).length > 1;
 
         controlbar.elements.settingsButton.toggle(shouldShowGear);
