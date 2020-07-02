@@ -38,6 +38,13 @@ interface VideoElementProvider {
     setState: (state: InternalPlayerState) => void;
 }
 
+type PlayerConfig = {
+    // Select an adaptation based on last bandwidthEstimate event from previous session
+    bandwidthEstimate: number | null,
+    // The user made a manual adaptation selection which had a bitrate of this value in the previous session
+    bitrateSelection: number | null
+}
+
 class VideoElementProvider implements CustomProvider {
 
     private static video?: HTMLVideoElement;
@@ -97,11 +104,15 @@ class VideoElementProvider implements CustomProvider {
         return seekableDuration !== Infinity && Math.abs(seekableDuration) >= minDvrWindow;
     }
 
-    constructor(playerId, config, mediaElement) {
+    constructor(playerId: string, config: PlayerConfig, mediaElement: HTMLVideoElement) {
         // Add event listener methods used by the player to this instance
         // See src/js/utils/backbone.events.ts
         const backboneEvents: Events = jwplayer(playerId).Events;
         Object.assign(this, backboneEvents);
+
+        // This video element comes from a pool managed by the player for dealing with autoplay policy
+        // and ads playback, but you could also use or create your own.
+        this.videoElement = mediaElement;
 
         this.name = PROVIDER_NAME;
         this.state = 'idle';
@@ -113,7 +124,6 @@ class VideoElementProvider implements CustomProvider {
         this.seekFromTime = null;
         this.seekToTime = null;
         this.stallTime = null;
-        this.videoElement = document.createElement('video');
         this.videoElement.setAttribute('controls', '');
         this.visualQuality = {
             reason: 'initial choice',

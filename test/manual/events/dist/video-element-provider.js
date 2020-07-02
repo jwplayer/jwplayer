@@ -151,7 +151,10 @@ var VideoElementProvider = /*#__PURE__*/function () {
     // Add event listener methods used by the player to this instance
     // See src/js/utils/backbone.events.ts
     var backboneEvents = jwplayer(playerId).Events;
-    Object.assign(this, backboneEvents);
+    Object.assign(this, backboneEvents); // This video element comes from a pool managed by the player for dealing with autoplay policy
+    // and ads playback, but you could also use or create your own.
+
+    this.videoElement = mediaElement;
     this.name = PROVIDER_NAME;
     this.state = 'idle';
     this.supportsPlaybackRate = true;
@@ -162,7 +165,6 @@ var VideoElementProvider = /*#__PURE__*/function () {
     this.seekFromTime = null;
     this.seekToTime = null;
     this.stallTime = null;
-    this.videoElement = document.createElement('video');
     this.videoElement.setAttribute('controls', '');
     this.visualQuality = {
       reason: 'initial choice',
