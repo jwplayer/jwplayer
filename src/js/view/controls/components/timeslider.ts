@@ -226,7 +226,7 @@ class TimeSlider extends Slider {
         if (duration === 0) {
             this._api.play(reasonInteraction());
         } else if (this.streamType === 'DVR') {
-            const seekRange = this._model.get('seekRange') || { start: 0 };
+            const seekRange = { start: 0 };
             const dvrSeekLimit = this._model.get('dvrSeekLimit');
             position = seekRange.start + (-duration - dvrSeekLimit) * percent / 100;
             this._api.seek(position, reasonInteraction());
@@ -324,9 +324,6 @@ class TimeSlider extends Slider {
 
     updateAriaText(): void {
         const model = this._model;
-        if (model.get('seeking')) {
-            return;
-        }
         const position = model.get('position');
         const duration = model.get('duration');
 

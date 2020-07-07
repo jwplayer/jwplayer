@@ -9,7 +9,7 @@ import type { StreamType } from 'providers/utils/stream-type';
 import type { GenericObject, TextTrackLike, Localization } from 'types/generic.type';
 import type { QualityLevel } from 'providers/data-normalizer';
 import type PlaylistItem from 'playlist/item';
-import type { ImplementedProvider, SeekRange } from 'providers/default';
+import type { ImplementedProvider } from 'providers/default';
 import type { Cue } from 'view/controls/components/chapters.mixin';
 
 type AutoStart = boolean | 'viewable';
@@ -28,6 +28,7 @@ export type PlayerModelAttributes = {
     captionLabel: string;
     captionsIndex: number;
     captionsTrack: TextTrackLike;
+    containerHeight: number;
     containerWidth: number;
     controlsEnabled: boolean;
     cues: Cue[];
@@ -73,8 +74,6 @@ export type PlayerModelAttributes = {
     qualityLabel: string;
     renderCaptionsNatively: boolean;
     scrubbing: boolean;
-    seeking: boolean;
-    seekRange: SeekRange;
     state: InternalPlayerState;
     streamType: StreamType;
     supportsPlaybackRate: boolean;
