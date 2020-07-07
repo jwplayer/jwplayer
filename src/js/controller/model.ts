@@ -9,7 +9,7 @@ import type { StreamType } from 'providers/utils/stream-type';
 import type { GenericObject, TextTrackLike, Localization } from 'types/generic.type';
 import type { QualityLevel } from 'providers/data-normalizer';
 import type PlaylistItem from 'playlist/item';
-import type { ImplementedProvider } from 'providers/default';
+import type { ImplementedProvider, SeekRange } from 'providers/default';
 import type { Cue } from 'view/controls/components/chapters.mixin';
 
 type AutoStart = boolean | 'viewable';
@@ -343,6 +343,7 @@ export type MediaModelAttributes = {
     mediaState: InternalPlayerState;
     position: number;
     preloaded: boolean;
+    seekRange?: SeekRange;
     setup: boolean;
     started: boolean;
     visualQuality: GenericObject | null;
