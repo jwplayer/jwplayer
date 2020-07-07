@@ -113,7 +113,7 @@ class Slider extends Events {
         percentage = Math.max(0, Math.min(percentage, 100));
 
         const elThumb = this.elementThumb as HTMLElement;
-        const elProgress = this.elementRail as HTMLElement;
+        const elProgress = this.elementProgress as HTMLElement;
 
         if (this.orientation === 'horizontal') {
             elThumb.style.left = percentage + '%';
