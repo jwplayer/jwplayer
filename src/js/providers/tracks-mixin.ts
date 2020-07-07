@@ -851,7 +851,7 @@ function _addCueToTrack(renderNatively: boolean, track: TextTrackLike, vttCue: T
 
             if (vttCue.value) {
                 const event = cue.text ? getTextCueMetaEvent(cue) : null;
-                if (event.metadataType === 'emsg') {
+                if (event && event.metadataType === 'emsg') {
                     cue.value = vttCue.value;
                 }
             }
