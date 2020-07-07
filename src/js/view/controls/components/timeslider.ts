@@ -116,8 +116,8 @@ class TimeSlider extends Slider {
     }
 
     // These overwrite Slider methods
-    setup(...args: any[]): void {
-        super.setup.apply(this, args);
+    setup(): void {
+        super.setup.call(this);
 
         this._model
             .on('change:duration', this.onDuration, this)
@@ -149,19 +149,19 @@ class TimeSlider extends Slider {
             .on('focus', this.updateAriaText, this);
     }
 
-    update(percent: number, ...args: any[]): void {
+    update(percent: number): void {
         this.seekTo = percent;
         this.seekThrottled();
-        super.update.apply(this, [percent, ...args]);
+        super.update.apply(this, [percent]);
     }
 
-    dragStart(...args: any[]): void {
+    dragStart(): void {
         this._model.set('scrubbing', true);
-        super.dragStart.apply(this, args);
+        super.dragStart.call(this);
     }
 
-    dragEnd(...args: any[]): void {
-        super.dragEnd.apply(this, args);
+    dragEnd(evt: Event): void {
+        super.dragEnd.apply(this, [evt]);
         this._model.set('scrubbing', false);
     }
 
