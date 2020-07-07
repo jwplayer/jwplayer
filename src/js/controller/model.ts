@@ -10,6 +10,7 @@ import type { GenericObject, TextTrackLike, Localization } from 'types/generic.t
 import type { QualityLevel } from 'providers/data-normalizer';
 import type PlaylistItem from 'playlist/item';
 import type { ImplementedProvider, SeekRange } from 'providers/default';
+import type { SimpleAudioTrack } from 'providers/tracks-mixin';
 import type { Cue } from 'view/controls/components/chapters.mixin';
 
 type AutoStart = boolean | 'viewable';
@@ -344,10 +345,15 @@ function syncPlayerWithMediaModel(mediaModel: MediaModel): void {
 }
 
 export type MediaModelAttributes = {
+    audioTracks?: SimpleAudioTrack[];
     buffer: number;
+    currentAudioTrack?: number;
+    currentLevel?: number;
     currentTime: number;
     duration: number;
+    levels?: { label: string }[];
     mediaState: InternalPlayerState;
+    mediaType?: 'video' | 'audio';
     position: number;
     preloaded: boolean;
     seekRange?: SeekRange;

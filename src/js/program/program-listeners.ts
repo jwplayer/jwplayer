@@ -7,6 +7,7 @@ import {
     NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, BANDWIDTH_ESTIMATE, WARNING, SUBTITLES_TRACKS, SUBTITLES_TRACK_CHANGED
 } from 'events/events';
 import type Model from 'controller/model';
+import type { MediaModel } from 'controller/model';
 import type ProgramController from 'program/program-controller';
 import type MediaController from 'program/media-controller';
 import type { AllProviderEventsListener, AllProviderEvents, ProviderEvents } from 'providers/default';
@@ -14,7 +15,7 @@ import type { PlayerError } from 'api/errors';
 
 export function ProviderListener(mediaController: MediaController): AllProviderEventsListener {
     return function<E extends keyof AllProviderEvents>(type: E, data: AllProviderEvents[E]): void {
-        const { mediaModel } = mediaController;
+        const mediaModel: MediaModel = mediaController.mediaModel;
         const event: AllProviderEvents[E] & { type: E } = Object.assign({}, data, {
             type: type
         });
