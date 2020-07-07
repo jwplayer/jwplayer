@@ -82,10 +82,11 @@ export function ProviderListener(mediaController: MediaController): AllProviderE
                 mediaModel.set('buffer', (data as ProviderEvents['bufferChange']).bufferPercent);
                 /* falls through to update duration while media is loaded */
             case MEDIA_TIME: {
-                mediaModel.set('seekRange', (data as ProviderEvents['time']).seekRange);
-                mediaModel.set('position', (data as ProviderEvents['time']).position);
-                mediaModel.set('currentTime', (data as ProviderEvents['time']).currentTime);
-                const duration = (data as ProviderEvents['time']).duration;
+                const timeData = data as ProviderEvents['time'] | ProviderEvents['bufferChange'];
+                mediaModel.set('seekRange', timeData.seekRange);
+                mediaModel.set('position', timeData.position);
+                mediaModel.set('currentTime', timeData.currentTime);
+                const duration = timeData.duration;
                 if (isValidNumber(duration)) {
                     mediaModel.set('duration', duration);
                 }

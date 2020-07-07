@@ -155,6 +155,11 @@ var VideoElementProvider = /*#__PURE__*/function () {
     // and ads playback, but you could also use or create your own.
 
     this.videoElement = mediaElement;
+    this.audioTracksChangeHandler = this.audioTracksChange.bind(this);
+    this.subtitleTracksChangeHandler = this.subtitleTracksChange.bind(this);
+    this.currentAudioTrack = -1;
+    this.currentSubtitleTrack = -1;
+    this.subtitleTracksDispatched = false;
     this.name = PROVIDER_NAME;
     this.state = 'idle';
     this.supportsPlaybackRate = true;
@@ -165,7 +170,6 @@ var VideoElementProvider = /*#__PURE__*/function () {
     this.seekFromTime = null;
     this.seekToTime = null;
     this.stallTime = null;
-    this.videoElement.setAttribute('controls', '');
     this.visualQuality = {
       reason: 'initial choice',
       mode: 'auto',
@@ -176,7 +180,10 @@ var VideoElementProvider = /*#__PURE__*/function () {
         index: 0,
         label: ''
       }
-    }; // Update state and trigger jwplayer events in response to changes on the video element
+    }; // Enable to use element controls rather than JW's
+    // window.jwplayer(playerId).setControls(false);
+    // this.videoElement.setAttribute('controls', '');
+    // Update state and trigger jwplayer events in response to changes on the video element
 
     var videoEventCallbacks = {
       click: function click(evt) {
@@ -192,9 +199,11 @@ var VideoElementProvider = /*#__PURE__*/function () {
         });
       },
       loadeddata: function loadeddata() {
-        if (this.videoElement.getStartDate) {} // Get 'program-date-time' from this.videoElement.getStartDate() in Safari
-        // Get 'audioTracks' from this.videoElement.audioTracks;
+        if (this.videoElement.getStartDate) {// Get 'program-date-time' from this.videoElement.getStartDate() in Safari
+        }
 
+        this.dispatchAudioTracks();
+        this.dispatchSubtitleTracks();
       },
       durationchange: function durationchange() {
         this.listenerDictionary.progress.call(this);
@@ -328,14 +337,12 @@ var VideoElementProvider = /*#__PURE__*/function () {
               width: videoWidth,
               height: videoHeight,
               index: 0,
-              // TODO: level index
-              label: '' // TODO: levels
-
+              label: ''
             },
             bitrate: 0,
             mode: 'auto',
-            // TODO: 'manual' for mp4 levels
-            reason: 'auto' // TODO: 'initial choice' for first resize after loading new item
+            // 'manual' for manual quality selection
+            reason: 'auto' // 'initial choice' for first resize after loading new item
 
           };
           this.visualQuality = visualQuality;
@@ -393,6 +400,19 @@ var VideoElementProvider = /*#__PURE__*/function () {
 
       _this2.videoElement.addEventListener(eventName, listenerDictionary[eventName]);
     });
+    var audioTracks = this.videoElement.audioTracks;
+
+    if (audioTracks) {
+      audioTracks.removeEventListener('change', this.audioTracksChangeHandler);
+      audioTracks.addEventListener('change', this.audioTracksChangeHandler);
+    }
+
+    var textTracks = this.videoElement.textTracks;
+
+    if (textTracks) {
+      textTracks.removeEventListener('change', this.subtitleTracksChangeHandler);
+      textTracks.addEventListener('change', this.subtitleTracksChangeHandler);
+    }
   };
 
   _proto.detachMedia = function detachMedia() {
@@ -406,16 +426,30 @@ var VideoElementProvider = /*#__PURE__*/function () {
     Object.keys(listenerDictionary).forEach(function (eventName) {
       _this3.videoElement.removeEventListener(eventName, listenerDictionary[eventName]);
     });
+    var audioTracks = this.videoElement.audioTracks;
+
+    if (audioTracks) {
+      audioTracks.removeEventListener('change', this.audioTracksChangeHandler);
+    }
+
+    var textTracks = this.videoElement.textTracks;
+
+    if (textTracks) {
+      textTracks.removeEventListener('change', this.subtitleTracksChangeHandler);
+    }
   };
 
   _proto.init = function init(item) {
     this.item = item;
     this.state = 'idle';
+    this.currentAudioTrack = -1;
+    this.currentSubtitleTrack = -1;
+    this.subtitleTracksDispatched = false;
     this.attachMedia();
   };
 
   _proto.preload = function preload(item) {
-    this.item = item; // TODO: convert sources array to "levels"
+    this.item = item;
 
     if (item.image) {
       this.videoElement.setAttribute('poster', item.image);
@@ -426,7 +460,6 @@ var VideoElementProvider = /*#__PURE__*/function () {
   };
 
   _proto.load = function load(item) {
-    // TODO: Load side loaded item.tracks
     this.item = item;
     var previousSource = this.videoElement.src;
     this.setVideoSource(item.sources[0]);
@@ -446,12 +479,17 @@ var VideoElementProvider = /*#__PURE__*/function () {
 
     if (item.starttime > 0 && this.videoElement.currentTime !== item.starttime) {
       this.seek(item.starttime);
-    } // TODO: convert sources array to "levels"
+    } // This should be triggered when adaptation sets are known
+    // In this case we can't provide manual quality selection so just report a single level
 
 
     this.trigger('levels', {
       levels: [{
-        label: '0'
+        label: '0' // height?: number;
+        // width?: number;
+        // bitrate?: number;
+        // default?: boolean;
+
       }],
       currentQuality: 0
     });
@@ -542,7 +580,11 @@ var VideoElementProvider = /*#__PURE__*/function () {
 
     this.config = null; // @ts-ignore
 
-    this.videoElement = null;
+    this.videoElement = null; // @ts-ignore
+
+    this.audioTracksChangeHandler = null; // @ts-ignore
+
+    this.subtitleTracksChangeHandler = null;
   };
 
   _proto.supportsFullscreen = function supportsFullscreen() {
@@ -599,7 +641,8 @@ var VideoElementProvider = /*#__PURE__*/function () {
     return 0;
   };
 
-  _proto.setCurrentQuality = function setCurrentQuality(qualityLevel) {};
+  _proto.setCurrentQuality = function setCurrentQuality(qualityLevel) {// Implement based on availability of manual bitrate selection
+  };
 
   _proto.getQualityLevels = function getQualityLevels() {
     return [{
@@ -610,7 +653,58 @@ var VideoElementProvider = /*#__PURE__*/function () {
     }];
   };
 
-  _proto.setCurrentAudioTrack = function setCurrentAudioTrack(at) {};
+  _proto.setCurrentAudioTrack = function setCurrentAudioTrack(currentTrack) {
+    if (currentTrack > -1 && this.videoElement) {
+      var audioTracks = this.videoElement.audioTracks;
+
+      if (currentTrack === this.currentAudioTrack || !audioTracks || currentTrack >= audioTracks.length) {
+        return;
+      }
+
+      this.currentAudioTrack = currentTrack;
+      audioTracks[currentTrack].enabled = true;
+      var tracksArray = [].slice.call(audioTracks);
+      var tracks = tracksArray.map(function (track) {
+        return {
+          name: track.label || track.language,
+          language: track.language
+        };
+      });
+      this.trigger('audioTrackChanged', {
+        currentTrack: currentTrack,
+        tracks: tracks
+      });
+    }
+  };
+
+  _proto.setSubtitlesTrack = function setSubtitlesTrack(oneIndexedTrackIndex) {
+    this.dispatchSubtitleTracks();
+    var currentTrack = oneIndexedTrackIndex - 1;
+
+    if (currentTrack > -1 && this.videoElement && this.videoElement.textTracks) {
+      var textTracks = this.videoElement.textTracks;
+      var tracks = [].slice.call(textTracks).filter(function (track) {
+        return track.kind === 'subtitles';
+      });
+
+      if (currentTrack === this.currentSubtitleTrack || currentTrack >= tracks.length) {
+        return;
+      }
+
+      this.currentSubtitleTrack = currentTrack;
+      tracks.forEach(function (track) {
+        return track.mode = 'disabled';
+      });
+      tracks[currentTrack].mode = 'showing'; // Here's an annoying bug where currentTrack is required to be one-indexed even though it should be 0
+      // This event is required for captions functionality, unless you want external changes made
+      // to the video textTracks to be reflected in JW Player.
+
+      this.trigger('subtitlesTrackChanged', {
+        currentTrack: oneIndexedTrackIndex,
+        tracks: tracks
+      });
+    }
+  };
 
   _proto.getCurrentAudioTrack = function getCurrentAudioTrack() {
     return 0;
@@ -766,6 +860,74 @@ var VideoElementProvider = /*#__PURE__*/function () {
     if (sourceChanged) {
       this.videoElement.src = source.file;
     }
+  };
+
+  _proto.dispatchAudioTracks = function dispatchAudioTracks() {
+    var audioTracks = this.videoElement.audioTracks;
+
+    if (audioTracks && audioTracks.length) {
+      var tracksArray = [].slice.call(audioTracks);
+      var currentTrack = tracksArray.findIndex(function (track) {
+        return track.enabled;
+      });
+
+      if (currentTrack === -1) {
+        currentTrack = 0;
+        audioTracks[0].enabled = true;
+      }
+
+      var tracks = tracksArray.map(function (track) {
+        return {
+          name: track.label || track.language,
+          language: track.language
+        };
+      });
+      audioTracks.removeEventListener('change', this.audioTracksChangeHandler);
+      audioTracks.addEventListener('change', this.audioTracksChangeHandler);
+      this.trigger('audioTracks', {
+        currentTrack: currentTrack,
+        tracks: tracks
+      });
+    }
+  };
+
+  _proto.audioTracksChange = function audioTracksChange() {
+    var tracksArray = [].slice.call(this.videoElement.audioTracks);
+    var currentTrack = tracksArray.findIndex(function (track) {
+      return track.enabled;
+    });
+    this.setCurrentAudioTrack(currentTrack);
+  };
+
+  _proto.dispatchSubtitleTracks = function dispatchSubtitleTracks() {
+    if (this.subtitleTracksDispatched) {
+      return;
+    }
+
+    var textTracks = this.videoElement.textTracks;
+
+    if (textTracks && textTracks.length) {
+      this.subtitleTracksDispatched = true;
+      var tracks = [].slice.call(textTracks).filter(function (track) {
+        return track.kind === 'subtitles';
+      });
+      textTracks.removeEventListener('change', this.subtitleTracksChangeHandler);
+      textTracks.addEventListener('change', this.subtitleTracksChangeHandler);
+      this.trigger('subtitlesTracks', {
+        tracks: tracks
+      });
+    }
+  };
+
+  _proto.subtitleTracksChange = function subtitleTracksChange() {
+    var textTracks = this.videoElement.textTracks;
+    var tracks = [].slice.call(textTracks).filter(function (track) {
+      return track.kind === 'subtitles';
+    });
+    var currentTrack = tracks.findIndex(function (track) {
+      return track.mode === 'showing';
+    });
+    this.setSubtitlesTrack(currentTrack + 1);
   };
 
   return VideoElementProvider;

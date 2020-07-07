@@ -63,6 +63,11 @@ class VideoElementProvider implements CustomProvider {
     private stallTime: number | null;
     private visualQuality: ProviderEvents['visualQuality'];
     private readonly listenerDictionary: { [key: string]: any };
+    private audioTracksChangeHandler: (this: VideoElementProvider) => void;
+    private subtitleTracksChangeHandler: (this: VideoElementProvider) => void;
+    private currentAudioTrack: number;
+    private currentSubtitleTrack: number;
+    private subtitleTracksDispatched: boolean;
 
     static supports(source: PlaylistItemSource): boolean {
         if (source.type === 'custom-type') {
@@ -113,7 +118,11 @@ class VideoElementProvider implements CustomProvider {
         // This video element comes from a pool managed by the player for dealing with autoplay policy
         // and ads playback, but you could also use or create your own.
         this.videoElement = mediaElement;
-
+        this.audioTracksChangeHandler = this.audioTracksChange.bind(this);
+        this.subtitleTracksChangeHandler = this.subtitleTracksChange.bind(this);
+        this.currentAudioTrack = -1;
+        this.currentSubtitleTrack = -1;
+        this.subtitleTracksDispatched = false;
         this.name = PROVIDER_NAME;
         this.state = 'idle';
         this.supportsPlaybackRate = true;
@@ -124,7 +133,6 @@ class VideoElementProvider implements CustomProvider {
         this.seekFromTime = null;
         this.seekToTime = null;
         this.stallTime = null;
-        this.videoElement.setAttribute('controls', '');
         this.visualQuality = {
             reason: 'initial choice',
             mode: 'auto',
@@ -136,6 +144,10 @@ class VideoElementProvider implements CustomProvider {
                 label: ''
             }
         };
+
+        // Enable to use element controls rather than JW's
+        // window.jwplayer(playerId).setControls(false);
+        // this.videoElement.setAttribute('controls', '');
 
         // Update state and trigger jwplayer events in response to changes on the video element
         const videoEventCallbacks = {
@@ -155,8 +167,8 @@ class VideoElementProvider implements CustomProvider {
                 if (this.videoElement.getStartDate) {
                     // Get 'program-date-time' from this.videoElement.getStartDate() in Safari
                 }
-
-                // Get 'audioTracks' from this.videoElement.audioTracks;
+                this.dispatchAudioTracks();
+                this.dispatchSubtitleTracks();
             },
             durationchange(this: VideoElementProvider) {
                 this.listenerDictionary.progress.call(this);
@@ -277,12 +289,12 @@ class VideoElementProvider implements CustomProvider {
                         level: {
                             width: videoWidth,
                             height: videoHeight,
-                            index: 0, // TODO: level index
-                            label: '' // TODO: levels
+                            index: 0,
+                            label: ''
                         },
                         bitrate: 0,
-                        mode: 'auto', // TODO: 'manual' for mp4 levels
-                        reason: 'auto', // TODO: 'initial choice' for first resize after loading new item
+                        mode: 'auto', // 'manual' for manual quality selection
+                        reason: 'auto', // 'initial choice' for first resize after loading new item
                     };
                     this.visualQuality = visualQuality;
                     this.trigger('visualQuality', visualQuality);
@@ -335,6 +347,16 @@ class VideoElementProvider implements CustomProvider {
             this.videoElement.removeEventListener(eventName, listenerDictionary[eventName]);
             this.videoElement.addEventListener(eventName, listenerDictionary[eventName]);
         });
+        const audioTracks = this.videoElement.audioTracks;
+        if (audioTracks) {
+            audioTracks.removeEventListener('change', this.audioTracksChangeHandler);
+            audioTracks.addEventListener('change', this.audioTracksChangeHandler);
+        }
+        const textTracks = this.videoElement.textTracks;
+        if (textTracks) {
+            textTracks.removeEventListener('change', this.subtitleTracksChangeHandler);
+            textTracks.addEventListener('change', this.subtitleTracksChangeHandler);
+        }
     }
 
     detachMedia(): void {
@@ -345,17 +367,27 @@ class VideoElementProvider implements CustomProvider {
         Object.keys(listenerDictionary).forEach(eventName => {
             this.videoElement.removeEventListener(eventName, listenerDictionary[eventName]);
         });
+        const audioTracks = this.videoElement.audioTracks;
+        if (audioTracks) {
+            audioTracks.removeEventListener('change', this.audioTracksChangeHandler);
+        }
+        const textTracks = this.videoElement.textTracks;
+        if (textTracks) {
+            textTracks.removeEventListener('change', this.subtitleTracksChangeHandler);
+        }
     }
 
     init(item: PlaylistItem): void {
         this.item = item;
         this.state = 'idle';
+        this.currentAudioTrack = -1;
+        this.currentSubtitleTrack = -1;
+        this.subtitleTracksDispatched = false;
         this.attachMedia();
     }
 
     preload(item: PlaylistItem): void {
         this.item = item;
-        // TODO: convert sources array to "levels"
         if (item.image) {
             this.videoElement.setAttribute('poster', item.image);
         }
@@ -364,8 +396,6 @@ class VideoElementProvider implements CustomProvider {
     }
 
     load(item: PlaylistItem): void {
-        // TODO: Load side loaded item.tracks
-
         this.item = item;
         const previousSource = this.videoElement.src;
         this.setVideoSource(item.sources[0]);
@@ -386,10 +416,15 @@ class VideoElementProvider implements CustomProvider {
             this.seek(item.starttime);
         }
 
-        // TODO: convert sources array to "levels"
+        // This should be triggered when adaptation sets are known
+        // In this case we can't provide manual quality selection so just report a single level
         this.trigger('levels', {
             levels: [{
-                label: '0'
+                label: '0',
+                // height?: number;
+                // width?: number;
+                // bitrate?: number;
+                // default?: boolean;
             }],
             currentQuality: 0
         });
@@ -469,6 +504,10 @@ class VideoElementProvider implements CustomProvider {
         this.config = null;
         // @ts-ignore
         this.videoElement = null;
+        // @ts-ignore
+        this.audioTracksChangeHandler = null;
+        // @ts-ignore
+        this.subtitleTracksChangeHandler = null;
     }
 
     public supportsFullscreen(): boolean {
@@ -523,6 +562,7 @@ class VideoElementProvider implements CustomProvider {
     }
 
     public setCurrentQuality(qualityLevel: number): void {
+        // Implement based on availability of manual bitrate selection
     }
 
     public getQualityLevels(): QualityLevel[] {
@@ -534,7 +574,40 @@ class VideoElementProvider implements CustomProvider {
         }];
     }
 
-    public setCurrentAudioTrack(at: number): void {
+    public setCurrentAudioTrack(currentTrack: number): void {
+        if (currentTrack > -1 && this.videoElement) {
+            const audioTracks = this.videoElement.audioTracks;
+            if (currentTrack === this.currentAudioTrack || !audioTracks || currentTrack >= audioTracks.length) {
+                return;
+            }
+            this.currentAudioTrack = currentTrack;
+            audioTracks[currentTrack].enabled = true;
+            const tracksArray = [].slice.call(audioTracks);
+            const tracks = tracksArray.map((track: AudioTrack) => ({
+                name: track.label || track.language,
+                language: track.language
+            }));
+            this.trigger('audioTrackChanged', { currentTrack, tracks });
+        }
+    }
+
+    public setSubtitlesTrack(oneIndexedTrackIndex: number) {
+        this.dispatchSubtitleTracks();
+        const currentTrack = oneIndexedTrackIndex - 1;
+        if (currentTrack > -1 && this.videoElement && this.videoElement.textTracks) {
+            const textTracks = this.videoElement.textTracks;
+            const tracks = [].slice.call(textTracks).filter((track: TextTrack) => track.kind === 'subtitles');
+            if (currentTrack === this.currentSubtitleTrack || currentTrack >= tracks.length) {
+                return;
+            }
+            this.currentSubtitleTrack = currentTrack;
+            tracks.forEach(track => track.mode = 'disabled');
+            tracks[currentTrack].mode = 'showing';
+            // Here's an annoying bug where currentTrack is required to be one-indexed even though it should be 0
+            // This event is required for captions functionality, unless you want external changes made
+            // to the video textTracks to be reflected in JW Player.
+            this.trigger('subtitlesTrackChanged', { currentTrack: oneIndexedTrackIndex, tracks });
+        }
     }
 
     public getCurrentAudioTrack(): number {
@@ -656,7 +729,7 @@ class VideoElementProvider implements CustomProvider {
         return latency;
     }
 
-    private setVideoSource(source): void {
+    private setVideoSource(source: PlaylistItemSource): void {
         const preload = source.preload || 'metadata';
         if (this.videoElement.getAttribute('preload') !== preload) {
             this.videoElement.setAttribute('preload', preload);
@@ -667,6 +740,52 @@ class VideoElementProvider implements CustomProvider {
         if (sourceChanged) {
             this.videoElement.src = source.file;
         }
+    }
+
+    private dispatchAudioTracks(): void {
+        const audioTracks = this.videoElement.audioTracks;
+        if (audioTracks && audioTracks.length) {
+            const tracksArray = [].slice.call(audioTracks);
+            let currentTrack = tracksArray.findIndex((track: AudioTrack) => track.enabled);
+            if (currentTrack === -1) {
+                currentTrack = 0;
+                audioTracks[0].enabled = true;
+            }
+            const tracks = tracksArray.map((track: AudioTrack) => ({
+                name: track.label || track.language,
+                language: track.language
+            }));
+            audioTracks.removeEventListener('change', this.audioTracksChangeHandler);
+            audioTracks.addEventListener('change', this.audioTracksChangeHandler);
+            this.trigger('audioTracks', { currentTrack, tracks });
+        }
+    }
+
+    private audioTracksChange(): void {
+        const tracksArray = [].slice.call(this.videoElement.audioTracks);
+        const currentTrack = tracksArray.findIndex((track: AudioTrack) => track.enabled);
+        this.setCurrentAudioTrack(currentTrack);
+    }
+
+    private dispatchSubtitleTracks(): void {
+        if (this.subtitleTracksDispatched) {
+            return;
+        }
+        const textTracks = this.videoElement.textTracks;
+        if (textTracks && textTracks.length) {
+            this.subtitleTracksDispatched = true;
+            const tracks = [].slice.call(textTracks).filter((track: TextTrack) => track.kind === 'subtitles');
+            textTracks.removeEventListener('change', this.subtitleTracksChangeHandler);
+            textTracks.addEventListener('change', this.subtitleTracksChangeHandler);
+            this.trigger('subtitlesTracks', { tracks });
+        }
+    }
+
+    private subtitleTracksChange(): void {
+        const textTracks = this.videoElement.textTracks;
+        const tracks = [].slice.call(textTracks).filter((track: TextTrack) => track.kind === 'subtitles');
+        const currentTrack = tracks.findIndex((track: TextTrack) => track.mode === 'showing');
+        this.setSubtitlesTrack(currentTrack + 1);
     }
 }
 

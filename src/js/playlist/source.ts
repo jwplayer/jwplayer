@@ -29,6 +29,7 @@ type PlaylistItemConfig = {
     mediaTypes?: Array<string>;
     mimeType?: string;
     onXhrOpen?: () => void;
+    preload?: 'metadata' | 'auto'| 'none';
     safarihlsjs?: boolean;
     type?: string;
     width?: number;
