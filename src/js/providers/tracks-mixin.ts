@@ -848,6 +848,13 @@ function _addCueToTrack(renderNatively: boolean, track: TextTrackLike, vttCue: T
             // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
             // This unfortunately removes positioning properties from the cues
             cue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
+
+            if (vttCue.value) {
+                const event = cue.text ? getTextCueMetaEvent(cue) : null;
+                if (event.metadataType === 'emsg') {
+                    cue.value = vttCue.value;
+                }
+            }
         }
         insertCueInOrder(track, cue);
     } else {
