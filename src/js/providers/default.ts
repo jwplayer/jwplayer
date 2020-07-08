@@ -24,6 +24,8 @@ export type SeekRange = {
     end: number;
 };
 
+type MetadataType = 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity';
+
 export type ProviderEvents = {
     [Event.PLAYER_STATE]: {
         newstate: InternalPlayerState;
@@ -35,7 +37,7 @@ export type ProviderEvents = {
         bandwidthEstimate: number;
     };
     [Event.MEDIA_META_CUE_PARSED]: {
-        metadataType: 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity';
+        metadataType: MetadataType;
         metadataTime?: number;
         metadata?: GenericObject;
         programDateTime?: string;
@@ -45,7 +47,7 @@ export type ProviderEvents = {
         seekRange?: SeekRange;
     };
     [Event.MEDIA_META]: {
-        metadataType: 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity' | 'unknown';
+        metadataType: MetadataType | 'unknown';
         metadataTime?: number;
         metadata?: GenericObject;
         programDateTime?: string;
