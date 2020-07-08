@@ -87,5 +87,7 @@ export default {
     skipAd: null,
     trigger: null,
     // In tests that iterate through these methods, call remove last
-    remove: null
+    remove: null,
+    getFloating: null,
+    setFloating: null
 };

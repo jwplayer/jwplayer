@@ -1,5 +1,7 @@
 import { normalizeAspectRatio, normalizeSize } from 'api/config-normalization';
 
+const FLOAT_ENUM = ['notVisible', 'always', 'never'];
+
 function setAutoStart(model, controller, autoStart) {
     model.setAutoStart(autoStart);
 
@@ -33,6 +35,16 @@ export default (controller, newConfig) => {
         controller._view.resize(newConfig.width, newConfig.height);
     }
 
+    if (newConfig.floating) {
+        const currFloatCfg = model.get('floating') || {};
+        const newFloatCfg = Object.assign({}, currFloatCfg, newConfig.floating);
+        if (FLOAT_ENUM.indexOf(newFloatCfg.mode) === -1) {
+            delete newConfig.floating;
+        } else {
+            newConfig.floating = newFloatCfg;
+        }
+    }
+
     Object.keys(newConfig).forEach((field) => {
         const newValue = newConfig[field];
         if (newValue === undefined) {
@@ -56,6 +68,7 @@ export default (controller, newConfig) => {
             case 'playbackRates':
             case 'repeat':
             case 'stretching':
+            case 'floating':
                 model.set(field, newValue);
                 break;
             default:

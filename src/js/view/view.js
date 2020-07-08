@@ -15,7 +15,6 @@ import {
 import Events from 'utils/backbone.events';
 import {
     addClass,
-    deviceIsLandscape,
     hasClass,
     removeClass,
     replaceClass,
@@ -38,8 +37,9 @@ import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
-import FloatingDragUI from 'view/floating-drag-ui';
+import FloatingController from 'view/floating/floating-controller';
 import ResizeListener from 'view/utils/resize-listener';
+import { getPlayerSizeStyles } from 'view/utils/player-size';
 
 if (!__HEADLESS__) {
     require('css/jwplayer.less');
@@ -49,8 +49,6 @@ let ControlsModule;
 
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
-
-let floatingPlayer = null;
 
 function View(_api, _model) {
     const _this = Object.assign(this, Events, {
@@ -63,7 +61,6 @@ function View(_api, _model) {
     const _playerElement = createElement(playerTemplate(_model.get('id'), _localization.player));
     const _wrapperElement = _playerElement.querySelector('.jw-wrapper');
     const _videoLayer = _playerElement.querySelector('.jw-media');
-    const _floatingUI = new FloatingDragUI(_wrapperElement);
 
     const _preview = new Preview(_model, _api);
     const _title = new Title(_model);
@@ -81,11 +78,16 @@ function View(_api, _model) {
     let _resizeContainerRequestId = -1;
     let _stateClassRequestId = -1;
 
-    let _floatingConfig = _model.get('floating');
+    const firstFloatCfg = _model.get('floating');
+    this.dismissible = firstFloatCfg && firstFloatCfg.dismissible;
 
-    this.dismissible = _floatingConfig && _floatingConfig.dismissible;
-    let _canFloat = false;
     let playerBounds = {};
+
+    const floatingController = new FloatingController(_model, playerBounds, {
+        player: _playerElement,
+        wrapper: _wrapperElement,
+        preview: _preview
+    });
 
     let displayClickHandler;
     let fullscreenHelpers;
@@ -98,10 +100,6 @@ function View(_api, _model) {
         return { reason: 'interaction' };
     }
 
-    function fosMobileBehavior() {
-        return _isMobile && !deviceIsLandscape() && !_model.get('fullscreen');
-    }
-
     // Compute player size, handle DOM removal/insertion, add to views-manager
     this.updateBounds = function () {
         cancelAnimationFrame(_resizeContainerRequestId);
@@ -112,6 +110,7 @@ function View(_api, _model) {
         const containerWidth = Math.round(rect.width);
         const containerHeight = Math.round(rect.height);
         playerBounds = bounds(_playerElement);
+        floatingController.updatePlayerBounds(playerBounds);
 
         // If the container is the same size as before, return early
         if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
@@ -157,9 +156,7 @@ function View(_api, _model) {
         _captionsRenderer.resize();
 
 
-        if (_floatingConfig) {
-            throttledMobileFloatScrollHandler();
-        }
+        floatingController.updateStyles();
     };
 
     // Dispatch UI events for changes in player size
@@ -271,7 +268,7 @@ function View(_api, _model) {
 
         const width = _model.get('width');
         const height = _model.get('height');
-        const styles = getPlayerSizeStyles(width, height);
+        const styles = getPlayerSizeStyles(_model, width, height);
         style(_playerElement, styles);
         _model.change('aspectratio', onAspectRatioChange);
         updateContainerStyles(width, height);
@@ -313,6 +310,15 @@ function View(_api, _model) {
             viewsManager.observe(_playerElement);
         }
         _model.set('inDom', inDOM);
+
+        // Floating event triggers
+        _model.on('forceAspectRatioChange', (evtArgs) => {
+            const ar = evtArgs.ratio || _model.get('aspectratio');
+            onAspectRatioChange(_model, ar);
+        });
+        _model.on('forceResponsiveListener', _responsiveListener);
+
+        floatingController.setup();
     };
 
     function updateVisibility() {
@@ -354,51 +360,10 @@ function View(_api, _model) {
         // Triggering 'resize' resulting in player 'ready'
         _lastWidth = _lastHeight = null;
 
-        // Setup floating scroll handler
-        if (_floatingConfig && _isMobile) {
-            viewsManager.addScrollHandler(throttledMobileFloatScrollHandler);
-        }
+        this.initFloatingBehavior();
 
         this.checkResized();
     };
-
-    // Functions for handler float on scroll (mobile)
-    const FLOATING_TOP_OFFSET = 62;
-    let canFire = true;
-    let debounceTO;
-    function checkFloatOnScroll() {
-        const floating = _model.get('isFloating');
-        const enoughRoomForFloat = playerBounds.top < FLOATING_TOP_OFFSET;
-        const hasCrossedThreshold = enoughRoomForFloat ?
-            playerBounds.top <= window.scrollY :
-            playerBounds.top <= window.scrollY + FLOATING_TOP_OFFSET;
-
-        if (!floating && hasCrossedThreshold) {
-            _updateFloating(0, enoughRoomForFloat);
-        } else if (floating && !hasCrossedThreshold) {
-            _updateFloating(1, enoughRoomForFloat);
-        }
-    }
-
-    function throttledMobileFloatScrollHandler() {
-        if (!fosMobileBehavior() || !_model.get('inDom')) {
-            return;
-        }
-        clearTimeout(debounceTO);
-        debounceTO = setTimeout(checkFloatOnScroll, 150);
-
-        if (!canFire) {
-            return;
-        }
-
-        canFire = false;
-        checkFloatOnScroll();
-
-        setTimeout(() => {
-            canFire = true;
-        }, 50);
-    }
-    // End functions for float on scroll (mobile)
 
     function changeControls(model, enable) {
         const controlsEvent = {
@@ -539,8 +504,8 @@ function View(_api, _model) {
         style(aspectRatioContainer, {
             paddingTop: aspectratio || null
         });
-        if (_this.isSetup && aspectratio && !_model.get('isFloating')) {
-            style(_playerElement, getPlayerSizeStyles(model.get('width')));
+        if (_this.isSetup && aspectratio && !model.get('isFloating')) {
+            style(_playerElement, getPlayerSizeStyles(model, model.get('width')));
             _responsiveUpdate();
         }
     }
@@ -556,6 +521,10 @@ function View(_api, _model) {
             openLink(evt.link, evt.linktarget, { rel: 'noreferrer' });
         }
     }
+
+    this.initFloatingBehavior = function() {
+        floatingController.initFloatingBehavior();
+    };
 
     this.addControls = function (controls) {
         _controls = controls;
@@ -629,28 +598,6 @@ function View(_api, _model) {
         }
     };
 
-    function getPlayerSizeStyles(playerWidth, playerHeight, resetAspectMode) {
-        const styles = {
-            width: playerWidth
-        };
-
-        // when jwResize is called remove aspectMode and force layout
-        if (resetAspectMode && playerHeight !== undefined) {
-            _model.set('aspectratio', null);
-        }
-        if (!_model.get('aspectratio')) {
-            // If the height is a pixel value (number) greater than 0, snap it to the minimum supported height
-            // Allow zero to mean "hide the player"
-            let height = playerHeight;
-            if (isNumber(height) && height !== 0) {
-                height = Math.max(height, CONTROLBAR_ONLY_HEIGHT);
-            }
-            styles.height = height;
-        }
-
-        return styles;
-    }
-
     function _resizeMedia(containerWidth, containerHeight) {
         if (!containerWidth || isNaN(1 * containerWidth)) {
             containerWidth = _model.get('containerWidth');
@@ -677,7 +624,7 @@ function View(_api, _model) {
     }
 
     this.resize = function (playerWidth, playerHeight) {
-        const styles = getPlayerSizeStyles(playerWidth, playerHeight, true);
+        const styles = getPlayerSizeStyles(_model, playerWidth, playerHeight, true);
         const widthSet = playerWidth !== undefined;
         const heightSet = playerHeight !== undefined;
 
@@ -686,9 +633,7 @@ function View(_api, _model) {
             _model.set('height', playerHeight);
         }
         style(_playerElement, styles);
-        if (_model.get('isFloating')) {
-            updateFloatingSize();
-        }
+        floatingController.resize();
         _responsiveUpdate();
     };
     this.resizeMedia = _resizeMedia;
@@ -864,7 +809,7 @@ function View(_api, _model) {
             _controls.setupInstream();
         }
 
-        _floatingUI.disable();
+        floatingController.disableFloatingUI();
     };
 
     const destroyInstream = function() {
@@ -876,8 +821,8 @@ function View(_api, _model) {
             _controls.destroyInstream(_model);
         }
 
-        if (floatingPlayer === _playerElement && !isIframe()) {
-            _floatingUI.enable();
+        if (floatingController.getFloatingPlayer() === _playerElement && !isIframe()) {
+            floatingController.enableFloatingUI();
         }
 
         _this.setAltText('');
@@ -939,142 +884,24 @@ function View(_api, _model) {
         _captionsRenderer.resize();
     };
 
+
     this.setIntersection = function (entry) {
         // Round as the IntersectionObserver polyfill sometimes returns ±0.00XXX.
         const intersectionRatio = Math.round(entry.intersectionRatio * 100) / 100;
         _model.set('intersectionRatio', intersectionRatio);
+        this.checkFloatIntersection(intersectionRatio);
+    };
 
-        if (_floatingConfig && !fosMobileBehavior()) {
-            // Only start floating if player has been mostly visible at least once.
-            _canFloat = _canFloat || intersectionRatio >= 0.5;
-            if (_canFloat) {
-                _updateFloating(intersectionRatio);
-            }
-        }
+    this.checkFloatIntersection = function(intersectionRatio) {
+        floatingController.checkFloatIntersection(intersectionRatio);
     };
 
     function _getCurrentElement() {
         return _model.get('isFloating') ? _wrapperElement : _playerElement;
     }
 
-    function _updateFloating(intersectionRatio, mobileFloatIntoPlace) {
-        // Player is 50% visible or less and no floating player already in the DOM. Player is not in iframe
-        const shouldFloat = intersectionRatio < 0.5 && !isIframe();
-        if (shouldFloat) {
-            const state = _model.get('state');
-            if (state !== STATE_IDLE && state !== STATE_ERROR && state !== STATE_COMPLETE && floatingPlayer === null) {
-                floatingPlayer = _playerElement;
-
-                _model.set('isFloating', true);
-
-                addClass(_playerElement, 'jw-flag-floating');
-
-                if (mobileFloatIntoPlace) {
-                    // Creates a dynamic animation where the top of the current player
-                    // Smoothly transitions into the expected floating space in the event
-                    // we can't start floating at 62px
-                    style(_wrapperElement, {
-                        transform: `translateY(-${FLOATING_TOP_OFFSET - playerBounds.top}px)`
-                    });
-
-                    setTimeout(() => {
-                        style(_wrapperElement, {
-                            transform: 'translateY(0)',
-                            transition: 'transform 150ms cubic-bezier(0, 0.25, 0.25, 1)'
-                        });
-                    });
-                }
-
-                // Copy background from preview element, fallback to image config.
-                style(_playerElement, {
-                    backgroundImage: _preview.el.style.backgroundImage || _model.get('image')
-                });
-
-                updateFloatingSize();
-
-                if (!_model.get('instreamMode')) {
-                    _floatingUI.enable();
-                }
-
-                // Perform resize and trigger "float" event responsively to prevent layout thrashing
-                _responsiveListener();
-            }
-        } else {
-            _this.stopFloating(false, mobileFloatIntoPlace);
-        }
-    }
-
-    function updateFloatingSize() {
-        // Always use aspect ratio to determine floating player size
-        // This allows us to support fixed pixel width/height or 100%*100% by matching the player container
-        const width = _model.get('width');
-        const height = _model.get('height');
-        const styles = getPlayerSizeStyles(width);
-        styles.maxWidth = Math.min(400, playerBounds.width);
-
-        if (!_model.get('aspectratio')) {
-            const containerWidth = playerBounds.width;
-            const containerHeight = playerBounds.height;
-            let aspectRatio = (containerHeight / containerWidth) || 0.5625; // (fallback to 16 by 9)
-            if (isNumber(width) && isNumber(height)) {
-                aspectRatio = height / width;
-            }
-            onAspectRatioChange(_model, (aspectRatio * 100) + '%');
-        }
-
-        style(_wrapperElement, styles);
-    }
-
     this.stopFloating = function(forever, mobileFloatIntoPlace) {
-        if (forever) {
-            _floatingConfig = null;
-            viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
-        }
-        if (floatingPlayer === _playerElement) {
-            floatingPlayer = null;
-            _model.set('isFloating', false);
-
-            const resetFloatingStyles = () => {
-                removeClass(_playerElement, 'jw-flag-floating');
-                onAspectRatioChange(_model, _model.get('aspectratio'));
-
-                // Wrapper should inherit from parent unless floating.
-                style(_playerElement, { backgroundImage: null }); // Reset to avoid flicker.
-
-                style(_wrapperElement, {
-                    maxWidth: null,
-                    width: null,
-                    height: null,
-                    left: null,
-                    right: null,
-                    top: null,
-                    bottom: null,
-                    margin: null,
-                    transform: null,
-                    transition: null,
-                    'transition-timing-function': null
-                });
-            };
-
-            if (mobileFloatIntoPlace) {
-                // Reverses a dynamic animation where the top of the current player
-                // Smoothly transitions into the expected static space in the event
-                // we didn't start floating at 62px
-                style(_wrapperElement, {
-                    transform: `translateY(-${FLOATING_TOP_OFFSET - playerBounds.top}px)`,
-                    'transition-timing-function': 'ease-out'
-                });
-
-                setTimeout(resetFloatingStyles, 150);
-            } else {
-                resetFloatingStyles();
-            }
-
-            _floatingUI.disable();
-
-            // Perform resize and trigger "float" event responsively to prevent layout thrashing
-            _responsiveListener();
-        }
+        floatingController.stopFloating(forever, mobileFloatIntoPlace);
     };
 
     this.destroy = function () {
@@ -1086,9 +913,6 @@ function View(_api, _model) {
         this.off();
         cancelAnimationFrame(_resizeContainerRequestId);
         clearTimeout(_resizeMediaTimeout);
-        if (floatingPlayer === _playerElement) {
-            floatingPlayer = null;
-        }
         if (focusHelper) {
             focusHelper.destroy();
             focusHelper = null;
@@ -1117,9 +941,7 @@ function View(_api, _model) {
             this.resizeListener.destroy();
             delete this.resizeListener;
         }
-        if (_floatingConfig && _isMobile) {
-            viewsManager.removeScrollHandler(throttledMobileFloatScrollHandler);
-        }
+        floatingController.destroy();
     };
 }
 
