@@ -394,6 +394,17 @@ export const AUDIO_TRACKS = 'audioTracks';
 export const AUDIO_TRACK_CHANGED = 'audioTrackChanged';
 
 /**
+ * Fired when the list of available subtitle tracks is updated. Happens shortly after a playlist item starts playing.
+ */
+export const SUBTITLES_TRACKS = 'subtitlesTracks';
+
+/**
+ * Fired when the active subtitle track is changed.
+ Happens in response to e.g. a user clicking the subtitle tracks menu or a script calling setCurrentSubtitleTrack().
+ */
+export const SUBTITLES_TRACK_CHANGED = 'subtitlesTrackChanged';
+
+/**
  * Fired when the playback rate has been changed.
 */
 export const PLAYBACK_RATE_CHANGED = 'playbackRateChanged';

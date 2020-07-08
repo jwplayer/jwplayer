@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src/js",
+    "target": "esnext",
+    "module": "esnext",
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noEmit": true,
+    "importsNotUsedAsValues": "error"
+  },
+  "include": [
+    "src",
+    "../../src/js"
+  ],
+  "exclude": [
+    "dist/**/*"
+  ]
+}

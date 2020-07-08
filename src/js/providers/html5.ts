@@ -3,7 +3,8 @@ import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import {
     STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META, MEDIA_ERROR, WARNING,
-    MEDIA_VISUAL_QUALITY, MEDIA_TYPE, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, NATIVE_FULLSCREEN, STATE_LOADING
+    MEDIA_VISUAL_QUALITY, MEDIA_TYPE, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, NATIVE_FULLSCREEN, STATE_LOADING,
+    AUDIO_TRACKS, AUDIO_TRACK_CHANGED
 } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
@@ -138,14 +139,13 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             if (_androidHls && duration === Infinity) {
                 duration = 0;
             }
-            const metadata = {
+            _this.trigger(MEDIA_META, {
                 metadataType: 'media',
                 duration: duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth,
                 seekRange: _this.getSeekRange()
-            };
-            _this.trigger(MEDIA_META, metadata);
+            });
             checkVisualQuality();
         },
 
@@ -158,7 +158,6 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
 
         loadeddata(): void {
             checkStartDateTime();
-            VideoEvents.loadeddata.call(_this);
             _setAudioTracks(_videotag.audioTracks);
             _checkDelayedSeek(_this.getDuration());
         },
@@ -370,11 +369,20 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             level.height = _videotag.videoHeight;
             _setMediaType();
             visualQuality.reason = visualQuality.reason || 'auto';
-            visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
-            visualQuality.bitrate = 0;
+            const mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
             level.index = _currentQuality;
             level.label = _levels[_currentQuality].label;
-            _this.trigger(MEDIA_VISUAL_QUALITY, visualQuality);
+            _this.trigger(MEDIA_VISUAL_QUALITY, {
+                reason: visualQuality.reason,
+                mode,
+                bitrate: 0,
+                level: {
+                    width: level.width,
+                    height: level.height,
+                    index: level.index,
+                    label: level.label
+                }
+            });
             visualQuality.reason = '';
         }
     }
@@ -952,7 +960,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         }
         _this.addTracksListener(tracks, 'change', _audioTrackChangeHandler);
         if (_audioTracks) {
-            _this.trigger('audioTracks', { currentTrack: _currentAudioTrackIndex, tracks: _audioTracks });
+            _this.trigger(AUDIO_TRACKS, { currentTrack: _currentAudioTrackIndex, tracks: _audioTracks });
         }
     }
 
@@ -962,7 +970,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
             _currentAudioTrackIndex = index;
             _videotag.audioTracks[_currentAudioTrackIndex].enabled = true;
-            _this.trigger('audioTrackChanged', { currentTrack: _currentAudioTrackIndex,
+            _this.trigger(AUDIO_TRACK_CHANGED, { currentTrack: _currentAudioTrackIndex,
                 tracks: _audioTracks });
         }
     }
