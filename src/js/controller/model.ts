@@ -14,11 +14,16 @@ import type { ImplementedProvider } from 'providers/default';
 type AutoStart = boolean | 'viewable';
 export type PauseReason = 'external' | 'interaction' | 'viewable';
 export type PlayReason = 'autostart' | 'external' | 'interaction' | 'playlist' | 'related-auto' | 'related-interaction';
+export type FloatConfig = {
+    dismissable?: boolean;
+    mode?: string;
+};
 
 export type PlayerModelAttributes = {
     _abZoomThumbnail?: boolean;
     __ab_truncated?: boolean;
     _destroyed: boolean;
+    aspectratio: string | null;
     audioMode: boolean;
     autostart: AutoStart;
     autostartMuted: boolean;
@@ -36,9 +41,11 @@ export type PlayerModelAttributes = {
     enableShortcuts: boolean;
     flashBlocked: boolean;
     flashThrottle?: boolean;
+    floating?: FloatConfig;
     fullscreen: boolean;
     height: number | string;
     id: string;
+    inDom: boolean;
     instreamMode: boolean;
     isFloating?: boolean;
     item: number;
