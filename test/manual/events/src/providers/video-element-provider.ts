@@ -10,10 +10,7 @@ const PROVIDER_NAME = 'headless-video-element';
 
 // Provider events not implemented in the example:
 // "bandwidthEstimate" (We're letting the browser handle network activity here)
-// "levelsChanged" (also "levels" is just stubbed)
 // "metadataCueParsed" and "meta" events (emsg, id3, program-date-time...) (See html5.ts)
-// "subtitlesTracks" and "subtitlesTrackChanged" (See html5.ts and tracks-mixin)
-// "audioTracks" and "audioTrackChanged" (See html5.ts)
 
 // The ImplementedProvider interface matches internal providers
 // These changes reflect the interface required for any provider registered with jwplayer
