@@ -850,8 +850,6 @@ function _addCueToTrack(renderNatively: boolean, track: TextTrackLike, vttCue: T
             cue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
 
             if (vttCue.value) {
-                const event = cue.text ? getTextCueMetaEvent(cue) : null;
-                if (event && event.metadataType === 'emsg') {
                     cue.value = vttCue.value;
                 }
             }
