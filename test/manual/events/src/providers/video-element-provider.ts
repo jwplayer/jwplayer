@@ -65,6 +65,7 @@ class VideoElementProvider implements CustomProvider {
     private readonly listenerDictionary: { [key: string]: any };
     private audioTracksChangeHandler: (this: VideoElementProvider) => void;
     private subtitleTracksChangeHandler: (this: VideoElementProvider) => void;
+    private currentQuality: number;
     private currentAudioTrack: number;
     private currentSubtitleTrack: number;
     private subtitleTracksDispatched: boolean;
@@ -120,6 +121,7 @@ class VideoElementProvider implements CustomProvider {
         this.videoElement = mediaElement;
         this.audioTracksChangeHandler = this.audioTracksChange.bind(this);
         this.subtitleTracksChangeHandler = this.subtitleTracksChange.bind(this);
+        this.currentQuality = -1;
         this.currentAudioTrack = -1;
         this.currentSubtitleTrack = -1;
         this.subtitleTracksDispatched = false;
@@ -380,6 +382,7 @@ class VideoElementProvider implements CustomProvider {
     init(item: PlaylistItem): void {
         this.item = item;
         this.state = 'idle';
+        this.currentQuality = -1;
         this.currentAudioTrack = -1;
         this.currentSubtitleTrack = -1;
         this.subtitleTracksDispatched = false;
@@ -391,14 +394,18 @@ class VideoElementProvider implements CustomProvider {
         if (item.image) {
             this.videoElement.setAttribute('poster', item.image);
         }
-        this.setVideoSource(item.sources[0]);
+        // Up to you to pick from available adaptations once they are known. This is just a quick hack to pick
+        // from a list of mp4 source, or the one HLS source in Safari.
+        this.currentQuality = Math.floor(item.sources.length / 3);
+        this.setVideoSource(item.sources[this.currentQuality]);
         this.videoElement.load();
     }
 
     load(item: PlaylistItem): void {
         this.item = item;
         const previousSource = this.videoElement.src;
-        this.setVideoSource(item.sources[0]);
+        this.currentQuality = this.currentQuality < 0 ? Math.floor(item.sources.length / 3) : this.currentQuality;
+        this.setVideoSource(item.sources[this.currentQuality]);
         const sourceChanged = previousSource !== this.videoElement.src;
         if (sourceChanged) {
             // Do not call load if src was not set. load() will cancel any active play promise.
@@ -418,15 +425,13 @@ class VideoElementProvider implements CustomProvider {
 
         // This should be triggered when adaptation sets are known
         // In this case we can't provide manual quality selection so just report a single level
+        const levels = this.item.sources.map(source => ({
+            label: source.label || `${source.height}p`
+        }))
+
         this.trigger('levels', {
-            levels: [{
-                label: '0',
-                // height?: number;
-                // width?: number;
-                // bitrate?: number;
-                // default?: boolean;
-            }],
-            currentQuality: 0
+            levels,
+            currentQuality: this.currentQuality
         });
     }
 
@@ -536,14 +541,6 @@ class VideoElementProvider implements CustomProvider {
         } else {
             this.seekToTime = toPosition;
         }
-        if (!this.getSeekableEnd()) {
-            // Can't seek without seekable range, trigger playback
-            // TODO: Defer seeking until seekable range updates
-            this.item.starttime = this.seekToTime;
-            this.play();
-            return;
-        }
-
         this.seeking = true;
         this.seekFromTime = this.videoElement.currentTime;
         this.videoElement.currentTime = this.seekToTime;
@@ -558,11 +555,29 @@ class VideoElementProvider implements CustomProvider {
     }
 
     public getCurrentQuality(): number {
-        return 0;
+        return this.currentQuality;
     }
 
-    public setCurrentQuality(qualityLevel: number): void {
+    public setCurrentQuality(currentQuality: number): void {
         // Implement based on availability of manual bitrate selection
+        if (currentQuality > -1 && this.currentQuality !== currentQuality &&
+            this.item.sources && currentQuality < this.item.sources.length) {
+            this.currentQuality = currentQuality;
+            const levels = this.item.sources.map(source => ({
+                label: source.label || source.height ? `${source.height}p` : `${source.bitrate}bps`
+            }))
+            this.trigger('levelsChanged', {
+                currentQuality,
+                levels
+            });
+            const playing = !this.videoElement.paused;
+            const currentTime = this.videoElement.currentTime;
+            this.setVideoSource(this.item.sources[currentQuality]);
+            this.videoElement.currentTime = currentTime;
+            if (playing) {
+                this.videoElement.play();
+            }
+        }
     }
 
     public getQualityLevels(): QualityLevel[] {

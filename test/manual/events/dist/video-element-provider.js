@@ -157,6 +157,7 @@ var VideoElementProvider = /*#__PURE__*/function () {
     this.videoElement = mediaElement;
     this.audioTracksChangeHandler = this.audioTracksChange.bind(this);
     this.subtitleTracksChangeHandler = this.subtitleTracksChange.bind(this);
+    this.currentQuality = -1;
     this.currentAudioTrack = -1;
     this.currentSubtitleTrack = -1;
     this.subtitleTracksDispatched = false;
@@ -442,6 +443,7 @@ var VideoElementProvider = /*#__PURE__*/function () {
   _proto.init = function init(item) {
     this.item = item;
     this.state = 'idle';
+    this.currentQuality = -1;
     this.currentAudioTrack = -1;
     this.currentSubtitleTrack = -1;
     this.subtitleTracksDispatched = false;
@@ -453,16 +455,20 @@ var VideoElementProvider = /*#__PURE__*/function () {
 
     if (item.image) {
       this.videoElement.setAttribute('poster', item.image);
-    }
+    } // Up to you to pick from available adaptations once they are known. This is just a quick hack to pick
+    // from a list of mp4 source, or the one HLS source in Safari.
 
-    this.setVideoSource(item.sources[0]);
+
+    this.currentQuality = Math.floor(item.sources.length / 3);
+    this.setVideoSource(item.sources[this.currentQuality]);
     this.videoElement.load();
   };
 
   _proto.load = function load(item) {
     this.item = item;
     var previousSource = this.videoElement.src;
-    this.setVideoSource(item.sources[0]);
+    this.currentQuality = this.currentQuality < 0 ? Math.floor(item.sources.length / 3) : this.currentQuality;
+    this.setVideoSource(item.sources[this.currentQuality]);
     var sourceChanged = previousSource !== this.videoElement.src;
 
     if (sourceChanged) {
@@ -483,15 +489,14 @@ var VideoElementProvider = /*#__PURE__*/function () {
     // In this case we can't provide manual quality selection so just report a single level
 
 
+    var levels = this.item.sources.map(function (source) {
+      return {
+        label: source.label || source.height + "p"
+      };
+    });
     this.trigger('levels', {
-      levels: [{
-        label: '0' // height?: number;
-        // width?: number;
-        // bitrate?: number;
-        // default?: boolean;
-
-      }],
-      currentQuality: 0
+      levels: levels,
+      currentQuality: this.currentQuality
     });
   };
 
@@ -616,14 +621,6 @@ var VideoElementProvider = /*#__PURE__*/function () {
       this.seekToTime = toPosition;
     }
 
-    if (!this.getSeekableEnd()) {
-      // Can't seek without seekable range, trigger playback
-      // TODO: Defer seeking until seekable range updates
-      this.item.starttime = this.seekToTime;
-      this.play();
-      return;
-    }
-
     this.seeking = true;
     this.seekFromTime = this.videoElement.currentTime;
     this.videoElement.currentTime = this.seekToTime;
@@ -638,10 +635,31 @@ var VideoElementProvider = /*#__PURE__*/function () {
   };
 
   _proto.getCurrentQuality = function getCurrentQuality() {
-    return 0;
+    return this.currentQuality;
   };
 
-  _proto.setCurrentQuality = function setCurrentQuality(qualityLevel) {// Implement based on availability of manual bitrate selection
+  _proto.setCurrentQuality = function setCurrentQuality(currentQuality) {
+    // Implement based on availability of manual bitrate selection
+    if (currentQuality > -1 && this.currentQuality !== currentQuality && this.item.sources && currentQuality < this.item.sources.length) {
+      this.currentQuality = currentQuality;
+      var levels = this.item.sources.map(function (source) {
+        return {
+          label: source.label || source.height ? source.height + "p" : source.bitrate + "bps"
+        };
+      });
+      this.trigger('levelsChanged', {
+        currentQuality: currentQuality,
+        levels: levels
+      });
+      var playing = !this.videoElement.paused;
+      var currentTime = this.videoElement.currentTime;
+      this.setVideoSource(this.item.sources[currentQuality]);
+      this.videoElement.currentTime = currentTime;
+
+      if (playing) {
+        this.videoElement.play();
+      }
+    }
   };
 
   _proto.getQualityLevels = function getQualityLevels() {
