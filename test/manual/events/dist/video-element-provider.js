@@ -96,10 +96,7 @@
 var jwplayer = window.jwplayer;
 var PROVIDER_NAME = 'headless-video-element'; // Provider events not implemented in the example:
 // "bandwidthEstimate" (We're letting the browser handle network activity here)
-// "levelsChanged" (also "levels" is just stubbed)
 // "metadataCueParsed" and "meta" events (emsg, id3, program-date-time...) (See html5.ts)
-// "subtitlesTracks" and "subtitlesTrackChanged" (See html5.ts and tracks-mixin)
-// "audioTracks" and "audioTrackChanged" (See html5.ts)
 // The ImplementedProvider interface matches internal providers
 // These changes reflect the interface required for any provider registered with jwplayer
 
@@ -489,11 +486,7 @@ var VideoElementProvider = /*#__PURE__*/function () {
     // In this case we can't provide manual quality selection so just report a single level
 
 
-    var levels = this.item.sources.map(function (source) {
-      return {
-        label: source.label || source.height + "p"
-      };
-    });
+    var levels = this.getQualityLevels();
     this.trigger('levels', {
       levels: levels,
       currentQuality: this.currentQuality
@@ -642,11 +635,7 @@ var VideoElementProvider = /*#__PURE__*/function () {
     // Implement based on availability of manual bitrate selection
     if (currentQuality > -1 && this.currentQuality !== currentQuality && this.item.sources && currentQuality < this.item.sources.length) {
       this.currentQuality = currentQuality;
-      var levels = this.item.sources.map(function (source) {
-        return {
-          label: source.label || source.height ? source.height + "p" : source.bitrate + "bps"
-        };
-      });
+      var levels = this.getQualityLevels();
       this.trigger('levelsChanged', {
         currentQuality: currentQuality,
         levels: levels
@@ -663,12 +652,14 @@ var VideoElementProvider = /*#__PURE__*/function () {
   };
 
   _proto.getQualityLevels = function getQualityLevels() {
-    return [{
-      bitrate: 0,
-      label: '0',
-      width: this.videoElement.videoWidth,
-      height: this.videoElement.videoHeight
-    }];
+    return this.item.sources.map(function (source) {
+      return {
+        bitrate: source.bitrate || 0,
+        label: source.label || source.height + "p",
+        width: source.width,
+        height: source.height
+      };
+    });
   };
 
   _proto.setCurrentAudioTrack = function setCurrentAudioTrack(currentTrack) {

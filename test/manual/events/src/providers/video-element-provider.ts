@@ -422,9 +422,7 @@ class VideoElementProvider implements CustomProvider {
 
         // This should be triggered when adaptation sets are known
         // In this case we can't provide manual quality selection so just report a single level
-        const levels = this.item.sources.map(source => ({
-            label: source.label || `${source.height}p`
-        }))
+        const levels = this.getQualityLevels();
 
         this.trigger('levels', {
             levels,
@@ -560,9 +558,7 @@ class VideoElementProvider implements CustomProvider {
         if (currentQuality > -1 && this.currentQuality !== currentQuality &&
             this.item.sources && currentQuality < this.item.sources.length) {
             this.currentQuality = currentQuality;
-            const levels = this.item.sources.map(source => ({
-                label: source.label || source.height ? `${source.height}p` : `${source.bitrate}bps`
-            }))
+            const levels = this.getQualityLevels();
             this.trigger('levelsChanged', {
                 currentQuality,
                 levels
@@ -578,12 +574,12 @@ class VideoElementProvider implements CustomProvider {
     }
 
     public getQualityLevels(): QualityLevel[] {
-        return [{
-            bitrate: 0,
-            label: '0',
-            width: this.videoElement.videoWidth,
-            height: this.videoElement.videoHeight
-        }];
+        return this.item.sources.map(source => ({
+            bitrate: source.bitrate || 0,
+            label: source.label || `${source.height}p`,
+            width: source.width,
+            height: source.height
+        }));
     }
 
     public setCurrentAudioTrack(currentTrack: number): void {
