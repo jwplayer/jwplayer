@@ -1,5 +1,6 @@
 /* eslint getter-return: 0, no-empty: 0 */
 
+// https://github.com/calvellido/focus-options-polyfill.git
 // focus - focusOptions - preventScroll polyfill
 (function() {
     if (
