@@ -1,4 +1,5 @@
 import 'polyfills/promise';
+import 'polyfills/focus';
 import { loadFrom } from './utils/playerutils';
 import instances from './api/players';
 import GlobalApi from 'api/global-api';
