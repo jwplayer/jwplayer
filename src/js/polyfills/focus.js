@@ -1,9 +1,11 @@
+/* eslint getter-return: 0, no-empty: 0 */
+
 // focus - focusOptions - preventScroll polyfill
 (function() {
     if (
         typeof window === 'undefined' ||
-      typeof document === 'undefined' ||
-      typeof HTMLElement === 'undefined'
+        typeof document === 'undefined' ||
+        typeof HTMLElement === 'undefined'
     ) {
         return;
     }
@@ -30,7 +32,7 @@
   
     if (
         HTMLElement.prototype.nativeFocus === undefined &&
-      !supportsPreventScrollOption
+        !supportsPreventScrollOption
     ) {
         HTMLElement.prototype.nativeFocus = HTMLElement.prototype.focus;
   
@@ -38,12 +40,12 @@
             let parent = element.parentNode;
             let scrollableElements = [];
             let rootScrollingElement =
-          document.scrollingElement || document.documentElement;
+            document.scrollingElement || document.documentElement;
   
             while (parent && parent !== rootScrollingElement) {
                 if (
                     parent.offsetHeight < parent.scrollHeight ||
-            parent.offsetWidth < parent.scrollWidth
+                    parent.offsetWidth < parent.scrollWidth
                 ) {
                     scrollableElements.push([
                         parent,
