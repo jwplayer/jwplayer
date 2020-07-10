@@ -3476,7 +3476,7 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.1"
     readable-stream "^2.0.4"
 
-focus-options-polyfill@^1.5.0:
+focus-options-polyfill@1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/focus-options-polyfill/-/focus-options-polyfill-1.5.0.tgz#fd2e6a0d6d8f828346726a5adf02f3d2bdfece5f"
   integrity sha512-HiMSaXGUz2OFjOuoGTWXlp+YjZCGnVXPu6vPeccgaSOzGmqLVz8tJRcKXWfMJnj16LXf/IM1rJI0zrZMVc9q7g==
