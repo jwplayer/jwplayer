@@ -4,7 +4,7 @@ const YEAR = new Date().getFullYear();
 const versions = {
     backbone: '1.1.2',
     'can-autoplay': '3.0.0',
-    'focus-options-polyfill': '1.5.0',
+    'focus-options-polyfill': devDeps['focus-options-polyfill'],
     'intersection-observer': '' + devDeps['intersection-observer'],
     'promise-polyfill': '' + devDeps['promise-polyfill'],
     'vtt.js': '0.13.0',

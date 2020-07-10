@@ -1,4 +1,3 @@
-import 'polyfills/focus';
 import { OS } from 'environment/environment';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
@@ -20,6 +19,8 @@ import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
 import FloatingCloseButton from 'view/floating/floating-close-button';
 
 require('css/controls.less');
+// Allows preventScrolling focus option on IE/Safari.
+require('../../../../node_modules/focus-options-polyfill');
 
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 // Keys which bypass keyboard shortcuts being off
