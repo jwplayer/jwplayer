@@ -850,8 +850,7 @@ function _addCueToTrack(renderNatively: boolean, track: TextTrackLike, vttCue: T
             cue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
 
             if (vttCue.value) {
-                    cue.value = vttCue.value;
-                }
+                cue.value = vttCue.value;
             }
         }
         insertCueInOrder(track, cue);
