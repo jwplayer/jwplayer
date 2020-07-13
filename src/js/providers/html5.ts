@@ -71,7 +71,7 @@ interface HTML5Provider extends ProviderWithMixins {
 }
 
 function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: GenericObject, mediaElement: HTMLVideoElement): void {
-    const _this = this;
+    const _this: HTML5Provider = this;
 
     // Current media state
     _this.state = STATE_IDLE;
@@ -104,12 +104,12 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     }
 
     const MediaEvents = {
-        progress(): void {
+        progress(this: ProviderWithMixins): void {
             VideoEvents.progress.call(_this);
             checkStaleStream();
         },
 
-        timeupdate(): void {
+        timeupdate(this: ProviderWithMixins): void {
             if (_this.currentTime >= 0) {
                 // Reset error retries after concurrent timeupdate events
                 _this.retries = 0;
@@ -128,13 +128,13 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
 
         resize: checkVisualQuality,
 
-        ended(): void {
+        ended(this: ProviderWithMixins): void {
             _currentQuality = -1;
             clearTimeouts();
             VideoEvents.ended.call(_this);
         },
 
-        loadedmetadata(): void {
+        loadedmetadata(this: ProviderWithMixins): void {
             let duration = _this.getDuration();
             if (_androidHls && duration === Infinity) {
                 duration = 0;
@@ -149,20 +149,20 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             checkVisualQuality();
         },
 
-        durationchange(): void {
+        durationchange(this: ProviderWithMixins): void {
             if (_androidHls) {
                 return;
             }
             VideoEvents.progress.call(_this);
         },
 
-        loadeddata(): void {
+        loadeddata(this: ProviderWithMixins): void {
             checkStartDateTime();
             _setAudioTracks(_videotag.audioTracks);
             _checkDelayedSeek(_this.getDuration());
         },
 
-        canplay(): void {
+        canplay(this: ProviderWithMixins): void {
             _canSeek = true;
             if (!_androidHls) {
                 _setMediaType();
@@ -171,7 +171,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             VideoEvents.canplay.call(_this);
         },
 
-        seeking(): void {
+        seeking(this: ProviderWithMixins): void {
             const offset = _seekToTime !== null ? timeToPosition(_seekToTime) : _this.getCurrentTime();
             const position = timeToPosition(_timeBeforeSeek as number);
             _timeBeforeSeek = _seekToTime;
@@ -184,13 +184,13 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             });
         },
 
-        seeked(): void {
+        seeked(this: ProviderWithMixins): void {
             VideoEvents.seeked.call(_this);
             _this.ensureMetaTracksActive();
         },
 
-        waiting(): void{
-            if (_this.seeking) {
+        waiting(this: ProviderWithMixins): void{
+            if (_this.seeking || _this.video.seeking) {
                 _this.setState(STATE_LOADING);
             } else if (_this.state === STATE_PLAYING) {
                 if (_this.atEdgeOfLiveStream()) {
