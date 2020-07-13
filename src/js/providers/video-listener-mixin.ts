@@ -19,6 +19,7 @@ export interface VideoListenerInt {
     timeupdate(): void;
     click(evt: Event): void;
     volumechange(): void;
+    seeking(): void;
     seeked(): void;
     playing(): void;
     pause(): void;
@@ -116,6 +117,12 @@ const VideoListenerMixin: VideoListenerInt = {
         this.trigger(MEDIA_MUTE, {
             mute: video.muted
         });
+    },
+
+    seeking(this: ProviderWithMixins): void {
+        this.seeking = true;
+        // TODO: this.trigger(MEDIA_SEEK implementation from html5 should be moved here
+        //  and removed frrom hlsjs/shaka providers
     },
 
     seeked(this: ProviderWithMixins): void {

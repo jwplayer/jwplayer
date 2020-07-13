@@ -7,7 +7,6 @@ import type * as Event from 'events/events';
 import type { TracksMixin, SimpleAudioTrack } from 'providers/tracks-mixin';
 import type { VideoActionsInt } from 'providers/video-actions-mixin';
 import type { VideoAttachedInt } from 'providers/video-attached-mixin';
-import type { VideoListenerInt } from 'providers/video-listener-mixin';
 import type PlaylistItem from 'playlist/item';
 import type { QualityLevel } from 'providers/data-normalizer';
 import type { PlaylistItemSource } from 'playlist/source';
@@ -224,7 +223,7 @@ export interface ImplementedProvider extends InternalProvider {
 export type AllProviderEvents = ProviderEvents & ProviderEventNotifications;
 export type AllProviderEventsListener = <E extends keyof AllProviderEvents>(type: E, data: AllProviderEvents[E]) => void;
 
-export type ProviderWithMixins = TracksMixin & VideoActionsInt & VideoAttachedInt & VideoListenerInt & ImplementedProvider & {
+export type ProviderWithMixins = TracksMixin & VideoActionsInt & VideoAttachedInt & ImplementedProvider & {
     drmUsed?: 'widevine' | 'playready' | 'clearkey' | null;
     // Providers can implement this method to add the invoked return value on "time" events `metadata.mpegts` property.
     getPtsOffset?(): number;
