@@ -17,10 +17,12 @@ import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
 import FloatingCloseButton from 'view/floating/floating-close-button';
+import polyfillFocusOptions from 'focus-options-polyfill';
 
 require('css/controls.less');
+
 // Allows preventScrolling focus option on IE/Safari.
-require('../../../../node_modules/focus-options-polyfill');
+polyfillFocusOptions();
 
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 // Keys which bypass keyboard shortcuts being off
