@@ -17,7 +17,7 @@ import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
 import FloatingCloseButton from 'view/floating/floating-close-button';
-import polyfillFocusOptions from 'focus-options-polyfill';
+import * as polyfillFocusOptions from 'focus-options-polyfill';
 
 require('css/controls.less');
 
