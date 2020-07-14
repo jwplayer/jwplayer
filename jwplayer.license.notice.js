@@ -4,6 +4,7 @@ const YEAR = new Date().getFullYear();
 const versions = {
     backbone: '1.1.2',
     'can-autoplay': '3.0.0',
+    'focus-options-polyfill': devDeps['focus-options-polyfill'],
     'intersection-observer': '' + devDeps['intersection-observer'],
     'promise-polyfill': '' + devDeps['promise-polyfill'],
     'vtt.js': '0.13.0',
@@ -61,6 +62,10 @@ https://github.com/taylorhakes/promise-polyfill/blob/v${versions['promise-polyfi
 can-autoplay.js v${versions['can-autoplay']}
 Copyright (c) 2017 video-dev
 https://github.com/video-dev/can-autoplay/blob/v${versions['can-autoplay']}/LICENSE
+
+focus-options-polyfill v${versions['focus-options-polyfill']}
+Copyright (c) 2018 Juan Valencia
+https://github.com/calvellido/focus-options-polyfill/blob/v${versions['focus-options-polyfill']}/LICENSE
 
 * * *
 

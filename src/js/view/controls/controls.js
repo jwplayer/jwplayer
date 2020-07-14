@@ -20,6 +20,9 @@ import FloatingCloseButton from 'view/floating/floating-close-button';
 
 require('css/controls.less');
 
+// Allows preventScrolling focus option on IE/Safari.
+require('focus-options-polyfill');
+
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 // Keys which bypass keyboard shortcuts being off
 const ALWAYS_ALLOWED_KEYS = [27];
@@ -104,9 +107,9 @@ export default class Controls extends Events {
 
         this.focusPlayerElement = () => {
             if (model.get('isFloating')) {
-                this.wrapperElement.querySelector('video').focus();
+                this.wrapperElement.querySelector('video').focus({ preventScroll: true });
             } else {
-                this.playerContainer.focus();
+                this.playerContainer.focus({ preventScroll: true });
             }
         };
 
