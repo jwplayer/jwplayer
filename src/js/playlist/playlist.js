@@ -31,7 +31,7 @@ export function normalizePlaylistItem(model, item, feedData) {
 
     playlistItem.preload = getPreload(item.preload, preload);
 
-    playlistItem.allSources = formatSources(item, model);
+    playlistItem.allSources = formatSources(playlistItem, model);
 
     playlistItem.sources = filterSources(playlistItem.allSources, providers);
 
