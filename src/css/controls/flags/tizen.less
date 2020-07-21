@@ -1,71 +1,248 @@
 @import "../../shared-imports/vars.less";
 
 .jw-tizen-app {
-    // Increasing the size of the svg-icons - icon.less
+    .jw-title {
+        /* Important is required so the title component is never displayed */
+        /* stylelint-disable-next-line declaration-no-important */
+        display: none !important;
+    }
+
+    // States
+    &:not(.jw-state-buffering) {
+        .jw-display {
+            display: none;
+        }
+    }
+
+    &:not(.jw-flag-user-inactive) {
+        .jw-controlbar {
+            will-change: initial;
+        }
+    }
+
+    &.jw-state-buffering {
+        .jw-tizen-controlbar {
+            display: none;
+        }
+    }
+
+    &.jw-state-paused.jw-flag-user-inactive {
+        .jw-pause-display {
+            display: initial;
+        }
+    }
+
+    // Icons
     .jw-svg-icon {
-        .square(60px);
+        .square(75px);
+        filter: drop-shadow(0 0 15px @white);
+    }
+
+    .jw-icon-back {
+        .jw-svg-icon {
+            .square(60px);
+        }
     }
 
     .jw-icon {
-        .square(100px);
+        .square(130px);
+        justify-content: center;
     }
 
-    .jw-icon-volume,
-    .jw-icon-fullscreen {
-        display: none;
+    // Next Up Display
+    .jw-nextup-container {
+        padding: 150px 120px;
+
+        .jw-nextup {
+            max-width: 675px;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .jw-nextup-tooltip {
+            height: 175px;
+        }
+
+        .jw-nextup-thumbnail {
+            width: 300px;
+        }
+
+        .jw-nextup-body {
+            width: 175px;
+            padding-left: 40px;
+        }
+
+        .jw-nextup-header {
+            font-size: 50px;
+        }
+
+        .jw-nextup-title {
+            font-size: 40px;
+            font-weight: normal;
+        }
+
+        .jw-nextup-close {
+            display: none;
+        }
     }
 
-    // Include the back icon in pointer events - jwplayerlayout.less
-    // Tizen back icon to fade with control bar - title.less
-    .jw-icon-back {
-        pointer-events: all;
-        left: 0;
-        top: 0;
+    // Active Button
+    .jw-icon.jw-button-color.jw-active {
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: @hover-color;
+
+        .jw-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+
+    // Pause Display
+    .jw-tizen-controls {
+        height: 100%;
+
+        .jw-pause-display {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2;
+            display: none;
+
+            .jw-pause-display-container {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                padding: 0 120px 300px;
+                width: 100%;
+
+                .jw-pause-title {
+                    font-size: 80px;
+                    font-weight: bold;
+                    width: 90%;
+                    color: rgba(255, 255, 255, 0.9);
+                    padding-bottom: 20px;
+                }
+
+                .jw-pause-description {
+                    font-size: 40px;
+                    width: 60%;
+                    color: rgba(255, 255, 255, 0.8);
+                    font-weight: normal;
+                }
+            }
+        }
+    }
+
+    // Controlbar
+    .jw-tizen-controlbar {
+        align-items: center;
+        justify-content: center;
         transition: 250ms @default-timing-function;
         transition-property: opacity, visibility;
         transition-delay: 0s;
-    }
+        padding: 90px 120px;
+        position: initial;
 
-    .jw-text {
-        font-size: @tizen-font-size;
-    }
+        .jw-button-container {
+            display: none;
+        }
 
-    .jw-controls {
-        padding: @tizen-margin;
-    }
+        .jw-top-container {
+            display: flex;
+            flex-flow: row wrap;
+            position: absolute;
+            width: 100%;
+            border: none;
+            border-radius: 0;
+            background-size: auto;
+            box-shadow: none;
+            left: 0;
+            top: 0;
+            padding: inherit;
+        }
 
-    .jw-controls-backdrop {
-        background: linear-gradient(to bottom, fade(@black, 40%) 100%, fade(@black, 40%) 77%, transparent, fade(@black, 40%) 77%, fade(@black, 40%) 100%);
-    }
-
-    // Raise control bar - controlbar.less
-    .jw-controlbar {
-        padding: @tizen-margin;
-        max-height: 300px;
+        .jw-bottom-container {
+            display: flex;
+            flex-flow: row wrap;
+            position: absolute;
+            width: 100%;
+            border: none;
+            border-radius: 0;
+            background-size: auto;
+            box-shadow: none;
+            left: 0;
+            bottom: 0;
+            padding: inherit;
+        }
 
         .jw-text {
-            font-size: 1.5em;
+            font-size: 40px;
+            font-weight: bold;
         }
 
-        .jw-text-elapsed {
-            justify-content: flex-end;
+        .jw-text-countdown {
+            display: flex;
+        }
+
+        // Controlbar Slider
+        .jw-slider-time {
+            height: initial;
+            width: initial;
+            flex-grow: 1;
+            padding: 0;
+
+            .jw-slider-container {
+                height: 15px;
+            }
+        }
+
+        // Controlbar Tooltips
+        .jw-tooltip {
+            display: block;
+            box-shadow: none;
+            top: 100%;
+
+            .jw-text {
+                font-size: 30px;
+                background-color: inherit;
+                color: rgba(255, 255, 255, 0.9);
+                padding-top: 10px;
+            }
+
+            &::after {
+                content: initial;
+            }
+
+            &.jw-open {
+                transition-delay: 0s;
+            }
         }
     }
 
-    // Video title styling
-    .jw-title {
-        padding-top: 6.5%;
-        padding-left: 10%;
+    // Controls Gradient
+    .jw-controls-backdrop {
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 35%, transparent 65%, rgba(0, 0, 0, 0.4) 100%);
     }
 
-    // Increase margin around JW Logo - logo.less
-    .jw-logo {
-        margin: @tizen-margin;
+    // **OUT OF DATE from v1.0**
+    // Recenter and resize slider tool and hide other tooltips - tooltip.less
+    .jw-tooltip-time {
+        .jw-overlay {
+            top: 0;
+            left: 0;
+        }
     }
-
-    // Moving display container down when the back icon is also displayed - display.less
-    .jw-display {
-        height: 70%;
+    // Increase the thickness of the slider during ad playback - ads.less
+    &.jwplayer.jw-flag-ads {
+        .jw-controlbar {
+            .jw-slider-time {
+                .jw-slider-container {
+                    height: 10px;
+                }
+            }
+        }
     }
 
     // Increasing size of Live text on livestreams - live.less
@@ -80,40 +257,6 @@
         .jw-text {
             font-size: @tizen-font-size;
             font-weight: normal;
-        }
-    }
-
-    // Increase the thickness of the slider - slider.less
-    .jw-slider-container {
-        height: 15px;
-    }
-
-    // Increase the thickness of the slider during ad playback - ads.less
-    &.jwplayer.jw-flag-ads {
-        .jw-controlbar {
-            .jw-slider-time {
-                .jw-slider-container {
-                    height: 10px;
-                }
-            }
-        }
-    }
-
-    // Recenter and resize slider tool and hide other tooltips - tooltip.less
-    .jw-tooltip {
-        display: none;
-    }
-
-    .jw-time-tip {
-        .jw-text {
-            font-size: @tizen-font-size;
-        }
-    }
-
-    .jw-tooltip-time {
-        .jw-overlay {
-            top: 0;
-            left: 0;
         }
     }
 
@@ -203,20 +346,6 @@
         // Style duplication below prevents compiler bug resulting in lost styles.
         video::-webkit-media-text-track-container {
             max-height: calc(100% - 300px);
-        }
-    }
-}
-
-// Fade back button with control bar - controlbar.less
-.jw-flag-ads-vpaid,
-.jw-flag-user-inactive.jw-state-playing,
-.jw-flag-user-inactive.jw-state-buffering {
-    &:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
-        .jw-icon-back {
-            visibility: hidden;
-            pointer-events: none;
-            opacity: 0;
-            transition-delay: 0s, 250ms;
         }
     }
 }
