@@ -251,6 +251,10 @@ export default class MediaController extends Events {
 
         this.item = item;
         this.provider.init(item);
+        if (__HEADLESS__) {
+            this.provider.mute(this.model.getMute());
+            this.provider.volume(this.model.get('volume'));
+        }
     }
 
     set audioTrack(index) {
@@ -280,7 +284,12 @@ export default class MediaController extends Events {
                 if (provider.removeFromContainer) {
                     provider.removeFromContainer();
                 } else {
-                    container.removeChild(provider.video);
+                    if (__HEADLESS__) {
+                        console.error('Provider should implement `removeFromContainer()` to background provider media view. Calling `provider.setContainer(null)` instead.');
+                        provider.setContainer(null);
+                    } else {
+                        container.removeChild(provider.video);
+                    }
                 }
                 this.container = null;
             }

@@ -326,6 +326,14 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             playlist = [item];
         }
 
+        if (__HEADLESS__) {
+            playlist = playlist.map(playlistItem => {
+                const newItem = Object.assign({}, playlistItem);
+                delete newItem.vastAd;
+                return newItem;
+            });
+        }
+
         const adModel = _adProgram.model;
         adModel.set('playlist', playlist);
         _model.set('hideAdsControls', false);

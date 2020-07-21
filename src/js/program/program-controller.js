@@ -747,7 +747,9 @@ class ProgramController extends Events {
             background.currentMedia.mute = mute;
         }
 
-        mediaPool.syncMute(mute);
+        if (!__HEADLESS__) {
+            mediaPool.syncMute(mute);
+        }
     }
 
     /**
@@ -766,7 +768,9 @@ class ProgramController extends Events {
             background.currentMedia.volume = volume;
         }
 
-        mediaPool.syncVolume(volume);
+        if (!__HEADLESS__) {
+            mediaPool.syncVolume(volume);
+        }
     }
 
     set itemCallback(callback) {
