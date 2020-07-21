@@ -17,6 +17,7 @@ import {
     flashVersion,
     isIframe,
     isTizen,
+    isTizenApp
 } from 'utils/browser';
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
@@ -160,6 +161,10 @@ Object.defineProperties(OS, {
     },
     tizen: {
         get: memoize(isTizen),
+        enumerable: true
+    },
+    tizenApp: {
+        get: memoize(isTizenApp),
         enumerable: true
     },
     version: {

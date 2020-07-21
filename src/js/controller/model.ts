@@ -53,7 +53,6 @@ export type PlayerModelAttributes = {
     inDom: boolean;
     instreamMode: boolean;
     isFloating?: boolean;
-    isTizenApp?: boolean;
     item: number;
     itemMeta: GenericObject;
     itemReady: boolean;
@@ -70,6 +69,7 @@ export type PlayerModelAttributes = {
     minDvrWindow: number;
     mute: boolean;
     nextUp: PlaylistItem;
+    nextUpDisplay: boolean;
     pauseReason: PauseReason;
     playbackRate: number;
     playlist: PlaylistItem[];
@@ -285,7 +285,7 @@ class Model extends SimpleModel {
     // Desktop players must have autostart set to viewable
     setAutoStart(autoStart?: AutoStart): void {
         // Always autostart for tizen app
-        if (this.attributes.isTizenApp) {
+        if (OS.tizen) {
             this.set('autostart', true);
             return;
         }
