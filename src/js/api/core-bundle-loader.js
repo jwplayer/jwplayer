@@ -5,6 +5,7 @@ import registerProvider from 'providers/providers-register';
 import { ControlsLoader } from 'controller/controls-loader';
 import { SETUP_ERROR_LOADING_CORE_JS } from 'api/errors';
 import { loadCore, chunkLoadErrorHandler, bundleContainsProviders } from 'api/core-loader';
+import { OS } from 'environment/environment';
 
 let bundlePromise = null;
 
@@ -19,6 +20,10 @@ function selectBundle(model) {
     const controls = model.get('controls');
     const polyfills = requiresPolyfills();
     const html5Provider = requiresProvider(model, 'html5');
+
+    if (OS.tizen) {
+        return loadWebCore();
+    }
 
     if (controls && polyfills && html5Provider) {
         return loadControlsPolyfillHtml5Bundle();
