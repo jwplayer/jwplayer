@@ -192,9 +192,10 @@ class SettingsMenu extends Menu {
     }
 
     onPlaylistItem() {
-        // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
-        // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
+        // Remove menus related to mediaModel properties. They will be populated when the model is populated.
         this.removeMenu('captions');
+        this.removeMenu('audioTracks');
+        this.removeMenu('quality');
         this.controlbar.elements.captionsButton.hide();
     
         // Settings menu should not be visible when switching playlist items via controls or .load()
