@@ -15,6 +15,9 @@ class PluginModel {
             return registeredPlugin.promise;
         }
         const plugin = this.addPlugin(url);
+        if (__HEADLESS__) {
+            return Promise.reject(`Skipping loading of unsupported js plugin "${url}" in headless player.`);
+        }
         return plugin.load();
     }
 
