@@ -98,7 +98,7 @@ const VideoListenerMixin: VideoListenerInt = {
         }
 
         // only emit time events when playing or seeking
-        if (this.state === STATE_PLAYING || this.seeking) {
+        if (this.state === STATE_PLAYING || (this.seeking && this.state !== STATE_IDLE)) {
             this.trigger(MEDIA_TIME, timeEventObject);
         }
     },
