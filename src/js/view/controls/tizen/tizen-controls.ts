@@ -1,9 +1,10 @@
 import Title from 'view/title';
 import TizenControlbar from 'view/controls/tizen/tizen-controlbar';
 import DisplayContainer from 'view/controls/display-container';
+import PauseDisplayTemplate from 'view/controls/tizen/templates/pause-display';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import SettingsMenu from 'view/controls/components/menu/settings-menu.js';
-import { addClass } from 'utils/dom';
+import { addClass, createElement } from 'utils/dom';
 import { STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import type ViewModel from 'view/view-model';
 import type { PlayerAPI } from 'types/generic.type';
@@ -59,24 +60,10 @@ class TizenControls extends Controls {
 
         // Pause Display
         if (!this.pauseDisplay) {
-            const pauseDisplay = this.context.createElement('div');
-            pauseDisplay.className = 'jw-pause-display';
-
-            const pauseDisplayContainer = this.context.createElement('div');
-            pauseDisplayContainer.className = 'jw-pause-display-container jw-reset-text';
-
-            const pauseTitle = this.context.createElement('div');
-            pauseTitle.className = 'jw-pause-title jw-reset-text';
-
-            const pauseDescription = this.context.createElement('div');
-            pauseDescription.className = 'jw-pause-description jw-reset-text';
-
-            pauseDisplayContainer.appendChild(pauseTitle);
-            pauseDisplayContainer.appendChild(pauseDescription);
+            const pauseDisplay = createElement(PauseDisplayTemplate());
 
             const title = new Title(model);
-            title.setup(pauseDisplayContainer);
-            pauseDisplay.appendChild(pauseDisplayContainer);
+            title.setup(pauseDisplay.querySelector('.jw-pause-display-container'));
             this.div.appendChild(pauseDisplay);
             this.pauseDisplay = pauseDisplay;
         }
@@ -93,7 +80,7 @@ class TizenControls extends Controls {
         const controlbar = this.controlbar = new TizenControlbar(api, model,
             this.playerContainer.querySelector('.jw-hidden-accessibility'));
         controlbar.on('backClick', () => {
-            this.onBackClick(api, model);
+            this.onBackClick(api);
         });
 
         // Next Up Tooltip
@@ -118,14 +105,8 @@ class TizenControls extends Controls {
             }
             switch (evt.keyCode) {
                 case 37: // left-arrow
-                    this.userActive();
-                    break;
                 case 39: // right-arrow
-                    this.userActive();
-                    break;
                 case 38: // up-arrow
-                    this.userActive();
-                    break;
                 case 40: // down-arrow
                     this.userActive();
                     break;
@@ -158,10 +139,10 @@ class TizenControls extends Controls {
                 case 417: // FastForward
                     break;
                 case 10009: // Back
-                    this.onBackClick(api, model);
+                    this.onBackClick(api);
                     break;
                 case 10182: // Exit/Home
-                    this.removePlayer(api, model);
+                    api.remove();
                     break;
                 default:
                     break;
@@ -170,7 +151,7 @@ class TizenControls extends Controls {
 
         // Trigger backClick when all videos complete      
         api.on('playlistComplete', () => {
-            this.onBackClick(api, model);
+            this.onBackClick(api);
         });
 
         // For the TV app to hear events
@@ -188,20 +169,15 @@ class TizenControls extends Controls {
         if (this.keydownCallback) {
             document.removeEventListener('keydown', this.keydownCallback);
         }
-        super.disable.apply(this, [model]);
+        super.disable.call(this, model);
     }
 
     userActive(timeout: number = ACTIVE_TIMEOUT): void {
-        super.userActive.apply(this, [timeout]);
+        super.userActive.call(this, timeout);
     }
 
-    onBackClick(api: PlayerAPI, model: ViewModel): void {
+    onBackClick(api: PlayerAPI): void {
         api.trigger('backClick');
-        this.removePlayer(api, model);
-    }
-
-    removePlayer(api: PlayerAPI, model: ViewModel): void {
-        this.disable(model);
         api.remove();
     }
 }
