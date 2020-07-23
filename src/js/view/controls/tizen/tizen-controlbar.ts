@@ -1,12 +1,12 @@
 import Controlbar from 'view/controls/controlbar';
 import { cloneIcons } from 'view/controls/icons';
 import TimeSlider from 'view/controls/components/timeslider';
+import CustomButton from 'view/controls/components/custom-button';
 import button, { Button } from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import { toggleClass } from 'utils/dom';
 import type { PlayerAPI } from 'types/generic.type';
 import type ViewModel from 'view/view-model';
-import type CustomButton from 'view/controls/components/custom-button';
 import type NextUpToolTip from 'view/controls/nextuptooltip';
 
 type ControlbarElement = HTMLElement | Button | TimeSlider | any;
@@ -67,13 +67,13 @@ export default class TizenControlbar extends Controlbar {
             countdown: superElements.countdown,
             time: timeSlider,
             duration: superElements.duration,
-            buttonContainer: superElements.buttonContainer,
             settingsButton: superElements.settingsButton,
             back: button('jw-icon-back', () => {
                 this.trigger('backClick');
             }, 'Back', cloneIcons('arrow-left')),
             topContainer: div('jw-top-container'),
-            bottomContainer: div('jw-bottom-container')
+            bottomContainer: div('jw-bottom-container'),
+            buttonContainer: div('jw-button-container')
         };
 
         // Remove play tooltip
@@ -231,7 +231,30 @@ export default class TizenControlbar extends Controlbar {
     onAudioMode(): void { /* */ }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    updateButtons(model: ViewModel, newButtons: CustomButton[], oldButtons: CustomButton[]): void { /* */ }
+    updateButtons(model: ViewModel, newButtons: CustomButton[], oldButtons: CustomButton[]): void {
+        if (!newButtons) {
+            return;
+        }
+        
+        const buttonContainer = this.elements.buttonContainer;
+
+        for (let i = newButtons.length - 1; i >= 0; i--) {
+            let buttonProps = newButtons[i];
+            const newButton = new CustomButton(
+                buttonProps.img,
+                buttonProps.tooltip,
+                buttonProps.callback,
+                buttonProps.id,
+                buttonProps.btnClass
+            );
+
+            if (buttonProps.tooltip) {
+                SimpleTooltip(newButton.element(), buttonProps.id, buttonProps.tooltip);
+            }
+
+            buttonContainer.appendChild(newButton.element());
+        }
+    }
 
     destroy(): void {
         this.activeButton = null;

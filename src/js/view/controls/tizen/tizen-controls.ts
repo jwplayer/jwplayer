@@ -48,7 +48,7 @@ class TizenControls extends Controls {
     }
 
     enable(api: PlayerAPI, model: ViewModel): void {
-        addClass(this.playerContainer, 'jw-tizen-app');
+        addClass(this.playerContainer, 'jw-tizen-app jw-flag-fullscreen');
 
         const element = this.context.createElement('div');
         element.className = 'jw-tizen-controls jw-tizen-reset';
@@ -87,6 +87,9 @@ class TizenControls extends Controls {
         if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
             const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
             nextUpToolTip.setup(this.context);
+            if (model.get('nextUp')) {
+                nextUpToolTip.onNextUp(model, model.get('nextUp'));
+            }
             controlbar.nextUpToolTip = nextUpToolTip;
 
             // NextUp needs to be behind the controlbar to not block other tooltips
@@ -160,7 +163,9 @@ class TizenControls extends Controls {
 
         this.addControls();
         this.addBackdrop();
-        api.setFullscreen(true);
+
+        // Hide controls on the first frame
+        this.userInactive();
 
         model.set('controlsEnabled', true);
     }
