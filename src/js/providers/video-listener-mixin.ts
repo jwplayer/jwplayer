@@ -120,9 +120,15 @@ const VideoListenerMixin: VideoListenerInt = {
     },
 
     seeking(this: ProviderWithMixins): void {
+        // TODO: Use trigger(MEDIA_SEEK) implementation from html5 removed from hlsjs/shaka providers
+        if (this.state === STATE_LOADING) {
+            // Ignore seeks performed by shaka-player and hls.js to jump initial buffer gap before play
+            const bufferStart = this.video.buffered.length ? this.video.buffered.start(0) : -1;
+            if (this.video.currentTime === bufferStart) {
+                return;
+            }
+        }
         this.seeking = true;
-        // TODO: this.trigger(MEDIA_SEEK implementation from html5 should be moved here
-        //  and removed frrom hlsjs/shaka providers
     },
 
     seeked(this: ProviderWithMixins): void {
