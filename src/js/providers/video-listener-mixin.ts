@@ -127,6 +127,8 @@ const VideoListenerMixin: VideoListenerInt = {
             if (this.video.currentTime === bufferStart) {
                 return;
             }
+        } else if (this.state === STATE_IDLE && this.video.currentTime === 0) {
+            return;
         }
         this.seeking = true;
     },
