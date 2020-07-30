@@ -35,6 +35,24 @@ function isVisibleButton(el: ControlbarElement): boolean {
     return el.element && el.element().style.display !== 'none' && el.element().classList.contains('jw-button-color');
 }
 
+function getNextButton(activeButton: Button, layout: ControlbarElement[], toRight: boolean): Button | undefined {
+    if (!activeButton) {
+        return;
+    }
+
+    const index = layout.indexOf(activeButton);
+    const incr = toRight ? 1 : -1;
+
+    for (let i = index + incr; i >= 0 && i < layout.length; i += incr) {
+        const element = layout[i];
+        if (isVisibleButton(element)) {
+            return element;
+        }
+    }
+
+    return;
+}
+
 export default class TizenControlbar extends Controlbar {
     _api: PlayerAPI;
     _model: ViewModel;
@@ -115,36 +133,6 @@ export default class TizenControlbar extends Controlbar {
         elements.back.show();
     }
 
-    getRightButton(activeButton: Button, containerLayout: ControlbarElement[]): Button | undefined {
-        if (!activeButton) {
-            return;
-        }
-
-        const index = containerLayout.indexOf(activeButton);
-        for (let i = index + 1; i < containerLayout.length; i++) {
-            const element = containerLayout[i];
-            if (isVisibleButton(element)) {
-                return element;
-            }
-        }
-        return;
-    }
-
-    getLeftButton(activeButton: Button, containerLayout: ControlbarElement[]): Button | undefined {
-        if (!activeButton) {
-            return;
-        }
-
-        const index = containerLayout.indexOf(activeButton);
-        for (let i = index - 1; i >= 0; i--) {
-            const element = containerLayout[i];
-            if (isVisibleButton(element)) {
-                return element;
-            }
-        }
-        return;
-    }
-
     handleKeydown(evt: KeyboardEvent, isShowing: boolean): void {
         const activeButton = this.activeButton;
         let inTopControls = false;
@@ -157,8 +145,8 @@ export default class TizenControlbar extends Controlbar {
             inBottomControls = this.elements.bottomContainer.contains(activeButton.element());
     
             const layout = inTopControls ? this.topLayout : this.bottomLayout;
-            rightButton = this.getRightButton(activeButton, layout);
-            leftButton = this.getLeftButton(activeButton, layout);
+            rightButton = getNextButton(activeButton, layout, true);
+            leftButton = getNextButton(activeButton, layout, false);
         }
 
         switch (evt.keyCode) {
