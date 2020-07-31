@@ -26,6 +26,54 @@
         }
     }
 
+    &.jw-flag-ads {
+        .jw-skip {
+            justify-content: center;
+            right: 10%;
+            height: 100px;
+            bottom: 105px;
+            background-color: transparent;
+            border-color: @white;
+            border-width: medium;
+
+            &.jw-active {
+                box-shadow: 0 0 10px 15px rgba(255, 255, 255, 0.3);
+            }
+
+            .jw-text {
+                font-size: 40px;
+            }
+
+            .jw-skip-icon {
+                display: flex;
+                justify-content: center;
+                height: 100px;
+                width: 100px;
+            }
+
+            .jw-svg-icon {
+                height: 45px;
+                width: 45px;
+            }
+        }
+
+        .jw-tizen-controlbar {
+            .jw-top-container {
+                display: none;
+            }
+
+            .jw-bottom-container {
+                .jw-slider-time {
+                    display: none;
+                }
+
+                .jw-text-alt {
+                    font-weight: normal;
+                }
+            }
+        }
+    }
+
     // Icons
     .jw-svg-icon {
         .square(75px);
@@ -169,6 +217,7 @@
             left: 0;
             bottom: 0;
             padding: inherit;
+            align-items: center;
         }
 
         .jw-text {
@@ -228,30 +277,10 @@
             left: 0;
         }
     }
-    // Increase the thickness of the slider during ad playback - ads.less
-    &.jwplayer.jw-flag-ads {
-        .jw-controlbar {
-            .jw-slider-time {
-                .jw-slider-container {
-                    height: 10px;
-                }
-            }
-        }
-    }
 
     // Increasing size of Live text on livestreams - live.less
     .jw-text-live {
         font-size: 2em;
-    }
-
-    // Changing the formatting for the skip ad button - skipad.less
-    .jw-skip {
-        right: 5%;
-
-        .jw-text {
-            font-size: 1.5em;
-            font-weight: normal;
-        }
     }
 
     // Increase settings menu text size, Settings menu - settings-menu.less
