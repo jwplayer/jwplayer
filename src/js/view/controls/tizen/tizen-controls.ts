@@ -6,10 +6,9 @@ import NextUpToolTip from 'view/controls/nextuptooltip';
 import SettingsMenu from 'view/controls/components/menu/settings-menu.js';
 import { addClass, createElement } from 'utils/dom';
 import { STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import Controls from 'view/controls/controls';
 import type ViewModel from 'view/view-model';
 import type { PlayerAPI } from 'types/generic.type';
-
-const Controls = require('../controls').default;
 
 const ACTIVE_TIMEOUT = 5000;
 
@@ -28,6 +27,7 @@ class TizenControls extends Controls {
     settingsMenu: SettingsMenu | null;
     showing: boolean;
     keydownCallback: ((evt: KeyboardEvent) => void) | null;
+    userInactive: any;
     addControls: any;
     addBackdrop: any;
     trigger: any;
