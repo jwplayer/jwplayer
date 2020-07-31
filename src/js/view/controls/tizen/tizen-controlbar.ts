@@ -42,6 +42,10 @@ function isVisibleButton(el: ControlbarElement): boolean {
         el.element().classList.contains('jw-button-color');
 }
 
+function isActiveElement(element: HTMLElement): boolean {
+    return element.classList.contains('jw-active');
+}
+
 function getNextButton(activeButton: Button, layout: ControlbarElement[], toRight: boolean): Button | undefined {
     if (!activeButton) {
         return;
@@ -69,6 +73,7 @@ export default class TizenControlbar extends Controlbar {
     activeButton: Button | null;
     el: HTMLElement;
     nextUpToolTip: NextUpToolTip;
+    adSkipButton: any;
     element: any;
     on: any;
     trigger: any;
@@ -138,16 +143,17 @@ export default class TizenControlbar extends Controlbar {
         // Initial State
         elements.play.show();
         elements.back.show();
+        this.setActiveButton(this.elements.play);
     }
 
-    handleKeydown(evt: KeyboardEvent, isShowing: boolean): void {
+    handleKeydown(evt: KeyboardEvent, isShowing: boolean, isAdsMode: boolean): void {
         const activeButton = this.activeButton;
         let inTopControls = false;
         let inBottomControls = false;
         let rightButton: Button | undefined;
         let leftButton: Button | undefined;
 
-        if (activeButton) {
+        if (!isAdsMode && activeButton) {
             inTopControls = this.elements.topContainer.contains(activeButton.element());
             inBottomControls = this.elements.bottomContainer.contains(activeButton.element());
     
@@ -158,12 +164,24 @@ export default class TizenControlbar extends Controlbar {
 
         switch (evt.keyCode) {
             case 37: // left-arrow
+                if (isAdsMode && isActiveElement(this.adSkipButton.el)) {
+                    toggleClass(this.adSkipButton.el, 'jw-active', false);
+                    this.setActiveButton(this.elements.play);
+                    return;
+                }
+
                 if (leftButton) {
                     this.setActiveButton(leftButton);
                     return;
                 }
                 break;
             case 39: // right-arrow
+                if (isAdsMode && activeButton && activeButton === this.elements.play) {
+                    toggleClass(this.adSkipButton.el, 'jw-active', true);
+                    this.setActiveButton(null);
+                    return;
+                }
+
                 if (rightButton) {
                     this.setActiveButton(rightButton);
                     return;
@@ -196,6 +214,11 @@ export default class TizenControlbar extends Controlbar {
                 }
                 break;
             case 13: // center/enter
+                if (isAdsMode && isActiveElement(this.adSkipButton.el)) {
+                    this.adSkipButton.skipUI.trigger('click');
+                    return;
+                }
+
                 if (isShowing && activeButton) {
                     activeButton.ui.trigger('click');
                 }
@@ -209,7 +232,7 @@ export default class TizenControlbar extends Controlbar {
         }
     }
 
-    setActiveButton(nextButton: Button): void {
+    setActiveButton(nextButton: Button | null): void {
         const currentActiveButton = this.activeButton;
         if (currentActiveButton === nextButton) {
             return;
@@ -219,8 +242,11 @@ export default class TizenControlbar extends Controlbar {
             toggleClass(currentActiveButton.element(), 'jw-active', false);
         }
 
+        if (nextButton) {
+            toggleClass(nextButton.element(), 'jw-active', true);
+        }
+
         this.activeButton = nextButton;
-        toggleClass(nextButton.element(), 'jw-active', true);
     }
 
     onAudioMode(): void { /* */ }
