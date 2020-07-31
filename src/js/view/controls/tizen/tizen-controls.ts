@@ -26,6 +26,7 @@ class TizenControls extends Controls {
     controlbar: TizenControlbar | null;
     settingsMenu: SettingsMenu | null;
     showing: boolean;
+    instreamState: boolean;
     keydownCallback: ((evt: KeyboardEvent) => void) | null;
     userInactive: any;
     addControls: any;
@@ -44,6 +45,7 @@ class TizenControls extends Controls {
         this.controlbar = null;
         this.settingsMenu = null;
         this.showing = false;
+        this.instreamState = false;
         this.keydownCallback = null;
     }
 
@@ -104,7 +106,7 @@ class TizenControls extends Controls {
 
         const handleKeydown = (evt: KeyboardEvent) => {
             if (this.controlbar) {
-                this.controlbar.handleKeydown(evt, this.showing);
+                this.controlbar.handleKeydown(evt, this.showing, this.instreamState);
             }
             switch (evt.keyCode) {
                 case 37: // left-arrow
