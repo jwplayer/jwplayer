@@ -114,8 +114,8 @@ export default class Controlbar {
 
             const volumeButtonEl = volumeGroup.element();
             menus.push(volumeGroup);
-            // Use 'group' role so that voiceover identifies volume slider and button
-            setAttribute(volumeButtonEl, 'role', 'group');
+            // Use 'button' role so that voiceover identifies mute button as button
+            setAttribute(volumeButtonEl, 'role', 'button');
             _model.change('mute', (model, muted) => {
                 const muteText = muted ? localization.unmute : localization.mute;
                 setAttribute(volumeButtonEl, 'aria-label', muteText);
@@ -467,7 +467,7 @@ export default class Controlbar {
         const localization = model.get('localization');
         let label = localization.play;
         this.setPlayText(label);
-        
+
         if (state === STATE_PLAYING) {
             if (model.get('streamType') !== 'LIVE') {
                 label = localization.pause;
