@@ -114,11 +114,11 @@ export default class Controlbar {
 
             const volumeButtonEl = volumeGroup.element();
             menus.push(volumeGroup);
-            // Use 'button' role so that voiceover identifies mute button as button
-            setAttribute(volumeButtonEl, 'role', 'button');
+            // Use 'group' role so that voiceover identifies volume slider and button
+            setAttribute(volumeButtonEl, 'role', 'group');
             _model.change('mute', (model, muted) => {
                 const muteText = muted ? localization.unmute : localization.mute;
-                setAttribute(volumeButtonEl, 'aria-label', muteText);
+                setAttribute(volumeButtonEl, 'aria-label', muteText + ' button');
             }, this);
         } else if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
             // Do not show the volume toggle in the mobile SDKs or <iOS10
