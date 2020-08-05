@@ -14,7 +14,7 @@ export function loadControls() {
                 return ControlsModule;
             }, function() {
                 controlsPromise = null;
-                chunkLoadWarningHandler(301130)();
+                chunkLoadWarningHandler(301133)();
             }, 'jwplayer.controls.tizen');
         } else {
             controlsPromise = require.ensure(['view/controls/controls'], function (require) {
