@@ -82,7 +82,7 @@ function domParse(html) {
 
 
 export function sanitizeScriptNodes(element) {
-    const nodes = element.querySelectorAll('script,object,iframe');
+    const nodes = element.querySelectorAll('script,object,iframe,meta');
     for (let i = nodes.length; i--;) {
         const node = nodes[i];
         node.parentNode.removeChild(node);
