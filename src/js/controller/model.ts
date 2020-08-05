@@ -25,6 +25,7 @@ export type PlayerModelAttributes = {
     _abZoomThumbnail?: boolean;
     __ab_truncated?: boolean;
     _destroyed: boolean;
+    advertising: GenericObject;
     aspectratio: string | null;
     audioMode: boolean;
     autostart: AutoStart;
@@ -83,6 +84,8 @@ export type PlayerModelAttributes = {
     qualityLabel: string;
     renderCaptionsNatively: boolean;
     scrubbing: boolean;
+    sharing: GenericObject;
+    skipButton: boolean;
     state: InternalPlayerState;
     streamType: StreamType;
     supportsPlaybackRate: boolean;

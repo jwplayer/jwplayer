@@ -40,6 +40,10 @@ export type Localization = {
         spacebar: string;
         captionsToggle: string;
     };
+    sharing: {
+        heading: string;
+        copied: string;
+    };
 };
 
 export type DrmConfig = GenericObject;
