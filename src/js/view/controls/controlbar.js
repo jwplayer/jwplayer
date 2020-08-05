@@ -118,7 +118,7 @@ export default class Controlbar {
             setAttribute(volumeButtonEl, 'role', 'group');
             _model.change('mute', (model, muted) => {
                 const muteText = muted ? localization.unmute : localization.mute;
-                setAttribute(volumeButtonEl, 'aria-label', muteText);
+                setAttribute(volumeButtonEl, 'aria-label', muteText + ' button');
             }, this);
         } else if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
             // Do not show the volume toggle in the mobile SDKs or <iOS10
@@ -467,7 +467,7 @@ export default class Controlbar {
         const localization = model.get('localization');
         let label = localization.play;
         this.setPlayText(label);
-        
+
         if (state === STATE_PLAYING) {
             if (model.get('streamType') !== 'LIVE') {
                 label = localization.pause;
