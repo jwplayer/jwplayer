@@ -29,7 +29,7 @@ function getHTMLElements(elements: ControlbarElement[]): HTMLElement[] {
             return e.element();
         }
         return e;
-    })
+    });
 }
 
 function setTooltip(tooltip: SimpleTooltip): void {
@@ -38,7 +38,8 @@ function setTooltip(tooltip: SimpleTooltip): void {
 }
 
 function isVisibleButton(el: ControlbarElement): boolean {
-    return 'element' in el && el.element().style.display !== 'none' && el.element().classList.contains('jw-button-color');
+    return 'element' in el && el.element().style.display !== 'none' &&
+        el.element().classList.contains('jw-button-color');
 }
 
 function getNextButton(activeButton: Button, layout: ControlbarElement[], toRight: boolean): Button | undefined {
@@ -131,7 +132,7 @@ export default class TizenControlbar extends Controlbar {
         this.el.className = 'jw-tizen-controlbar jw-controlbar jw-reset';
 
         appendChildren(elements.topContainer, getHTMLElements(this.topLayout));
-        appendChildren(elements.bottomContainer,getHTMLElements(this.bottomLayout));
+        appendChildren(elements.bottomContainer, getHTMLElements(this.bottomLayout));
         appendChildren(this.el, layout);
 
         // Initial State
