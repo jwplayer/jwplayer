@@ -9,7 +9,7 @@ import type { PlayerAPI } from 'types/generic.type';
 import type ViewModel from 'view/view-model';
 import type NextUpToolTip from 'view/controls/nextuptooltip';
 
-type ControlbarElement = HTMLElement | Button | TimeSlider | any;
+type ControlbarElement = HTMLElement | Button | TimeSlider;
 
 function div(classes: string): HTMLElement {
     const element = document.createElement('div');
@@ -17,14 +17,20 @@ function div(classes: string): HTMLElement {
     return element;
 }
 
-const appendChildren = (container: HTMLElement, elements: ControlbarElement[]) => {
+const appendChildren = (container: HTMLElement, elements: HTMLElement[]) => {
     elements.forEach(e => {
-        if (e.element) {
-            e = e.element();
-        }
         container.appendChild(e);
     });
 };
+
+function getHTMLElements(elements: ControlbarElement[]): HTMLElement[] {
+    return elements.map(e => {
+        if ('element' in e) {
+            return e.element();
+        }
+        return e;
+    })
+}
 
 function setTooltip(tooltip: SimpleTooltip): void {
     tooltip.open();
@@ -32,7 +38,7 @@ function setTooltip(tooltip: SimpleTooltip): void {
 }
 
 function isVisibleButton(el: ControlbarElement): boolean {
-    return el.element && el.element().style.display !== 'none' && el.element().classList.contains('jw-button-color');
+    return 'element' in el && el.element().style.display !== 'none' && el.element().classList.contains('jw-button-color');
 }
 
 function getNextButton(activeButton: Button, layout: ControlbarElement[], toRight: boolean): Button | undefined {
@@ -46,7 +52,7 @@ function getNextButton(activeButton: Button, layout: ControlbarElement[], toRigh
     for (let i = index + incr; i >= 0 && i < layout.length; i += incr) {
         const element = layout[i];
         if (isVisibleButton(element)) {
-            return element;
+            return element as Button;
         }
     }
 
@@ -101,12 +107,12 @@ export default class TizenControlbar extends Controlbar {
         setTooltip(SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings));
         setTooltip(SimpleTooltip(elements.back.element(), 'back', 'Back'));
 
-        const topLayout = this.topLayout = [
+        this.topLayout = [
             elements.back,
             elements.settingsButton
         ];
 
-        const bottomLayout = this.bottomLayout = [
+        this.bottomLayout = [
             elements.play,
             elements.alt,
             elements.live,
@@ -124,8 +130,8 @@ export default class TizenControlbar extends Controlbar {
         this.el = document.createElement('div');
         this.el.className = 'jw-tizen-controlbar jw-controlbar jw-reset';
 
-        appendChildren(elements.topContainer, topLayout);
-        appendChildren(elements.bottomContainer, bottomLayout);
+        appendChildren(elements.topContainer, getHTMLElements(this.topLayout));
+        appendChildren(elements.bottomContainer,getHTMLElements(this.bottomLayout));
         appendChildren(this.el, layout);
 
         // Initial State
