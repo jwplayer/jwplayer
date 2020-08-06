@@ -29,7 +29,7 @@ class TizenControls extends Controls {
     instreamState: boolean;
     keydownCallback: ((evt: KeyboardEvent) => void) | null;
     userInactive: any;
-    addControls: any;
+    wrapperElement: any;
     addBackdrop: any;
     trigger: any;
 
@@ -50,15 +50,20 @@ class TizenControls extends Controls {
     }
 
     enable(api: PlayerAPI, model: ViewModel): void {
+        super.enable.call(this, api, model);
+
         addClass(this.playerContainer, 'jw-tizen-app jw-flag-fullscreen');
 
         const element = this.context.createElement('div');
         element.className = 'jw-tizen-controls jw-tizen-reset';
         this.div = element;
     
-        const backdrop = this.context.createElement('div');
-        backdrop.className = 'jw-controls-backdrop jw-reset';
-        this.backdrop = backdrop;
+        if (!this.backdrop) {
+            const backdrop = this.context.createElement('div');
+            backdrop.className = 'jw-controls-backdrop jw-reset';
+            this.backdrop = backdrop;
+            this.addBackdrop();
+        }
 
         // Pause Display
         if (!this.pauseDisplay) {
@@ -164,12 +169,19 @@ class TizenControls extends Controls {
         this.keydownCallback = handleKeydown;
 
         this.addControls();
-        this.addBackdrop();
 
         // Hide controls on the first frame
         this.userInactive();
 
         model.set('controlsEnabled', true);
+    }
+
+    addControls(): void {
+        const controls = this.wrapperElement.querySelector('.jw-controls');
+        if (controls) {
+            this.wrapperElement.removeChild(controls);
+        }
+        super.addControls.call(this);
     }
 
     disable(model: ViewModel): void {
