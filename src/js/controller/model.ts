@@ -25,6 +25,7 @@ export type PlayerModelAttributes = {
     _abZoomThumbnail?: boolean;
     __ab_truncated?: boolean;
     _destroyed: boolean;
+    advertising: GenericObject;
     aspectratio: string | null;
     audioMode: boolean;
     autostart: AutoStart;
@@ -70,6 +71,7 @@ export type PlayerModelAttributes = {
     minDvrWindow: number;
     mute: boolean;
     nextUp: PlaylistItem;
+    nextUpDisplay: boolean;
     pauseReason: PauseReason;
     playbackRate: number;
     playlist: PlaylistItem[];
@@ -83,6 +85,8 @@ export type PlayerModelAttributes = {
     qualityLabel: string;
     renderCaptionsNatively: boolean;
     scrubbing: boolean;
+    sharing: GenericObject;
+    skipButton: boolean;
     state: InternalPlayerState;
     streamType: StreamType;
     supportsPlaybackRate: boolean;
@@ -285,7 +289,7 @@ class Model extends SimpleModel {
     // Desktop players must have autostart set to viewable
     setAutoStart(autoStart?: AutoStart): void {
         // Always autostart for tizen app
-        if (this.attributes.isTizenApp) {
+        if (OS.tizen) {
             this.set('autostart', true);
             return;
         }

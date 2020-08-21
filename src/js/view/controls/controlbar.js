@@ -485,7 +485,9 @@ export default class Controlbar {
         const dvrMode = streamType === 'DVR';
 
         // Hide rewind button when in LIVE mode
-        this.elements.rewind.toggle(!liveMode);
+        if (this.elements.rewind) {
+            this.elements.rewind.toggle(!liveMode);
+        }
 
         this.elements.live.toggle(liveMode || dvrMode);
         setAttribute(this.elements.live.element(), 'tabindex', liveMode ? '-1' : '0');
