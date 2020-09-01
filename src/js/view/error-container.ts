@@ -2,7 +2,7 @@ import errorContainerTemplate from 'templates/error';
 import { createElement } from 'utils/dom';
 import { style } from 'utils/css';
 import { OS } from 'environment/environment';
-import TizenErrorContainer from 'view/controls/tizen/tizen-error';
+import TizenErrorContainer from 'view/controls/tizen/tizen-error-container';
 import type Model from 'controller/model';
 import type { PlayerError } from 'api/errors';
 import type { PlayerAPI } from 'types/generic.type';
