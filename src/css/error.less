@@ -1,0 +1,55 @@
+@import "shared-imports/vars.less";
+
+.jw-error {
+    overflow: hidden;
+    position: relative;
+
+    .jw-error-text {
+        text-align: start;
+        color: @white;
+        font-size: 14px;
+        line-height: 1.35;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .jw-error-msg {
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+    }
+
+    &.jw-tizen-app {
+        .jw-error-text {
+            font-size: 50px;
+            font-weight: initial;
+        }
+
+        .jw-icon {
+            width: 100px;
+            height: 100px;
+
+            .jw-svg-icon {
+                fill: @white;
+            }
+        }
+
+        .jw-info-container {
+            margin-left: 80px;
+
+            .jw-button-color.jw-previous {
+                display: flex;
+                width: 450px;
+                height: 80px;
+                font-size: 30px;
+                font-weight: bold;
+                color: @black;
+                background-color: @white;
+                margin-top: 70px;
+                border-radius: 10px;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+}

@@ -705,7 +705,7 @@ function View(_api, _model) {
             _title.playlistItem(model, model.get('playlistItem'));
             return;
         }
-        const errorContainer = ErrorContainer(model, errorEvent);
+        const errorContainer = ErrorContainer(_api, model, errorEvent);
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }

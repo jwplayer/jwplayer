@@ -293,7 +293,7 @@ function setupError(core, api, error) {
         const contextual = model.get('contextual');
         // Remove (and hide) the player if it failed to set up in contextual mode; otherwise, show the error view
         if (!contextual && !__HEADLESS__) {
-            const errorContainer = ErrorContainer(core, playerError);
+            const errorContainer = ErrorContainer(api, core, playerError);
             if (ErrorContainer.cloneIcon) {
                 errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
             }

@@ -17,7 +17,7 @@ export default function (
     icon: string,
     apiAction: (value: unknown) => PlayerAPI,
     ariaText: string,
-    svgIcons: Array<SVGElement|string|Node|null>
+    svgIcons?: Array<SVGElement|string|Node|null>
 ): Button {
     const element = document.createElement('div');
     element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
