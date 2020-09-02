@@ -35,6 +35,7 @@ export type PlayerModelAttributes = {
     captionLabel: string;
     captionsIndex: number;
     captionsTrack: TextTrackLike;
+    containerHeight: number;
     containerWidth: number;
     controlsEnabled: boolean;
     cues: Cue[];
@@ -46,10 +47,7 @@ export type PlayerModelAttributes = {
     enableShortcuts: boolean;
     flashBlocked: boolean;
     flashThrottle?: boolean;
-    floating?: {
-        disable?: boolean;
-        dismissible?: boolean;
-    };
+    floating?: FloatConfig;
     fullscreen: boolean;
     height: number | string;
     id: string;
