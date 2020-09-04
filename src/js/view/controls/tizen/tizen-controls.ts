@@ -22,6 +22,7 @@ const reasonInteraction = () => {
 class TizenControls extends Controls {
     context: HTMLDocument;
     playerContainer: HTMLElement;
+    api: PlayerAPI | null;
     div: HTMLElement | null;
     backdrop: HTMLElement | null;
     pauseDisplay: HTMLElement | null;
@@ -43,6 +44,7 @@ class TizenControls extends Controls {
 
         this.context = context;
         this.playerContainer = playerContainer;
+        this.api = null;
         this.div = null;
         this.backdrop = null;
         this.pauseDisplay = null;
@@ -56,10 +58,15 @@ class TizenControls extends Controls {
         this.keydownCallback = null;
     }
 
+    get apiEnabled(): boolean {
+        return !!this.api;
+    }
+
     enable(api: PlayerAPI, model: ViewModel): void {
         super.enable.call(this, api, model);
 
         addClass(this.playerContainer, 'jw-tizen-app jw-flag-fullscreen');
+        this.api = api;
 
         const element = this.context.createElement('div');
         element.className = 'jw-tizen-controls jw-tizen-reset';
@@ -116,38 +123,6 @@ class TizenControls extends Controls {
         const seekbar = this.seekbar = new TizenSeekbar(model, api, this.controlbar.elements.time);
         this.div.appendChild(seekbar.element());
 
-        const enterSeekMode = () => {
-            if (this.seekbar) {
-                addClass(this.playerContainer, 'jw-flag-seek');
-                this.seekState = true;
-                this.seekbar.show();
-                api.pause();
-            }
-        };
-
-        const exitSeekMode = () => {
-            if (this.seekbar) {
-                removeClass(this.playerContainer, 'jw-flag-seek');
-                this.seekState = false;
-                this.seekbar.hide();
-            }
-        };
-
-        const updateSeek = (increment: number) => {
-            if (this.seekbar) {
-                this.seekbar.update(increment);
-            }
-        };
-
-        const seek = () => {
-            if (this.seekbar) {
-                this.seekbar.seek();
-                exitSeekMode();
-                api.play();
-                this.userInactive();
-            }
-        };
-
         // Settings/Tracks Menu
         const localization = model.get('localization');
         this.settingsMenu = new SettingsMenu(api, model.player, this.controlbar, localization);
@@ -159,25 +134,25 @@ class TizenControls extends Controls {
             switch (evt.keyCode) {
                 case 37: // left-arrow
                     if (this.seekState) {
-                        updateSeek(-10);
+                        this.updateSeek(-10);
                     } else if (!this.showing ||
                         (this.controlbar && this.controlbar.activeButton === this.controlbar.elements.play)) {
-                        enterSeekMode();
+                        this.enterSeekMode();
                     }
                     this.userActive();
                     break;
                 case 39: // right-arrow
                     if (this.seekState) {
-                        updateSeek(10);
+                        this.updateSeek(10);
                     } else if (!this.showing ||
                         (this.controlbar && this.controlbar.activeButton === this.controlbar.elements.play)) {
-                        enterSeekMode();
+                        this.enterSeekMode();
                     }
                     this.userActive();
                     break;
                 case 38: // up-arrow
                     if (this.seekState) {
-                        exitSeekMode();
+                        this.exitSeekMode();
                         this.userInactive();
                         api.play();
                         return;
@@ -186,14 +161,14 @@ class TizenControls extends Controls {
                     break;
                 case 40: // down-arrow
                     if (this.seekState) {
-                        exitSeekMode();
+                        this.exitSeekMode();
                     }
                     this.userActive();
                     break;
                 case 13: // center/enter
                     evt.preventDefault();
                     if (this.seekState) {
-                        seek();
+                        this.seek();
                         return;
                     }
                     if (!this.showing) {
@@ -203,7 +178,7 @@ class TizenControls extends Controls {
                     break;
                 case 415: // play
                     if (this.seekState) {
-                        seek();
+                        this.seek();
                         return;
                     }
                     if (model.get('state') !== STATE_PLAYING) {
@@ -212,7 +187,7 @@ class TizenControls extends Controls {
                     break;
                 case 19: // pause
                     if (this.seekState) {
-                        exitSeekMode();
+                        this.exitSeekMode();
                         return;
                     }
                     if (model.get('state') !== STATE_PAUSED) {
@@ -222,7 +197,7 @@ class TizenControls extends Controls {
                     break;
                 case 10252: // play/pause
                     if (this.seekState) {
-                        seek();
+                        this.seek();
                         return;
                     }
                     if (model.get('state') !== STATE_PAUSED) {
@@ -236,7 +211,7 @@ class TizenControls extends Controls {
                     break;
                 case 10009: // Back
                     if (this.seekState) {
-                        exitSeekMode();
+                        this.exitSeekMode();
                         this.userActive();
                         return;
                     }
@@ -276,9 +251,12 @@ class TizenControls extends Controls {
     }
 
     disable(model: ViewModel): void {
+        this.api = null;
+
         if (this.keydownCallback) {
             document.removeEventListener('keydown', this.keydownCallback);
         }
+
         super.disable.call(this, model);
     }
 
@@ -289,6 +267,45 @@ class TizenControls extends Controls {
     onBackClick(api: PlayerAPI): void {
         api.trigger('backClick');
         api.remove();
+    }
+
+    private seek(): void {
+        if (!this.apiEnabled || !this.seekbar) {
+            return;
+        }
+
+        this.seekbar.seek();
+        this.exitSeekMode();
+        this.api.play();
+        this.userInactive();
+    }
+
+    private enterSeekMode(): void {
+        if (!this.apiEnabled || !this.seekbar) {
+            return;
+        }
+
+        addClass(this.playerContainer, 'jw-flag-seek');
+        this.seekState = true;
+        this.seekbar.show();
+        this.api.pause();
+    }
+
+    private exitSeekMode(): void {
+        if (!this.seekbar) {
+            return;
+        }
+
+        removeClass(this.playerContainer, 'jw-flag-seek');
+        this.seekState = false;
+        this.seekbar.hide();
+    }
+
+    private updateSeek(increment: number): void {
+        if (!this.seekbar) {
+            return;
+        }
+        this.seekbar.update(increment);
     }
 }
 
