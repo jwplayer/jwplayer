@@ -33,6 +33,7 @@ export default {
     getHeight: null,
     getItemMeta: null,
     getMute: null,
+    getPercentViewable: null,
     getPlaybackRate: null,
     getPlaylist: null,
     getPlaylistIndex: null,
