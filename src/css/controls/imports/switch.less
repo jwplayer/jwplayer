@@ -1,7 +1,8 @@
 .jw-shortcuts-container {
     .jw-switch {
         position: relative;
-        display: inline-block;
+        display: flex;
+        align-items: center;
         transition: ease-out 0.15s;
         transition-property: opacity, background;
         border-radius: 18px;
@@ -12,14 +13,14 @@
         cursor: pointer;
         font-size: inherit;
         vertical-align: middle;
+        outline: none;
 
         &.jw-tab-focus {
-            outline: @ui-focus;
+            border: @ui-focus;
         }
 
         .jw-switch-knob {
             position: absolute;
-            top: 2px;
             left: 1px;
             transition: ease-out 0.15s;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
@@ -29,21 +30,18 @@
             background: @rightclick-shortcuts-secondary-bg;
         }
 
-        &:before,
-        &:after {
+        .jw-switch-disabled,
+        .jw-switch-enabled {
             position: absolute;
-            top: 3px;
             transition: inherit;
             color: @rightclick-shortcuts-primary-text;
         }
 
-        &:before {
-            content: attr(data-jw-switch-disabled);
+        .jw-switch-disabled {
             right: 8px;
         }
 
-        &:after {
-            content: attr(data-jw-switch-enabled);
+        .jw-switch-enabled {
             left: 8px;
             opacity: 0;
         }
@@ -51,11 +49,11 @@
         &[aria-checked="true"] {
             background: #475470;
 
-            &:before {
+            .jw-switch-disabled {
                 opacity: 0;
             }
 
-            &:after {
+            .jw-switch-enabled {
                 opacity: 1;
             }
 

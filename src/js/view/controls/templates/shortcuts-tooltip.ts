@@ -25,8 +25,10 @@ export default (shortcuts: Array<ShortcutDisplayOpts>, title: string): HTMLTempl
             `<div class="jw-reset jw-shortcuts-container">` +
                 `<div class="jw-reset jw-shortcuts-header">` +
                     `<span class="jw-reset jw-shortcuts-title">${title}</span>` +
-                    `<button role="switch" class="jw-reset jw-switch" data-jw-switch-enabled="Enabled" data-jw-switch-disabled="Disabled">` +
+                    `<button role="switch" aria-label="${title}" class="jw-reset jw-switch">` +
                         `<span class="jw-reset jw-switch-knob"></span>` +
+                        `<span class="jw-reset-text jw-switch-enabled">Enabled</span>` +
+                        `<span class="jw-reset-text jw-switch-disabled">Disabled</span>` +
                     `</button>` +
                 `</div>` +
                 `<div class="jw-reset jw-shortcuts-tooltip-list">` +
