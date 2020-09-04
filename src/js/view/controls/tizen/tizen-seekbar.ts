@@ -79,73 +79,73 @@ export default class TizenSeekbar {
         const currentTime = this.currentTime;
         const duration = this._model.get('duration');
         
-        let position = currentTime + increment;
-        position = position < 0 ? 0 : position;
-        position = position > duration ? duration : position;
+        let time = currentTime + increment;
+        time = time < 0 ? 0 : time;
+        time = time > duration ? duration : time;
 
-        if (position !== currentTime) { 
+        if (time !== currentTime) { 
             if (this._slider.thumbnails && this._slider.thumbnails.length !== 0) {
-                this._updateThumbnails(position, increment);
+                this._updateThumbnails(time, Math.abs(increment));
             } else {
-                this._updateTimeTip(position);
+                this._updateTimeTip(time);
             }
         }
     }
 
-    _updateTimeTip(position: number): void {
+    _updateTimeTip(time: number): void {
         const timeTip = this._slider.timeTip;
-        const pct = this._getProgressPercent(position);
+        const pct = this.getProgressPercent(time);
 
         style(timeTip.el, { left: pct + '%' });
-        timeTip.update(timeFormat(Math.round(position)));
+        timeTip.update(timeFormat(Math.round(time)));
 
-        this._updateProgressBar(position);
-        this.currentTime = Math.round(position);
+        this.updateProgressBar(time);
+        this.currentTime = Math.round(time);
     }
 
-    _updateThumbnails(position: number, increment: number): void {
+    _updateThumbnails(time: number, increment: number): void {
         const thumbnails = this.thumbnailContainer.children;
         const duration = this._model.get('duration');
-        const positions = [
-            position - (2 * increment),
-            position - increment,
-            position,
-            position + increment,
-            position + (2 * increment)
+        const thumbnailTimes = [
+            time - (2 * increment),
+            time - increment,
+            time,
+            time + increment,
+            time + (2 * increment)
         ];
 
-        for (let i = 0; i < positions.length; i++) {
-            const pos = positions[i];
-            const thumbnail = thumbnails[i];
+        for (let i = 0; i < thumbnailTimes.length; i++) {
+            const thumbTime = thumbnailTimes[i];
+            const thumb = thumbnails[i];
             let thumbnailStyles: GenericObject | undefined;
 
-            if (pos >= 0 && pos <= duration) {
-                thumbnailStyles = this._slider.loadThumbnail(pos) as GenericObject;
+            if (thumbTime >= 0 && thumbTime <= duration) {
+                thumbnailStyles = this._slider.loadThumbnail(thumbTime) as GenericObject;
             }
 
-            const styles = this._getThumbnailStyles(thumbnailStyles);
-            style(thumbnail, styles);
+            const styles = this.getThumbnailStyles(thumbnailStyles);
+            style(thumb, styles);
         }
 
-        const elapsed = document.getElementsByClassName('jw-text-elapsed')[0];
-        elapsed.textContent = timeFormat(Math.round(position));
+        const elapsedEl = document.getElementsByClassName('jw-text-elapsed')[0];
+        elapsedEl.textContent = timeFormat(Math.round(time));
 
-        this._updateProgressBar(position);
-        this.currentTime = Math.round(position);
+        this.updateProgressBar(time);
+        this.currentTime = Math.round(time);
     }
 
     hide(): void {
-        // Set elements to the model's position
-        const position = this._model.get('position');
-        const elapsed = document.getElementsByClassName('jw-text-elapsed')[0];
+        // Set time elements to the model's position
+        const time = this._model.get('position');
+        const elapsedEl = document.getElementsByClassName('jw-text-elapsed')[0];
 
-        elapsed.textContent = timeFormat(Math.round(position));
-        this._updateProgressBar(position);
+        elapsedEl.textContent = timeFormat(Math.round(time));
+        this.updateProgressBar(time);
 
         removeClass(this._slider.timeTip.el, 'jw-open');
         removeClass(this.thumbnailContainer, 'jw-open');
 
-        this._resetThumbnails();
+        this.resetThumbnails();
     }
 
     seek(): void {
@@ -157,24 +157,24 @@ export default class TizenSeekbar {
     }
 
     // Helper Functions
-    _resetThumbnails(): void {
+    private resetThumbnails(): void {
         for (let i = 0; i < this.thumbnailContainer.children.length; i++) {
             style(this.thumbnailContainer.children[i], { backgroundImage: '' });
         }
     }
 
-    _getProgressPercent(position: number): number {
+    private getProgressPercent(time: number): number {
         const duration = this._model.get('duration');
-        return parseFloat((position / duration).toFixed(3)) * 100;
+        return parseFloat((time / duration).toFixed(3)) * 100;
     }
 
-    _updateProgressBar(position: number): void {
-        const pct = this._getProgressPercent(position);
+    private updateProgressBar(time: number): void {
+        const pct = this.getProgressPercent(time);
         const progressBar = this._slider.el.querySelector('.jw-progress');
         style(progressBar, { width: pct + '%' });
     }
 
-    _getThumbnailStyles(thumbnailStyles?: GenericObject): ThumbnailStyles {
+    private getThumbnailStyles(thumbnailStyles?: GenericObject): ThumbnailStyles {
         const styles = {
             margin: '5px',
             height: '215px',
