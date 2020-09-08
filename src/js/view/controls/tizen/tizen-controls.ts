@@ -23,6 +23,7 @@ class TizenControls extends Controls {
     context: HTMLDocument;
     playerContainer: HTMLElement;
     api: PlayerAPI | null;
+    model: ViewModel | null;
     div: HTMLElement | null;
     backdrop: HTMLElement | null;
     pauseDisplay: HTMLElement | null;
@@ -45,6 +46,7 @@ class TizenControls extends Controls {
         this.context = context;
         this.playerContainer = playerContainer;
         this.api = null;
+        this.model = null;
         this.div = null;
         this.backdrop = null;
         this.pauseDisplay = null;
@@ -67,6 +69,7 @@ class TizenControls extends Controls {
 
         addClass(this.playerContainer, 'jw-tizen-app jw-flag-fullscreen');
         this.api = api;
+        this.model = model;
 
         const element = this.context.createElement('div');
         element.className = 'jw-tizen-controls jw-tizen-reset';
@@ -125,109 +128,7 @@ class TizenControls extends Controls {
 
         // Settings/Tracks Menu
         const localization = model.get('localization');
-        this.settingsMenu = new SettingsMenu(api, model.player, this.controlbar, localization);
-
-        const handleKeydown = (evt: KeyboardEvent) => {
-            if (!this.apiEnabled) {
-                return;
-            }
-
-            if (this.controlbar) {
-                this.controlbar.handleKeydown(evt, this.showing, this.instreamState);
-            }
-            switch (evt.keyCode) {
-                case 37: // left-arrow
-                    if (this.seekState) {
-                        this.updateSeek(-10);
-                    } else if (!this.showing ||
-                        (this.controlbar && this.controlbar.activeButton === this.controlbar.elements.play)) {
-                        this.enterSeekMode();
-                    }
-                    this.userActive();
-                    break;
-                case 39: // right-arrow
-                    if (this.seekState) {
-                        this.updateSeek(10);
-                    } else if (!this.showing ||
-                        (this.controlbar && this.controlbar.activeButton === this.controlbar.elements.play)) {
-                        this.enterSeekMode();
-                    }
-                    this.userActive();
-                    break;
-                case 38: // up-arrow
-                    if (this.seekState) {
-                        this.exitSeekMode();
-                        this.userInactive();
-                        this.api.play();
-                        return;
-                    }
-                    this.userActive();
-                    break;
-                case 40: // down-arrow
-                    if (this.seekState) {
-                        this.exitSeekMode();
-                    }
-                    this.userActive();
-                    break;
-                case 13: // center/enter
-                    evt.preventDefault();
-                    if (this.seekState) {
-                        this.seek();
-                        return;
-                    }
-                    if (!this.showing) {
-                        this.userActive();
-                        this.api.playToggle(reasonInteraction());
-                    }
-                    break;
-                case 415: // play
-                    if (this.seekState) {
-                        this.seek();
-                        return;
-                    }
-                    if (model.get('state') !== STATE_PLAYING) {
-                        this.api.play();
-                    }
-                    break;
-                case 19: // pause
-                    if (this.seekState) {
-                        this.exitSeekMode();
-                        return;
-                    }
-                    if (model.get('state') !== STATE_PAUSED) {
-                        this.userActive();
-                        this.api.pause();
-                    }
-                    break;
-                case 10252: // play/pause
-                    if (this.seekState) {
-                        this.seek();
-                        return;
-                    }
-                    if (model.get('state') !== STATE_PAUSED) {
-                        this.userActive();
-                    }
-                    this.api.playToggle(reasonInteraction());
-                    break;
-                case 412: // Rewind
-                    break;
-                case 417: // FastForward
-                    break;
-                case 10009: // Back
-                    if (this.seekState) {
-                        this.exitSeekMode();
-                        this.userActive();
-                        return;
-                    }
-                    this.onBackClick();
-                    break;
-                case 10182: // Exit/Home
-                    this.api.remove();
-                    break;
-                default:
-                    break;
-            }
-        };
+        this.settingsMenu = new SettingsMenu(api, model, this.controlbar, localization);
 
         // Trigger backClick when all videos complete      
         api.on('playlistComplete', () => {
@@ -235,8 +136,8 @@ class TizenControls extends Controls {
         }, this);
 
         // For the TV app to hear events
-        document.addEventListener('keydown', handleKeydown);
-        this.keydownCallback = handleKeydown;
+        document.addEventListener('keydown', this.handleKeydown);
+        this.keydownCallback = this.handleKeydown;
 
         this.addControls();
 
@@ -255,6 +156,8 @@ class TizenControls extends Controls {
     }
 
     disable(model: ViewModel): void {
+        this.model = null;
+
         if (this.apiEnabled) {
             this.api.off(null, null, this);
             this.api = null;
@@ -278,6 +181,108 @@ class TizenControls extends Controls {
     onBackClick(): void {
         this.api.trigger('backClick');
         this.api.remove();
+    }
+
+    private handleKeydown = (evt: KeyboardEvent) => {
+        if (!this.apiEnabled || !this.model) {
+            return;
+        }
+
+        if (this.controlbar) {
+            this.controlbar.handleKeydown(evt, this.showing, this.instreamState);
+        }
+        switch (evt.keyCode) {
+            case 37: // left-arrow
+                if (this.seekState) {
+                    this.updateSeek(-10);
+                } else if (!this.showing ||
+                    (this.controlbar && this.controlbar.activeButton === this.controlbar.elements.play)) {
+                    this.enterSeekMode();
+                }
+                this.userActive();
+                break;
+            case 39: // right-arrow
+                if (this.seekState) {
+                    this.updateSeek(10);
+                } else if (!this.showing ||
+                    (this.controlbar && this.controlbar.activeButton === this.controlbar.elements.play)) {
+                    this.enterSeekMode();
+                }
+                this.userActive();
+                break;
+            case 38: // up-arrow
+                if (this.seekState) {
+                    this.exitSeekMode();
+                    this.userInactive();
+                    this.api.play();
+                    return;
+                }
+                this.userActive();
+                break;
+            case 40: // down-arrow
+                if (this.seekState) {
+                    this.exitSeekMode();
+                }
+                this.userActive();
+                break;
+            case 13: // center/enter
+                evt.preventDefault();
+                if (this.seekState) {
+                    this.seek();
+                    return;
+                }
+                if (!this.showing) {
+                    this.userActive();
+                    this.api.playToggle(reasonInteraction());
+                }
+                break;
+            case 415: // play
+                if (this.seekState) {
+                    this.seek();
+                    return;
+                }
+                if (this.model.get('state') !== STATE_PLAYING) {
+                    this.api.play();
+                }
+                break;
+            case 19: // pause
+                if (this.seekState) {
+                    this.exitSeekMode();
+                    return;
+                }
+                if (this.model.get('state') !== STATE_PAUSED) {
+                    this.userActive();
+                    this.api.pause();
+                }
+                break;
+            case 10252: // play/pause
+                if (this.seekState) {
+                    this.seek();
+                    return;
+                }
+                if (this.model.get('state') !== STATE_PAUSED) {
+                    this.userActive();
+                }
+                this.api.playToggle(reasonInteraction());
+                break;
+            case 412: // Rewind
+                break;
+            case 417: // FastForward
+                break;
+            case 10009: // Back
+                if (this.seekState) {
+                    this.exitSeekMode();
+                    this.userActive();
+                    return;
+                }
+                this.onBackClick();
+                break;
+            case 10182: // Exit/Home
+                this.api.remove();
+                break;
+            default:
+                break;
+        }
     }
 
     private seek(): void {
