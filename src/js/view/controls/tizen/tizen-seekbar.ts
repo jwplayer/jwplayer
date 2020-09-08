@@ -52,7 +52,7 @@ export default class TizenSeekbar {
             if (this._slider.thumbnails && this._slider.thumbnails.length !== 0) {
                 this._setImageDimensions();
             }
-        });
+        }, this);
     }
 
     _setImageDimensions(): void {
@@ -154,6 +154,10 @@ export default class TizenSeekbar {
 
     element(): HTMLElement {
         return this.el;
+    }
+
+    destroy(): void {
+        this._api.off(null, null, this);
     }
 
     // Helper Functions
