@@ -183,7 +183,7 @@ class TizenControls extends Controls {
         this.api.remove();
     }
 
-    private handleKeydown = (evt: KeyboardEvent) => {
+    private handleKeydown(evt: KeyboardEvent): void {
         if (!this.apiEnabled || !this.model) {
             return;
         }
