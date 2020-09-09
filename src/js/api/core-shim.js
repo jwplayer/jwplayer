@@ -51,6 +51,7 @@ const CoreShim = function(originalContainer) {
         'addButton',
         'removeButton',
         'castToggle',
+        'stopCasting',
         'setMute',
         'setVolume',
         'setPlaybackRate',
