@@ -51,6 +51,12 @@ function normalizeState(newstate) {
 const Controller = function() {};
 const noop = function() {};
 
+if (__HEADLESS__) {
+    Controller.prototype.set = function(property, value) {
+        return this._model.set(property, value);
+    };
+}
+
 Object.assign(Controller.prototype, {
     setup(config, _api, originalContainer, eventListeners, commandQueue, mediaPool) {
         const _this = this;

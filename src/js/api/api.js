@@ -197,6 +197,13 @@ export default function Api(element) {
 
     });
 
+    if (__HEADLESS__) {
+        this.get = (attribute) => core.get(attribute);
+        this.set = (attribute, value) => core.set(attribute, value);
+        this.castVideo = (castProvider, item) => core.castVideo(castProvider, item);
+        this.stopCast = () => core.stopCast();
+    }
+
     Object.assign(this, /** @lends Api.prototype */ {
         /**
          * A map of event listeners.
