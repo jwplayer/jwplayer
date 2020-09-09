@@ -22,7 +22,7 @@ export default class Menu extends Events {
         this.toggle = this.toggle.bind(this);
         this.name = _name;
         this.title = _title || _name;
-        this.localization = _localization;
+        this.localizedPrevious = _localization.prev;
         this.isSubmenu = !!_parentMenu;
         this.el = createElement(_template(this.isSubmenu, _name));
         this.buttonContainer = this.el.querySelector(`.jw-${this.name}-topbar-buttons`);
@@ -39,7 +39,7 @@ export default class Menu extends Events {
                 this.categoryButton = this.createCategoryButton();
             }
             if (this.parentMenu.parentMenu && !this.mainMenu.backButton) {
-                this.mainMenu.backButton = this.createBackButton(this.localization);
+                this.mainMenu.backButton = this.createBackButton(this.localizedPrevious);
             }
             this.itemsContainer = this.createItemsContainer();
             this.parentMenu.appendMenu(this);
@@ -108,7 +108,7 @@ export default class Menu extends Events {
         const categoryButton = menuCategoryButton(this);
         return categoryButton;
     }
-    createBackButton(localization) {
+    createBackButton(localizedPrevious) {
         const getPreviousMenu = () => this.mainMenu.backButtonTarget;
         const backButton = button(
             'jw-settings-back', 
@@ -118,7 +118,7 @@ export default class Menu extends Events {
                     menu.open(evt);
                 }
             }, 
-            localization.prev, 
+            localizedPrevious,
             [cloneIcon('arrow-left')]
         );
         prependChild(this.mainMenu.topbar.el, backButton.element());
@@ -126,8 +126,7 @@ export default class Menu extends Events {
     }
     setBackButtonAriaLabel(labelText) {
         const backButtonElement = this.mainMenu.backButton.element();
-        const localizedPrevious = this.localization.prev;
-        const backButtonText = labelText ? localizedPrevious + ' - Button - ' + labelText : localizedPrevious;
+        const backButtonText = labelText ? this.localizedPrevious + ' - ' + labelText : this.localizedPrevious;
         backButtonElement.setAttribute('aria-label', backButtonText);
     }
     createTopbar() {
