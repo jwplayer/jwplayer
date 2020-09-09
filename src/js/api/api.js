@@ -861,6 +861,7 @@ export default function Api(element) {
          /**
          * Stops casting immediately (Chromecast only).
          * @return {Api} The Player API instance.
+         * @since v8.18.0
          */
         stopCasting() {
             core.stopCasting();
