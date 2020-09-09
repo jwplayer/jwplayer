@@ -51,13 +51,13 @@ const CoreShim = function(originalContainer) {
         'addButton',
         'removeButton',
         'castToggle',
-        'stopCasting',
         'setMute',
         'setVolume',
         'setPlaybackRate',
         'addCues',
         'setCues',
         'setPlaylistItem',
+        'stopCasting',
 
         // These commands require the view instance to be available
         'resize',
