@@ -58,6 +58,7 @@ class TizenControls extends Controls {
         this.showing = false;
         this.instreamState = false;
         this.keydownCallback = null;
+        this.handleKeydown = this.handleKeydown.bind(this);
     }
 
     get apiEnabled(): boolean {
