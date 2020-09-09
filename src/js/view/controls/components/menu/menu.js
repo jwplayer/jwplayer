@@ -127,7 +127,7 @@ export default class Menu extends Events {
     setBackButtonAriaLabel(labelText) {
         const backButtonElement = this.mainMenu.backButton.element();
         const localizedPrevious = this.localization.prev;
-        const backButtonText = labelText ? localizedPrevious + ' - ' + labelText : localizedPrevious;
+        const backButtonText = labelText ? localizedPrevious + ' - Button - ' + labelText : localizedPrevious;
         backButtonElement.setAttribute('aria-label', backButtonText);
     }
     createTopbar() {
