@@ -858,6 +858,15 @@ export default function Api(element) {
             return this;
         },
 
+         /**
+         * Stops casting immediately (Chromecast only).
+         * @return {Api} The Player API instance.
+         */
+        stopCasting() {
+            core.stopCasting();
+            return this;
+        },
+    
         /**
          * Creates a new instance of the instream adapter. If present, the previous instance created is destroyed first.
          * @returns {InstreamAdapter} The instream instance.
