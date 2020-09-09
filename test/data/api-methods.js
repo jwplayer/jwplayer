@@ -82,6 +82,7 @@ export default {
     setVolume: null,
     setup: null,
     stop: null,
+    stopCasting: null,
     off: null,
     on: null,
     once: null,
