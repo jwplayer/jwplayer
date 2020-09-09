@@ -22,6 +22,7 @@ export default class Menu extends Events {
         this.toggle = this.toggle.bind(this);
         this.name = _name;
         this.title = _title || _name;
+        this.localizedPrevious = _localization.prev;
         this.isSubmenu = !!_parentMenu;
         this.el = createElement(_template(this.isSubmenu, _name));
         this.buttonContainer = this.el.querySelector(`.jw-${this.name}-topbar-buttons`);
@@ -38,7 +39,7 @@ export default class Menu extends Events {
                 this.categoryButton = this.createCategoryButton();
             }
             if (this.parentMenu.parentMenu && !this.mainMenu.backButton) {
-                this.mainMenu.backButton = this.createBackButton(_localization);
+                this.mainMenu.backButton = this.createBackButton(this.localizedPrevious);
             }
             this.itemsContainer = this.createItemsContainer();
             this.parentMenu.appendMenu(this);
@@ -107,7 +108,7 @@ export default class Menu extends Events {
         const categoryButton = menuCategoryButton(this);
         return categoryButton;
     }
-    createBackButton(localization) {
+    createBackButton(localizedPrevious) {
         const getPreviousMenu = () => this.mainMenu.backButtonTarget;
         const backButton = button(
             'jw-settings-back', 
@@ -117,11 +118,16 @@ export default class Menu extends Events {
                     menu.open(evt);
                 }
             }, 
-            localization.prev, 
+            localizedPrevious,
             [cloneIcon('arrow-left')]
         );
         prependChild(this.mainMenu.topbar.el, backButton.element());
         return backButton;
+    }
+    setBackButtonAriaLabel(labelText) {
+        const backButtonElement = this.mainMenu.backButton.element();
+        const backButtonText = labelText ? this.localizedPrevious + ' - ' + labelText : this.localizedPrevious;
+        backButtonElement.setAttribute('aria-label', backButtonText);
     }
     createTopbar() {
         const topbar = createElement(`<div class="jw-reset jw-submenu-topbar"></div>`);
@@ -329,12 +335,14 @@ export default class Menu extends Events {
         if (parentMenu.isSubmenu) {
             parentMenu.el.classList.remove('jw-settings-submenu-active');
             mainMenu.topbar.el.classList.add('jw-nested-menu-open');
-            const menuTitle = mainMenu.topbar.el.querySelector('.jw-settings-topbar-text');
-            menuTitle.setAttribute('name', this.title);
-            menuTitle.innerText = this.title;
+            const menuTitleElement = mainMenu.topbar.el.querySelector('.jw-settings-topbar-text');
+            menuTitleElement.setAttribute('name', this.title);
+            menuTitleElement.innerText = this.title;
+            const parentMenuTitle = parentMenu.title;
+            this.setBackButtonAriaLabel(parentMenuTitle);
             mainMenu.backButton.show();
             this.mainMenu.backButtonTarget = this.parentMenu;
-            focusEl = menuTitle;
+            focusEl = menuTitleElement;
         } else {
             mainMenu.topbar.el.classList.remove('jw-nested-menu-open');
             if (mainMenu.backButton) {
