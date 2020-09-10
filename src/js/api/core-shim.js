@@ -65,6 +65,15 @@ const CoreShim = function(originalContainer) {
     ], () => true);
 };
 
+if (__HEADLESS__) {
+    CoreShim.prototype.set = function(property, value) {
+        if (!this.modelShim) {
+            return;
+        }
+        return this.modelShim.set(property, value);
+    };
+}
+
 Object.assign(CoreShim.prototype, {
     on: Events.on,
     once: Events.once,
