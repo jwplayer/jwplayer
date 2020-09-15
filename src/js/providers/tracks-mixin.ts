@@ -14,6 +14,7 @@ type TrackCue = (VTTCue | DataCue | TextTrackCue) & {
 
 type TrackCueParsed = TrackCue & {
     _parsed?: boolean;
+    _extended?: boolean;
 }
 
 type TracksRecord = Record<string, TextTrackLike>;
@@ -607,23 +608,48 @@ const Tracks: TracksMixin = {
             (lastCue._parsed || cuesMatch(previousCues[previousCues.length - 1], lastCue))) {
             return;
         }
+        const dataCueSets: Array<TrackCueParsed[]> = [];
+        const parsedDataCueSets: Array<TrackCueParsed[]> = [];
         let dataCueSetIndex = -1;
         let startTime = -1;
-        const dataCueSets: Array<TrackCueParsed[]> = Array.prototype.reduce.call(cues, (cueSets: Array<TrackCueParsed[]>, cue: TrackCueParsed) => {
-            if (!cue._parsed && ((cue as DataCue).data || cue.value)) {
+        let previousStart = -1;
+        for (let i = 0; i < cues.length; i++) {
+            const cue: TrackCueParsed = cues[i];
+            if (!cue._extended && !!((cue as DataCue).data || cue.value)) {
                 if (cue.startTime !== startTime || cue.endTime === null) {
+                    previousStart = startTime;
                     startTime = cue.startTime;
-                    cueSets[++dataCueSetIndex] = [];
+                    const previousSet = dataCueSets[dataCueSetIndex];
+                    dataCueSets[++dataCueSetIndex] = [];
+                    parsedDataCueSets[dataCueSetIndex] = [];
+                    // increase id3 cue duration to a minimum of 0.25s up to next id3 cue start to ensure
+                    // "cuechange" event is fired and it is added to activeCues when currentTime intersects cue range
+                    const gap = startTime - previousStart;
+                    if (previousSet && gap > 0) {
+                        // eslint-disable-next-line max-depth
+                        for (let j = 0; j < previousSet.length; j++) {
+                            const previousCue: TrackCueParsed = previousSet[j];
+                            previousCue.endTime = startTime;
+                            previousCue._extended = true;
+                        }
+                    }
                 }
-                cueSets[dataCueSetIndex].push(cue);
+                dataCueSets[dataCueSetIndex].push(cue);
+                if (!cue._parsed) {
+                    parsedDataCueSets[dataCueSetIndex].push(cue);
+                    if (cue.endTime - startTime < 0.25) {
+                        cue.endTime = startTime + 0.25;
+                    }
+                    cue._parsed = true;
+                }
             }
-            cue._parsed = true;
-            return cueSets;
-        }, []);
-        dataCueSets.forEach((dataCues: TrackCueParsed[]) => {
-            const event = getId3CueMetaEvent(dataCues);
-            this.trigger(MEDIA_META_CUE_PARSED, event);
-        });
+        }
+        for (let i = 0; i < parsedDataCueSets.length; i++) {
+            if (parsedDataCueSets[i].length) {
+                const event = getId3CueMetaEvent(parsedDataCueSets[i]);
+                this.trigger(MEDIA_META_CUE_PARSED, event);
+            }
+        }
     },
     triggerActiveCues(this: ProviderWithMixins, currentActiveCues: TrackCue[], previousActiveCues: TrackCue[]): void {
         const dataCues = currentActiveCues.filter((cue) => {
