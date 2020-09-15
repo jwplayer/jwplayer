@@ -50,12 +50,12 @@ export default class TizenSeekbar {
         // Set the thumbnail image width and height in case of sprites (all thumbnails in one image)
         api.on('firstFrame', () => {
             if (this._slider.thumbnails && this._slider.thumbnails.length !== 0) {
-                this._setImageDimensions();
+                this.setImageDimensions();
             }
         }, this);
     }
 
-    _setImageDimensions(): void {
+    private setImageDimensions(): void {
         const img = new Image();
         img.onload = () => {
             img.onload = null;
@@ -68,10 +68,10 @@ export default class TizenSeekbar {
     show(): void {
         if (this._slider.thumbnails && this._slider.thumbnails.length !== 0) {
             addClass(this.thumbnailContainer, 'jw-open');
-            this._updateThumbnails(this._model.get('position'), 10);
+            this.updateThumbnails(this._model.get('position'), 10);
         } else {
             addClass(this._slider.timeTip.el, 'jw-open');
-            this._updateTimeTip(this._model.get('position'));
+            this.updateTimeTip(this._model.get('position'));
         }
     }
 
@@ -85,14 +85,14 @@ export default class TizenSeekbar {
 
         if (time !== currentTime) { 
             if (this._slider.thumbnails && this._slider.thumbnails.length !== 0) {
-                this._updateThumbnails(time, Math.abs(increment));
+                this.updateThumbnails(time, Math.abs(increment));
             } else {
-                this._updateTimeTip(time);
+                this.updateTimeTip(time);
             }
         }
     }
 
-    _updateTimeTip(time: number): void {
+    private updateTimeTip(time: number): void {
         const timeTip = this._slider.timeTip;
         const pct = this.getProgressPercent(time);
 
@@ -103,7 +103,7 @@ export default class TizenSeekbar {
         this.currentTime = Math.round(time);
     }
 
-    _updateThumbnails(time: number, increment: number): void {
+    private updateThumbnails(time: number, increment: number): void {
         const thumbnails = this.thumbnailContainer.children;
         const duration = this._model.get('duration');
         const thumbnailTimes = [
