@@ -63,7 +63,7 @@
     "puppeteer": "1.13.0",
     "simple-style-loader": "0.4.4",
     "sinon": "7.2.3",
-    "sinon-chai": "3.3.0",
+    "sinon-chai": "3.5.0",
     "stylelint": "9.5.0",
     "svg-inline-loader": "0.8.0",
     "tslint": "5.20.1",
