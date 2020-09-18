@@ -52,7 +52,7 @@
     "karma-webpack": "3.0.5",
     "less": "3.9.0",
     "less-loader": "4.1.0",
-    "load-grunt-tasks": "3.5.2",
+    "load-grunt-tasks": "5.1.0",
     "marked": "0.7.0",
     "mocha": "5.2.0",
     "node-libs-browser": "2.1.0",
