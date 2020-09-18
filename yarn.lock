@@ -3742,10 +3742,10 @@ grunt-contrib-watch@1.1.0:
     lodash "^4.17.10"
     tiny-lr "^1.1.1"
 
-grunt-karma@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/grunt-karma/-/grunt-karma-3.0.0.tgz#534f695728db21ab7fa09257969977f6d90d073f"
-  integrity sha512-E111KL3o5v2aoc4w0CkCSdd/MzA3sB7xHeUw5b/hRW3LwRgJWUrsP8BTX3nsOshi1yHhws1st9jFSKHYI2bY+g==
+grunt-karma@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/grunt-karma/-/grunt-karma-4.0.0.tgz#faaeaff37ee71ebd75313da4cec1268500d51190"
+  integrity sha512-L3YpIAW6NB5tQ3cb6VoJCCCWfIJ0nqeyxs/SF6N385sMSadZ6RjBllP2kOUE2plkT8T8DR3bGVqzgH+vUDTsuQ==
   dependencies:
     lodash "^4.17.10"
 
