@@ -34,7 +34,7 @@ class TizenControls extends Controls {
     settingsMenu: SettingsMenu | null;
     showing: boolean;
     instreamState: boolean;
-    keydownCallback: ((evt: KeyboardEvent) => void) | null;
+    keydownCallback: ((evt: KeyboardEvent) => void);
     userInactive: any;
     wrapperElement: any;
     addBackdrop: any;
@@ -57,8 +57,7 @@ class TizenControls extends Controls {
         this.settingsMenu = null;
         this.showing = false;
         this.instreamState = false;
-        this.keydownCallback = null;
-        this.handleKeydown = this.handleKeydown.bind(this);
+        this.keydownCallback = this.handleKeydown.bind(this);
     }
 
     get apiEnabled(): boolean {
@@ -164,9 +163,7 @@ class TizenControls extends Controls {
             this.api = null;
         }
 
-        if (this.keydownCallback) {
-            document.removeEventListener('keydown', this.keydownCallback);
-        }
+        document.removeEventListener('keydown', this.keydownCallback);
 
         if (this.seekbar) {
             this.seekbar.destroy();
