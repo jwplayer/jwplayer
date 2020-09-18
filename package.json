@@ -23,7 +23,7 @@
     "danger": "3.4.5",
     "eslint": "5.7.0",
     "eslint-plugin-import": "2.14.0",
-    "eslint-plugin-no-for-of-loops": "1.0.0",
+    "eslint-plugin-no-for-of-loops": "1.0.1",
     "eslint-plugin-no-unsanitized": "3.1.2",
     "esprima": "4.0.1",
     "fast-diff": "1.1.2",
