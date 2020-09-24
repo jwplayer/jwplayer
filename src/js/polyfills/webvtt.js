@@ -692,6 +692,11 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
         let percentage = 0; // Lowest possible so the first thing we get is better.
         let bestAxis;
 
+        // Prevent empty boxes from entering recursive overlap correction.
+        if (!b.height || !b.width) {
+            return specifiedPosition;
+        }
+    
         for (let i = 0; i < axis.length; i++) {
             while (b.overlapsOppositeAxis(containerBox, axis[i]) ||
             (b.within(containerBox) && b.overlapsAny(boxPositions))) {
