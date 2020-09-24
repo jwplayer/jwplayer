@@ -694,7 +694,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
 
         // Prevent empty boxes from entering recursive overlap correction.
         if (!b.height || !b.width) {
-            return b;
+            return specifiedPosition;
         }
     
         for (let i = 0; i < axis.length; i++) {
