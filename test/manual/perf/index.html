@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>JW Player + Web Performance API Test</title>
+    <meta charset='utf-8'/>
+    <meta name="viewport" content="width=680, initial-scale=1, maximum-scale=1.5">
+    <style>
+        html {
+            width: 680px;
+        }
+        body {
+            background: #eee;
+            margin: 20px auto;
+            width: 640px;
+            font: 14px/20px Helvetica, Arial, sans-serif;
+        }
+        #player {
+            background: blue;
+            display: block;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            width: 640px;
+            height: 360px;
+        }
+        pre {
+            background: #fff;
+            padding: 5px 20px;
+            border-radius: 5px;
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            color: inherit;
+            font: inherit;
+            margin: 0;
+        }
+        button {
+            overflow: visible;
+        }
+        button,
+        select {
+            text-transform: none;
+        }
+        button,
+        html input[type="button"],
+        input[type="reset"],
+        input[type="submit"] {
+            -webkit-appearance: button;
+            cursor: pointer;
+        }
+        button[disabled],
+        html input[disabled] {
+            cursor: default;
+        }
+        button::-moz-focus-inner,
+        input::-moz-focus-inner {
+            border: 0;
+            padding: 0;
+        }
+        label {
+            display: inline-block;
+            max-width: 100%;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        @media only screen and (min-device-width : 320px) and (max-device-width : 768px) {
+            body {
+                font-size: 2vw;
+                line-height: 3vw;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="player"></div>
+<p>
+    <button id="sample">sample</button>
+    <button id="clear">clear</button>
+</p>
+<pre></pre>
+<!--
+The commercial player is available from our CDN. It requires a valid key to passed to setup().
+<script type="text/javascript" crossorigin src="//ssl.p.jwpcdn.com/player/v/8.5.6/jwplayer.js"></script>
+-->
+<script type="text/javascript" src="../../../bin-release/jwplayer.js"></script>
+<script type="text/javascript" src="index.js"></script>
+</body>
+</html>
