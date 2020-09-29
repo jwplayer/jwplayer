@@ -8,7 +8,7 @@
 
 #### Addresses Issue(s):
 
-JW8-###
+https://jwplayer.atlassian.net/browse/JW8-#####
 
 ### Checklist
 - [ ] Jenkins builds and unit tests are passing
