@@ -282,7 +282,7 @@ export default class Controlbar {
             // jw-dvr-live: Player is in DVR mode but not at the live edge.
             toggleClass(liveElement, 'jw-dvr-live', dvrNotLive);
             setAttribute(liveElement, 'aria-label', dvrNotLive ? notLive : liveBroadcast);
-            liveElement.textContent = liveBroadcast;
+            liveElement.textContent = dvrNotLive ? notLive : liveBroadcast;
         }, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
