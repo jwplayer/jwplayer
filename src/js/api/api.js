@@ -450,6 +450,16 @@ export default function Api(element) {
         },
 
         /**
+         * Gets the player's visibility.
+         * @returns {Number} Returns a number between 0 and 1 that represents how much of the player is in the document viewport.
+         * Returns 0 if the player is not in an active tab, or if the player is completely out of the viewport.
+         * @since v8.18.0
+         */
+        getPercentViewable() {
+            return core.get('visibility');
+        },
+
+        /**
          * Gets the rate at which playback should occur while media is playing.
          * @default 1.0
          * @returns {number} The playback rate of the media element (`HTMLMediaElement.playbackRate`).

@@ -282,6 +282,7 @@ describe('Api', function() {
         expect(api.getItemMeta(), '.getItemMeta()').to.eql({});
         expect(api.getMute(), '.getMute()').to.equal(undefined);
         expect(api.getVolume(), '.getVolume()').to.equal(undefined);
+        expect(api.getPercentViewable(), '.getPercentViewable()').to.equal(undefined);
         expect(api.getPlaybackRate(), '.getPlaybackRate()').to.equal(undefined);
         expect(api.getPlaylist(), '.getPlaylist()').to.equal(undefined);
         expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.equal(undefined);
@@ -331,6 +332,7 @@ describe('Api', function() {
             expect(api.getItemMeta(), '.getItemMeta()').to.eql({});
             expect(api.getMute(), '.getMute()').to.be.a('boolean');
             expect(api.getVolume(), '.getVolume()').to.be.a('number');
+            expect(api.getPercentViewable(), '.getPercentViewable()').to.equal(undefined);
             expect(api.getPlaybackRate(), '.getPlaybackRate()').to.equal(1);
             expect(api.getPlaylist(), '.getPlaylist()').to.be.an('array');
             expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.equal(0);
