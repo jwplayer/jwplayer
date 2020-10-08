@@ -42,10 +42,6 @@ function isVisibleButton(el: ControlbarElement): boolean {
         el.element().classList.contains('jw-button-color');
 }
 
-function isActiveElement(element: HTMLElement): boolean {
-    return element.classList.contains('jw-active');
-}
-
 function getNextButton(activeButton: Button, layout: ControlbarElement[], toRight: boolean): Button | undefined {
     if (!activeButton) {
         return;
@@ -61,6 +57,16 @@ function getNextButton(activeButton: Button, layout: ControlbarElement[], toRigh
         }
     }
 
+    return;
+}
+
+function getButtonElement(btn: any): HTMLElement | undefined {
+    if ('element' in btn) {
+        return btn.element();
+    }
+    if ('el' in btn) {
+        return btn.el;
+    }
     return;
 }
 
@@ -163,9 +169,13 @@ export default class TizenControlbar extends Controlbar {
         }
 
         switch (evt.keyCode) {
+            case 415: // play
+            case 19: // pause
+            case 10252: // play/pause
+                this.setActiveButton(this.elements.play);
+                break;
             case 37: // left-arrow
-                if (isAdsMode && isActiveElement(this.adSkipButton.el)) {
-                    toggleClass(this.adSkipButton.el, 'jw-active', false);
+                if (isAdsMode && activeButton === this.adSkipButton) {
                     this.setActiveButton(this.elements.play);
                     return;
                 }
@@ -176,9 +186,8 @@ export default class TizenControlbar extends Controlbar {
                 }
                 break;
             case 39: // right-arrow
-                if (isAdsMode && activeButton && activeButton === this.elements.play) {
-                    toggleClass(this.adSkipButton.el, 'jw-active', true);
-                    this.setActiveButton(null);
+                if (isAdsMode && this.adSkipButton && activeButton === this.elements.play) {
+                    this.setActiveButton(this.adSkipButton);
                     return;
                 }
 
@@ -188,8 +197,12 @@ export default class TizenControlbar extends Controlbar {
                 }
                 break;
             case 38: // up-arrow
-                if (!isShowing || !activeButton) {
+                if (!isShowing) {
                     this.setActiveButton(this.elements.play);
+                    return;
+                }
+
+                if (isAdsMode) {
                     return;
                 }
 
@@ -203,8 +216,12 @@ export default class TizenControlbar extends Controlbar {
                 }
                 break;
             case 40: // down-arrow
-                if (!isShowing || !activeButton) {
+                if (!isShowing) {
                     this.setActiveButton(this.elements.play);
+                    return;
+                }
+
+                if (isAdsMode) {
                     return;
                 }
 
@@ -214,8 +231,13 @@ export default class TizenControlbar extends Controlbar {
                 }
                 break;
             case 13: // center/enter
-                if (isAdsMode && isActiveElement(this.adSkipButton.el)) {
+                if (isAdsMode && activeButton === this.adSkipButton) {
+                    if (!this.adSkipButton.skippable) {
+                        return;
+                    }
+
                     this.adSkipButton.skipUI.trigger('click');
+                    this.setActiveButton(this.elements.play);
                     return;
                 }
 
@@ -232,18 +254,18 @@ export default class TizenControlbar extends Controlbar {
         }
     }
 
-    setActiveButton(nextButton: Button | null): void {
+    setActiveButton(nextButton: any): void {
         const currentActiveButton = this.activeButton;
         if (currentActiveButton === nextButton) {
             return;
         }
 
         if (currentActiveButton) {
-            toggleClass(currentActiveButton.element(), 'jw-active', false);
+            toggleClass(getButtonElement(currentActiveButton), 'jw-active', false);
         }
 
         if (nextButton) {
-            toggleClass(nextButton.element(), 'jw-active', true);
+            toggleClass(getButtonElement(nextButton), 'jw-active', true);
         }
 
         this.activeButton = nextButton;
