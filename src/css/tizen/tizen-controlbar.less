@@ -1,0 +1,116 @@
+.jw-tizen-app {
+    .jw-tizen-controlbar {
+        align-items: center;
+        justify-content: center;
+        transition: 250ms @default-timing-function;
+        transition-property: opacity, visibility;
+        transition-delay: 0s;
+        padding: 90px 120px;
+        position: initial;
+
+        .jw-button-container {
+            display: none;
+        }
+
+        .jw-top-container {
+            display: flex;
+            flex-flow: row wrap;
+            position: absolute;
+            width: 100%;
+            border: none;
+            border-radius: 0;
+            background-size: auto;
+            box-shadow: none;
+            left: 0;
+            top: 0;
+            padding: inherit;
+        }
+
+        .jw-bottom-container {
+            display: flex;
+            flex-flow: row wrap;
+            position: absolute;
+            width: 100%;
+            border: none;
+            border-radius: 0;
+            background-size: auto;
+            box-shadow: none;
+            left: 0;
+            bottom: 0;
+            padding: inherit;
+            align-items: center;
+        }
+
+        .jw-text {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .jw-text-countdown {
+            display: flex;
+        }
+
+        // Controlbar Slider
+        .jw-slider-time {
+            height: initial;
+            width: initial;
+            flex-grow: 1;
+            padding: 0;
+
+            .jw-slider-container {
+                height: 15px;
+            }
+        }
+
+        // Controlbar Tooltips
+        .jw-tooltip {
+            display: block;
+            box-shadow: none;
+            top: 100%;
+
+            .jw-text {
+                font-size: 30px;
+                background-color: inherit;
+                color: rgba(255, 255, 255, 0.9);
+                padding-top: 10px;
+            }
+
+            &::after {
+                content: initial;
+            }
+
+            &.jw-open {
+                transition-delay: 0s;
+            }
+        }
+
+        // Live Text
+        .jw-text-live {
+            font-size: 2.5em;
+            width: auto;
+
+            &:before {
+                height: 0.5em;
+                width: 0.5em;
+                margin-right: 0.375em;
+            }
+        }
+    }
+
+    // Controls Gradient
+    .jw-controls-backdrop {
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, transparent 35%, transparent 65%, rgba(0, 0, 0, 0.4) 100%);
+    }
+
+    // Active Button
+    .jw-icon.jw-button-color.jw-active {
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: @hover-color;
+
+        .jw-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+}
