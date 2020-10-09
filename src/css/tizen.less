@@ -1,0 +1,94 @@
+@import "shared-imports/vars.less";
+@import "shared-imports/mixins/rect.less";
+@import "tizen/tizen-states.less";
+@import "tizen/tizen-ads.less";
+@import "tizen/tizen-icon.less";
+@import "tizen/tizen-nextup.less";
+@import "tizen/tizen-pause-display.less";
+@import "tizen/tizen-controlbar.less";
+@import "tizen/tizen-captions.less";
+
+.jw-tizen-app {
+    // **OUT OF DATE from v1.0**
+    // Recenter and resize slider tool and hide other tooltips - tooltip.less
+    .jw-tooltip-time {
+        .jw-overlay {
+            top: 0;
+            left: 0;
+        }
+    }
+
+    // Increase settings menu text size, Settings menu - settings-menu.less
+    .jw-settings-menu {
+        bottom: 225px;
+        right: 5%;
+        max-height: none;
+        max-width: none;
+        height: 35%;
+        width: 25%;
+
+        .jw-settings-topbar:not(.jw-nested-menu-open) {
+            .jw-icon-inline {
+                .square(90px);
+                display: flex;
+
+                .jw-svg-icon {
+                    .square(50px);
+                }
+            }
+        }
+
+        .jw-settings-back {
+            min-width: 60px;
+            display: flex;
+        }
+    }
+
+    .jw-settings-content-item-value {
+        font-size: 1em;
+    }
+
+    .jw-settings-submenu {
+        .jw-settings-content-item {
+            font-size: 1.5em;
+            padding: 11px 15px 11px 30px;
+
+            .jw-settings-item-active::before {
+                justify-content: flex-end;
+            }
+
+            .jw-auto-label {
+                font-size: 0.85em;
+                padding-left: 10px;
+            }
+        }
+
+        .jw-settings-value-wrapper {
+            .jw-svg-icon-arrow-right {
+                width: 15px;
+                height: 20px;
+            }
+        }
+    }
+
+    .jw-settings-topbar {
+        .jw-settings-topbar-text {
+            font-size: 1.65em;
+            font-weight: bold;
+        }
+
+        .jw-settings-close {
+            display: flex;
+        }
+
+        &.jw-nested-menu-open {
+            .jw-svg-icon-close {
+                .square(50px);
+            }
+
+            .jw-svg-icon-arrow-left {
+                .square(35px);
+            }
+        }
+    }
+}

@@ -10,6 +10,8 @@ import Controls from 'view/controls/controls';
 import type ViewModel from 'view/view-model';
 import type { PlayerAPI } from 'types/generic.type';
 
+require('css/tizen.less');
+
 const ACTIVE_TIMEOUT = 5000;
 
 const reasonInteraction = () => {

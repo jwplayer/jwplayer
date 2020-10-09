@@ -1,0 +1,25 @@
+.jw-tizen-app {
+    &:not(.jw-state-buffering) {
+        .jw-display {
+            display: none;
+        }
+    }
+
+    &:not(.jw-flag-user-inactive) {
+        .jw-controlbar {
+            will-change: initial;
+        }
+    }
+
+    &.jw-state-buffering {
+        .jw-tizen-controlbar {
+            display: none;
+        }
+    }
+
+    &.jw-state-paused.jw-flag-user-inactive {
+        .jw-pause-display {
+            display: initial;
+        }
+    }
+}
