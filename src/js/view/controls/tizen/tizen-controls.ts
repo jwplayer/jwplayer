@@ -34,7 +34,7 @@ class TizenControls extends Controls {
     settingsMenu: SettingsMenu | null;
     showing: boolean;
     instreamState: boolean;
-    keydownCallback: ((this: Document, evt: KeyboardEvent) => void) | null;
+    keydownCallback: ((evt: KeyboardEvent) => void) | null;
     userInactive: any;
     wrapperElement: any;
     addBackdrop: any;
