@@ -1,0 +1,49 @@
+.jw-tizen-app {
+    &.jw-flag-ads {
+        .jw-skip {
+            justify-content: center;
+            right: 10%;
+            height: 6.25em;
+            bottom: 9.72%;
+            background-color: transparent;
+            border-color: @white;
+            border-width: medium;
+
+            &.jw-active {
+                box-shadow: 0 0 0.63em 1em rgba(255, 255, 255, 0.3);
+            }
+
+            .jw-text {
+                font-size: 2.5em;
+            }
+
+            .jw-skip-icon {
+                display: flex;
+                justify-content: center;
+                height: 6.25em;
+                width: 6.25em;
+            }
+
+            .jw-svg-icon {
+                height: 4.02em;
+                width: 4.02em;
+            }
+        }
+
+        .jw-tizen-controlbar {
+            .jw-top-container {
+                display: none;
+            }
+
+            .jw-bottom-container {
+                .jw-slider-time {
+                    display: none;
+                }
+
+                .jw-text-alt {
+                    font-weight: normal;
+                }
+            }
+        }
+    }
+}
