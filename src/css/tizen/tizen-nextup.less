@@ -1,6 +1,17 @@
+@tizen-nextup-header-font-size: 50px;
+
+@media (min-device-width: 2560px) {
+    @tizen-nextup-header-font-size: 66.67px;
+}
+
+@media (min-device-width: 3840px) {
+    @tizen-nextup-header-font-size: 100px;
+}
+
 .jw-tizen-app {
     .jw-nextup-container {
         padding: 8% 6.25%;
+        font-size: @tizen-nextup-header-font-size;
 
         .jw-nextup {
             max-width: 40.18%;
@@ -9,7 +20,7 @@
         }
 
         .jw-nextup-tooltip {
-            height: 10.95em;
+            height: 4em;
         }
 
         .jw-nextup-thumbnail {
@@ -21,11 +32,11 @@
         }
 
         .jw-nextup-header {
-            font-size: 3.13em;
+            font-size: 1em;
         }
 
         .jw-nextup-title {
-            font-size: 2.5em;
+            font-size: 0.8em;
             font-weight: normal;
         }
 
