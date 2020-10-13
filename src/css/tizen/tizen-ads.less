@@ -1,32 +1,39 @@
+@tizen-skip-font-size: 40px;
+
+@media (min-device-width: 2560px) {
+    @tizen-skip-font-size: 53.33px;
+}
+
+@media (min-device-width: 3840px) {
+    @tizen-skip-font-size: 80px;
+}
+
 .jw-tizen-app {
     &.jw-flag-ads {
         .jw-skip {
             justify-content: center;
             right: 10%;
-            height: 6.25em;
+            height: 2.5em;
             bottom: 9.72%;
             background-color: transparent;
             border-color: @white;
             border-width: medium;
+            font-size: @tizen-skip-font-size;
 
             &.jw-active {
-                box-shadow: 0 0 0.63em 1em rgba(255, 255, 255, 0.3);
-            }
-
-            .jw-text {
-                font-size: 2.5em;
+                box-shadow: 0 0 0.25em 0.38em rgba(255, 255, 255, 0.3);
             }
 
             .jw-skip-icon {
                 display: flex;
                 justify-content: center;
-                height: 6.25em;
-                width: 6.25em;
+                height: 3.6em;
+                width: 3.6em;
             }
 
             .jw-svg-icon {
-                height: 4.02em;
-                width: 4.02em;
+                height: 2em;
+                width: 2em;
             }
         }
 

@@ -1,3 +1,13 @@
+@tizen-controlbar-font-size: 40px;
+
+@media (min-device-width: 2560px) {
+    @tizen-controlbar-font-size: 53.33px;
+}
+
+@media (min-device-width: 3840px) {
+    @tizen-controlbar-font-size: 80px;
+}
+
 .jw-tizen-app {
     .jw-tizen-controlbar {
         align-items: center;
@@ -5,8 +15,9 @@
         transition: 250ms @default-timing-function;
         transition-property: opacity, visibility;
         transition-delay: 0s;
-        padding: 90px 120px;
+        padding: 6% 6.25%;
         position: initial;
+        font-size: @tizen-skip-font-size;
 
         .jw-button-container {
             display: none;
@@ -42,7 +53,7 @@
         }
 
         .jw-text {
-            font-size: 2.5em;
+            font-size: 1em;
             font-weight: bold;
         }
 
@@ -58,7 +69,7 @@
             padding: 0;
 
             .jw-slider-container {
-                height: 15px;
+                height: 0.38em;
             }
         }
 
@@ -69,10 +80,10 @@
             top: 100%;
 
             .jw-text {
-                font-size: 30px;
+                font-size: 0.75em;
                 background-color: inherit;
                 color: rgba(255, 255, 255, 0.9);
-                padding-top: 10px;
+                padding-top: 0.25em;
             }
 
             &::after {
@@ -86,13 +97,13 @@
 
         // Live Text
         .jw-text-live {
-            font-size: 2.5em;
+            font-size: 1em;
             width: auto;
 
             &:before {
                 height: 0.5em;
                 width: 0.5em;
-                margin-right: 0.375em;
+                margin-right: 0.38em;
             }
         }
     }
