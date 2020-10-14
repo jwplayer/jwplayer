@@ -1,0 +1,34 @@
+&.jw-flag-seek {
+    .jw-icon-back,
+    .jw-icon-settings,
+    .jw-icon-playback {
+        visibility: hidden;
+    }
+
+    .jw-seekbar-thumbnails.jw-open {
+        display: flex;
+    }
+}
+
+.jw-seekbar-thumbnails {
+    position: absolute;
+    display: none;
+    justify-content: center;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    padding-bottom: 12%;
+
+    .jw-seekbar-thumb.jw-active {
+        border: @white;
+        border-style: solid;
+        border-width: thick;
+    }
+}
+
+.jw-tooltip-time {
+    .jw-overlay {
+        top: 0;
+        left: 0;
+    }
+}
