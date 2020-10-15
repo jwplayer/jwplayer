@@ -345,7 +345,7 @@ class SettingsMenu extends Menu {
                 break;
         }
         if (focusEl) {
-            focusEl.focus({ preventScroll: !event });
+            focusEl.focus();
         }
     }
 

@@ -107,9 +107,9 @@ export default class Controls extends Events {
 
         this.focusPlayerElement = () => {
             if (model.get('isFloating')) {
-                this.wrapperElement.querySelector('video').focus({ preventScroll: true });
+                this.wrapperElement.querySelector('video').focus();
             } else {
-                this.playerContainer.focus({ preventScroll: true });
+                this.playerContainer.focus();
             }
         };
 
