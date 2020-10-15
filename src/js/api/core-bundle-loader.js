@@ -21,7 +21,7 @@ function selectBundle(model) {
     const polyfills = requiresPolyfills();
     const html5Provider = requiresProvider(model, 'html5');
 
-    if (OS.tizenApp) {
+    if (OS.tizen) {
         return loadWebCore();
     }
 
