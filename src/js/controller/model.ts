@@ -288,7 +288,7 @@ class Model extends SimpleModel {
     // Desktop players must have autostart set to viewable
     setAutoStart(autoStart?: AutoStart): void {
         // Always autostart for tizen app
-        if (OS.tizen) {
+        if (OS.tizenApp) {
             this.set('autostart', true);
             return;
         }
