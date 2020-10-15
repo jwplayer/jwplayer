@@ -7,7 +7,7 @@ export const ControlsLoader = {};
 
 export function loadControls() {
     if (!controlsPromise) {
-        if (OS.tizen) {
+        if (OS.tizenApp) {
             controlsPromise = require.ensure(['view/controls/tizen/tizen-controls'], function (require) {
                 const ControlsModule = require('view/controls/tizen/tizen-controls').default;
                 ControlsLoader.controls = ControlsModule;
