@@ -24,7 +24,7 @@ export default class Menu extends Events {
         this.title = _title || _name;
         this.localizedPrevious = _localization.prev;
         this.isSubmenu = !!_parentMenu;
-        this.el = createElement(_template(this.isSubmenu, _name));
+        this.el = createElement(_template(this.isSubmenu, _name, this.title));
         this.buttonContainer = this.el.querySelector(`.jw-${this.name}-topbar-buttons`);
         this.children = {};
         this.openMenus = [];

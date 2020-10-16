@@ -5,13 +5,14 @@ import { _defaults as CaptionsDefaults } from 'view/captionsrenderer';
 import { captionStyleItems } from './utils';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
-import { normalizeKey } from './utils';
+import { normalizeKey, destroyMenu, selectMenuItem } from './utils';
 import UI from 'utils/ui';
 import { 
     nextSibling, 
     previousSibling,
-    emptyElement
+    emptyElement, 
 } from 'utils/dom';
+
 
 class SettingsMenu extends Menu {
     constructor(api, model, controlbar, localization) {
@@ -307,7 +308,7 @@ class SettingsMenu extends Menu {
             return;
         }
         this.el.parentNode.classList.add('jw-settings-open');
-        this.trigger('menuVisibility', { visible: true, evt });
+        this.trigger('visibility', { visible: true, evt });
         document.addEventListener('click', this.onDocumentClick);
         this.el.setAttribute('aria-expanded', 'true');
         this.visible = true;
@@ -315,7 +316,7 @@ class SettingsMenu extends Menu {
 
     close(evt) {
         this.el.parentNode.classList.remove('jw-settings-open');
-        this.trigger('menuVisibility', { visible: false, evt });
+        this.trigger('visibility', { visible: false, evt });
         document.removeEventListener('click', this.onDocumentClick);
         this.visible = false;
         if (this.openMenus.length) {
@@ -369,15 +370,8 @@ class SettingsMenu extends Menu {
     }
 
     destroy() {
-        Object.keys(this.children).map(menuName => {
-            this.children[menuName].destroy();
-        });
+        destroyMenu.call(this);
         document.removeEventListener('click', this.onDocumentClick);
-        if (this.model) {
-            this.model.off(null, null, this);
-            this.model = null;
-        }
-        this.off();
     }
 }
 
@@ -390,15 +384,6 @@ function changeAutoLabel(levels, qualityLevel, qualityMenu, currentIndex) {
     const level = levels[qualityLevel.index] || { label: '' };
 
     item.textContent = currentIndex ? '' : level.label;
-}
-
-function selectMenuItem (menu, itemIndex) {
-    if (menu && itemIndex > -1) {
-        menu.items.forEach(item => {
-            item.deactivate();
-        });
-        menu.items[itemIndex].activate();
-    }
 }
 
 function createCloseButton(topbarEl, closeFunction, localization) {

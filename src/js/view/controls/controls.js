@@ -299,7 +299,7 @@ export default class Controls extends Events {
                 // Let event bubble upwards
                 return true;
             }
-            const menuHidden = !this.settingsMenu.visible;
+            const menuHidden = !this.settingsMenu || !this.settingsMenu.visible;
             const shortcutsEnabled = model.get('enableShortcuts') === true;
             const adMode = this.instreamState;
 
