@@ -4,9 +4,9 @@ import TizenSeekbar from './tizen-seekbar';
 import DisplayContainer from 'view/controls/display-container';
 import PauseDisplayTemplate from 'view/controls/tizen/templates/pause-display';
 import NextUpToolTip from 'view/controls/nextuptooltip';
-import SettingsMenu from 'view/controls/components/menu/settings-menu.js';
+import { TizenMenu } from 'view/controls/components/menu/tizen-menu.js';
 import { addClass, removeClass, createElement } from 'utils/dom';
-import { STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import { STATE_PLAYING, STATE_PAUSED, USER_ACTION } from 'events/events';
 import Controls from 'view/controls/controls';
 import type ViewModel from 'view/view-model';
 import type { PlayerAPI } from 'types/generic.type';
@@ -31,7 +31,7 @@ class TizenControls extends Controls {
     controlbar: TizenControlbar | null;
     seekbar: TizenSeekbar | null;
     seekState: boolean;
-    settingsMenu: SettingsMenu | null;
+    settingsMenu: TizenMenu | null;
     showing: boolean;
     instreamState: boolean;
     keydownCallback: ((evt: KeyboardEvent) => void) | null;
@@ -128,7 +128,12 @@ class TizenControls extends Controls {
 
         // Settings/Tracks Menu
         const localization = model.get('localization');
-        this.settingsMenu = new SettingsMenu(api, model, this.controlbar, localization);
+        const settingsMenu = this.settingsMenu = new TizenMenu(api, model.player, this.controlbar, localization);
+        settingsMenu.on(USER_ACTION, () => this.userActive());
+        this.controlbar.on('settingsInteraction', () => {
+            settingsMenu.toggle();
+        });
+        this.div.insertBefore(settingsMenu.el, controlbar.element());
 
         // Trigger backClick when all videos complete      
         api.on('playlistComplete', () => {
@@ -146,6 +151,7 @@ class TizenControls extends Controls {
         document.addEventListener('keydown', this.keydownCallback);
 
         this.addControls();
+        this.playerContainer.focus({ preventScroll: true });
 
         // Hide controls on the first frame
         this.userInactive();
@@ -195,6 +201,11 @@ class TizenControls extends Controls {
         }
 
         let playButtonActive = false;
+        if (this.settingsMenu && this.settingsMenu.visible) {
+            if (evt.keyCode !== 10253) {
+                return;
+            }
+        }
         if (this.controlbar) {
             this.controlbar.handleKeydown(evt, this.showing, this.instreamState);
             playButtonActive = this.controlbar.activeButton === this.controlbar.elements.play;
@@ -303,6 +314,12 @@ class TizenControls extends Controls {
                     return;
                 }
                 this.onBackClick();
+                break;
+            case 10253: // menu
+                this.userActive();
+                if (this.settingsMenu) {
+                    this.settingsMenu.toggle(!this.settingsMenu.visible);
+                }
                 break;
             case 10182: // Exit/Home
                 this.api.remove();

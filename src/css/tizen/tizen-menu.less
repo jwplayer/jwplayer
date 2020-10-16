@@ -1,0 +1,97 @@
+@tizen-menu-font-size: 36px;
+
+@media (min-device-width: 2560px) {
+    @tizen-menu-font-size: 48px;
+}
+
+@media (min-device-width: 3840px) {
+    @tizen-menu-font-size: 72px;
+}
+
+.jw-settings-menu-tizen {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    position: absolute;
+    margin-left: auto;
+    width: 38%;
+    bottom: 0;
+    padding-top: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    color: #fff;
+
+    &.jw-settings-open {
+        display: flex;
+    }
+
+    &.jw-settings-transition-close {
+        animation: jw-transition-out 0.3s ease forwards;
+    }
+
+    &.jw-settings-transition-open {
+        animation: jw-transition-in 0.3s ease forwards;
+    }
+
+    .jw-settings-submenu-tizen {
+        display: flex;
+        flex-direction: column;
+        padding-left: 10%;
+        padding-top: 10%;
+        padding-right: 15%;
+    }
+
+    .jw-settings-item-active::before {
+        font-size: 1.333em;
+    }
+
+    .jw-settings-topbar-text {
+        font-weight: bold;
+    }
+
+    .jw-settings-content-item,
+    .jw-settings-topbar-text,
+    .jw-settings-submenu-items {
+        font-size: @tizen-menu-font-size;
+    }
+
+    .jw-settings-content-item {
+        font-weight: normal;
+        padding: 0.29em 1.555em;
+        margin-top: 0.417em;
+
+        &:focus {
+            border: solid 0.138em #fff;
+            color: #fff;
+            margin: -0.138em;
+            background: #ffffff36;
+            border-radius: 0.083em;
+            margin-top: 0.279em;
+        }
+    }
+
+    .jw-settings-submenu-items {
+        padding-top: 0.5em;
+        font-size: @tizen-menu-font-size;
+    }
+}
+
+@keyframes jw-transition-in {
+    from {
+        right: -100%;
+    }
+
+    to {
+        right: 0;
+    }
+}
+
+@keyframes jw-transition-out {
+    from {
+        right: 0;
+    }
+
+    to {
+        right: -100%;
+    }
+}
