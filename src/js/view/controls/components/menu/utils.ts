@@ -1,3 +1,5 @@
+import type { Menu } from 'types/generic.type';
+
 export interface CaptionsLocalization {
     subtitleSettings: string;
     color: string;
@@ -128,3 +130,22 @@ const fontOptions = (localization: CaptionsLocalization): string[] => {
     return fonts;
 };
 
+export function destroyMenu(this: Menu): void {
+    Object.keys(this.children).map(menuName => {
+        this.children[menuName].destroy();
+    });
+    if (this.model) {
+        this.model.off(null, null, this);
+        delete this.model;
+    }
+    this.off();
+}
+
+export function selectMenuItem (menu: Menu, itemIndex: number): void {
+    if (menu && itemIndex > -1) {
+        menu.items.forEach(item => {
+            item.deactivate();
+        });
+        menu.items[itemIndex].activate();
+    }
+}
