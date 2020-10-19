@@ -42,10 +42,6 @@ function isVisibleButton(el: ControlbarElement): boolean {
         el.element().classList.contains('jw-button-color');
 }
 
-function isActiveElement(element: HTMLElement): boolean {
-    return element === document.activeElement;
-}
-
 function getNextButton(activeButton: Button, layout: ControlbarElement[], toRight: boolean): Button | undefined {
     if (!activeButton) {
         return;
@@ -169,7 +165,7 @@ export default class TizenControlbar extends Controlbar {
                 this.setActiveButton(this.elements.play);
                 break;
             case 37: // left-arrow
-                if (isAdsMode && isActiveElement(this.adSkipButton.el)) {
+                if (isAdsMode && this.activeButton === this.adSkipButton) {
                     this.setActiveButton(this.elements.play);
                     return;
                 }
@@ -180,9 +176,8 @@ export default class TizenControlbar extends Controlbar {
                 }
                 break;
             case 39: // right-arrow
-                if (isAdsMode && activeButton && activeButton === this.elements.play) {
-                    this.adSkipButton.el.focus();
-                    this.setActiveButton(null);
+                if (isAdsMode && this.adSkipButton && this.adSkipButton === this.elements.play) {
+                    this.setActiveButton(this.adSkipButton);
                     return;
                 }
 
@@ -256,7 +251,7 @@ export default class TizenControlbar extends Controlbar {
         }
 
         if (nextButton) {
-            nextButton.element().focus();
+            (nextButton.el || nextButton.element()).focus();
         }
 
         this.activeButton = nextButton;
