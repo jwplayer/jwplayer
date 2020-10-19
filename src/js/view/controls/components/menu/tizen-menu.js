@@ -12,13 +12,14 @@ export class TizenMenu extends Menu {
     constructor(api, model, controlbar, localization) {
         super('settings', localization.settings, null, localization, TizenMenuTemplate);
         this.onInteraction = this.onInteraction.bind(this);
+        this.onTransition = this.onTransition.bind(this);
+        this.ui = new UI(this.el);
         this.api = api;
         this.model = model;
+        this.controlbar = controlbar;
         this.localization = localization;
         this.visible = false;
-        this.ui = new UI(this.el);
-        this.onTransition = onTransition.bind(this);
-        this.controlbar = controlbar;
+       
         this.addEventListeners();
     }
 
@@ -105,7 +106,7 @@ export class TizenMenu extends Menu {
         }
     }
 
-    setVisibility(evt) {
+    onVisibility(evt) {
         const el = this.el;
         
         if (evt.visible) {
@@ -156,6 +157,28 @@ export class TizenMenu extends Menu {
         this.trigger('visibility', { visible: !this.visible, evt });
     }
 
+    onTransition() {
+        if (!this.visible) {
+            this.el.classList.remove('jw-settings-transition-open', 'jw-settings-open');
+        }
+    }
+
+    onAudioTracks(model, audioTracks) {
+        this.setupMenu(
+            'audioTracks', 
+            this.localization.audioTracks,
+            audioTracks, 
+            (index) => this.api.setCurrentAudioTrack(index), 
+            model.get('currentAudioTrackIndex')
+        );
+    }
+
+    onAudioTrackIndex(model, trackIndex) {
+        const audioTracksMenu = this.children.audioTracks;
+        selectMenuItem(audioTracksMenu, trackIndex);
+        this.close();
+    }
+
     onCaptionsList(model, captionsList) {
         const menuItemOptions = { defaultText: this.localization.off };
         const initialIndex = model.get('captionsIndex');
@@ -172,27 +195,8 @@ export class TizenMenu extends Menu {
 
     onCaptionsIndex(model, index) {
         const captionsMenu = this.children.captions;
-        if (captionsMenu) {
-            selectMenuItem(captionsMenu, index);
-        }
-    }
-
-    onAudioTracks(model, audioTracks) {
-        this.setupMenu(
-            'audioTracks', 
-            this.localization.audioTracks,
-            audioTracks, 
-            (index) => this.api.setCurrentAudioTrack(index), 
-            model.get('currentAudioTrackIndex')
-        );
-    }
-
-    onAudioTrackIndex(model, trackIndex) {
-        const audioTracksMenu = this.children.audioTracks;
-        if (!audioTracksMenu) {
-            return;
-        }
-        selectMenuItem(audioTracksMenu, trackIndex);
+        selectMenuItem(captionsMenu, index);
+        this.close();
     }
 
     onPlaylistItem() {
@@ -200,10 +204,19 @@ export class TizenMenu extends Menu {
         if (this.visible) {
             this.close();
         }
-        if (this.children && this.children.length) {
-            this.children.forEach(child => {
+        const { children } = this;
+        if (children && children.length) {
+            children.forEach(child => {
                 this.removeChild(child);
             });
+        }
+    }
+
+    updateControlbarButtons() {
+        if (!Object.keys(this.children)) {
+            this.controlbar.elements.settingsButton.hide();
+        } else {
+            this.controlbar.elements.settingsButton.show();
         }
     }
 
@@ -215,19 +228,5 @@ export class TizenMenu extends Menu {
         if (this.controlbar) {
             this.controlbar.toggleVisibility(true);
         }
-    }
-
-    updateControlbarButtons() {
-        if (!Object.keys(this.children)) {
-            this.controlbar.elements.settingsButton.hide();
-        } else {
-            this.controlbar.elements.settingsButton.show();
-        }
-    }
-}
-
-function onTransition() {
-    if (!this.visible) {
-        this.el.classList.remove('jw-settings-transition-open', 'jw-settings-open');
     }
 }
