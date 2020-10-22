@@ -201,10 +201,9 @@ class TizenControls extends Controls {
         }
 
         let playButtonActive = false;
-        if (this.settingsMenu && this.settingsMenu.visible) {
-            if (evt.keyCode !== 10253) {
-                return;
-            }
+        const settingsMenu = this.settingsMenu;
+        if (settingsMenu && settingsMenu.visible && evt.keyCode !== 10253) {
+            return;
         }
         if (this.controlbar) {
             this.controlbar.handleKeydown(evt, this.showing, this.instreamState);
@@ -317,8 +316,8 @@ class TizenControls extends Controls {
                 break;
             case 10253: // menu
                 this.userActive();
-                if (this.settingsMenu) {
-                    this.settingsMenu.toggle(!this.settingsMenu.visible);
+                if (settingsMenu) {
+                    settingsMenu.toggle(evt);
                 }
                 break;
             case 10182: // Exit/Home

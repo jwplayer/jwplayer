@@ -26,8 +26,8 @@ export class TizenMenu extends Menu {
     addEventListeners() {
         const { model } = this;
 
-        this.on('visibility', this.setVisibility, this);
-        this.on('menuAppended', this.updateControlbarButtons());
+        this.on('visibility', this.onVisibility, this);
+        this.on('menuAppended', this.updateControlbarButtons);
 
         model.on('change:playlistItem', this.onPlaylistItem, this);
         model.change('audioTracks', this.onAudioTracks, this);
@@ -67,12 +67,13 @@ export class TizenMenu extends Menu {
     
     onInteraction(evt) {
         const onNavigateMenu = function(isUp) {
-            const next = isUp ? previousSibling(evt.target) : nextSibling(evt.target);
+            const target = evt.target;
+            const next = isUp ? previousSibling(target) : nextSibling(target);
             if (next) {
                 next.focus({ preventScroll: true });
             } else {
                 const nextMenu = isUp ? this.children.captions : this.children.audioTracks;
-                if (nextMenu && !nextMenu.el.contains(evt.target)) {
+                if (nextMenu && !nextMenu.el.contains(target)) {
                     const items = nextMenu.items;
                     (isUp ? items[items.length - 1] : items[0]).el.focus({ preventScroll: true });
                 }
@@ -107,54 +108,49 @@ export class TizenMenu extends Menu {
     }
 
     onVisibility(evt) {
-        const el = this.el;
-        
+        const { api, children, controlbar, el } = this;
+        const classList = el.classList;
+
         if (evt.visible) {
-            this.api.pause({ reason: 'settingsInteraction' });
+            api.pause({ reason: 'settingsInteraction' });
             document.addEventListener('keydown', this.onInteraction);
-            el.classList.remove('jw-settings-transition-close');
-            el.classList.add('jw-settings-open');
-            el.classList.add('jw-settings-transition-open');
+            classList.remove('jw-settings-transition-close');
+            classList.add('jw-settings-open');
+            classList.add('jw-settings-transition-open');
             el.setAttribute('aria-expanded', 'true');
             this.visible = true;
             const menuNames = Object.keys(this.children);
-            if (this.children && menuNames.length) {
+            if (children && menuNames.length) {
                 // Focus first item of first menu
-                this.children[menuNames[0]].items[0].el.focus({ preventScroll: true });
+                children[menuNames[0]].items[0].el.focus({ preventScroll: true });
             }
         } else {
             document.removeEventListener('keydown', this.onInteraction);
-            el.classList.remove('jw-settings-transition-open');
-            el.classList.add('jw-settings-transition-close');
+            classList.remove('jw-settings-transition-open');
+            classList.add('jw-settings-transition-close');
             el.setAttribute('aria-expanded', 'false');
             this.visible = false;
         }
 
-        if (this.controlbar) {
+        if (controlbar) {
             // Hide controlbar when showing menu
-            this.controlbar.toggleVisibility(!evt.visible);
+            controlbar.toggleVisibility(!evt.visible);
         }
     }
 
     open(evt) {
-        if (this.visible) {
-            return;
-        }
-        this.trigger('visibility', { visible: true, evt });
+        this.toggle(evt, true);
     }
-
+    
     close(evt) {
-        if (!this.visible) {
-            return;
-        }
-        this.trigger('visibility', { visible: false, evt });
+        this.toggle(evt, false);
     }
 
-    toggle(evt) {
-        if (!this.children.captions && !this.children.audioTracks) {
+    toggle(evt, visible = !this.visible) {
+        if (visible === this.visible || !(this.children.captions || this.children.audioTracks)) {
             return;
         }
-        this.trigger('visibility', { visible: !this.visible, evt });
+        this.trigger('visibility', { visible, evt });
     }
 
     onTransition() {
@@ -200,11 +196,10 @@ export class TizenMenu extends Menu {
     }
 
     onPlaylistItem() {
-        // Settings menu should not be visible when switching playlist items via controls or .load()
-        if (this.visible) {
-            this.close();
-        }
         const { children } = this;
+
+        // Hide menu before clearing
+        this.close();
         if (children && children.length) {
             children.forEach(child => {
                 this.removeChild(child);
@@ -213,10 +208,12 @@ export class TizenMenu extends Menu {
     }
 
     updateControlbarButtons() {
-        if (!Object.keys(this.children)) {
-            this.controlbar.elements.settingsButton.hide();
+        const settingsButton = this.controlbar.elements.settingsButton;
+
+        if (Object.keys(this.children).length) {
+            settingsButton.show();
         } else {
-            this.controlbar.elements.settingsButton.show();
+            settingsButton.hide();
         }
     }
 
