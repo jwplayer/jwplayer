@@ -132,6 +132,10 @@ class TizenControls extends Controls {
         settingsMenu.on(USER_ACTION, () => this.userActive());
         this.controlbar.on('settingsInteraction', () => {
             settingsMenu.toggle();
+            const activeButton = this.div && this.div.querySelector('.jw-active');
+            if (settingsMenu.visible && activeButton) {
+                removeClass(activeButton, 'jw-active');
+            }
         });
         this.div.insertBefore(settingsMenu.el, controlbar.element());
 

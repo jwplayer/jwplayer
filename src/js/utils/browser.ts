@@ -37,7 +37,7 @@ export function isTizen(): boolean {
 }
 
 export function isTizenApp(): boolean {
-    return isTizen() && !userAgentMatch(/SamsungBrowser/) && userAgentMatch(/Version\//);
+    return isTizen() && !userAgentMatch(/SamsungBrowser/);
 }
 
 export function isChrome(): boolean {

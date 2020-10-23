@@ -42,6 +42,19 @@ function isVisibleButton(el: ControlbarElement): boolean {
         el.element().classList.contains('jw-button-color');
 }
 
+function getButtonElement(btn: any): HTMLElement | undefined {
+    if (!btn || typeof btn !== 'object') {
+        return;
+    }
+    if ('element' in btn) {
+        return btn.element();
+    }
+    if ('el' in btn) {
+        return btn.el;
+    }
+    return;
+}
+
 function getNextButton(activeButton: Button, layout: ControlbarElement[], toRight: boolean): Button | undefined {
     if (!activeButton) {
         return;
@@ -250,8 +263,16 @@ export default class TizenControlbar extends Controlbar {
             return;
         }
 
-        if (nextButton) {
-            (nextButton.el || nextButton.element()).focus();
+        const currentEl = getButtonElement(currentActiveButton);
+        const nextEl = getButtonElement(nextButton);
+
+        if (currentEl) {
+            toggleClass(currentEl, 'jw-active', false);
+        }
+
+        if (nextEl) {
+            toggleClass(nextEl, 'jw-active', true);
+            nextEl.focus();
         }
 
         this.activeButton = nextButton;

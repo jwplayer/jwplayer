@@ -74,10 +74,17 @@
         }
 
         // Controlbar Tooltips
+        .jw-active {
+            .jw-tooltip.jw-open {
+                margin-top: 15px;
+            }
+        }
+
+        // Controlbar Tooltips
         .jw-tooltip {
-            display: block;
             box-shadow: none;
             top: 100%;
+            visibility: hidden;
 
             .jw-text {
                 font-size: 0.75em;
@@ -92,6 +99,7 @@
 
             &.jw-open {
                 transition-delay: 0s;
+                visibility: visible;
             }
         }
 
@@ -114,14 +122,13 @@
     }
 
     // Active Button
-    .jw-icon.jw-button-color.jw-active {
-        border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: @hover-color;
-
-        .jw-tooltip {
-            visibility: visible;
-            opacity: 1;
+    .jw-icon.jw-button-color {
+        &:focus,
+        &.jw-active {
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: @hover-color;
+            border: none;
         }
     }
 }
