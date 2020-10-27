@@ -54,7 +54,7 @@ export type ProviderEvents = {
         height?: number;
         width?: number;
         seekRange?: SeekRange;
-        drm?: 'widevine' | 'playready' | 'clearkey' | null;
+        drm?: 'widevine' | 'playready' | 'fairplay' | 'clearkey' | null;
     };
     [Event.MEDIA_BUFFER]: {
         bufferPercent: number;
