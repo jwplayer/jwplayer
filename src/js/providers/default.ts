@@ -69,6 +69,7 @@ export type ProviderEvents = {
         currentTime: number;
         seekRange: SeekRange;
         latency?: number;
+        targetLatency?: number;
         metadata: {
             currentTime: number;
             mpegts?: number;
@@ -190,6 +191,7 @@ interface InternalProvider {
 
     getPlaybackRate: () => number;
     getLiveLatency: () => number | null;
+    getTargetLatency?: () => number | null;
     setControls: (bool?: boolean) => void;
     setState: (state: InternalPlayerState) => void;
 

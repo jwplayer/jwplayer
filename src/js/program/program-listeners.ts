@@ -1,4 +1,4 @@
-import { isValidNumber, isNumber } from 'utils/underscore';
+import { isValidNumber } from 'utils/underscore';
 import {
     PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
@@ -90,7 +90,7 @@ export function ProviderListener(mediaController: MediaController): AllProviderE
                 if (isValidNumber(duration)) {
                     mediaModel.set('duration', duration);
                 }
-                if (type === MEDIA_TIME && isNumber(mediaController.item.starttime)) {
+                if (type === MEDIA_TIME && 'starttime' in mediaController.item) {
                     delete mediaController.item.starttime;
                 }
                 break;
@@ -168,6 +168,10 @@ export function MediaControllerListener(model: Model): AllMediaEventsListener {
                     (event as ProviderEvents['subtitlesTrackChanged']).tracks);
                 break;
             case MEDIA_TIME:
+                if ((event as ProviderEvents['time']).targetLatency) {
+                    model.set('dvrSeekLimit', (event as ProviderEvents['time']).targetLatency as number);
+                }
+                /* falls through to to trigger model event off model */
             case MEDIA_SEEK:
             case MEDIA_SEEKED:
             case NATIVE_FULLSCREEN:

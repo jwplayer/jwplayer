@@ -1,4 +1,5 @@
 import Model from 'controller/model';
+import Playlist from 'playlist/playlist';
 import ProgramController from 'program/program-controller';
 import MediaElementPool from 'program/media-element-pool';
 import { Features } from 'environment/environment';
@@ -27,10 +28,10 @@ const mp4Item = {
     ]
 };
 
-const defaultPlaylist = [
+const defaultPlaylist = Playlist([
     mp4Item,
     mp4Item
-];
+]);
 
 const providerEvents = [
     {
