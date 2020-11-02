@@ -178,7 +178,7 @@ export default class TizenControlbar extends Controlbar {
                 this.setActiveButton(this.elements.play);
                 break;
             case 37: // left-arrow
-                if (isAdsMode && this.activeButton === this.adSkipButton) {
+                if (isAdsMode && activeButton === this.adSkipButton) {
                     this.setActiveButton(this.elements.play);
                     return;
                 }
@@ -189,7 +189,7 @@ export default class TizenControlbar extends Controlbar {
                 }
                 break;
             case 39: // right-arrow
-                if (isAdsMode && this.adSkipButton && this.adSkipButton === this.elements.play) {
+                if (isAdsMode && this.adSkipButton && activeButton === this.elements.play) {
                     this.setActiveButton(this.adSkipButton);
                     return;
                 }
@@ -272,7 +272,6 @@ export default class TizenControlbar extends Controlbar {
 
         if (nextEl) {
             toggleClass(nextEl, 'jw-active', true);
-            nextEl.focus();
         }
 
         this.activeButton = nextButton;
