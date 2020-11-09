@@ -566,7 +566,9 @@ Object.assign(Controller.prototype, {
                     // Resetting the source in order to prime is OK since we'll be switching it anyway
                     if (inInteraction() && !_backgroundLoading) {
                         const video = _model.get('mediaElement');
-                        video.src = '';
+                        if (_this._instreamAdapter) {
+                            video.src = '';
+                        }
                         video.load();
                     }
                     _interruptPlay = false;
