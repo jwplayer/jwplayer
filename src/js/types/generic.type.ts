@@ -44,6 +44,7 @@ export type Localization = {
         heading: string;
         copied: string;
     };
+    volumeSlider?: any;
 };
 
 export type DrmConfig = GenericObject;

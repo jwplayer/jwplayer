@@ -1,6 +1,18 @@
 import { toggleClass, replaceInnerHtml } from 'utils/dom';
 
-export function SimpleTooltip(attachToElement, name, text, openCallback, closeCallback) {
+export interface SimpleTooltipInterface {
+    dirty: boolean;
+    opened: boolean;
+    text: string;
+    open: Function;
+    close: Function;
+    setText: Function;
+    touchEvent: boolean;
+    suppress: boolean;
+}
+
+export function SimpleTooltip(attachToElement: HTMLElement, name: string,
+    text: string, openCallback?: Function, closeCallback?: Function): SimpleTooltipInterface {
     const tooltipElement = document.createElement('div');
     tooltipElement.className = `jw-reset-text jw-tooltip jw-tooltip-${name}`;
     tooltipElement.setAttribute('dir', 'auto');
@@ -15,7 +27,9 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
         dirty: !!text,
         opened: false,
         text,
-        open() {
+        touchEvent: false,
+        suppress: false,
+        open(): void {
             if (instance.touchEvent) {
                 return;
             }
@@ -30,7 +44,7 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
                 openCallback();
             }
         },
-        close() {
+        close(): void {
             if (instance.touchEvent) {
                 return;
             }
@@ -41,7 +55,7 @@ export function SimpleTooltip(attachToElement, name, text, openCallback, closeCa
                 closeCallback();
             }
         },
-        setText(newText) {
+        setText(newText: string): void {
             if (newText !== instance.text) {
                 instance.text = newText;
                 instance.dirty = true;

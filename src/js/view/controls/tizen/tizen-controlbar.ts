@@ -4,12 +4,21 @@ import TimeSlider from 'view/controls/components/timeslider';
 import CustomButton from 'view/controls/components/custom-button';
 import button, { Button } from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
+import type { SimpleTooltipInterface } from 'view/controls/components/simple-tooltip';
 import { toggleClass } from 'utils/dom';
 import type { PlayerAPI } from 'types/generic.type';
 import type ViewModel from 'view/view-model';
 import type NextUpToolTip from 'view/controls/nextuptooltip';
 
 type ControlbarElement = HTMLElement | Button | TimeSlider;
+
+interface CustomButtonProps {
+    btnClass: string;
+    callback: Function;
+    id: string;
+    img: string;
+    tooltip: string;
+}
 
 function div(classes: string): HTMLElement {
     const element = document.createElement('div');
@@ -32,7 +41,7 @@ function getHTMLElements(elements: ControlbarElement[]): HTMLElement[] {
     });
 }
 
-function setTooltip(tooltip: SimpleTooltip): void {
+function setTooltip(tooltip: SimpleTooltipInterface): void {
     tooltip.open();
     tooltip.close();
 }
@@ -280,7 +289,7 @@ export default class TizenControlbar extends Controlbar {
     onAudioMode(): void { /* */ }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    updateButtons(model: ViewModel, newButtons: CustomButton[], oldButtons: CustomButton[]): void {
+    updateButtons(model: ViewModel, newButtons: CustomButtonProps[], oldButtons: CustomButton[]): void {
         if (!newButtons) {
             return;
         }
