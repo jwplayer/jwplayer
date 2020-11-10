@@ -2,9 +2,9 @@ import { style } from 'utils/css';
 import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
 
-let collection = {};
+let collection: Record<string, XMLDocument> = {};
 
-export function getCachedIcon(svg: string): HTMLElement {
+export function getCachedIcon(svg: string): Node {
     if (!collection[svg]) {
         const icons = Object.keys(collection);
         if (icons.length > 10) {
