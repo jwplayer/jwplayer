@@ -134,8 +134,8 @@ export function ProviderListener(mediaController: MediaController): AllProviderE
 
 type AllMediaEventsListener = <E extends keyof AllProviderEventsListener>(type: E, data: AllProviderEventsListener[E] & { type: E }) => void;
 
-export function MediaControllerListener(model: Model, programController: ProgramController): AllMediaEventsListener {
-    return function<E extends keyof AllProviderEventsListener>(type: E, event: AllProviderEventsListener[E] & { type: E }): void {
+export function MediaControllerListener(model: Model): AllMediaEventsListener {
+    return function<E extends keyof AllProviderEventsListener>(this: ProgramController, type: E, event: AllProviderEventsListener[E] & { type: E }): void {
         switch (type) {
             case PLAYER_STATE:
                 // This "return" is important because
@@ -182,6 +182,6 @@ export function MediaControllerListener(model: Model, programController: Program
             default:
         }
 
-        programController.trigger(type, event);
+        this.trigger(type, event);
     };
 }

@@ -24,7 +24,7 @@ class ProgramController extends Events {
         this.background = BackgroundMedia();
         this.mediaPool = mediaPool;
         this.mediaController = null;
-        this.mediaControllerListener = MediaControllerListener(model, this);
+        this.mediaControllerListener = MediaControllerListener(model);
         this.model = model;
         this.providers = new Providers(model.getConfiguration());
         this.loadPromise = null;
