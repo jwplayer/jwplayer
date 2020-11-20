@@ -324,8 +324,8 @@ const Tracks: TracksMixin = {
                     } else {
                         trackId = track._id = createId(track, this._textTracks ? this._textTracks.length : 0) as string;
                     }
-                    if (_tracksById[trackId] || this.renderNatively) {
-                        // tracks without unique ids must not be marked as "inuse", unless they are natively renddered and explicitly set to not "inuse"
+                    if (_tracksById[trackId]) {
+                        // tracks without unique ids must not be marked as "inuse"
                         continue;
                     }
                     track.inuse = true;
