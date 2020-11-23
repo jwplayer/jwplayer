@@ -2,9 +2,9 @@ import { style } from 'utils/css';
 import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
 
-let collection = {};
+let collection: Record<string, XMLDocument> = {};
 
-export function getCachedIcon(svg) {
+export function getCachedIcon(svg: string): Node {
     if (!collection[svg]) {
         const icons = Object.keys(collection);
         if (icons.length > 10) {
@@ -16,9 +16,11 @@ export function getCachedIcon(svg) {
     return collection[svg].cloneNode(true);
 }
 
-export default class CustomButton {
+class CustomButton {
+    id: string;
+    buttonElement: HTMLElement;
 
-    constructor(img, ariaText, callback, id, btnClass) {
+    constructor(img: string, ariaText: string, callback: Function, id: string, btnClass: string) {
         const buttonElement = document.createElement('div');
         buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset ${btnClass || ''}`;
         buttonElement.setAttribute('button', id);
@@ -55,11 +57,11 @@ export default class CustomButton {
         this.buttonElement = buttonElement;
     }
 
-    element() {
+    element(): HTMLElement {
         return this.buttonElement;
     }
 
-    toggle(show) {
+    toggle(show: boolean): void {
         if (show) {
             this.show();
         } else {
@@ -67,10 +69,12 @@ export default class CustomButton {
         }
     }
 
-    show() {
+    show(): void {
         this.buttonElement.style.display = '';
     }
-    hide() {
+    hide(): void {
         this.buttonElement.style.display = 'none';
     }
 }
+
+export default CustomButton;

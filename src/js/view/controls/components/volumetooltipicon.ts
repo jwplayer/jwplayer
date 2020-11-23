@@ -2,9 +2,12 @@ import TooltipIcon from 'view/controls/components/tooltipicon';
 import Slider from 'view/controls/components/slider';
 import UI from 'utils/ui';
 import { setAttribute, toggleClass } from 'utils/dom';
+import type Model from 'controller/model';
 
 class VolumeSlider extends Slider {
-    constructor(orientation, label, styleElement) {
+    uiOver: UI;
+
+    constructor(orientation: string, label: string, styleElement: HTMLElement) {
         let className = 'jw-slider-volume';
         if (orientation === 'vertical') {
             className += ' jw-volume-tip';
@@ -22,29 +25,36 @@ class VolumeSlider extends Slider {
         setAttribute(styleElement, 'role', 'slider');
 
         this.uiOver = new UI(styleElement)
-            .on('click', function() {});
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            .on('click', function(): void {});
     }
 }
 
 export default class VolumeTooltipIcon extends TooltipIcon {
-    constructor(_model, name, ariaText, svgIcons, horizontalContainer) {
+    _model: Model;
+    horizontalContainer: HTMLElement;
+    horizontalSlider: VolumeSlider;
+    verticalSlider: VolumeSlider;
+    ui: UI;
+
+    constructor(_model: Model, name: string, ariaText: string, svgIcons: Node[], horizontalContainer: HTMLElement) {
         super(name, ariaText, true, svgIcons);
 
         this._model = _model;
         this.horizontalContainer = horizontalContainer;
 
         const volumeLabel = _model.get('localization').volumeSlider;
-        this.horizontalSlider = new VolumeSlider('horizontal', volumeLabel, horizontalContainer, this);
-        this.verticalSlider = new VolumeSlider('vertical', volumeLabel, this.tooltip, this);
+        this.horizontalSlider = new VolumeSlider('horizontal', volumeLabel, horizontalContainer);
+        this.verticalSlider = new VolumeSlider('vertical', volumeLabel, this.tooltip);
 
         horizontalContainer.appendChild(this.horizontalSlider.element());
         this.addContent(this.verticalSlider.element());
 
-        this.verticalSlider.on('update', function (evt) {
+        this.verticalSlider.on('update', function (this: VolumeTooltipIcon, evt: Event): void {
             this.trigger('update', evt);
         }, this);
 
-        this.horizontalSlider.on('update', function (evt) {
+        this.horizontalSlider.on('update', function (this: VolumeTooltipIcon, evt: Event): void {
             this.trigger('update', evt);
         }, this);
 
@@ -74,15 +84,14 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         this.onAudioMode(null, _model.get('audioMode'));
 
         this._model.on('change:audioMode', this.onAudioMode, this);
-        this._model.on('change:volume', this.onVolume, this);
     }
 
-    onAudioMode(model, val) {
+    onAudioMode(model: Model | null, val: boolean): void {
         const tabIndex = val ? 0 : -1;
         setAttribute(this.horizontalContainer, 'tabindex', tabIndex);
     }
 
-    addSliderHandlers(ui) {
+    addSliderHandlers(ui: UI): void {
         const { openSlider, closeSlider } = this;
         ui.on('over', openSlider, this)
             .on('out', closeSlider, this)
@@ -90,22 +99,22 @@ export default class VolumeTooltipIcon extends TooltipIcon {
             .on('blur', closeSlider, this);
     }
 
-    openSlider(evt) {
+    openSlider(evt: Event): void {
         super.openTooltip(evt);
         toggleClass(this.horizontalContainer, this.openClass, true);
     }
 
-    closeSlider(evt) {
+    closeSlider(evt: Event): void {
         super.closeTooltip(evt);
         toggleClass(this.horizontalContainer, this.openClass, false);
         this.horizontalContainer.blur();
     }
 
-    toggleValue() {
+    toggleValue(): void {
         this.trigger('toggleValue');
     }
 
-    destroy() {
+    destroy(): void {
         this.horizontalSlider.uiOver.destroy();
         this.verticalSlider.uiOver.destroy();
         this.ui.destroy();
