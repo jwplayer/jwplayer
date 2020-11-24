@@ -62,7 +62,7 @@ export default class FloatingController {
     _preview: Preview;
     _model: Model;
     _floatingUI: FloatingDragUI;
-    _mobileCheckCanFire?: boolean;
+    _mobileCheckCanFire: boolean;
     _mobileDebounceTimeout?: number;
     _floatingStoppedForever: boolean;
     _lastIntRatio: number;
@@ -91,6 +91,7 @@ export default class FloatingController {
         this._lastIntRatio = 0;
         this._playerBounds = playerBounds;
         this._isMobile = isMobile;
+        this._mobileCheckCanFire = true;
 
         this._boundThrottledMobileFloatScrollHandler = this.throttledMobileFloatScrollHandler.bind(this);
 
