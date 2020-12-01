@@ -254,7 +254,13 @@ describe('languageUtils', function() {
         const languageCodes = context.keys().map(key => key.substring(key.lastIndexOf('/') + 1, key.lastIndexOf('.')));
 
         it('should match the list of supported translations', function() {
-            expect(languageCodes).to.deep.equal(translatedLanguageCodes);
+            translatedLanguageCodes.forEach(code => {
+                // TODO: Remove check when 'no' language code is deprecated.
+                if (code === 'nn' || code ==='nb') {
+                    code = 'no';
+                }
+                expect(languageCodes.indexOf(code) > -1);
+            }); 
         });
 
 
@@ -308,6 +314,21 @@ describe('languageUtils', function() {
                 expect(result).to.have.property('response').which.is.an('object');
                 expect(Object.keys(result.response)).to.deep.equal(Object.keys(en));
             });
+        });
+     
+        it('should fetch Norwegian for all appropriate language codes', function() {
+            const checkCode = (code) => {
+                loadJsonTranslation('/base/test/files/', code).then(result => {
+                    expect(result).to.have.property('responseType').which.equals('json');
+                    expect(result).to.have.property('status').which.equals(200);
+                    expect(result).to.have.property('response').which.is.an('object');
+                    expect(result).to.have.property('response').which.is.an('object');
+                    expect(result).to.have.property('responseURL').which.contains('no.json');
+                });
+            }                
+            checkCode('nb')
+            checkCode('no');
+            checkCode('nn');
         });
     });
 
