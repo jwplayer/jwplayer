@@ -25,7 +25,9 @@ const codeToLang = {
     id: 'Indonesian',
     ko: 'Korean',
     th: 'Thai',
-    vi: 'Vietnamese'
+    vi: 'Vietnamese',
+    // TODO: Deprecate and replace with nn and nb
+    no: 'Norwegian'
 };
 
 const langToCode = invert(codeToLang);
@@ -87,7 +89,8 @@ export function getLanguage() {
     return language || navigator.language || 'en';
 }
 
-export const translatedLanguageCodes = ['ar', 'da', 'de', 'el', 'es', 'fi', 'fr', 'he', 'id', 'it', 'ja', 'ko', 'nl', 'no', 'oc', 'pt', 'ro', 'ru', 'sl', 'sv', 'th', 'tr', 'vi', 'zh'];
+// TODO: Deprecate "no", keep "nn" and "nb"
+export const translatedLanguageCodes = ['ar', 'da', 'de', 'el', 'es', 'fi', 'fr', 'he', 'id', 'it', 'ja', 'ko', 'nb', 'nl', 'nn', 'no', 'oc', 'pt', 'ro', 'ru', 'sl', 'sv', 'th', 'tr', 'vi', 'zh'];
 
 export function isRtl(message) {
     // RTL regex can be improved with ranges from:
@@ -168,10 +171,16 @@ export function isLocalizationComplete(customLocalization) {
     });
 }
 
+// Used to ensure nb/nn language codes both return 'no'. 
+// TODO: Deprecate and replace with nn and nb
+function normalizeNorwegian(language) {
+    return /^n(b|n)$/.test(language) ? 'no' : language;
+}
+
 export function loadJsonTranslation(base, languageCode) {
     let translationLoad = translationPromises[languageCode];
     if (!translationLoad) {
-        const url = `${base}translations/${normalizeLanguageCode(languageCode)}.json`;
+        const url = `${base}translations/${normalizeNorwegian(normalizeLanguageCode(languageCode))}.json`;
         translationPromises[languageCode] = translationLoad = new Promise((oncomplete, reject) => {
             const onerror = (message, file, _url, error) => {
                 translationPromises[languageCode] = null;
