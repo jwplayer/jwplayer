@@ -174,7 +174,7 @@ export function isLocalizationComplete(customLocalization) {
 // Used to ensure nb/nn language codes both return 'no'. 
 // TODO: Deprecate and replace with nn and nb
 function normalizeNorwegian(language) {
-    return /^n(b|n)$/.test(language) ? 'no' : language;
+    return /^n[bn]$/.test(language) ? 'no' : language;
 }
 
 export function loadJsonTranslation(base, languageCode) {
