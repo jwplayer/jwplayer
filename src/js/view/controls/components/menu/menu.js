@@ -363,12 +363,12 @@ export default class Menu extends Events {
         if (this.openMenus.length) {
             this.closeChildren();
         }
-        if (focusEl) {
-            focusEl.focus();
-        }
         this.el.scrollTop = 0;
         this.visible = true;
         this.el.setAttribute('aria-expanded', 'true');
+        if (focusEl) {
+            focusEl.focus();
+        }
     }
     close(evt) {
         // if visible, return
