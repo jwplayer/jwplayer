@@ -25,9 +25,7 @@ const codeToLang = {
     id: 'Indonesian',
     ko: 'Korean',
     th: 'Thai',
-    vi: 'Vietnamese',
-    // TODO: Deprecate and replace with nn and nb
-    no: 'Norwegian'
+    vi: 'Vietnamese'
 };
 
 const langToCode = invert(codeToLang);
