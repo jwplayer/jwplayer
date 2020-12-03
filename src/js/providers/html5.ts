@@ -12,7 +12,7 @@ import VideoAttached from 'providers/video-attached-mixin';
 import { isDvr } from 'providers/utils/stream-type';
 import { style } from 'utils/css';
 import { emptyElement } from 'utils/dom';
-import DefaultProvider, { ProviderWithMixins, SeekRange } from 'providers/default';
+import DefaultProvider, { ProviderEvents, ProviderWithMixins, SeekRange } from 'providers/default';
 import Events from 'utils/backbone.events';
 import Tracks, { SimpleAudioTrack } from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
@@ -68,9 +68,11 @@ interface HTML5Provider extends ProviderWithMixins {
     startDateTime: number;
     setStartDateTime: (time: number) => void;
     videoLoad: (this: HTMLVideoElement) => void;
+    fairplay?: unknown;
 }
 
 function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: GenericObject, mediaElement: HTMLVideoElement): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this: HTML5Provider = this;
 
     // Current media state
@@ -134,18 +136,22 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             VideoEvents.ended.call(_this);
         },
 
-        loadedmetadata(this: ProviderWithMixins): void {
+        loadedmetadata(this: HTML5Provider): void {
             let duration = _this.getDuration();
             if (_androidHls && duration === Infinity) {
                 duration = 0;
             }
-            _this.trigger(MEDIA_META, {
+            const metadata: ProviderEvents['meta'] = {
                 metadataType: 'media',
                 duration: duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth,
                 seekRange: _this.getSeekRange()
-            });
+            };
+            if (_this.fairplay) {
+                metadata.drm = 'fairplay';
+            }
+            _this.trigger(MEDIA_META, metadata);
             checkVisualQuality();
         },
 
