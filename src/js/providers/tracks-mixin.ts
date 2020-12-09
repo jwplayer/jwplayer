@@ -315,6 +315,7 @@ const Tracks: TracksMixin = {
                 if (!trackId) {   
                     if (track.inuse === false && track.kind === 'captions' && this.renderNatively) {
                         // ignore native captions tracks from previous items that no longer can be re-used
+                        track._id = 'native' + track.kind + i;
                         continue;
                     }
                     if (track.kind === 'captions' || track.kind === 'metadata') {
