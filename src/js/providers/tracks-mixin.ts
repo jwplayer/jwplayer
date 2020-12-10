@@ -310,8 +310,14 @@ const Tracks: TracksMixin = {
 
             for (i; i < len; i++) {
                 const track = tracks[i] as TextTrackLike;
-                let trackId: string = track._id || '';
-                if (!trackId) {
+                let trackId: string = track._id || '';                
+
+                if (!trackId) {   
+                    if (track.inuse === false && track.kind === 'captions' && this.renderNatively) {
+                        // ignore native captions tracks from previous items that no longer can be re-used
+                        track._id = 'native' + track.kind + i;
+                        continue;
+                    }
                     if (track.kind === 'captions' || track.kind === 'metadata') {
                         trackId = track._id = 'native' + track.kind + i;
                         if (!track.label && track.kind === 'captions') {
