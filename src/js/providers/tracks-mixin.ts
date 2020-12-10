@@ -315,11 +315,11 @@ const Tracks: TracksMixin = {
                 if (!trackId) {   
                     if (track.inuse === false && track.kind === 'captions' && this.renderNatively) {
                         // ignore native captions tracks from previous items that no longer can be re-used
-                        track._id = createId(track, i)
+                        track._id = 'native' + track.kind + i;
                         continue;
                     }
                     if (track.kind === 'captions' || track.kind === 'metadata') {
-                        trackId = track._id = createId(track, i);
+                        trackId = track._id = 'native' + track.kind + i;
                         if (!track.label && track.kind === 'captions') {
                             // track label is read only in Safari
                             // 'captions' tracks without a label need a name in order for the cc menu to work
