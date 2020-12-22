@@ -16,7 +16,7 @@ const PROVIDER_NAME = 'headless-video-element';
 // These changes reflect the interface required for any provider registered with jwplayer
 interface CustomProvider extends Omit<ImplementedProvider,
     'prototype'|'seeking'|'stallTime'|'instreamMode'|'renderNatively'|'supports'|'video'|
-    'getCurrentTime'|'getDuration'|'getSeekRange'|'getLiveLatency'|'setCurrentSubtitleTrack'|'setControls'|
+    'getCurrentTime'|'getDuration'|'getSeekRange'|'getLiveLatency'|'getTargetLatency'|'setCurrentSubtitleTrack'|'setControls'|
     'getBandwidthEstimate'|'isLive'> {
     attachMedia(): void;
     detachMedia(): void;

@@ -117,5 +117,5 @@ export default {
     bandwidthEstimate: null,
     bitrateSelection: null,
     backgroundLoading: Features.backgroundLoading,
-    liveSyncDuration: 25
+    liveSyncDuration: undefined
 };

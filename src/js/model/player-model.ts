@@ -17,3 +17,6 @@ export const INITIAL_MEDIA_STATE = {
     buffer: 0,
     currentTime: 0,
 };
+
+export const DEFAULT_MIN_DVR_WINDOW = 120;
+export const DEFAULT_DVR_SEEK_LIMIT = 25;

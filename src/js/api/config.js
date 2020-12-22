@@ -44,9 +44,6 @@ export const Defaults = {
 };
 
 export function getLiveSyncDuration(liveSyncDuration) {
-    if (!liveSyncDuration) {
-        return 25;
-    }
     if (liveSyncDuration < 5) {
         return 5;
     }

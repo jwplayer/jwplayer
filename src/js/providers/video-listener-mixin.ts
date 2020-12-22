@@ -95,6 +95,12 @@ const VideoListenerMixin: VideoListenerInt = {
         const latency = this.getLiveLatency();
         if (latency !== null) {
             timeEventObject.latency = latency;
+            if (this.getTargetLatency) {
+                const targetLatency = this.getTargetLatency();
+                if (targetLatency !== null) {
+                    timeEventObject.targetLatency = targetLatency;
+                }
+            }
         }
 
         // only emit time events when playing or seeking

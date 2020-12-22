@@ -60,7 +60,9 @@ export const fixSources = (item, model) => filterSources(formatSources(item, mod
 
 function formatItem(item) {
     const liveSyncDuration = item.sources[0].liveSyncDuration;
-    item.dvrSeekLimit = item.liveSyncDuration = liveSyncDuration;
+    if (liveSyncDuration) {
+        item.liveSyncDuration = item.dvrSeekLimit = liveSyncDuration;
+    }
     return item;
 }
 

@@ -1,5 +1,6 @@
 import Source from 'playlist/source';
 import Track from 'playlist/track';
+import { DEFAULT_MIN_DVR_WINDOW } from 'model/player-model';
 
 const isArray = Array.isArray;
 /**
@@ -24,8 +25,7 @@ const Item = function(config) {
     const playlistItem = Object.assign({}, {
         sources: [],
         tracks: [],
-        minDvrWindow: 120,
-        dvrSeekLimit: 25
+        minDvrWindow: DEFAULT_MIN_DVR_WINDOW
     }, config);
 
     if ((playlistItem.sources === Object(playlistItem.sources)) && !isArray(playlistItem.sources)) {

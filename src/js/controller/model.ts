@@ -1,6 +1,6 @@
 import { OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
-import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
+import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE, DEFAULT_MIN_DVR_WINDOW, DEFAULT_DVR_SEEK_LIMIT } from 'model/player-model';
 import { InternalPlayerState, STATE_IDLE } from 'events/events';
 import { isValidNumber, isNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
@@ -114,7 +114,9 @@ class Model extends SimpleModel {
         this.providerController = null;
         this._provider = null;
         this.addAttributes({
-            mediaModel: new MediaModel()
+            mediaModel: new MediaModel(),
+            minDvrWindow: DEFAULT_MIN_DVR_WINDOW,
+            dvrSeekLimit: DEFAULT_DVR_SEEK_LIMIT
         });
     }
 
@@ -154,7 +156,7 @@ class Model extends SimpleModel {
         (this.attributes as PlayerModelAttributes).playlistItem = null;
         this.set('item', index);
         this.set('minDvrWindow', item.minDvrWindow);
-        this.set('dvrSeekLimit', item.dvrSeekLimit);
+        this.set('dvrSeekLimit', item.dvrSeekLimit || DEFAULT_DVR_SEEK_LIMIT);
         this.set('playlistItem', item);
     }
 
