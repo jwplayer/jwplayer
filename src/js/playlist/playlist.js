@@ -58,6 +58,13 @@ export function wrapPlaylistIndex(index, length) {
 
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
 
+export function shouldAutoAdvance() {
+    // If it's the last item in the playlist
+    const _model = this._model || this.model;
+    const idx = _model.get('item');
+    return idx !== _model.get('playlist').length - 1;
+}
+
 function formatItem(item) {
     const liveSyncDuration = item.sources[0].liveSyncDuration;
     item.dvrSeekLimit = item.liveSyncDuration = liveSyncDuration;

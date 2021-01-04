@@ -3,7 +3,7 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist, wrapPlaylistIndex } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist, wrapPlaylistIndex, shouldAutoAdvance } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -758,11 +758,6 @@ Object.assign(Controller.prototype, {
             return false;
         }
 
-        function _shouldAutoAdvance() {
-            // If it's the last item in the playlist
-            const idx = _model.get('item');
-            return idx !== _model.get('playlist').length - 1;
-        }
         function _completeHandler() {
             if (_this.completeCancelled()) {
                 return;
@@ -944,7 +939,7 @@ Object.assign(Controller.prototype, {
         this.next = noop;
         this.completeHandler = _completeHandler;
         this.completeCancelled = _completeCancelled;
-        this.shouldAutoAdvance = _shouldAutoAdvance;
+        this.shouldAutoAdvance = shouldAutoAdvance;
         this.nextItem = () => {
             _next({ reason: 'playlist' });
         };
