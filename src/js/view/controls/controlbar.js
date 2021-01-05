@@ -197,6 +197,9 @@ export default class Controlbar {
         const nextElement = elements.next.element();
         const nextUpTip = SimpleTooltip(nextElement, 'next', localization.nextUp, () => {
             const nextUp = _model.get('nextUp');
+            if (!nextUp) {
+                return;
+            }
             feedShownId = genId(FEED_SHOWN_ID_LENGTH);
             this.trigger('nextShown', {
                 mode: nextUp.mode,
