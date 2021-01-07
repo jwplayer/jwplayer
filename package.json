@@ -62,7 +62,7 @@
     "promise-polyfill": "7.1.1",
     "puppeteer": "5.4.0",
     "simple-style-loader": "0.4.4",
-    "sinon": "7.2.3",
+    "sinon": "9.2.3",
     "sinon-chai": "3.5.0",
     "stylelint": "9.5.0",
     "svg-inline-loader": "0.8.0",
