@@ -26,15 +26,10 @@ function testSource(sourceName, desiredType, isAndroidHls) {
 }
 
 describe('playlist.fixSources', function() {
-
-    const flashSource = Playlist(Playlists.flv_mp4)[0].sources[0];
-    const flashSupport = (new Providers()).choose(flashSource).name === 'flash';
-
     it('should filter sources when androidhls is enabled', function() {
         testSource('mp4_flv', 'mp4', true);
         testSource('aac_mp4', 'aac', true);
         testSource('mp4_aac', 'mp4', true);
-        testSource('flv_mp4', flashSupport ? 'flv' : undefined, true);
         testSource('invalid', undefined, true);
         testSource('mixed', 'mp4', true);
     });
@@ -43,7 +38,6 @@ describe('playlist.fixSources', function() {
         testSource('mp4_flv', 'mp4', false);
         testSource('aac_mp4', 'aac', false);
         testSource('mp4_aac', 'mp4', false);
-        testSource('flv_mp4', flashSupport ? 'flv' : undefined, true);
         testSource('invalid', undefined, false);
         testSource('mixed', 'mp4', false);
     });

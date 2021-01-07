@@ -7,7 +7,6 @@ export interface PlaylistItemTrack {
     name?: string;
     label?: string;
     language?: string;
-    source?: 'mpegts'; // Legacy Flash provider attribute
     xhr?: XMLHttpRequest;
     includedInManifest?: boolean;
 }

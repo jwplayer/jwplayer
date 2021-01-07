@@ -1,5 +1,3 @@
-declare const __FLASH_VERSION__: number;
-
 const userAgent = navigator.userAgent;
 
 function userAgentMatch(regex: RegExp): boolean {
@@ -10,9 +8,9 @@ function lazyUserAgentMatch(regex: RegExp): () => boolean {
     return () => userAgentMatch(regex);
 }
 
-export function isFlashSupported(): boolean {
-    const version = flashVersion();
-    return !!(version && version >= __FLASH_VERSION__);
+// Always returns false as flash support is discontinued
+export function isFlashSupported(): false {
+    return false;
 }
 
 const isIPadOS13 = () => navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
@@ -83,32 +81,7 @@ export function isIframe(): boolean {
     }
 }
 
-export function flashVersion(): number {
-    if (isAndroid()) {
-        return 0;
-    }
-
-    const plugins = navigator.plugins;
-    let flash;
-
-    if (plugins) {
-        flash = plugins.namedItem('Shockwave Flash');
-        if (flash && flash.description) {
-            return parseFloat(flash.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
-        }
-    }
-
-    if (typeof window.ActiveXObject !== 'undefined') {
-        try {
-            flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-            if (flash) {
-                return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
-            }
-        } catch (e) {
-            return 0;
-        }
-
-        return flash;
-    }
+// Always returns 0 as flash support is discontinued
+export function flashVersion(): 0 {
     return 0;
 }

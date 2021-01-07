@@ -362,7 +362,7 @@ describe('ProgramController', function () {
                 expect(model.persistQualityLevel).to.have.callCount(0);
                 expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
                 programController.restoreBackgroundMedia();
-                expect(model.set).to.have.callCount(14);
+                expect(model.set).to.have.callCount(12);
                 expect(model.set.firstCall).to.have.been.calledWith('mediaElement');
                 expect(model.set.getCall(1)).to.have.been.calledWith('mediaModel');
                 expect(model.set.getCall(2)).to.have.been.calledWith('provider');
@@ -418,7 +418,7 @@ describe('ProgramController', function () {
                 expect(model.persistQualityLevel).to.have.callCount(0);
                 expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
                 programController.restoreBackgroundMedia();
-                expect(model.set).to.have.callCount(14);
+                expect(model.set).to.have.callCount(12);
                 expect(model.set.firstCall).to.have.been.calledWith('mediaElement');
                 expect(model.set.getCall(1)).to.have.been.calledWith('mediaModel');
                 expect(model.set.getCall(2)).to.have.been.calledWith('provider');

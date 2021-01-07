@@ -3,17 +3,12 @@
 .jw-flag-audio-player {
     background-color: @black;
 
-    &:not(.jw-flag-flash-blocked) .jw-media {
+    .jw-media {
         visibility: hidden;
     }
 
     .jw-title {
         background: none;
-    }
-
-    // min 44px object tag prevents IE11 CORS Flash Blocking
-    object {
-        min-height: @mobile-touch-target;
     }
 
     &:not(.jw-flag-live) .jw-spacer {

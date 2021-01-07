@@ -45,8 +45,6 @@ export type PlayerModelAttributes = {
     dvrSeekLimit: number;
     displayPlaybackLabel: boolean;
     enableShortcuts: boolean;
-    flashBlocked: boolean;
-    flashThrottle?: boolean;
     floating?: FloatConfig;
     fullscreen: boolean;
     height: number | string;
@@ -329,11 +327,6 @@ const syncProviderProperties = (model: Model, provider: ImplementedProvider) => 
     model.set('provider', provider.getName());
     if (model.get('instreamMode') === true) {
         provider.instreamMode = true;
-    }
-
-    if (provider.getName().name.indexOf('flash') === -1) {
-        model.set('flashThrottle', undefined);
-        model.set('flashBlocked', false);
     }
 
     // Attempt setting the playback rate to be the user selected value

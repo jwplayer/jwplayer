@@ -1,7 +1,6 @@
 import rightclickTemplate from 'view/controls/templates/rightclick';
 import { cloneIcon } from 'view/controls/icons';
 import { version } from 'version';
-import { flashVersion } from 'utils/browser';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { OS } from 'environment/environment';
 import UI from 'utils/ui';
@@ -57,16 +56,7 @@ export default class RightClick {
             }]
         };
 
-        const provider = model.get('provider');
         const menuItems = menu.items;
-        if (provider && provider.name.indexOf('flash') >= 0) {
-            const text = 'Flash Version ' + flashVersion();
-            menuItems.push({
-                title: text,
-                type: 'link',
-                link: 'http://www.adobe.com/software/flash/about/'
-            });
-        }
         if (this.shortcutsTooltip) {
             menuItems.splice(menuItems.length - 1, 0, {
                 type: 'keyboardShortcuts'

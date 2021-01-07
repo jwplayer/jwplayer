@@ -689,12 +689,10 @@ function View(_api, _model) {
 
     function _onMediaTypeChange(model, val) {
         const isAudioFile = (val === 'audio');
-        const provider = model.get('provider');
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-        const isFlash = (provider && provider.name.indexOf('flash') === 0);
-        const element = (isAudioFile && !isFlash) ? _videoLayer : _videoLayer.nextSibling;
+        const element = isAudioFile ? _videoLayer : _videoLayer.nextSibling;
         // Put the preview element before the media element in order to display browser captions
         // otherwise keep it on top of the media element to display captions with the captions renderer
         _preview.el.parentNode.insertBefore(_preview.el, element);
@@ -770,7 +768,7 @@ function View(_api, _model) {
 
     function setMediaTitleAttribute(model, playlistItem) {
         const videotag = model.get('mediaElement');
-        // chromecast and flash providers do no support video tags
+        // chromecast provider does not support video tags
         if (!videotag) {
             return;
         }

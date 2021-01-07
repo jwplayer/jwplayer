@@ -670,21 +670,6 @@ class ProgramController extends Events {
     }
 
     /**
-     * Activates or deactivates media controls.
-     * @param {boolean} mode - Activate or deactivate media controls?
-     * @returns {void}
-     * TODO: deprecate - only used by jwplayer-commercial flash provider
-     */
-    set controls(mode) {
-        const { mediaController } = this;
-        if (!mediaController) {
-            return;
-        }
-
-        mediaController.controls = mode;
-    }
-
-    /**
      * Seeks the media to the provided position.
      * Set the item's starttime so that if detached while seeking it resumes from the correct time.
      * ALso set the item's starttime so that if we seek before loading, we load and begin at the correct time.

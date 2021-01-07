@@ -38,13 +38,13 @@ describe('browser', function() {
         expect(isIPad(), 'isIPad').to.be.a('boolean');
         expect(isIPod(), 'isIPod').to.be.a('boolean');
         expect(isIframe(), 'isIframe').to.be.a('boolean');
-        expect(isFlashSupported(), 'isFlashSupported').to.be.a('boolean');
+        expect(isFlashSupported(), 'isFlashSupported').to.equal(false);
     });
 
     it('browser.flashVersion test', function() {
         const version = flashVersion();
 
-        expect(typeof version, 'Flash version is ' + version).to.equal('number');
+        expect(version, 'Flash version is ' + version).to.equal(0);
     });
 
 });

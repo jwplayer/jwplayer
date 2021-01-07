@@ -176,11 +176,11 @@ Object.defineProperties(OS, {
 Object.defineProperties(Features, {
     flash: {
         get: memoize(isFlashSupported),
-        enumerable: true,
+        enumerable: false,
     },
     flashVersion: {
         get: memoize(flashVersion),
-        enumerable: true
+        enumerable: false
     },
     iframe: {
         get: memoize(isIframe),

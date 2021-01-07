@@ -151,13 +151,7 @@ export default class Controls extends Events {
             addClass(this.playerContainer, 'jw-flag-touch');
             this.rightClickMenu.setup(model, this.playerContainer, this.wrapperElement);
         } else {
-            model.change('flashBlocked', (modelChanged, isBlocked) => {
-                if (isBlocked) {
-                    this.rightClickMenu.destroy();
-                } else {
-                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.wrapperElement);
-                }
-            }, this);
+            this.rightClickMenu.setup(model, this.playerContainer, this.wrapperElement);
         }
 
         // Floating Close Button

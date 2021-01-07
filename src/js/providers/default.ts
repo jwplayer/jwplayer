@@ -139,8 +139,6 @@ export type ProviderEvents = {
     [Event.CLICK]: Event;
     [Event.WARNING]: PlayerError;
     [Event.MEDIA_ERROR]: PlayerError;
-    flashThrottle: { value: any };
-    flashBlocked: { value: any };
 }
 
 type ProviderEventNotifications = {
@@ -281,7 +279,6 @@ interface DefaultProvider {
     getPlaybackRate: () => number;
     getBandwidthEstimate: () => number | null;
     getLiveLatency: () => number | null;
-    setControls: () => void;
 
     attachMedia: () => void;
     detachMedia: () => void;
@@ -370,9 +367,6 @@ const DefaultProvider: DefaultProvider = {
     getLiveLatency(): number | null {
         return null;
     },
-
-    // TODO: Deprecate provider.setControls(bool) with Flash. It's used to toggle the cursor when the swf is in focus.
-    setControls: noop,
 
     attachMedia: noop,
     detachMedia: noop,
