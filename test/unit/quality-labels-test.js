@@ -14,20 +14,6 @@ describe('quality-labels', function() {
     };
 
     describe('generateLabel', function() {
-        // flash provider only
-        it('should use label property if it exists and there are no custom labels', function() {
-            const level = { label: '360px' };
-            const actual = generateLabel(level, null, false);
-            expect(actual).to.equal('360px');
-        });
-
-        // flash provider only
-        it('should not use label property if it exists and there are custom labels', function() {
-            const level = { label: '360px', bitrate: 2000000 };
-            const actual = generateLabel(level, customLabels, false);
-            expect(actual).to.equal('medium');
-        });
-
         it('should get custom label when bandwidth exactly matches a custom lable key', function() {
             const level = { bitrate: 2000000 };
             const expected = 'medium';

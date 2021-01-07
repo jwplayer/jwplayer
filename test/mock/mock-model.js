@@ -52,7 +52,6 @@ export default class MockModel extends SimpleModel {
             castActive: false,
             fullscreen: false,
             autostartFailed: false,
-            flashBlocked: false,
             captionsList: [
                 { label: 'Off' },
                 { label: 'English' }

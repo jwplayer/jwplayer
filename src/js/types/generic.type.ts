@@ -59,7 +59,6 @@ export type TextTrackLike = TextTrack & {
     embedded?: boolean;
     sideloaded?: boolean;
     groupid?: string; // Shaka-player 'subs' tracks
-    source?: 'mpegts'; // Legacy Flash provider attribute
     file?: string;
 };
 

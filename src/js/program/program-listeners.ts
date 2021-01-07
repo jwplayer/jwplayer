@@ -142,10 +142,6 @@ export function MediaControllerListener(model: Model): AllMediaEventsListener {
                 //  we are choosing to not propagate model event.
                 //  Instead letting the master controller do so
                 return;
-            case 'flashThrottle':
-            case 'flashBlocked':
-                model.set(type, (event as ProviderEvents['flashBlocked']).value);
-                return;
             case MEDIA_VOLUME:
                 model.set(MEDIA_VOLUME, event[MEDIA_VOLUME]);
                 return;

@@ -73,21 +73,6 @@ export const ASYNC_PLAYLIST_ITEM_REJECTED = 203700;
 export const ERROR_LOADING_PROVIDER = 204000;
 
 /**
- * @enum {ErrorCode} An error occurred duing Flash setup.
- */
-export const FLASH_SETUP_ERROR = 210001;
-
-/**
- * @enum {ErrorCode} An error occurred during Flash playback.
- */
-export const FLASH_ERROR = 210000;
-
-/**
- * @enum {ErrorCode} A media error occurred during Flash playback.
- */
-export const FLASH_MEDIA_ERROR = 214000;
-
-/**
  * @enum {ErrorCode} The play attempt failed for unknown reasons.
  */
 const PLAY_ATTEMPT_FAILED_MISC = 303200;

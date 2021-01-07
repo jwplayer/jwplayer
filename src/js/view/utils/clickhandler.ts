@@ -42,9 +42,6 @@ export default class ClickHandler extends Events {
             return;
         }
 
-        if (this.model.get('flashBlocked')) {
-            return;
-        }
         if (this.alternateClickHandler) {
             this.alternateClickHandler(evt);
             return;

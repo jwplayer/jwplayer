@@ -2,7 +2,6 @@ import { STATE_IDLE } from 'events/events';
 
 export const INITIAL_PLAYER_STATE = {
     audioMode: false,
-    flashBlocked: false,
     itemMeta: {},
     playbackRate: 1,
     playRejected: false,

@@ -34,20 +34,6 @@ type AddCueData = {
     track?: string;
 }
 
-type FlashCuesData = {
-    name: string;
-    source?: 'mpegts';
-    captions?: FlashCue[];
-}
-
-type FlashCue = {
-    begin: number;
-    end: number;
-    text: string;
-    trackid: string;
-    useDTS?: boolean;
-}
-
 export type SimpleAudioTrack = {
     name: string;
     language: string;
@@ -84,8 +70,6 @@ export interface TracksMixin {
     setTextTracks: (tracks: TextTrackList | null) => void;
     setupSideloadedTracks: (itemTracks: PlaylistItemTrack[]) => void;
     setSubtitlesTrack: (menuIndex: number) => void;
-    addCuesToTrack: (cueData: FlashCuesData) => void;
-    addCaptionsCue: (cueData: FlashCue) => void;
     createCue: (start: number, end: number | undefined, content: string) => VTTCue | TextTrackCue;
     addVTTCue: (cueData: AddCueData, cacheKey?: string) => TrackCue | null;
     addVTTCuesToTrack: (track: TextTrackLike, vttCues: TrackCue[]) => void;
@@ -466,73 +450,6 @@ const Tracks: TracksMixin = {
             currentTrack: this._currentTextTrackIndex + 1,
             tracks: this._textTracks
         });
-    },
-    addCuesToTrack(cueData: FlashCuesData): void {
-        // convert cues coming from the flash provider into VTTCues, then append them to track
-        const track = (this._tracksById as TracksRecord)[cueData.name];
-        if (!track || !this._metaCuesByTextTime) {
-            return;
-        }
-
-        track.source = cueData.source;
-        const cues = cueData.captions || [];
-        const vttCues: TrackCue[] = [];
-        let sort = false;
-
-        for (let i = 0; i < cues.length; i++) {
-            const cue = cues[i];
-            const cueId = cueData.name + '_' + cue.begin + '_' + cue.end;
-            if (!this._metaCuesByTextTime[cueId]) {
-                const vttCue = this.createCue(cue.begin, cue.end, cue.text);
-                this._metaCuesByTextTime[cueId] = vttCue;
-                vttCues.push(vttCue);
-                sort = true;
-            }
-        }
-        if (sort) {
-            vttCues.sort(function(a: any, b: any): number {
-                return a.start - b.start;
-            });
-        }
-        track.data = track.data || [];
-        Array.prototype.push.apply(track.data, vttCues);
-    },
-    addCaptionsCue(this: ProviderWithMixins, cueData: FlashCuesData & FlashCue): void {
-        if (!cueData.text || !cueData.begin || !cueData.end || !this._metaCuesByTextTime) {
-            return;
-        }
-        const trackId = cueData.trackid.toString();
-        let track: TextTrackLike | PlaylistItemTrack | null = this._tracksById && this._tracksById[trackId];
-        if (!track) {
-            track = {
-                kind: 'captions',
-                _id: trackId,
-                data: [],
-                'default': false
-            };
-            this.addTextTracks([track]);
-            this.trigger(SUBTITLES_TRACKS, { tracks: this._textTracks as TextTrackLike[] });
-        }
-
-        let cueId;
-
-        if (cueData.useDTS) {
-            // There may not be any 608 captions when the track is first created
-            // Need to set the source so position is determined from metadata
-            if (!track.source) {
-                track.source = cueData.source || 'mpegts';
-            }
-
-        }
-        cueId = cueData.begin + '_' + cueData.text;
-
-        const existingCue = this._metaCuesByTextTime[cueId];
-        if (!existingCue) {
-            const vttCue = this.createCue(cueData.begin, cueData.end, cueData.text);
-            this._metaCuesByTextTime[cueId] = vttCue;
-            track.data = track.data || [];
-            track.data.push(vttCue);
-        }
     },
     createCue(start: number, end: number | undefined, content: string): VTTCue | TextTrackCue {
         const MetaCue = window.VTTCue || window.TextTrackCue;
