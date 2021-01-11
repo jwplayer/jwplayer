@@ -305,6 +305,9 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
                 const videoLoad = this.videoLoad = _videotag.load;
                 _videotag.load = function(): void {
                     if (_videotag.src === location.href) {
+                        if (_currentQuality === -1) {
+                            _currentQuality = _pickInitialQuality(_levels);
+                        }
                         _setVideotagSource(_levels[_currentQuality]);
                         if (_this.state === STATE_PLAYING) {
                             _videotag.play();
