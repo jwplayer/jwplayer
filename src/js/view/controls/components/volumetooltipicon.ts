@@ -50,6 +50,15 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         horizontalContainer.appendChild(this.horizontalSlider.element());
         this.addContent(this.verticalSlider.element());
 
+        const hasHorizontalSlider = _model.get('horizontalVolumeSlider') || _model.get('audioMode');
+
+        if (hasHorizontalSlider) {
+            this.horizontalContainer.style.display = 'flex';
+            this.tooltip.style.display = 'none';
+        }
+
+        this.setHorizontalSliderTabIndex(null, hasHorizontalSlider);
+
         this.verticalSlider.on('update', function (this: VolumeTooltipIcon, evt: Event): void {
             this.trigger('update', evt);
         }, this);
@@ -81,12 +90,10 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         this.addSliderHandlers(this.horizontalSlider.uiOver);
         this.addSliderHandlers(this.verticalSlider.uiOver);
 
-        this.onAudioMode(null, _model.get('audioMode'));
-
-        this._model.on('change:audioMode', this.onAudioMode, this);
+        this._model.on('change:audioMode', this.setHorizontalSliderTabIndex, this);
     }
 
-    onAudioMode(model: Model | null, val: boolean): void {
+    setHorizontalSliderTabIndex(model: Model | null, val: boolean): void {
         const tabIndex = val ? 0 : -1;
         setAttribute(this.horizontalContainer, 'tabindex', tabIndex);
     }
