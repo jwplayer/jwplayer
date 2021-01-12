@@ -83,19 +83,12 @@ export default class VolumeTooltipIcon extends TooltipIcon {
 
         this.updateSlider(_model, _model.get('audioMode'));
 
-        this._model.on('change:audioMode', this.updateSlider, this);
+        this._model.change('audioMode', this.updateSlider, this);
     }
 
     updateSlider(model: Model, audioMode: boolean): void {
         const hasHorizontalSlider = model.get('horizontalVolumeSlider') || audioMode;
-
-        if (hasHorizontalSlider) {
-            this.horizontalContainer.style.display = 'flex';
-            this.tooltip.style.display = 'none';
-        } else {
-            this.horizontalContainer.style.display = 'none';
-            this.tooltip.style.display = '';
-        }
+        toggleClass(this.element(), 'jw-flag-horizontal-slider', hasHorizontalSlider ? true : false);
     }
 
     addSliderHandlers(ui: UI): void {

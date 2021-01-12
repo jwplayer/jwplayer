@@ -190,9 +190,16 @@
     }
 }
 
+.jw-flag-horizontal-slider {
+    .jw-overlay {
+        display: none;
+    }
+}
+
 .jw-flag-audio-player,
 .jwplayer:not(.jw-flag-small-player) {
-    .jw-horizontal-volume-container {
+    .jw-flag-horizontal-slider ~ .jw-horizontal-volume-container {
+        display: flex;
         transition: width @slider-tansition-duration @default-timing-function;
         width: 0;
 
@@ -248,8 +255,4 @@
 
 .jw-horizontal-volume-container {
     display: none;
-
-    .jw-slider-volume {
-        opacity: 0;
-    }
 }
