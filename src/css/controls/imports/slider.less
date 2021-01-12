@@ -191,9 +191,9 @@
 }
 
 .jw-flag-audio-player,
-.jwplayer:not(.jw-breakpoint--1):not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+.jwplayer:not(.jw-flag-small-player) {
     .jw-horizontal-volume-container {
-        transition: width 300ms @default-timing-function;
+        transition: width @slider-tansition-duration @default-timing-function;
         width: 0;
 
         &.jw-open {
@@ -201,12 +201,12 @@
 
             .jw-slider-volume {
                 padding-right: 24px;
-                transition: opacity 300ms;
                 opacity: 1;
             }
         }
 
         .jw-slider-volume {
+            transition: opacity @slider-tansition-duration;
             opacity: 0;
 
             .jw-knob {

@@ -77,10 +77,15 @@
             }
         }
 
-        .jw-horizontal-volume-container.jw-open ~ .jw-slider-time {
-            flex: 1 1 auto;
-            width: auto;
-            transition: opacity 300ms, width 300ms;
+        .jw-horizontal-volume-container {
+            ~ .jw-slider-time {
+                transition: opacity @slider-tansition-duration, width @slider-tansition-duration;
+            }
+
+            &.jw-open ~ .jw-slider-time {
+                flex: 1 1 auto;
+                width: auto;
+            }
         }
 
         .jw-slider-volume ~ .jw-icon-volume {
