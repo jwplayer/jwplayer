@@ -248,7 +248,7 @@ const Tracks: TracksMixin = {
 
         tracksArray.forEach(itemTrack => {
             // only add valid and supported kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
-            if (itemTrack.kind && !_kindSupported(itemTrack.kind)) {
+            if (itemTrack.includedInManifest || (itemTrack.kind && !_kindSupported(itemTrack.kind))) {
                 return;
             }
             const textTrackAny = this._createTrack(itemTrack);
