@@ -34,7 +34,7 @@ const Captions = function(_model) {
             for (let i = 0; i < len; i++) {
                 /* eslint-disable no-loop-func */
                 const track = tracks[i];
-                if (_kindSupported(track.kind) && !_tracksById[track._id]) {
+                if (!track.includedInManifest && _kindSupported(track.kind) && !_tracksById[track._id]) {
                     track.sideloaded = true;
                     _addTrack(track);
                     loadFile(track, (vttCues) => {
