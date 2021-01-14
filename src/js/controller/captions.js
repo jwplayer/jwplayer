@@ -34,7 +34,7 @@ const Captions = function(_model) {
             for (let i = 0; i < len; i++) {
                 /* eslint-disable no-loop-func */
                 const track = tracks[i];
-                if (_kindSupported(track.kind) && !_tracksById[track._id]) {
+                if (!track.includedInManifest && _kindSupported(track.kind) && !_tracksById[track._id]) {
                     track.sideloaded = true;
                     _addTrack(track);
                     loadFile(track, (vttCues) => {
@@ -66,13 +66,19 @@ const Captions = function(_model) {
             _tracksById = {};
             _unknownCount = 0;
         } else {
-            for (let i = 0; i < tracks.length; i++) {
-                _addTrack(tracks[i]);
-            }
-
-            // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
-            const allTracks = Object.keys(_tracksById).map(id => _tracksById[id]);
-            _tracks = allTracks.filter(track => !track.sideloaded).concat(allTracks.filter(track => !!track.sideloaded));
+            tracks.forEach(track => _addTrack(track));
+            // Make _tracks order match (video) tracks
+            _tracks.sort((trackA, trackB) => {
+                const videoTracksIndexOfA = tracks.indexOf(trackA);
+                if (videoTracksIndexOfA === -1) {
+                    return 1;
+                }
+                const videoTracksIndexOfB = tracks.indexOf(trackB);
+                if (videoTracksIndexOfB === -1) {
+                    return -1;
+                }
+                return videoTracksIndexOfA - videoTracksIndexOfB;
+            });
         }
 
         _setCaptionsList();
@@ -89,7 +95,7 @@ const Captions = function(_model) {
     function _addTrack(track) {
         track.data = track.data || [];
         track.name = track.label || track.name || track.language;
-        track._id = createId(track, _tracks.length);
+        const id = createId(track, _tracks.length);
 
         if (!track.name) {
             const labelInfo = createLabel(track, _unknownCount);
@@ -97,8 +103,10 @@ const Captions = function(_model) {
             _unknownCount = labelInfo.unknownCount;
         }
 
-        // During the same playlist we may reu and readd tracks with the same _id; allow the new track to replace the old
-        _tracksById[track._id] = track;
+        // During the same playlist we may re-add tracks with the same _id; allow the new track to replace the old
+        track._id = id;
+        _tracksById[id] = track;
+        _tracks = _tracks.filter(tr => tr._id !== id);
         _tracks.push(track);
     }
 
