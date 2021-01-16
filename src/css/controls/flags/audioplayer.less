@@ -34,6 +34,7 @@
         .jw-button-container {
             padding-right: 3px;
             padding-left: 0;
+            justify-content: flex-start;
         }
 
         .jw-icon-tooltip,
@@ -77,36 +78,18 @@
         }
 
         .jw-horizontal-volume-container {
-            transition: width 300ms @default-timing-function;
-            width: 0;
+            ~ .jw-slider-time {
+                transition: opacity @slider-tansition-duration, width @slider-tansition-duration;
+            }
 
-            &.jw-open {
-                width: @volume-rail-length;
-
-                .jw-slider-volume {
-                    padding-right: 24px;
-                    transition: opacity 300ms;
-                    opacity: 1;
-                }
-
-                ~ .jw-slider-time {
-                    flex: 1 1 auto;
-                    width: auto;
-                    transition: opacity 300ms, width 300ms;
-                }
+            &.jw-open ~ .jw-slider-time {
+                flex: 1 1 auto;
+                width: auto;
             }
         }
 
-        .jw-slider-volume {
-            opacity: 0;
-
-            .jw-knob {
-                transform: translate(-50%, -50%);
-            }
-
-            ~ .jw-icon-volume {
-                margin-right: @volume-rail-length;
-            }
+        .jw-slider-volume ~ .jw-icon-volume {
+            margin-right: @volume-rail-length;
         }
     }
 
