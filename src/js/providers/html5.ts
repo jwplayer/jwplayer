@@ -326,6 +326,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             }
 
             if (this.renderNatively) {
+                this.clearTracks();
                 this.setTextTracks(this.video.textTracks);
             }
             this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);

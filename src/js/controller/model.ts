@@ -50,7 +50,6 @@ export type PlayerModelAttributes = {
     floating?: FloatConfig;
     fullscreen: boolean;
     height: number | string;
-    horizontalVolumeSlider?: boolean;
     id: string;
     inDom: boolean;
     instreamMode: boolean;

@@ -84,8 +84,7 @@ export default class Menu extends Events {
                     break;
                 case 'Esc':
                     focusEl = settingsElement;
-                    // always close the main menu if coming from within a sub-menu
-                    this.mainMenu.close(event);
+                    this.close(event);
                     break;
                 default:
                     break;

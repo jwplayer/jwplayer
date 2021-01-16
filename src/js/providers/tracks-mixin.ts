@@ -217,7 +217,7 @@ const Tracks: TracksMixin = {
 
             // IOS native captions does not remove the active cue from the dom when the track is disabled, so we must hide it
             const trackId = track._id;
-            if ((trackId && isNativeCaptionsOrSubtitles(trackId)) || (this.renderNatively && OS.iOS)) {
+            if ((trackId && trackId.indexOf('nativecaptions') === 0) || (this.renderNatively && OS.iOS)) {
                 track.mode = 'hidden';
             }
         }
@@ -248,7 +248,7 @@ const Tracks: TracksMixin = {
 
         tracksArray.forEach(itemTrack => {
             // only add valid and supported kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
-            if (itemTrack.includedInManifest || (itemTrack.kind && !isCaptionsOrSubtitles(itemTrack.kind))) {
+            if (itemTrack.kind && !_kindSupported(itemTrack.kind)) {
                 return;
             }
             const textTrackAny = this._createTrack(itemTrack);
@@ -287,7 +287,7 @@ const Tracks: TracksMixin = {
             this._unknownCount = 0;
             this._textTracks = this._textTracks.filter((track) => {
                 const trackId = track._id as string;
-                if (this.renderNatively && trackId && isNativeCaptionsOrSubtitles(trackId)) {
+                if (this.renderNatively && trackId && trackId.indexOf('nativecaptions') === 0) {
                     delete _tracksById[trackId];
                     return false;
                 } else if (track.name && track.name.indexOf('Unknown') === 0) {
@@ -313,12 +313,12 @@ const Tracks: TracksMixin = {
                 let trackId: string = track._id || '';                
 
                 if (!trackId) {   
-                    if (track.inuse === false && isCaptionsOrSubtitles(track.kind) && this.renderNatively) {
+                    if (track.inuse === false && track.kind === 'captions' && this.renderNatively) {
                         // ignore native captions tracks from previous items that no longer can be re-used
                         track._id = 'native' + track.kind + i;
                         continue;
                     }
-                    if (isCaptionsOrSubtitles(track.kind) || track.kind === 'metadata') {
+                    if (track.kind === 'captions' || track.kind === 'metadata') {
                         trackId = track._id = 'native' + track.kind + i;
                         if (!track.label && track.kind === 'captions') {
                             // track label is read only in Safari
@@ -347,7 +347,7 @@ const Tracks: TracksMixin = {
                     track.removeEventListener('cuechange', handler);
                     track.addEventListener('cuechange', handler);
                     _tracksById[trackId] = track;
-                } else if (isCaptionsOrSubtitles(track.kind)) {
+                } else if (_kindSupported(track.kind)) {
                     const mode = track.mode;
                     let cue;
 
@@ -360,7 +360,7 @@ const Tracks: TracksMixin = {
                         continue;
                     }
 
-                    if (mode !== 'disabled' || isNativeCaptionsOrSubtitles(trackId)) {
+                    if (mode !== 'disabled' || trackId.indexOf('nativecaptions') !== 0) {
                         track.mode = mode;
                     }
 
@@ -408,7 +408,6 @@ const Tracks: TracksMixin = {
             return;
         }
         // Determine if the tracks are the same and the embedded + sideloaded count = # of tracks in the controlbar
-        itemTracks = itemTracks || null;
         const alreadyLoaded = itemTracks === this._itemTracks;
         if (!alreadyLoaded) {
             cancelXhr(this._itemTracks);
@@ -795,7 +794,7 @@ const Tracks: TracksMixin = {
 function textTrackChangeHandler(this: ProviderWithMixins): void {
     const textTracks = this.video.textTracks;
     const inUseTracks = filter(textTracks, function (track: TextTrackLike): boolean {
-        return (track.inuse || !track._id) && isCaptionsOrSubtitles(track.kind);
+        return (track.inuse || !track._id) && _kindSupported(track.kind);
     });
     if (!this._textTracks || _tracksModified.call(this, inUseTracks)) {
         this.setTextTracks(textTracks);
@@ -952,12 +951,8 @@ function _removeCues(renderNatively: boolean, tracks: TextTrackList | TextTrack[
     }
 }
 
-function isCaptionsOrSubtitles(kind: string): boolean {
-    return kind === 'captions' || kind === 'subtitles';
-}
-
-function isNativeCaptionsOrSubtitles(trackId: string): boolean {
-    return (/^native(?:captions|subtitles)/).test(trackId);
+function _kindSupported(kind: string): boolean {
+    return kind === 'subtitles' || kind === 'captions';
 }
 
 function getTextCueMetaEvent(cue: TrackCue): ProviderEvents['meta'] | null {
