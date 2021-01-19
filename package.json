@@ -44,7 +44,7 @@
     "karma-chrome-launcher": "2.2.0",
     "karma-coverage-istanbul-reporter": "3.0.3",
     "karma-firefox-launcher": "1.1.0",
-    "karma-junit-reporter": "1.2.0",
+    "karma-junit-reporter": "2.0.1",
     "karma-mocha": "2.0.1",
     "karma-mocha-reporter": "2.2.5",
     "karma-safari-launcher": "1.0.0",
