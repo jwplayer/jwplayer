@@ -67,6 +67,9 @@ describe('strings', function() {
 
             ext = extension('http://csm-e.cds1.yospace.com/csm/extlive/yospace02,hlssample.m3u8;test?test');
             expect(ext, 'Non URI compliant attributes 6').to.equal('m3u8');
+
+            ext = extension('http://live.okradio.net:8020/;*.mp3');
+            expect(ext, "asdasd").to.equal('mp3');
         });
     });
 
