@@ -492,7 +492,7 @@ class ProgramController extends Events {
      */
     _destroyMediaController(mediaController) {
         const { mediaPool } = this;
-        if (!mediaController) {
+        if (!mediaController || !mediaController.provider) {
             return;
         }
         mediaPool.recycle(mediaController.mediaElement);
