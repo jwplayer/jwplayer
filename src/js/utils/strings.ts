@@ -36,7 +36,7 @@ export function extension(path: string): string {
         return azureFormatMatches[1];
     }
 
-    path = path.split('?')[0].split('#')[0];
+    path = encodeURI(path).split('?')[0].split('#')[0].split(';')[0];
     if (path.lastIndexOf('.') > -1) {
         return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
     }
