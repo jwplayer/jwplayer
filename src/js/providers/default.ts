@@ -78,6 +78,12 @@ export type ProviderEvents = {
     [Event.MEDIA_SEEK]: {
         position: number;
         offset: number;
+        duration: number;
+        currentTime: number;
+        seekRange: SeekRange;
+        metadata: {
+            currentTime: number;
+        };
     };
     [Event.MEDIA_RATE_CHANGE]: {
         playbackRate: number;
