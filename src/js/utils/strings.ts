@@ -39,6 +39,8 @@ export function extension(path: string): string {
     const fileExtension = path.replace(/^.+?\.(\w+)(?:[;].*)?(?:[?#].*)?$/, '$1');
     if (fileExtension !== path) {
         return fileExtension.toLowerCase();
+    } else if (path.lastIndexOf('.') > -1) {
+        return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
     }
 
     return '';
