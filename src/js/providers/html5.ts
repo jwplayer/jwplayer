@@ -178,15 +178,22 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         },
 
         seeking(this: ProviderWithMixins): void {
+            const timeBeforeSeek = _timeBeforeSeek as number;
             const offset = _seekToTime !== null ? timeToPosition(_seekToTime) : _this.getCurrentTime();
-            const position = timeToPosition(_timeBeforeSeek as number);
+            const position = timeToPosition(timeBeforeSeek);
             _timeBeforeSeek = _seekToTime;
             _seekToTime = null;
             _delayedSeek = 0;
             _this.seeking = true;
             _this.trigger(MEDIA_SEEK, {
                 position,
-                offset
+                offset,
+                duration: _this.getDuration(),
+                currentTime: timeBeforeSeek,
+                seekRange: _this.getSeekRange(),
+                metadata: {
+                    currentTime: timeBeforeSeek
+                }
             });
         },
 
