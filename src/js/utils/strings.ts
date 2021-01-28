@@ -36,10 +36,17 @@ export function extension(path: string): string {
         return azureFormatMatches[1];
     }
 
+    const fileExtension = path.replace(/^.+?\.(\w+)(?:[;].*)?(?:[?#].*)?$/, '$1');
+    if (fileExtension !== path) {
+        return fileExtension.toLowerCase();
+    } 
+    
     path = path.split('?')[0].split('#')[0];
+
     if (path.lastIndexOf('.') > -1) {
         return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
     }
+
     return '';
 }
 
