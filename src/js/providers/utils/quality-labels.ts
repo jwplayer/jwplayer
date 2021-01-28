@@ -10,9 +10,7 @@ export function generateLabel(level?: ProviderLevel, qualityLabels?: QualityLabe
     if (!level) {
         return '';
     }
-    // custom providers may use level bitrate rather than bandwidth
     const bandwidth = level.bitrate || level.bandwidth;
-    // flash provider, in some cases, will create its own label. Prefer it over creating a new label
     return getCustomLabel(qualityLabels, bandwidth) ||
         level.label ||
         createLabel(level.height, bandwidth, redundant);

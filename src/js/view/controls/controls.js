@@ -149,10 +149,9 @@ export default class Controls extends Events {
         this.rightClickMenu = new RightClick(this.infoOverlay, this.shortcutsTooltip);
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
-            this.rightClickMenu.setup(model, this.playerContainer, this.wrapperElement);
-        } else {
-            this.rightClickMenu.setup(model, this.playerContainer, this.wrapperElement);
         }
+
+        this.rightClickMenu.setup(model, this.playerContainer, this.wrapperElement);
 
         // Floating Close Button
         let floatingConfig = model.get('floating');
