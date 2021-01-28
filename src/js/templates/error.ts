@@ -12,7 +12,7 @@ export default (id: string, message: string | undefined, errorCode: string, code
                 `</style>` +
                 `<div class="jw-icon jw-reset"></div>` +
                 `<div class="jw-info-container jw-reset">` +
-                    `<div class="jw-error-text jw-reset-text" dir="auto">${(message || '')}<span class="jw-break jw-reset"></span>${detail}</div>` +
+                    `<div class="jw-error-text jw-reset-text" dir="auto" data-nosnippet>${(message || '')}<span class="jw-break jw-reset"></span>${detail}</div>` +
                 `</div>` +
             `</div>` +
         `</div>`
