@@ -15,7 +15,6 @@ const compileConstants = {
     __DEBUG__: false,
     __HEADLESS__: false,
     __BUILD_VERSION__: `'${getBuildVersion()}'`,
-    __FLASH_VERSION__: 18
 };
 
 const webpackConfig = {
