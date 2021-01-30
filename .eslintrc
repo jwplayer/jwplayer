@@ -7,7 +7,6 @@
     },
     "globals": {
         "__webpack_public_path__": false,
-        "__FLASH_VERSION__": false,
         "__REPO__": false,
         "__SELF_HOSTED__": false,
         "__DEBUG__": false,
