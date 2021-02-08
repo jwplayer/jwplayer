@@ -1,7 +1,7 @@
 import type { ProviderLevel } from 'providers/data-normalizer';
 import type { GenericObject } from 'types/generic.type';
 
-type QualityLabels = {
+export type QualityLabels = {
     [key: number]: string;
 };
 

@@ -57,7 +57,7 @@ class VideoElementProvider implements CustomProvider {
     private seeking: boolean;
     private seekFromTime: number | null;
     private seekToTime: number | null;
-    private stallTime: number | null;
+    private stallTime: number;
     private visualQuality: ProviderEvents['visualQuality'];
     private readonly listenerDictionary: { [key: string]: any };
     private audioTracksChangeHandler: (this: VideoElementProvider) => void;
@@ -131,7 +131,7 @@ class VideoElementProvider implements CustomProvider {
         this.seeking = false;
         this.seekFromTime = null;
         this.seekToTime = null;
-        this.stallTime = null;
+        this.stallTime = -1;
         this.visualQuality = {
             reason: 'initial choice',
             mode: 'auto',

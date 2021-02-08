@@ -23,7 +23,7 @@ export type SeekRange = {
     end: number;
 };
 
-type MetadataType = 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity';
+export type MetadataType = 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity';
 
 export type ProviderEvents = {
     [Event.PLAYER_STATE]: {
