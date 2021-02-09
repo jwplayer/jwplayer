@@ -75,7 +75,6 @@ const VideoListenerMixin: VideoListenerInt = {
             this.trigger(PROVIDER_FIRST_FRAME);
         }
 
-
         const timeEventObject: ProviderEvents['time'] = {
             position,
             duration,
@@ -124,7 +123,7 @@ const VideoListenerMixin: VideoListenerInt = {
         if (this.state === STATE_LOADING) {
             // Ignore seeks performed by shaka-player and hls.js to jump initial buffer gap before play
             const bufferStart = this.video.buffered.length ? this.video.buffered.start(0) : -1;
-            if (this.video.currentTime === bufferStart) {
+            if (Math.abs(this.video.currentTime - bufferStart) < 1.25) {
                 return;
             }
         } else if (this.state === STATE_IDLE) {
