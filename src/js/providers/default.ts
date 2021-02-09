@@ -151,7 +151,7 @@ type ProviderEventNotifications = {
 interface InternalProvider {
     state?: string;
     video: HTMLVideoElement;
-    instreamMode: boolean;
+    instreamMode?: boolean;
     supportsPlaybackRate: boolean;
     seeking: boolean;
     stallTime: number;
@@ -176,7 +176,7 @@ interface InternalProvider {
 
     seek: (seekPos: number) => void;
 
-    setVisibility: (isVisible: boolean) => void;
+    setVisibility?: (isVisible: boolean) => void;
 
     setFullscreen: (isFullscreen: boolean) => void;
     getFullscreen: () => boolean;
@@ -231,8 +231,6 @@ export type AllProviderEventsListener = <E extends keyof AllProviderEvents>(type
 
 export type ProviderWithMixins = TracksMixin & VideoActionsInt & VideoAttachedInt & ImplementedProvider & {
     drmUsed?: 'widevine' | 'playready' | 'clearkey' | null;
-    // Providers can implement this method to add the invoked return value on "time" events `metadata.mpegts` property.
-    getPtsOffset?(): number;
 };
 
 interface DefaultProvider {

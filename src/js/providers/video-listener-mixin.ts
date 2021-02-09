@@ -85,12 +85,6 @@ const VideoListenerMixin: VideoListenerInt = {
                 currentTime: currentTime
             }
         };
-        if (this.getPtsOffset) {
-            const ptsOffset = this.getPtsOffset();
-            if (ptsOffset >= 0) {
-                timeEventObject.metadata.mpegts = ptsOffset + position;
-            }
-        }
 
         const latency = this.getLiveLatency();
         if (latency !== null) {
