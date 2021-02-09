@@ -3653,13 +3653,6 @@ declare namespace _ {
         mapObject(object: any, iteratee: string, context?: any): _.Dictionary<any>;
 
         /**
-        * Convert an object into a list of [key, value] pairs.
-        * @param object Convert this object to a list of [key, value] pairs.
-        * @return List of [key, value] pairs on `object`.
-        **/
-        pairs(object: any): [string, any][];
-
-        /**
         * Returns a copy of the object where the keys have become the values and the values the keys.
         * For this to work, all of your object's values should be unique and string serializable.
         * @param object Object to invert key/value pairs.
@@ -4761,12 +4754,6 @@ declare namespace _ {
 
         /**
         * Wrapped type `object`.
-        * @see _.pairs
-        **/
-        pairs(): [string, any][];
-
-        /**
-        * Wrapped type `object`.
         * @see _.invert
         **/
         invert(): any;
@@ -5731,12 +5718,6 @@ declare namespace _ {
         * @see _.mapObject
         **/
         mapObject(fn: _.ListIterator<T, any>): _Chain<T>;
-
-        /**
-        * Wrapped type `object`.
-        * @see _.pairs
-        **/
-        pairs(): _Chain<[string, any]>;
 
         /**
         * Wrapped type `object`.

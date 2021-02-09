@@ -71,6 +71,16 @@ interface HTML5Provider extends ProviderWithMixins {
     fairplay?: unknown;
 }
 
+type WebkitHTMLVideoElement = HTMLVideoElement & {
+    readonly audioTracks?: AudioTrackList;
+    webkitEnterFullScreen?(): void;
+    webkitEnterFullscreen?(): void;
+    webkitExitFullScreen?(): void;
+    webkitExitFullscreen?(): void;
+    webkitDisplayingFullscreen?: boolean;
+    webkitSupportsFullscreen?: boolean;
+};
+
 function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: GenericObject, mediaElement: HTMLVideoElement): void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this: HTML5Provider = this;
@@ -342,7 +352,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         }
     });
 
-    const _videotag = mediaElement;
+    const _videotag: WebkitHTMLVideoElement = mediaElement;
     // wait for maria's quality level changes to merge
     const visualQuality: GenericObject = { level: {} };
     // Prefer the config timeout, which is allowed to be 0 and null by default
@@ -712,7 +722,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         }
         _beforeResumeHandler = noop;
         _removeListeners(MediaEvents, _videotag);
-        _this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
+        _this.removeTracksListener(_videotag.audioTracks as any, 'change', _audioTrackChangeHandler);
         _this.removeTracksListener(textTracks, 'change', textTrackChangeHandler);
         _this.removeTracksListener(textTracks, 'addtrack', addTrackHandler);
         if (cueChangeHandler) {
@@ -827,8 +837,9 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
 
     function _audioTrackChangeHandler(): void {
         let _selectedAudioTrackIndex = -1;
-        for (let i = 0; i < _videotag.audioTracks.length; i++) {
-            if (_videotag.audioTracks[i].enabled) {
+        const tracks = _videotag.audioTracks as any;
+        for (let i = 0; i < tracks.length; i++) {
+            if (tracks[i].enabled) {
                 _selectedAudioTrackIndex = i;
                 break;
             }
@@ -950,7 +961,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
 
     this.getCurrentAudioTrack = _getCurrentAudioTrack;
 
-    function _setAudioTracks(tracks: AudioTrackList): void {
+    function _setAudioTracks(tracks: AudioTrackList | undefined): void {
         _audioTracks = null;
         if (!tracks) {
             return;
@@ -966,7 +977,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
                 _currentAudioTrackIndex = 0;
                 tracks[_currentAudioTrackIndex].enabled = true;
             }
-            _audioTracks = map(tracks, function(track: AudioTrack): SimpleAudioTrack {
+            _audioTracks = map(tracks as any[], function(track: any): SimpleAudioTrack {
                 const _track = {
                     name: track.label || track.language,
                     language: track.language
@@ -974,7 +985,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
                 return _track;
             });
         }
-        _this.addTracksListener(tracks, 'change', _audioTrackChangeHandler);
+        _this.addTracksListener(tracks as any, 'change', _audioTrackChangeHandler);
         if (_audioTracks) {
             _this.trigger(AUDIO_TRACKS, { currentTrack: _currentAudioTrackIndex, tracks: _audioTracks });
         }

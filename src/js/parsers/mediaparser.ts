@@ -22,20 +22,20 @@ export type PlaylistMRSSItemWithMedia = PlaylistMRSSItem & {
     duration?: number;
     image?: string;
     sources?: PlaylistMRSSSource[];
-    tracks: PlaylistMRSSTrack[];
+    tracks?: PlaylistMRSSTrack[];
 };
 
 export type PlaylistMRSSSource = {
-    default?: string;
+    default?: string | boolean;
     file: string;
     type: string;
     width?: string;
-    label: string;
+    label?: string;
     mediaTypes?: string[];
 };
 
 export type PlaylistMRSSTrack = {
-    default?: string;
+    default?: string | boolean;
     file?: string;
     kind: string;
     label?: string;

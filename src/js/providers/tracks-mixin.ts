@@ -56,8 +56,8 @@ export interface TracksMixin {
     renderNatively: boolean;
     cueChangeHandler: ((this: ProviderWithMixins, e: Event) => void) | null;
     _initTextTracks: () => void;
-    addTracksListener: (tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any) => void;
-    removeTracksListener: (tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: ((e?: any) => any) | null) => void;
+    addTracksListener: (tracks: TextTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any) => void;
+    removeTracksListener: (tracks: TextTrackList, eventType: keyof TextTrackListEventMap, handler: ((e?: any) => any) | null) => void;
     clearTracks: () => void;
     clearMetaCues: () => void;
     clearCueData: (trackId: string) => void;
@@ -107,7 +107,7 @@ const Tracks: TracksMixin = {
         this._activeCues = {};
         this._unknownCount = 0;
     },
-    addTracksListener(this: ProviderWithMixins, tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any): void {
+    addTracksListener(this: ProviderWithMixins, tracks: TextTrackList, eventType: keyof TextTrackListEventMap, handler: (e?: any) => any): void {
         if (!tracks) {
             return;
         }
@@ -124,7 +124,7 @@ const Tracks: TracksMixin = {
             tracks['on' + eventType] = handler;
         }
     },
-    removeTracksListener(tracks: TextTrackList | AudioTrackList, eventType: keyof TextTrackListEventMap, handler: ((e?: any) => any) | null): void {
+    removeTracksListener(tracks: TextTrackList, eventType: keyof TextTrackListEventMap, handler: ((e?: any) => any) | null): void {
         if (!tracks) {
             return;
         }
@@ -338,7 +338,7 @@ const Tracks: TracksMixin = {
                     // By setting the track mode to 'hidden', we can determine if the track has cues
                     track.mode = 'hidden';
 
-                    if (!track.cues.length && track.embedded) {
+                    if ((!track.cues || !track.cues.length) && track.embedded) {
                         // There's no method to remove tracks added via: video.addTextTrack.
                         // This ensures the 608 captions track isn't added to the CC menu until it has cues
                         continue;
@@ -584,7 +584,7 @@ const Tracks: TracksMixin = {
             if ((cue as DataCue).data) {
                 return true;
             }
-            const event = cue.text ? getTextCueMetaEvent(cue) : null;
+            const event = (cue as VTTCue).text ? getTextCueMetaEvent(cue as VTTCue) : null;
             if (event) {
                 if (event.metadataType === 'emsg') {
                     event.metadata = event.metadata || {};
@@ -645,7 +645,7 @@ const Tracks: TracksMixin = {
                 return true;
             }
             case 'metadata': {
-                const text = (vttCue as DataCue).data ? new Uint8Array((vttCue as DataCue).data).join('') : vttCue.text;
+                const text = (vttCue as DataCue).data ? new Uint8Array((vttCue as DataCue).data).join('') : (vttCue as VTTCue).text;
                 cacheKeyTime = cacheKey || vttCue.startTime + text;
                 if (cachedCues[cacheKeyTime]) {
                     return false;
@@ -793,12 +793,12 @@ function cueChangeHandler(this: ProviderWithMixins, e: Event): void {
 function _addCueToTrack(renderNatively: boolean, track: TextTrackLike, vttCue: TrackCue): void {
     // IE/Edge will throw an exception if cues are not inserted in time order: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/13183203/
     if (Browser.ie) {
-        let cue = vttCue;
+        let cue: TrackCue = vttCue;
         if (renderNatively || track.kind === 'metadata') {
             // There's no support for the VTTCue interface in IE/Edge.
             // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
             // This unfortunately removes positioning properties from the cues
-            cue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
+            cue = new (window.TextTrackCue as any)(vttCue.startTime, vttCue.endTime, (vttCue as VTTCue).text);
 
             if (vttCue.value) {
                 cue.value = vttCue.value;
@@ -820,12 +820,14 @@ function insertCueInOrder(track: TextTrackLike, vttCue: TrackCue): void {
     const mode = track.mode;
     track.mode = 'hidden';
     const cues = track.cues;
-    for (let i = cues.length - 1; i >= 0; i--) {
-        if (cues[i].startTime > vttCue.startTime) {
-            temp.unshift(cues[i]);
-            track.removeCue(cues[i]);
-        } else {
-            break;
+    if (cues) {
+        for (let i = cues.length - 1; i >= 0; i--) {
+            if (cues[i].startTime > vttCue.startTime) {
+                temp.unshift(cues[i]);
+                track.removeCue(cues[i]);
+            } else {
+                break;
+            }
         }
     }
     try {
@@ -858,8 +860,10 @@ function _removeCues(renderNatively: boolean, tracks: TextTrackList | TextTrack[
                 track.mode = 'disabled';
                 track.mode = 'hidden';
             }
-            for (let i = track.cues.length; i--;) {
-                track.removeCue(track.cues[i]);
+            if (track.cues) {
+                for (let i = track.cues.length; i--;) {
+                    track.removeCue(track.cues[i]);
+                }
             }
             if (!track.embedded) {
                 track.mode = 'disabled';
@@ -877,7 +881,7 @@ function isNativeCaptionsOrSubtitles(trackId: string): boolean {
     return (/^native(?:captions|subtitles)/).test(trackId);
 }
 
-function getTextCueMetaEvent(cue: TrackCue): ProviderEvents['meta'] | null {
+function getTextCueMetaEvent(cue: VTTCue): ProviderEvents['meta'] | null {
     let metadata;
     try {
         metadata = JSON.parse(cue.text);
@@ -908,7 +912,7 @@ function getId3CueMetaEvent(dataCues: TrackCueParsed[]): ProviderEvents['metadat
 function cuesMatch(cue1: TrackCue, cue2: TrackCue): boolean {
     return cue1.startTime === cue2.startTime &&
         cue1.endTime === cue2.endTime &&
-        cue1.text === cue2.text &&
+        (cue1 as VTTCue).text === (cue2 as VTTCue).text &&
         (cue1 as DataCue).data === (cue2 as DataCue).data &&
         JSON.stringify(cue1.value) === JSON.stringify(cue2.value);
 }
