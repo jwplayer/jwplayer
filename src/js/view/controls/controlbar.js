@@ -38,7 +38,7 @@ function div(classes) {
 }
 
 function createCastButton(castToggle, localization) {
-    if (Browser.safari) {
+    if ('WebKitPlaybackTargetAvailabilityEvent' in window) {
         const airplayButton = button(
             'jw-icon-airplay jw-off',
             castToggle,
