@@ -1,12 +1,17 @@
 declare const __BUILD_VERSION__: string;
 declare const __DEBUG__: boolean;
 declare interface Window {
-    jwplayerPluginJsonp: Function;
+    jwplayerPluginJsonp?: Function;
     msCrypto: Crypto;
 }
 
 declare interface Document {
     webkitHidden: boolean;
+}
+
+declare interface AudioTrackList {
+    [Symbol.iterator](): IterableIterator<any>;
+    length: number;
 }
 
 declare const __SELF_HOSTED__: boolean;

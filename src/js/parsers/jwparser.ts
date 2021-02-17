@@ -29,6 +29,7 @@ const parseEntry = function (obj: PageNode, itm: PlaylistMRSSItemWithMedia): Pla
     const type = 'type';
     const sources: PlaylistMRSSSource[] = [];
     const tracks: PlaylistMRSSTrack[] = [];
+    const result = itm as PlaylistFeedItemWithMedia;
 
     for (let i = 0; i < obj.childNodes.length; i++) {
         const node = obj.childNodes[i] as Element;
@@ -69,13 +70,13 @@ const parseEntry = function (obj: PageNode, itm: PlaylistMRSSItemWithMedia): Pla
     if (sources.length) {
         itm.sources = [];
         for (let i = 0; i < sources.length; i++) {
-            const source = sources[i] as PlaylistFeedSource;
+            const source = sources[i];
             if (source.file.length > 0) {
                 source[def] = (sources[i][def] === 'true');
                 if (!source.label) {
                     delete source.label;
                 }
-                itm.sources.push(source);
+                result.sources.push(source);
             }
         }
     }
@@ -83,18 +84,18 @@ const parseEntry = function (obj: PageNode, itm: PlaylistMRSSItemWithMedia): Pla
     if (tracks.length) {
         itm.tracks = [];
         for (let i = 0; i < tracks.length; i++) {
-            const track = tracks[i] as PlaylistFeedTrack;
+            const track = tracks[i];
             if (track.file && track.file.length > 0) {
                 track[def] = (tracks[i][def] === 'true');
                 track.kind = (!tracks[i].kind.length) ? 'captions' : tracks[i].kind;
                 if (!track.label) {
                     delete track.label;
                 }
-                itm.tracks.push(track);
+                result.tracks.push(track);
             }
         }
     }
-    return itm as PlaylistFeedItemWithMedia;
+    return result;
 };
 
 export default parseEntry;

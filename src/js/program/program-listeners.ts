@@ -22,10 +22,10 @@ export function ProviderListener(mediaController: MediaController): AllProviderE
 
         switch (type) {
             case MEDIA_TYPE:
-                if (mediaModel.get(MEDIA_TYPE) === (event as ProviderEvents['mediaType']).mediaType) {
+                if (mediaModel.get(MEDIA_TYPE) === (event as unknown as ProviderEvents['mediaType']).mediaType) {
                     return;
                 }
-                mediaModel.set(MEDIA_TYPE, (event as ProviderEvents['mediaType']).mediaType);
+                mediaModel.set(MEDIA_TYPE, (event as unknown as ProviderEvents['mediaType']).mediaType);
                 break;
             case MEDIA_VISUAL_QUALITY:
                 mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
@@ -64,13 +64,13 @@ export function ProviderListener(mediaController: MediaController): AllProviderE
                     // We stop propagation here allow the player to try loading once more when playback is initiated
                     // MEDIA_ERROR codes are in the 200,000 range; adding 100,000 puts it in the 300,000 warning range.
                     type = WARNING as E;
-                    (event as PlayerError).code += 100000;
+                    (event as unknown as PlayerError).code += 100000;
                 }
                 break;
             case MEDIA_META: {
                 const { duration, metadataType, seekRange } = data as ProviderEvents['meta'];
                 if (!metadataType) {
-                    (event as ProviderEvents['meta']).metadataType = 'unknown';
+                    (event as unknown as ProviderEvents['meta']).metadataType = 'unknown';
                 }
                 if (isValidNumber(duration)) {
                     mediaModel.set('seekRange', seekRange);

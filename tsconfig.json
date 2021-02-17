@@ -3,6 +3,7 @@
         "baseUrl": "src/js",
         "target": "esnext",
         "module": "esnext",
+        "lib": ["dom", "es2015"],
         "sourceMap": true,
         "strictNullChecks": true,
         "noImplicitThis": true,
