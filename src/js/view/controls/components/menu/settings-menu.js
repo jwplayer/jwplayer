@@ -23,14 +23,10 @@ class SettingsMenu extends Menu {
         this.controlbar = controlbar;
         this.closeButton = createCloseButton(this.el.querySelector(`.jw-${this.name}-topbar-buttons`), this.close, localization);
         this.backButtonTarget = null;
+        this.defaultChild = null;
         this.topbar = createTopbar(this);
         this.onDocumentClick = this.onDocumentClick.bind(this);
         this.addEventListeners();
-    }
-
-    get defaultChild() {
-        const { quality, captions, audioTracks, sharing, playbackRates } = this.children;
-        return quality || captions || audioTracks || playbackRates || sharing;
     }
 
     setupMenu(menuName, menuTitle, items, onItemSelect, defaultItemIndex, itemOptions) {
@@ -46,6 +42,10 @@ class SettingsMenu extends Menu {
             menu.createItems(items, onItemSelect, itemOptions), 
             defaultItemIndex
         );
+        const categoryButton = menu.categoryButton && menu.categoryButton.element();
+        if (categoryButton && categoryButton.parentElement.firstChild === categoryButton) {
+            this.defaultChild = menu;
+        }
     }
 
     onLevels(model, levels) {
