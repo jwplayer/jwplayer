@@ -43,7 +43,7 @@ class SettingsMenu extends Menu {
             defaultItemIndex
         );
         const categoryButton = menu.categoryButton && menu.categoryButton.element();
-        if (categoryButton && categoryButton.parentElement.firstChild === categoryButton) {
+        if (this.buttonContainer.firstChild === categoryButton) {
             this.defaultChild = menu;
         }
     }
