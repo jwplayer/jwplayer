@@ -165,7 +165,7 @@ export const AD_IMPRESSION = 'adImpression';
 /**
  * Event triggered on instream adapter when vast media is loaded onto the video tag.
  */
-export const AD_MEDIA_LAODED = 'adMediaLoaded';
+export const AD_MEDIA_LOADED = 'adMediaLoaded';
 
 /**
  * Event triggered when metadata is obtained during ad playback.
