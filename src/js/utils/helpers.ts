@@ -42,16 +42,13 @@ import { between } from 'utils/math';
 import { log } from 'utils/log';
 import { genId } from 'utils/random-id-generator';
 
-// TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url))
+// TODO: Deprecate in v9
 function crossdomain(uri: string): boolean {
-    const a = document.createElement('a');
-    const b = document.createElement('a');
-    a.href = location.href;
+    const URL = window.URL;
     try {
-        b.href = uri;
-        b.href = b.href; /* IE fix for relative urls */ // eslint-disable-line no-self-assign
-        return a.protocol + '//' + a.host !== b.protocol + '//' + b.host;
-    } catch (e) {/* swallow */}
+        const b = new URL(uri, location.origin);
+        return location.protocol + '//' + location.host !== b.protocol + '//' + b.host;
+    } catch (e) {/* no-op */}
     return true;
 }
 
