@@ -1,4 +1,4 @@
-import { ERROR, FULLSCREEN, NATIVE_FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import { AD_MEDIA_LAODED, ERROR, FULLSCREEN, NATIVE_FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import ProgramController from 'program/program-controller';
 import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
@@ -75,6 +75,7 @@ export default class AdProgramController extends ProgramController {
         this.provider = null;
         return super.setActiveItem(index)
             .then((mediaController) => {
+                this.trigger(AD_MEDIA_LAODED);
                 this._setProvider(mediaController.provider);
                 return this.playVideo();
             });
