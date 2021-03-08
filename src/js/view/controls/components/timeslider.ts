@@ -305,7 +305,7 @@ class TimeSlider extends Slider {
             timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
         }
         const safePct: number = parseFloat(Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3)) * 100;
-        style(timeTip.el, { transform: `translateX(${safePct}%)`});
+        style(timeTip.el, { transform: `translateX(${safePct}%)` });
     }
 
     hideTimeTooltip(): void {
