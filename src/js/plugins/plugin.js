@@ -87,7 +87,7 @@ Object.assign(Plugin.prototype, {
             if (__HEADLESS__) {
                 return;
             }
-            const overlaysElement = api.getContainer().querySelector('.jw-overlays');
+            const overlaysElement = this.getContainer().querySelector('.jw-overlays');
             if (!overlaysElement) {
                 return;
             }

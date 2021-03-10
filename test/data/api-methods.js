@@ -29,6 +29,7 @@ export default {
     getCurrentTime: null,
     getDuration: null,
     getEnvironment: null,
+    getFloating: null,
     getFullscreen: null,
     getHeight: null,
     getItemMeta: null,
@@ -74,6 +75,7 @@ export default {
     setCurrentAudioTrack: null,
     setCurrentCaptions: null,
     setCurrentQuality: null,
+    setFloating: null,
     setFullscreen: null,
     setMute: null,
     setPlaybackRate: null,
@@ -89,7 +91,5 @@ export default {
     skipAd: null,
     trigger: null,
     // In tests that iterate through these methods, call remove last
-    remove: null,
-    getFloating: null,
-    setFloating: null
+    remove: null
 };

@@ -46,14 +46,23 @@ function coreFactory(api, element) {
  */
 function resetPlayer(api, core) {
     const plugins = api.plugins;
-    Object.keys(plugins).forEach(key => {
+    const pluginInstances = Object.keys(plugins).map(key => {
+        const instance = plugins[key];
         delete plugins[key];
+        return instance;
     });
     if (core.get('setupConfig')) {
         api.trigger('remove');
     }
     api.off();
     core.playerDestroy();
+    pluginInstances.forEach((instance) => {
+        if (instance.destroy) {
+            try {
+                instance.destroy();
+            } catch (e) {/* */}
+        }
+    });
     if (!__HEADLESS__) {
         core.getContainer().removeAttribute('data-jwplayer-id');
     }
@@ -222,8 +231,9 @@ export default function Api(element) {
         setup(options) {
             qoeTimer.clear('ready');
             qoeTimer.tick('setup');
-
-            resetPlayer(this, core);
+            if (core) {
+                resetPlayer(this, core);
+            }
             core = coreFactory(this, element);
             core.init(options, this);
 
@@ -242,7 +252,11 @@ export default function Api(element) {
             removePlayer(this);
 
             // Unbind listeners and destroy controller/model/...
-            resetPlayer(this, core);
+            if (core) {
+                resetPlayer(this, core);
+                // The api should not throw even if it's methods are called after remove so leave core
+                // core = null;
+            }
 
             return this;
         },

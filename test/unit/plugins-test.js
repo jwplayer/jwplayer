@@ -9,7 +9,8 @@ const globalPluginsModel = new PluginsModel();
 
 const mockApi = () => ({
     id: 'player',
-    addPlugin: sinon.spy()
+    addPlugin: sinon.spy(),
+    getContainer: () => ({ querySelector: sinon.spy() })
 });
 
 function mockModel(attributes) {
