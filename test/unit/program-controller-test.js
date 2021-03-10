@@ -185,16 +185,15 @@ describe('ProgramController', function () {
         const callback = sandbox.spy();
         programController.on('all', callback, {});
         programController.stopVideo();
-        const itemPromise = programController.setActiveItem(0)
-            .then(function () {
-                const provider = programController.mediaController.provider;
+        return programController.setActiveItem(0)
+            .then(function (mediaController) {
+                const provider = mediaController.provider;
+                programController.destroy();
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
                 expect(callback).to.have.callCount(0);
             });
-        programController.destroy();
-        return itemPromise;
     });
 
     it('forwards queued provider events when provider is foregrounded', function() {

@@ -5,7 +5,7 @@ import { STATE_IDLE, STATE_PLAYING, STATE_LOADING, STATE_STALLED, MEDIA_PLAY_ATT
     MEDIA_FIRST_FRAME } from 'events/events';
 import { dateTime } from 'utils/clock';
 import { now } from 'utils/date';
-import initQoe from 'controller/qoe';
+import { initQoe } from 'controller/qoe';
 
 describe('Model QoE', function() {
 

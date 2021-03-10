@@ -85,9 +85,17 @@ export default class MediaController extends Events {
         if (provider.getContainer()) {
             provider.remove();
         }
+        if (this.eventQueue) {
+            this.eventQueue.destroy();
+        }
         delete provider.instreamMode;
-        this.provider = null;
-        this.item = null;
+        this.provider =
+            this.mediaModel =
+            this.model =
+            this.eventQueue =
+            this.item =
+            this.providerListener =
+            this.thenPlayPromise = null;
     }
 
     attach() {

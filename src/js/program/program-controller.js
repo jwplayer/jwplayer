@@ -101,7 +101,8 @@ class ProgramController extends Events {
             // Resolve and exit on asyncActiveItem() itemPromiseError,
             // or if setActiveItem was called again changing itemSetContext
             if (playlistItem === null ||
-                itemSetContext !== this.itemSetContext) {
+                itemSetContext !== this.itemSetContext ||
+                this.providers === null) {
                 return null;
             }
 
@@ -430,7 +431,12 @@ class ProgramController extends Events {
         this.off();
         this._destroyBackgroundMedia();
         this._destroyActiveMedia();
-        this.apiContext = null;
+        this.asyncItems =
+            this.loadPromise =
+            this.mediaControllerListener =
+            this.model =
+            this.providers =
+            this.apiContext = null;
     }
 
     /**

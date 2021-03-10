@@ -25,7 +25,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
 import ProgramController from 'program/program-controller';
-import initQoe from 'controller/qoe';
+import { initQoe, destroyQoe } from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
 import {
     composePlayerError,
@@ -58,7 +58,34 @@ if (__HEADLESS__) {
 }
 
 Object.assign(Controller.prototype, {
-    setup(config, _api, originalContainer, eventListeners, commandQueue, mediaPool) {
+    destroy() {
+        this.off();
+        this.stop();
+        showView(this, this.originalContainer);
+        if (this._view) {
+            this._view.destroy();
+        }
+        if (this._model) {
+            destroyQoe(this._model);
+            this._model.destroy();
+        }
+        if (this._apiQueue) {
+            this._apiQueue.destroy();
+        }
+        if (this._captions) {
+            this._captions.destroy();
+        }
+        if (this._programController) {
+            this._programController.destroy();
+        }
+        this.instreamDestroy();
+        this._view =
+            this._model =
+            this._apiQueue =
+            this._captions =
+            this._programController = null;
+    },
+    playerSetup(config, _api, originalContainer, eventListeners, commandQueue, mediaPool) {
         const _this = this;
         const _model = _this._model = new Model();
 
@@ -235,7 +262,7 @@ Object.assign(Controller.prototype, {
 
         // Ensure captionsList event is raised after playlistItem
         if (!__HEADLESS__) {
-            _captions = new Captions(_model);
+            _captions = this._captions = new Captions(_model);
             _captions.on('all', _trigger, _this);
         }
 
@@ -1112,24 +1139,6 @@ Object.assign(Controller.prototype, {
             _model.set('cues', cues);
         };
 
-        this.updatePlaylist = function(playlist, feedData) {
-            try {
-                const filteredPlaylist = filterPlaylist(playlist, _model, feedData);
-
-                // Throw exception if playlist is empty
-                validatePlaylist(filteredPlaylist);
-
-                const sanitizedFeedData = Object.assign({}, feedData);
-                delete sanitizedFeedData.playlist;
-
-                _model.set('feedData', sanitizedFeedData);
-                _model.set('playlist', filteredPlaylist);
-            } catch (error) {
-                return Promise.reject(error);
-            }
-            return this.setItemIndex(_model.get('item'));
-        };
-
         this.setPlaylistItem = function (index, item) {
             const playlist = _model.get('playlist');
             const wrappedIndex = wrapPlaylistIndex(index, playlist.length);
@@ -1149,28 +1158,6 @@ Object.assign(Controller.prototype, {
             }
         };
 
-        this.playerDestroy = function () {
-            this.off();
-            this.stop();
-            showView(this, this.originalContainer);
-            if (_view) {
-                _view.destroy();
-            }
-            if (_model) {
-                _model.destroy();
-            }
-            if (apiQueue) {
-                apiQueue.destroy();
-            }
-            if (_captions) {
-                _captions.destroy();
-            }
-            if (_programController) {
-                _programController.destroy();
-            }
-            this.instreamDestroy();
-        };
-
         this.isBeforePlay = this.checkBeforePlay;
 
         this.createInstream = function() {
@@ -1180,14 +1167,14 @@ Object.assign(Controller.prototype, {
         };
 
         this.instreamDestroy = function() {
-            if (_this._instreamAdapter) {
-                _this._instreamAdapter.destroy();
-                _this._instreamAdapter = null;
+            if (this._instreamAdapter) {
+                this._instreamAdapter.destroy();
+                this._instreamAdapter = null;
             }
         };
 
         // Setup ApiQueueDecorator after instance methods have been assigned
-        const apiQueue = new ApiQueueDecorator(this, [
+        const apiQueue = this._apiQueue = new ApiQueueDecorator(this, [
             'play',
             'pause',
             'setCurrentAudioTrack',
@@ -1229,6 +1216,24 @@ Object.assign(Controller.prototype, {
         }, model);
 
         this.trigger(ERROR, evt);
+    },
+    updatePlaylist(playlist, feedData) {
+        const model = this._model;
+        try {
+            const filteredPlaylist = filterPlaylist(playlist, model, feedData);
+
+            // Throw exception if playlist is empty
+            validatePlaylist(filteredPlaylist);
+
+            const sanitizedFeedData = Object.assign({}, feedData);
+            delete sanitizedFeedData.playlist;
+
+            model.set('feedData', sanitizedFeedData);
+            model.set('playlist', filteredPlaylist);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+        return this.setItemIndex(model.get('item'));
     }
 });
 
