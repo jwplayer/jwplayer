@@ -163,6 +163,11 @@ export const AD_ERROR = 'adError';
 export const AD_IMPRESSION = 'adImpression';
 
 /**
+ * Event triggered on instream adapter when vast media is loaded onto the video tag.
+ */
+export const AD_MEDIA_LOADED = 'mediaLoaded';
+
+/**
  * Event triggered when metadata is obtained during ad playback.
 */
 export const AD_META = 'adMeta';
