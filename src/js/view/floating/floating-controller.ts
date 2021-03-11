@@ -214,11 +214,6 @@ export default class FloatingController {
                 maxWidth: null,
                 width: null,
                 height: null,
-                left: null,
-                right: null,
-                top: null,
-                bottom: null,
-                margin: null,
                 transform: null,
                 transition: null,
                 'transition-timing-function': null
