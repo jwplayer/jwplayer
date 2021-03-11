@@ -8,7 +8,6 @@
         position: fixed;
         //  Maximum allowable z-index to ensure always on top.
         z-index: 2147483647;
-        animation: jw-float-to-bottom 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
         top: auto;
         bottom: 1rem;
         left: auto;
@@ -17,10 +16,21 @@
         max-height: 400px;
         margin: 0 auto;
 
+        @media screen and (min-width : 481px) {
+            &:not(.jw-floating-dragged) {
+                animation: jw-float-to-bottom 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
+            }
+        }
         @media screen and (max-width : 480px) {
             width: 100%;
             left: 0;
             right: 0;
+        }
+
+        &.jw-floating-dragging {
+            /* stylelint-disable-next-line */
+            transition: none!important;
+            will-change: transform;
         }
 
         .jw-media {
@@ -30,10 +40,9 @@
         .jw-flag-touch& {
             @media screen and (max-device-width : 480px) and (orientation: portrait) {
                 animation: none;
-                top: 62px;
+                top: 0;
+                margin-top: 62px;
                 bottom: auto;
-                left: 0;
-                right: 0;
                 max-width: none;
                 max-height: none;
             }
