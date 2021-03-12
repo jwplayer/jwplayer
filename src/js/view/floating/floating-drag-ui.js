@@ -1,5 +1,5 @@
 import UI from 'utils/ui';
-import { style } from 'utils/css';
+import { transform } from 'utils/css';
 import { addClass, removeClass } from 'utils/dom';
 
 export default class FloatingDragUI {
@@ -50,9 +50,7 @@ export default class FloatingDragUI {
                 const { pageX, pageY } = e;
                 deltaX = calculateDelta(x, pageX, startX, maxDeltaX, minDeltaX);
                 deltaY = calculateDelta(y, pageY, startY, maxDeltaY, minDeltaY);
-                style(container, {
-                    transform: `translate3d(${deltaX}px, ${deltaY}px, 0)`,
-                });
+                transform(container, `translate3d(${deltaX}px, ${deltaY}px, 0)`);
             })
             .on('dragEnd', () => {
                 removeClass(container, 'jw-floating-dragging');
