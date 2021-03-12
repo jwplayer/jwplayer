@@ -94,13 +94,7 @@ function _styleValue(property, value) {
 }
 
 export function transform(element, value) {
-    style(element, {
-        transform: value,
-        webkitTransform: value,
-        msTransform: value,
-        mozTransform: value,
-        oTransform: value
-    });
+    style(element, { transform: value });
 }
 
 let canvasColorContext;
