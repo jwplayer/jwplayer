@@ -38,8 +38,8 @@ export default class FloatingDragUI {
                 const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = container;
                 startX = pageX;
                 startY = pageY;
-                minDeltaX = calculateMin(offsetLeft);
-                minDeltaY = calculateMin(offsetTop);
+                minDeltaX = -offsetLeft;
+                minDeltaY = -offsetTop;
                 maxDeltaX = calculateMax(outerWidth, offsetLeft, offsetWidth);
                 maxDeltaY = calculateMax(outerHeight, offsetTop, offsetHeight);
                 // Class prevents initial animation styles from overriding translate styling.
@@ -62,6 +62,5 @@ export default class FloatingDragUI {
     }
 }
 
-const calculateMin = (offset) => 0 - offset;
 const calculateMax = (windowLength, offset, length) => windowLength - offset - length;
 const calculateDelta = (last, current, first, max, min) => Math.max(Math.min(last + current - first, max), min);
