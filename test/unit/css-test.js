@@ -83,16 +83,10 @@ describe('css', function() {
         transform(element, 'none');
 
         expect(element.style.transform, 'css transform').to.equal('none');
-        expect(element.style.msTransform, 'css transform ms').to.equal('none');
-        expect(element.style.mozTransform, 'css transform moz').to.equal('none');
-        expect(element.style.oTransform, 'css transform o').to.equal('none');
 
         transform(element, '');
 
         expect(element.style.transform, 'css transform').to.equal('');
-        expect(element.style.msTransform, 'css transform ms').to.equal('');
-        expect(element.style.mozTransform, 'css transform moz').to.equal('');
-        expect(element.style.oTransform, 'css transform o').to.equal('');
     });
 
     it('getRgba', function() {
