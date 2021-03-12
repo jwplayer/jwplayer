@@ -15,6 +15,7 @@ describe('Model QoE', function() {
         const mediaPool = new MediaElementPool();
         const program = new ProgramController(model, mediaPool);
         const mediaModel = model.mediaModel;
+        program.mediaController = { mediaModel };
         initQoe(model, program);
         const qoeItem = model._qoeItem;
 
@@ -23,8 +24,7 @@ describe('Model QoE', function() {
         mediaModel.set('mediaState', STATE_LOADING);
         mediaModel.set('mediaState', STATE_PLAYING);
 
-        // FIXME: PROVIDER_FIRST_FRAME triggers MEDIA_FIRST_FRAME : we only need one event
-        program.trigger(PROVIDER_FIRST_FRAME);
+        program.trigger(PROVIDER_FIRST_FRAME, { type: PROVIDER_FIRST_FRAME });
 
         expect(!!qoeItem, 'qoeItem is defined').to.equal(true);
 
@@ -48,11 +48,13 @@ describe('Model QoE', function() {
         const model = new Model().setup();
         const mediaPool = new MediaElementPool();
         const program = new ProgramController(model, mediaPool);
+        const mediaModel = model.mediaModel;
+        program.mediaController = { mediaModel };
         initQoe(model, program);
         const qoeItem = model._qoeItem;
 
         program.trigger(MEDIA_PLAY_ATTEMPT);
-        program.trigger(PROVIDER_FIRST_FRAME);
+        program.trigger(PROVIDER_FIRST_FRAME, { type: PROVIDER_FIRST_FRAME });
 
         let qoeDump = qoeItem.dump();
         expect(validateMeasurement(qoeDump.events.playAttempt, startTime), 'play attempt event was fired ' +
@@ -70,7 +72,7 @@ describe('Model QoE', function() {
         program.trigger(MEDIA_TIME, {
             position: 2
         });
-        program.trigger(PROVIDER_FIRST_FRAME);
+        program.trigger(PROVIDER_FIRST_FRAME, { type: PROVIDER_FIRST_FRAME });
 
         qoeDump = qoeItem.dump();
         expect(playAttemptTick).to.equal(qoeDump.events.playAttempt, 'play attempt is unchanged after further media events');
@@ -83,6 +85,7 @@ describe('Model QoE', function() {
         const program = new ProgramController(model, mediaPool);
         initQoe(model, program);
         const mediaModel = model.mediaModel;
+        program.mediaController = { mediaModel };
         const qoeItem = model._qoeItem;
 
         mediaModel.set('mediaState', STATE_LOADING);

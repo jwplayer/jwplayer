@@ -4,7 +4,9 @@ import {
     PROVIDER_FIRST_FRAME,
     MEDIA_TIME,
     MEDIA_FIRST_FRAME,
-    MEDIA_VISUAL_QUALITY
+    MEDIA_VISUAL_QUALITY,
+    STATE_PLAYING,
+    STATE_PAUSED
 } from 'events/events';
 import Timer from 'api/timer';
 import type {
@@ -20,7 +22,7 @@ const TAB_VISIBLE = 'tabVisible';
 
 interface QoeModel extends Model {
     _qoeItem: QoeItem;
-    _triggerFirstFrame: () => void;
+    _triggerFirstFrame: (evt: TimeEvent | { type: 'providerFirstFrame' }) => void;
     _onTime: (evt: TimeEvent) => void;
     _onPlayAttempt: () => void;
     _onTabVisible?: (modelChanged: Model, activeTab: boolean) => void;
@@ -41,12 +43,12 @@ class QoeItem extends Timer {
 
 // This is to provide a first frame event even when
 //  a provider does not give us one.
-const onTimeIncreasesGenerator = (function(callback: () => void): (evt: TimeEvent) => void {
+const onTimeIncreasesGenerator = (function(callback: (evt: TimeEvent) => void): (evt: TimeEvent) => void {
     let lastVal = 0;
     return function (evt: TimeEvent): void {
         const pos = evt.position;
         if (pos > lastVal) {
-            callback();
+            callback(evt);
         }
         // sometimes the number will wrap around (ie 100 down to 0)
         //  so always update
@@ -68,8 +70,15 @@ function trackFirstFrame(model: QoeModel, programController: ProgramController):
 
     // When it occurs, send the event, and unbind all listeners
     let once = false;
-    model._triggerFirstFrame = function(): void {
-        if (once) {
+    model._triggerFirstFrame = function(evt: TimeEvent | { type: 'providerFirstFrame' }): void {
+        if (once || !programController.mediaController) {
+            return;
+        }
+        // Only trigger firstFrame while playing or paused or providerFirstFrame
+        // (ignores "time" events while loading/stalling/idle/complete)
+        const mediaModel = programController.mediaController.mediaModel;
+        const state = mediaModel.attributes.mediaState;
+        if (state !== STATE_PLAYING && state !== STATE_PAUSED && evt.type !== PROVIDER_FIRST_FRAME) {
             return;
         }
         once = true;
@@ -80,15 +89,12 @@ function trackFirstFrame(model: QoeModel, programController: ProgramController):
         programController.trigger(MEDIA_FIRST_FRAME, { loadTime: time });
 
         // Start firing visualQuality once playback has started
-        if (programController.mediaController) {
-            const mediaModel = programController.mediaController.mediaModel;
-            mediaModel.off(`change:${MEDIA_VISUAL_QUALITY}`, null, mediaModel);
-            mediaModel.change(MEDIA_VISUAL_QUALITY, (changedMediaModel, eventData) => {
-                if (eventData) {
-                    programController.trigger(MEDIA_VISUAL_QUALITY, eventData);
-                }
-            }, mediaModel);
-        }
+        mediaModel.off(`change:${MEDIA_VISUAL_QUALITY}`, null, mediaModel);
+        mediaModel.change(MEDIA_VISUAL_QUALITY, (changedMediaModel, eventData) => {
+            if (eventData) {
+                programController.trigger(MEDIA_VISUAL_QUALITY, eventData);
+            }
+        }, mediaModel);
 
         unbindFirstFrameEvents(model, programController);
     };
