@@ -55,7 +55,7 @@ export default class FloatingDragUI {
                 const { pageX, pageY } = e;
                 deltaX = calculateDelta(x, pageX, startX, maxDeltaX, minDeltaX);
                 deltaY = calculateDelta(y, pageY, startY, maxDeltaY, minDeltaY);
-                transform(container, `translate3d(${deltaX}px, ${deltaY}px, 0)`);
+                transform(container, `translate(${deltaX}px, ${deltaY}px)`);
             })
             .on('dragEnd', () => {
                 removeClass(container, 'jw-floating-dragging');
