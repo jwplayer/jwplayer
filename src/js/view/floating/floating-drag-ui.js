@@ -1,5 +1,5 @@
 import UI from 'utils/ui';
-import { transform } from 'utils/css';
+import { transform, style } from 'utils/css';
 import { addClass, removeClass } from 'utils/dom';
 
 export default class FloatingDragUI {
@@ -9,10 +9,14 @@ export default class FloatingDragUI {
     }
 
     disable() {
-        if (this.ui) {
+        const container = this.container;
+        if (container) {
             // 'Dragged' state is reset so the transition animation can fire again if the player re-floats.
-            removeClass(this.container, 'jw-floating-dragged');
-            removeClass(this.container, 'jw-floating-dragging');
+            removeClass(container, 'jw-floating-dragged');
+            removeClass(container, 'jw-floating-dragging');
+            setWillChange(container, 'auto');
+        }
+        if (this.ui) {
             this.ui.destroy();
             this.ui = null;
         }
@@ -45,6 +49,7 @@ export default class FloatingDragUI {
                 // Class prevents initial animation styles from overriding translate styling.
                 addClass(container, 'jw-floating-dragged');
                 addClass(container, 'jw-floating-dragging');
+                setWillChange(container, 'transform');
             })
             .on('drag', (e) => {
                 const { pageX, pageY } = e;
@@ -54,6 +59,7 @@ export default class FloatingDragUI {
             })
             .on('dragEnd', () => {
                 removeClass(container, 'jw-floating-dragging');
+                setWillChange(container, 'auto');
                 x = deltaX;
                 y = deltaY;
             });
@@ -62,3 +68,4 @@ export default class FloatingDragUI {
 
 const calculateMax = (windowLength, offset, length) => windowLength - offset - length;
 const calculateDelta = (last, current, first, max, min) => Math.max(Math.min(last + current - first, max), min);
+const setWillChange = (element, willChange) => style(element, { willChange });
