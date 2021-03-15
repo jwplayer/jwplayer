@@ -90,6 +90,8 @@ export function sanitizeScriptNodes(element) {
     return element;
 }
 
+const validUrl = new RegExp(/^((((https?|ftps?|gopher|telnet|nntp):\/\/)|(mailto:|news:))(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:|:blank:]])?$/);
+
 export function sanitizeElementAttributes(element) {
     const attributes = element.attributes;
     for (let i = attributes.length; i--;) {
@@ -99,7 +101,7 @@ export function sanitizeElementAttributes(element) {
         }
         if (/href/.test(name)) {
             const link = attributes[i].value;
-            if (/javascript:|javascript&colon;/.test(link)) {
+            if (/javascript:|javascript&colon;/.test(link) && validUrl.test(link)) {
                 element.removeAttribute(name);
             }
         }
@@ -253,7 +255,7 @@ export function openLink(link, target, additionalOptions = {}) {
     let a = document.createElement('a');
     a.href = link;
     a.target = target;
-    a = Object.assign(a, additionalOptions);
+    a = sanitizeElementAttributes(Object.assign(a, additionalOptions));
 
     // Firefox is the only modern browser that doesn't support clicking orphaned anchors.
     if (Browser.firefox) {
