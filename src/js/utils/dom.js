@@ -255,6 +255,9 @@ export function previousSibling(element) {
 }
 
 export function openLink(link, target, additionalOptions = {}) {
+    if (!validUrl.test(link)) {
+        return;
+    }
     let a = document.createElement('a');
     a.href = link;
     a.target = target;
