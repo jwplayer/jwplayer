@@ -7,7 +7,7 @@ import VolumeTooltipIcon from 'view/controls/components/volumetooltipicon';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import Events from 'utils/backbone.events';
-import { prependChild, setAttribute, toggleClass, openLink } from 'utils/dom';
+import { prependChild, setAttribute, toggleClass, openLink, addClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
@@ -170,6 +170,9 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
+            imaFullscreen: button('jw-icon-fullscreen', () => {
+                _api.setFullscreen();
+            }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
             }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
@@ -216,7 +219,11 @@ export default class Controlbar {
         setAttribute(nextElement, 'dir', 'auto');
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
-        const fullscreenTip = SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
+        const fullscreenTips = [
+            SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen),
+            SimpleTooltip(elements.imaFullscreen.element())
+        ];
+        addClass(elements.imaFullscreen.element(), 'jw-fullscreen-ads');
 
         // Filter out undefined elements
         const buttonLayout = [
@@ -224,6 +231,7 @@ export default class Controlbar {
             elements.rewind,
             elements.next,
             elements.volumetooltip,
+            elements.imaFullscreen,
             elements.mute,
             elements.horizontalVolumeContainer,
             elements.alt,
@@ -270,12 +278,15 @@ export default class Controlbar {
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', (model, val) => {
-            const fullscreenElement = this.elements.fullscreen.element();
-            toggleClass(fullscreenElement, 'jw-off', val);
+            const fullscreenElements = [this.elements.fullscreen.element(), this.elements.imaFullscreen.element()];
 
-            const fullscreenText = model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
-            fullscreenTip.setText(fullscreenText);
-            setAttribute(fullscreenElement, 'aria-label', fullscreenText);
+            for (let i=0; i < fullscreenElements.length; i++) {
+                const element = fullscreenElements[i];
+                toggleClass(fullscreenElements[i], 'jw-off', val);
+                const fullscreenText = model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
+                fullscreenTips[i].setText(fullscreenText);
+                setAttribute(element, 'aria-label', fullscreenText);
+            }
         }, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
@@ -391,6 +402,7 @@ export default class Controlbar {
 
     onCastActive(model, val) {
         this.elements.fullscreen.toggle(!val);
+        this.elements.imaFullscreen.toggle(!val);
         if (this.elements.cast.button) {
             toggleClass(this.elements.cast.button, 'jw-off', !val);
         }
