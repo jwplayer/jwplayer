@@ -14,8 +14,22 @@
         bottom: 0.5em;
     }
 
-    .jw-nextup-container {
-        bottom: 0;
+    &:not(.jw-flag-touch.jw-breakpoint-4):not(.jw-flag-touch.jw-breakpoint-5):not(.jw-flag-touch.jw-breakpoint-6):not(.jw-flag-touch.jw-breakpoint-7) {
+        .jw-nextup-container {
+            transform: translateY((@mobile-touch-target * 1.5));
+        }
+    }
+
+    &.jw-flag-touch.jw-state-playing {
+        &.jw-breakpoint-7,
+        &.jw-breakpoint-6,
+        &.jw-breakpoint-5,
+        &.jw-breakpoint-4 {
+            .jw-nextup-container {
+                /* For bottom styling from touch.less */
+                transform: translateY(4.25em);
+            }
+        }
     }
 }
 
