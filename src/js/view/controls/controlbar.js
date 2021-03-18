@@ -170,7 +170,7 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
-            imaFullscreen: button('jw-icon-fullscreen', () => {
+            adsFullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
             }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
             fullscreen: button('jw-icon-fullscreen', () => {
@@ -221,9 +221,9 @@ export default class Controlbar {
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
         const fullscreenTips = [
             SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen),
-            SimpleTooltip(elements.imaFullscreen.element())
+            SimpleTooltip(elements.adsFullscreen.element())
         ];
-        addClass(elements.imaFullscreen.element(), 'jw-fullscreen-ads');
+        addClass(elements.adsFullscreen.element(), 'jw-fullscreen-ads');
 
         // Filter out undefined elements
         const buttonLayout = [
@@ -231,7 +231,7 @@ export default class Controlbar {
             elements.rewind,
             elements.next,
             elements.volumetooltip,
-            elements.imaFullscreen,
+            elements.adsFullscreen,
             elements.mute,
             elements.horizontalVolumeContainer,
             elements.alt,
@@ -278,7 +278,7 @@ export default class Controlbar {
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', (model, val) => {
-            const fullscreenElements = [this.elements.fullscreen.element(), this.elements.imaFullscreen.element()];
+            const fullscreenElements = [this.elements.fullscreen.element(), this.elements.adsFullscreen.element()];
 
             for (let i=0; i < fullscreenElements.length; i++) {
                 const element = fullscreenElements[i];
@@ -402,7 +402,7 @@ export default class Controlbar {
 
     onCastActive(model, val) {
         this.elements.fullscreen.toggle(!val);
-        this.elements.imaFullscreen.toggle(!val);
+        this.elements.adsFullscreen.toggle(!val);
         if (this.elements.cast.button) {
             toggleClass(this.elements.cast.button, 'jw-off', !val);
         }
