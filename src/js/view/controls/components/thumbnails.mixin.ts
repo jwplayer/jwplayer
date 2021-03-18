@@ -57,6 +57,8 @@ const ThumbnailsMixin: ThumbnailsMixinInt = {
                 thumbs.push(new Thumbnail(obj));
             }, this);
             this.drawCues();
+            // Set the initial timetip dimensions for the thumbnail
+            this.showThumbnail(0);
         }
     },
 

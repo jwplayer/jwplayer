@@ -1,6 +1,6 @@
 import { throttle, each } from 'utils/underscore';
 import { between } from 'utils/math';
-import { style } from 'utils/css';
+import { style, transform } from 'utils/css';
 import { timeFormat } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
 import UI from 'utils/ui';
@@ -305,7 +305,7 @@ class TimeSlider extends Slider {
             timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
         }
         const safePct: number = parseFloat(Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3)) * 100;
-        style(timeTip.el, { transform: `translateX(${safePct}%)` });
+        transform(timeTip.el, `translateX(${safePct}%)`);
     }
 
     hideTimeTooltip(): void {
