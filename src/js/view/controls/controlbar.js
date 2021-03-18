@@ -280,7 +280,7 @@ export default class Controlbar {
         _model.change('fullscreen', (model, val) => {
             const fullscreenElements = [this.elements.fullscreen.element(), this.elements.imaFullscreen.element()];
 
-            for (let i=0; i < fullscreenElements.length; i++) {
+            for (let i = 0; i < fullscreenElements.length; i++) {
                 const element = fullscreenElements[i];
                 toggleClass(fullscreenElements[i], 'jw-off', val);
                 const fullscreenText = model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
