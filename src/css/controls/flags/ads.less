@@ -53,13 +53,9 @@
             }
         }
 
-        .jw-fullscreen-ads {
-            display: flex;
-        }
-
         .jw-tooltip,
         .jw-icon-tooltip:not(.jw-icon-volume),
-        .jw-icon-inline:not(.jw-icon-playback):not(.jw-fullscreen-ads):not(.jw-icon-volume) {
+        .jw-icon-inline:not(.jw-icon-playback):not(.jw-icon-fullscreen):not(.jw-icon-volume) {
             display: none;
         }
 
@@ -70,6 +66,10 @@
         .jw-text-alt {
             display: flex;
         }
+    }
+
+    .jw-fullscreen-ima {
+        display: none;
     }
 
     // Control bar should always be visible during ad playback on touch devices
