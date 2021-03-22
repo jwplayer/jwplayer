@@ -38,14 +38,14 @@ export default class FloatingDragUI {
         this.ui = new UI(input, { preventScrolling: true })
             .on('dragStart', (e) => {
                 const { pageX, pageY } = e;
-                const { outerWidth, outerHeight } = window;
+                const { innerWidth, innerHeight } = window;
                 const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = container;
                 startX = pageX;
                 startY = pageY;
                 minDeltaX = -offsetLeft;
                 minDeltaY = -offsetTop;
-                maxDeltaX = calculateMax(outerWidth, offsetLeft, offsetWidth);
-                maxDeltaY = calculateMax(outerHeight, offsetTop, offsetHeight);
+                maxDeltaX = calculateMax(innerWidth, offsetLeft, offsetWidth);
+                maxDeltaY = calculateMax(innerHeight, offsetTop, offsetHeight);
                 // Class prevents initial animation styles from overriding translate styling.
                 addClass(container, 'jw-floating-dragged');
                 addClass(container, 'jw-floating-dragging');
