@@ -304,8 +304,9 @@ class TimeSlider extends Slider {
             // timeTip may go outside the bounds of the player. Determine the % of tolerance needed
             timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
         }
-        const safePct: number = parseFloat(Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3)) * 100;
-        transform(timeTip.el, `translateX(${safePct}%)`);
+        const safePct: number = parseFloat(Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3));
+        const safePos = safePct * railBounds.width;
+        transform(timeTip.el, `translateX(${safePos}px)`);
     }
 
     hideTimeTooltip(): void {
