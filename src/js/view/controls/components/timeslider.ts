@@ -297,16 +297,15 @@ class TimeSlider extends Slider {
         addClass(timeTip.el, 'jw-open');
 
         const timeTipWidth = timeTip.getWidth();
-        const widthPct = railBounds.width / 100;
         const tolerance = playerWidth - railBounds.width;
-        let timeTipPct = 0;
+        let timeTipPixels = 0;
         if (timeTipWidth > tolerance) {
-            // timeTip may go outside the bounds of the player. Determine the % of tolerance needed
-            timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
+            // timeTip may go outside the bounds of the player. Determine the amount of tolerance needed in pixels.
+            timeTipPixels = (timeTipWidth - tolerance) / 2;
         }
-        const safePct: number = parseFloat(Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3));
-        const safePos = safePct * railBounds.width;
-        transform(timeTip.el, `translateX(${safePos}px)`);
+        const safePixels: number = parseFloat(Math.min(railBounds.width - timeTipPixels,
+            Math.max(timeTipPixels, position)).toFixed(3));
+        transform(timeTip.el, `translateX(${safePixels}px)`);
     }
 
     hideTimeTooltip(): void {
