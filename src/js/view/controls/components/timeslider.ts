@@ -303,8 +303,8 @@ class TimeSlider extends Slider {
             // timeTip may go outside the bounds of the player. Determine the amount of tolerance needed in pixels.
             timeTipPixels = (timeTipWidth - tolerance) / 2;
         }
-        const safePixels: number = parseFloat(Math.min(railBounds.width - timeTipPixels,
-            Math.max(timeTipPixels, position)).toFixed(3));
+        const safePixels: number = Math.round(Math.min(railBounds.width - timeTipPixels,
+            Math.max(timeTipPixels, position)) * 4) / 4;
         transform(timeTip.el, `translateX(${safePixels}px)`);
     }
 
