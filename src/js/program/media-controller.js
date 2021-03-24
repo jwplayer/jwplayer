@@ -2,7 +2,7 @@ import cancelable from 'utils/cancelable';
 import Events from 'utils/backbone.events';
 import ApiQueueDecorator from 'api/api-queue';
 import { PlayerError, getPlayAttemptFailedErrorCode } from 'api/errors';
-import { ProviderListener } from 'program/program-listeners';
+import { providerListener } from 'program/program-listeners';
 import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
 import {
@@ -19,7 +19,7 @@ export default class MediaController extends Events {
         this.mediaModel = new MediaModel();
         this.model = model;
         this.provider = provider;
-        this.providerListener = new ProviderListener(this);
+        this.providerListener = providerListener;
         this.thenPlayPromise = cancelable(() => {});
         provider.off();
         provider.on('all', this.providerListener, this);

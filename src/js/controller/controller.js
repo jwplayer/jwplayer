@@ -84,10 +84,13 @@ Object.assign(Controller.prototype, {
             this._apiQueue =
             this._captions =
             this._programController = null;
+        if (this.clearSetupVars) {
+            this.clearSetupVars();
+        }
     },
     playerSetup(config, _api, originalContainer, eventListeners, commandQueue, mediaPool) {
-        const _this = this;
-        const _model = _this._model = new Model();
+        let _this = this;
+        let _model = _this._model = new Model();
 
         let _view;
         let _captions;
@@ -138,10 +141,24 @@ Object.assign(Controller.prototype, {
             });
         }
 
-        const _programController = this._programController = new ProgramController(_model, mediaPool, _api._publicApi);
+        let _programController = this._programController = new ProgramController(_model, mediaPool, _api._publicApi);
         updateProgramSoundSettings();
         addProgramControllerListeners();
         initQoe(_model, _programController);
+
+        _this.clearSetupVars = function() {
+            if (eventsReadyQueue) {
+                eventsReadyQueue.destroy();
+            }
+            _this =
+                _programController =
+                _model =
+                _view =
+                checkAutoStartCancelable =
+                updatePlaylistCancelable =
+                apiQueue =
+                eventsReadyQueue = null;
+        };
 
         _model.on(ERROR, _this.triggerError, _this);
 
@@ -1174,7 +1191,7 @@ Object.assign(Controller.prototype, {
         };
 
         // Setup ApiQueueDecorator after instance methods have been assigned
-        const apiQueue = this._apiQueue = new ApiQueueDecorator(this, [
+        let apiQueue = this._apiQueue = new ApiQueueDecorator(this, [
             'play',
             'pause',
             'setCurrentAudioTrack',
