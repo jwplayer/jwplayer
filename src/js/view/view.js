@@ -202,6 +202,7 @@ function View(_api, _model) {
         _this.updateBounds();
         _this.updateStyles();
         _this.checkResized();
+        _model.trigger('responsiveUpdate');
     }
 
     function updateContainerStyles(width, height) {
