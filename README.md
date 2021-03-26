@@ -60,9 +60,8 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
 #### Requirements:
 
 - [Node.js](http://nodejs.org/download/) with npm
-- [yarn](https://yarnpkg.com/en/docs/install) is preferred for package management
 - Install global npm dependencies
-`yarn global add eslint grunt-cli jsdoc karma-cli stylelint webpack webpack-cli`
+`npm install -g eslint grunt-cli jsdoc karma-cli stylelint webpack webpack-cli`
 
 #### Steps:
 
@@ -79,10 +78,10 @@ git remote add upstream https://github.com/jwplayer/jwplayer
 2. Install the dependencies:
 ````bash
 # Install dependencies
-yarn global add eslint grunt-cli jsdoc karma-cli stylelint webpack webpack-cli
-yarn install
+npm install -g eslint grunt-cli jsdoc karma-cli stylelint webpack webpack-cli
+npm install
 # Optionally, install webpack-dev-server
-yarn global add webpack-dev-server
+npm install -g webpack-dev-server
 ````
  
 3. Build the player:
@@ -107,7 +106,7 @@ grunt karma:{BROWSER} e.g. grunt karma:chrome
  
 5. Lint your code:
 ````bash
-yarn run lint
+npm run lint
 ````
 
 6. Setup git pre-push hook

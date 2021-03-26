@@ -206,7 +206,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('hooks', 'Install Pre Push Hook', function() {
-        runCommand('yarn hooks', '.');
+        runCommand('npm run hooks', '.');
     });
     
     grunt.registerTask('notice', 'Create notice.txt file', function() {
@@ -221,7 +221,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('lint', 'ESLints JavaScript & Stylelints LESS', function(target) {
-        let command = 'yarn lint';
+        let command = 'npm run lint';
         if (target === 'js') {
             command = command + ':js';
         }
@@ -232,11 +232,11 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('type-check', 'Run type-check on ts files', function() {
-        runCommand('yarn type-check', '.')
+        runCommand('npm run type-check', '.')
     });
 
     // grunt.registerTask('docs', 'Generate API documentation', function() {
-    //     runCommand('yarn docs', '.');
+    //     runCommand('npm run docs', '.');
     // "preversion": "grunt && grunt clean:docs && npm run docs && git add docs",
     // "docs": "jsdoc -c docs/jsdoc.conf.json",
     // });
