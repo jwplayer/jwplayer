@@ -1,7 +1,7 @@
 /*!
-JW Player version 8.16.2
-Copyright (c) 2020, JW Player, All Rights Reserved 
-https://github.com/jwplayer/jwplayer/blob/v8.16.2/README.md
+JW Player version 8.20.0
+Copyright (c) 2021, JW Player, All Rights Reserved 
+https://github.com/jwplayer/jwplayer/blob/v8.20.0/README.md
 
 This source code and its use and distribution is subject to the terms and conditions of the applicable license agreement. 
 https://www.jwplayer.com/tos/
@@ -15,7 +15,7 @@ The following software is used under Apache License 2.0
 **************************************************************************************************
 
 vtt.js v0.13.0
-Copyright (c) 2020 Mozilla (http://mozilla.org)
+Copyright (c) 2021 Mozilla (http://mozilla.org)
 https://github.com/mozilla/vtt.js/blob/v0.13.0/LICENSE
 
 * * *
@@ -50,6 +50,10 @@ https://github.com/taylorhakes/promise-polyfill/blob/v7.1.1/LICENSE
 can-autoplay.js v3.0.0
 Copyright (c) 2017 video-dev
 https://github.com/video-dev/can-autoplay/blob/v3.0.0/LICENSE
+
+focus-options-polyfill v1.5.0
+Copyright (c) 2018 Juan Valencia
+https://github.com/calvellido/focus-options-polyfill/blob/v1.5.0/LICENSE
 
 * * *
 
@@ -92,4 +96,563 @@ COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL OR CONSEQ
 
 The name and trademarks of copyright holders may NOT be used in advertising or publicity pertaining to the work without specific, written prior permission. Title to copyright in this work will at all times remain with copyright holders.
 */
-(window.webpackJsonpjwplayer=window.webpackJsonpjwplayer||[]).push([[10],{97:function(t,e,r){"use strict";r.r(e);var n=r(38),i=r(65),s=/^(\d+):(\d{2})(:\d{2})?\.(\d{3})/,a=/^-?\d+$/,u=/\r\n|\n/,o=/^NOTE($|[ \t])/,c=/^[^\sa-zA-Z-]+/,l=/:/,f=/\s/,h=/^\s+/,g=/-->/,d=/^WEBVTT([ \t].*)?$/,p=function(t,e,r){this.window=t,this.state="INITIAL",this.buffer="",this.decoder=e||new b,this.syncCueParsing=r,this.regionList=[],this.maxCueBatch=1e3};function b(){return{decode:function(t){if(!t)return"";if("string"!=typeof t)throw new Error("Error - expected string data.");return decodeURIComponent(encodeURIComponent(t))}}}function v(){this.values=Object.create(null)}v.prototype={set:function(t,e){this.get(t)||""===e||(this.values[t]=e)},get:function(t,e,r){return r?this.has(t)?this.values[t]:e[r]:this.has(t)?this.values[t]:e},has:function(t){return t in this.values},alt:function(t,e,r){for(var n=0;n<r.length;++n)if(e===r[n]){this.set(t,e);break}},integer:function(t,e){a.test(e)&&this.set(t,parseInt(e,10))},percent:function(t,e){return(e=parseFloat(e))>=0&&e<=100&&(this.set(t,e),!0)}};var E=new i.a(0,0,0),w="middle"===E.align?"middle":"center";function T(t,e,r){var n=t;function i(){var e=function(t){function e(t,e,r,n){return 3600*(0|t)+60*(0|e)+(0|r)+(0|n)/1e3}var r=t.match(s);return r?r[3]?e(r[1],r[2],r[3].replace(":",""),r[4]):r[1]>59?e(r[1],r[2],0,r[4]):e(0,r[1],r[2],r[4]):null}(t);if(null===e)throw new Error("Malformed timestamp: "+n);return t=t.replace(c,""),e}function a(){t=t.replace(h,"")}if(a(),e.startTime=i(),a(),"--\x3e"!==t.substr(0,3))throw new Error("Malformed time stamp (time stamps must be separated by '--\x3e'): "+n);t=t.substr(3),a(),e.endTime=i(),a(),function(t,e){var n=new v;!function(t,e,r,n){for(var i=n?t.split(n):[t],s=0;s<=i.length;s+=1)if("string"==typeof i[s]){var a=i[s].split(r);if(2===a.length)e(a[0],a[1])}}(t,(function(t,e){switch(t){case"region":for(var i=r.length-1;i>=0;i--)if(r[i].id===e){n.set(t,r[i].region);break}break;case"vertical":n.alt(t,e,["rl","lr"]);break;case"line":var s=e.split(","),a=s[0];n.integer(t,a),n.percent(t,a)&&n.set("snapToLines",!1),n.alt(t,a,["auto"]),2===s.length&&n.alt("lineAlign",s[1],["start",w,"end"]);break;case"position":var u=e.split(",");n.percent(t,u[0]),2===u.length&&n.alt("positionAlign",u[1],["start",w,"end","line-left","line-right","auto"]);break;case"size":n.percent(t,e);break;case"align":n.alt(t,e,["start",w,"end","left","right"])}}),l,f),e.region=n.get("region",null),e.vertical=n.get("vertical","");var i=n.get("line","auto");"auto"===i&&-1===E.line&&(i=-1),e.line=i,e.lineAlign=n.get("lineAlign","start"),e.snapToLines=n.get("snapToLines",!0),e.size=n.get("size",100),e.align=n.get("align",w);var s=n.get("position","auto");"auto"===s&&50===E.position&&(s="start"===e.align||"left"===e.align?0:"end"===e.align||"right"===e.align?100:50),e.position=s}(t,e)}p.prototype={parse:function(t,e){var r,s=this;function a(){for(var t=s.buffer,e=0;e<t.length&&"\r"!==t[e]&&"\n"!==t[e];)++e;var r=t.substr(0,e);return"\r"===t[e]&&++e,"\n"===t[e]&&++e,s.buffer=t.substr(e),r}function c(){"CUETEXT"===s.state&&s.cue&&s.oncue&&s.oncue(s.cue),s.cue=null,s.state="INITIAL"===s.state?"BADWEBVTT":"BADCUE"}t&&(s.buffer+=s.decoder.decode(t,{stream:!0}));try{if("INITIAL"===s.state){if(!u.test(s.buffer))return this;var f=(r=a()).match(d);if(!f||!f[0])throw new Error("Malformed WebVTT signature.");s.state="HEADER"}}catch(t){return c(),this}var h=!1,p=0;!function t(){try{for(;s.buffer&&(p<=s.maxCueBatch||s.syncCueParsing);){if(!u.test(s.buffer))return s.flush(),this;switch(h?h=!1:r=a(),s.state){case"HEADER":l.test(r)||r||(s.state="ID");break;case"NOTE":r||(s.state="ID");break;case"ID":if(o.test(r)){s.state="NOTE";break}if(!r)break;if(s.cue=new i.a(0,0,""),s.state="CUE",!g.test(r)){s.cue.id=r;break}case"CUE":try{T(r,s.cue,s.regionList)}catch(t){s.cue=null,s.state="BADCUE";break}s.state="CUETEXT";break;case"CUETEXT":var f=g.test(r);if(!r||f&&(h=!0)){s.oncue&&(p+=1,s.oncue(s.cue)),s.cue=null,s.state="ID";break}s.cue.text&&(s.cue.text+="\n"),s.cue.text+=r;break;case"BADCUE":r||(s.state="ID")}}if(p=0,s.buffer)Object(n.b)(t);else if(!e)return s.flush(),this}catch(t){return c(),this}}()},flush:function(){try{if(this.buffer+=this.decoder.decode(),(this.cue||"HEADER"===this.state)&&(this.buffer+="\n\n",this.parse(void 0,!0)),"INITIAL"===this.state)throw new Error("Malformed WebVTT signature.")}catch(t){throw t}return this.onflush&&this.onflush(),this}},e.default=p}}]);
+(window["webpackJsonpjwplayer"] = window["webpackJsonpjwplayer"] || []).push([["vttparser"],{
+
+/***/ "./src/js/parsers/captions/vttparser.js":
+/*!**********************************************!*\
+  !*** ./src/js/parsers/captions/vttparser.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var utils_request_animation_frame__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils/request-animation-frame */ "./src/js/utils/request-animation-frame.ts");
+/* harmony import */ var parsers_captions_vttcue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! parsers/captions/vttcue */ "./src/js/parsers/captions/vttcue.js");
+/**
+ * Copyright 2013 vtt.js Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+* Source: https://github.com/mozilla/vtt.js/blob/v0.13.0/dist/vtt.js#L1718
+*/
+
+/* eslint-disable no-nested-ternary */
+
+
+var timestampRegex = /^(\d+):(\d{2})(:\d{2})?\.(\d{3})/;
+var integerRegex = /^-?\d+$/;
+var fullLineRegex = /\r\n|\n/;
+var noteRegex = /^NOTE($|[ \t])/;
+var removeTimestampRegex = /^[^\sa-zA-Z-]+/;
+var colonDelimRegex = /:/;
+var stringDelimRegex = /\s/;
+var whitespaceRegex = /^\s+/;
+var arrowRegex = /-->/;
+var headerRegex = /^WEBVTT([ \t].*)?$/;
+
+var VTTParser = function VTTParser(window, decoder, syncCueParsing) {
+  this.window = window;
+  this.state = 'INITIAL';
+  this.buffer = '';
+  this.decoder = decoder || new StringDecoder();
+  this.syncCueParsing = syncCueParsing;
+  this.regionList = [];
+  this.maxCueBatch = 1000;
+};
+
+function StringDecoder() {
+  return {
+    decode: function decode(data) {
+      if (!data) {
+        return '';
+      }
+
+      if (typeof data !== 'string') {
+        throw new Error('Error - expected string data.');
+      }
+
+      return decodeURIComponent(encodeURIComponent(data));
+    }
+  };
+} // Try to parse input as a time stamp.
+
+
+function parseTimeStamp(input) {
+  function computeSeconds(h, m, s, f) {
+    return (h | 0) * 3600 + (m | 0) * 60 + (s | 0) + (f | 0) / 1000;
+  }
+
+  var m = input.match(timestampRegex);
+
+  if (!m) {
+    return null;
+  }
+
+  if (m[3]) {
+    // Timestamp takes the form of [hours]:[minutes]:[seconds].[milliseconds]
+    return computeSeconds(m[1], m[2], m[3].replace(':', ''), m[4]);
+  } else if (m[1] > 59) {
+    // Timestamp takes the form of [hours]:[minutes].[milliseconds]
+    // First position is hours as it's over 59.
+    return computeSeconds(m[1], m[2], 0, m[4]);
+  } // Timestamp takes the form of [minutes]:[seconds].[milliseconds]
+
+
+  return computeSeconds(0, m[1], m[2], m[4]);
+} // A settings object holds key/value pairs and will ignore anything but the first
+// assignment to a specific key.
+
+
+function Settings() {
+  this.values = Object.create(null);
+}
+
+Settings.prototype = {
+  // Only accept the first assignment to any key.
+  set: function set(k, v) {
+    if (!this.get(k) && v !== '') {
+      this.values[k] = v;
+    }
+  },
+  // Return the value for a key, or a default value.
+  // If 'defaultKey' is passed then 'dflt' is assumed to be an object with
+  // a number of possible default values as properties where 'defaultKey' is
+  // the key of the property that will be chosen; otherwise it's assumed to be
+  // a single value.
+  get: function get(k, dflt, defaultKey) {
+    if (defaultKey) {
+      return this.has(k) ? this.values[k] : dflt[defaultKey];
+    }
+
+    return this.has(k) ? this.values[k] : dflt;
+  },
+  // Check whether we have a value for a key.
+  has: function has(k) {
+    return k in this.values;
+  },
+  // Accept a setting if its one of the given alternatives.
+  alt: function alt(k, v, a) {
+    for (var n = 0; n < a.length; ++n) {
+      if (v === a[n]) {
+        this.set(k, v);
+        break;
+      }
+    }
+  },
+  // Accept a setting if its a valid (signed) integer.
+  integer: function integer(k, v) {
+    if (integerRegex.test(v)) {
+      // integer
+      this.set(k, parseInt(v, 10));
+    }
+  },
+  // Accept a setting if its a valid percentage.
+  percent: function percent(k, v) {
+    v = parseFloat(v);
+
+    if (v >= 0 && v <= 100) {
+      this.set(k, v);
+      return true;
+    }
+
+    return false;
+  }
+}; // Helper function to parse input into groups separated by 'groupDelim', and
+// interprete each group as a key/value pair separated by 'keyValueDelim'.
+
+function parseOptions(input, callback, keyValueDelim, groupDelim) {
+  var groups = groupDelim ? input.split(groupDelim) : [input];
+
+  for (var i = 0; i <= groups.length; i += 1) {
+    if (typeof groups[i] !== 'string') {
+      continue;
+    }
+
+    var kv = groups[i].split(keyValueDelim);
+
+    if (kv.length !== 2) {
+      continue;
+    }
+
+    var k = kv[0];
+    var v = kv[1];
+    callback(k, v);
+  }
+}
+
+var defaults = new parsers_captions_vttcue__WEBPACK_IMPORTED_MODULE_1__["default"](0, 0, 0); // 'middle' was changed to 'center' in the spec: https://github.com/w3c/webvtt/pull/244
+// Chrome and Safari don't yet support this change, but FF does
+
+var center = defaults.align === 'middle' ? 'middle' : 'center';
+
+function parseCue(input, cue, regionList) {
+  // Remember the original input if we need to throw an error.
+  var oInput = input; // 4.1 WebVTT timestamp
+
+  function consumeTimeStamp() {
+    var ts = parseTimeStamp(input);
+
+    if (ts === null) {
+      throw new Error('Malformed timestamp: ' + oInput);
+    } // Remove time stamp from input.
+
+
+    input = input.replace(removeTimestampRegex, '');
+    return ts;
+  } // 4.4.2 WebVTT cue settings
+
+
+  function consumeCueSettings(inputInner, cueInner) {
+    var settings = new Settings();
+    parseOptions(inputInner, function (k, v) {
+      switch (k) {
+        case 'region':
+          // Find the last region we parsed with the same region id.
+          for (var i = regionList.length - 1; i >= 0; i--) {
+            if (regionList[i].id === v) {
+              settings.set(k, regionList[i].region);
+              break;
+            }
+          }
+
+          break;
+
+        case 'vertical':
+          settings.alt(k, v, ['rl', 'lr']);
+          break;
+
+        case 'line':
+          {
+            var vals = v.split(',');
+            var vals0 = vals[0];
+            settings.integer(k, vals0);
+
+            if (settings.percent(k, vals0)) {
+              settings.set('snapToLines', false);
+            }
+
+            settings.alt(k, vals0, ['auto']);
+
+            if (vals.length === 2) {
+              settings.alt('lineAlign', vals[1], ['start', center, 'end']);
+            }
+
+            break;
+          }
+
+        case 'position':
+          {
+            var _vals = v.split(',');
+
+            settings.percent(k, _vals[0]);
+
+            if (_vals.length === 2) {
+              settings.alt('positionAlign', _vals[1], ['start', center, 'end', 'line-left', 'line-right', 'auto']);
+            }
+
+            break;
+          }
+
+        case 'size':
+          settings.percent(k, v);
+          break;
+
+        case 'align':
+          settings.alt(k, v, ['start', center, 'end', 'left', 'right']);
+          break;
+
+        default:
+      }
+    }, colonDelimRegex, stringDelimRegex); // Apply default values for any missing fields.
+
+    cueInner.region = settings.get('region', null);
+    cueInner.vertical = settings.get('vertical', '');
+    var line = settings.get('line', 'auto');
+
+    if (line === 'auto' && defaults.line === -1) {
+      // set numeric line number for Safari
+      line = -1;
+    }
+
+    cueInner.line = line;
+    cueInner.lineAlign = settings.get('lineAlign', 'start');
+    cueInner.snapToLines = settings.get('snapToLines', true);
+    cueInner.size = settings.get('size', 100);
+    cueInner.align = settings.get('align', center);
+    var position = settings.get('position', 'auto');
+
+    if (position === 'auto' && defaults.position === 50) {
+      // set numeric position for Safari
+      position = cueInner.align === 'start' || cueInner.align === 'left' ? 0 : cueInner.align === 'end' || cueInner.align === 'right' ? 100 : 50;
+    }
+
+    cueInner.position = position;
+  }
+
+  function skipWhitespace() {
+    input = input.replace(whitespaceRegex, '');
+  } // 4.1 WebVTT cue timings.
+
+
+  skipWhitespace();
+  cue.startTime = consumeTimeStamp(); // (1) collect cue start time
+
+  skipWhitespace();
+
+  if (input.substr(0, 3) !== '-->') {
+    // (3) next characters must match '-->'
+    throw new Error('Malformed time stamp (time stamps must be separated by \'-->\'): ' + oInput);
+  }
+
+  input = input.substr(3);
+  skipWhitespace();
+  cue.endTime = consumeTimeStamp(); // (5) collect cue end time
+  // 4.1 WebVTT cue settings list.
+
+  skipWhitespace();
+  consumeCueSettings(input, cue);
+}
+
+VTTParser.prototype = {
+  parse: function parse(data, flushing) {
+    var self = this; // If there is no data then we won't decode it, but will just try to parse
+    // whatever is in buffer already. This may occur in circumstances, for
+    // example when flush() is called.
+
+    if (data) {
+      // Try to decode the data that we received.
+      self.buffer += self.decoder.decode(data, {
+        stream: true
+      });
+    }
+
+    function collectNextLine() {
+      var buffer = self.buffer;
+      var pos = 0;
+
+      while (pos < buffer.length && buffer[pos] !== '\r' && buffer[pos] !== '\n') {
+        ++pos;
+      }
+
+      var line = buffer.substr(0, pos); // Advance the buffer early in case we fail below.
+
+      if (buffer[pos] === '\r') {
+        ++pos;
+      }
+
+      if (buffer[pos] === '\n') {
+        ++pos;
+      }
+
+      self.buffer = buffer.substr(pos);
+      return line;
+    } // 3.2 WebVTT metadata header syntax
+    // function parseHeader(input) {
+    //     parseOptions(input, function (k, v) {
+    //         switch (k) {
+    //             case 'Region':
+    //                 // 3.3 WebVTT region metadata header syntax
+    //                 console.log('parse region', v);
+    //                 // parseRegion(v);
+    //                 break;
+    //             default:
+    //         }
+    //     }, colonDelimRegex);
+    // }
+
+
+    function errorHandler() {
+      // If we are currently parsing a cue, report what we have.
+      if (self.state === 'CUETEXT' && self.cue && self.oncue) {
+        self.oncue(self.cue);
+      }
+
+      self.cue = null; // Enter BADWEBVTT state if header was not parsed correctly otherwise
+      // another exception occurred so enter BADCUE state.
+
+      self.state = self.state === 'INITIAL' ? 'BADWEBVTT' : 'BADCUE';
+    }
+
+    var line; // 5.1 WebVTT file parsing.
+
+    try {
+      if (self.state === 'INITIAL') {
+        // We can't start parsing until we have the first line.
+        if (!fullLineRegex.test(self.buffer)) {
+          return this;
+        }
+
+        line = collectNextLine();
+        var m = line.match(headerRegex);
+
+        if (!m || !m[0]) {
+          throw new Error('Malformed WebVTT signature.');
+        }
+
+        self.state = 'HEADER';
+      }
+    } catch (e) {
+      errorHandler();
+      return this;
+    }
+
+    var alreadyCollectedLine = false;
+    var currentCueBatch = 0;
+
+    function processBuffer() {
+      try {
+        while (self.buffer && (currentCueBatch <= self.maxCueBatch || self.syncCueParsing)) {
+          // We can't parse a line until we have the full line.
+          if (!fullLineRegex.test(self.buffer)) {
+            self.flush();
+            return this;
+          }
+
+          if (!alreadyCollectedLine) {
+            line = collectNextLine();
+          } else {
+            alreadyCollectedLine = false;
+          }
+
+          switch (self.state) {
+            case 'HEADER':
+              // 13-18 - Allow a header (metadata) under the WEBVTT line.
+              if (colonDelimRegex.test(line)) {// parseHeader(line);
+              } else if (!line) {
+                // An empty line terminates the header and starts the body (cues).
+                self.state = 'ID';
+              }
+
+              break;
+
+            case 'NOTE':
+              // Ignore NOTE blocks.
+              if (!line) {
+                self.state = 'ID';
+              }
+
+              break;
+
+            case 'ID':
+              // Check for the start of NOTE blocks.
+              if (noteRegex.test(line)) {
+                self.state = 'NOTE';
+                break;
+              } // 19-29 - Allow any number of line terminators, then initialize new cue values.
+
+
+              if (!line) {
+                break;
+              }
+
+              self.cue = new parsers_captions_vttcue__WEBPACK_IMPORTED_MODULE_1__["default"](0, 0, '');
+              self.state = 'CUE'; // 30-39 - Check if self line contains an optional identifier or timing data.
+
+              if (!arrowRegex.test(line)) {
+                self.cue.id = line;
+                break;
+              }
+
+            // Process line as start of a cue.
+
+            /* falls through*/
+
+            case 'CUE':
+              // 40 - Collect cue timings and settings.
+              try {
+                parseCue(line, self.cue, self.regionList);
+              } catch (e) {
+                // In case of an error ignore rest of the cue.
+                self.cue = null;
+                self.state = 'BADCUE';
+                break;
+              }
+
+              self.state = 'CUETEXT';
+              break;
+
+            case 'CUETEXT':
+              {
+                var hasSubstring = arrowRegex.test(line); // 34 - If we have an empty line then report the cue.
+                // 35 - If we have the special substring '-->' then report the cue,
+                // but do not collect the line as we need to process the current
+                // one as a new cue.
+
+                if (!line || hasSubstring && (alreadyCollectedLine = true)) {
+                  // We are done parsing self cue.
+                  if (self.oncue) {
+                    currentCueBatch += 1;
+                    self.oncue(self.cue);
+                  }
+
+                  self.cue = null;
+                  self.state = 'ID';
+                  break;
+                }
+
+                if (self.cue.text) {
+                  self.cue.text += '\n';
+                }
+
+                self.cue.text += line;
+                break;
+              }
+
+            case 'BADCUE':
+              // BADCUE
+              // 54-62 - Collect and discard the remaining cue.
+              if (!line) {
+                self.state = 'ID';
+              }
+
+              break;
+
+            default:
+          }
+        }
+
+        currentCueBatch = 0;
+
+        if (self.buffer) {
+          Object(utils_request_animation_frame__WEBPACK_IMPORTED_MODULE_0__["requestAnimationFrame"])(processBuffer);
+        } else if (!flushing) {
+          self.flush();
+          return this;
+        }
+      } catch (e) {
+        errorHandler(e);
+        return this;
+      }
+    } // Immediately process some cues
+
+
+    processBuffer();
+  },
+  flush: function flush() {
+    var self = this;
+
+    try {
+      // Finish decoding the stream.
+      self.buffer += self.decoder.decode(); // Synthesize the end of the current cue or region.
+
+      if (self.cue || self.state === 'HEADER') {
+        self.buffer += '\n\n';
+        self.parse(undefined, true);
+      } // If we've flushed, parsed, and we're still on the INITIAL state then
+      // that means we don't have enough of the stream to parse the first
+      // line.
+
+
+      if (self.state === 'INITIAL') {
+        throw new Error('Malformed WebVTT signature.');
+      }
+    } catch (e) {
+      throw e;
+    }
+
+    if (self.onflush) {
+      self.onflush();
+    }
+
+    return this;
+  }
+};
+/* harmony default export */ __webpack_exports__["default"] = (VTTParser);
+
+/***/ })
+
+}]);
+//# sourceMappingURL=vttparser.c57b7bef86dba4bab5ae.map
