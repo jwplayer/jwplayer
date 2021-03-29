@@ -179,6 +179,9 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         },
 
         canplay(this: ProviderWithMixins): void {
+            if (_this.seeking) {
+                return;
+            }
             _canSeek = true;
             if (!_androidHls) {
                 _setMediaType();
