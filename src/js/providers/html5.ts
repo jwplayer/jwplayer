@@ -179,7 +179,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         },
 
         canplay(this: ProviderWithMixins): void {
-            if (_this.seeking) {
+            if (_canSeek) {
                 return;
             }
             _canSeek = true;
