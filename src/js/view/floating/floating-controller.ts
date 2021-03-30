@@ -368,5 +368,6 @@ export default class FloatingController {
         if (!this._floatingStoppedForever && this.getFloatingConfig() && this.getFloatMode() === 'notVisible') {
             this._boundThrottledMobileFloatScrollHandler();
         }
+        this.transitionFloating(false);
     }
 }
