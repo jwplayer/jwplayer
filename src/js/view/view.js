@@ -202,7 +202,6 @@ function View(_api, _model) {
         _this.updateBounds();
         _this.updateStyles();
         _this.checkResized();
-        floatingController.transitionFloating(false);
     }
 
     function updateContainerStyles(width, height) {
