@@ -7,7 +7,8 @@ import { deviceIsLandscape } from 'utils/dom';
 import { isIframe } from 'utils/browser';
 import {
     addClass,
-    removeClass
+    removeClass,
+    toggleClass
 } from 'utils/dom';
 import { STATE_IDLE, STATE_COMPLETE, STATE_ERROR } from 'events/events';
 import { isNumber } from 'utils/underscore';
@@ -54,17 +55,6 @@ const removeFPWatcher = (fc: FloatingController) => {
     if (watcherIDX !== -1) {
         watchers.splice(watcherIDX, 1);
     }
-};
-
-const preTransition = (fc: FloatingController) => {
-    const { _model, _wrapperEl } = fc;
-    addClass(_wrapperEl, 'jw-float-transition');
-    // Prevent layout shift in controls when player moves to pre-transition state.
-    _model.once('forceResponsiveListener', () => {
-        _model.once('responsiveUpdate', () => {
-            removeClass(_wrapperEl, 'jw-float-transition');
-        }, fc);
-    }, fc);
 };
 
 export default class FloatingController {
@@ -162,9 +152,8 @@ export default class FloatingController {
         if (this.getFloatingPlayer() === null) {
             this.setFloatingPlayer(this._playerEl);
 
-            preTransition(this);
             this._model.set('isFloating', true);
-
+            this.transitionFloating(true);
             addClass(this._playerEl, 'jw-flag-floating');
 
             if (mobileFloatIntoPlace) {
@@ -212,7 +201,7 @@ export default class FloatingController {
             return;
         }
 
-        preTransition(this);
+        this.transitionFloating(true);
         this.setFloatingPlayer(null);
         this._model.set('isFloating', false);
         const playerBounds = this._playerBounds;
@@ -251,6 +240,10 @@ export default class FloatingController {
 
         // Perform resize and trigger "float" event responsively to prevent layout thrashing
         this._model.trigger('forceResponsiveListener', {});
+    }
+    
+    transitionFloating(isTransitionIn: boolean): void {
+        toggleClass(this._wrapperEl, 'jw-float-transition', isTransitionIn);
     }
 
     updateFloatingSize(): void {
