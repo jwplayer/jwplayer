@@ -41,8 +41,8 @@ function matchIntersection(entry, group) {
 function onOrientationChange() {
     views.forEach(view => {
         const model = view.model;
-        if (model.get('audioMode') || !model.get('controls') || model.get('visibility') < 0.75) {
-            // return early if chromeless player/audio only mode and player is less than 75% visible
+        if (model.get('audioMode') || model.get('isFloating') || !model.get('controls') || model.get('visibility') < 0.75) {
+            // exit early if audio only mode, player is floating, chromeless player, or player is less than 75% visible
             return;
         }
 
