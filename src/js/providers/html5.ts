@@ -800,6 +800,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         _videotag.pause();
     };
 
+    let iosMuteToggle = false;
     this.seek = function(seekToPosition: number): void {
         const seekRange = _this.getSeekRange();
         let seekToTime = seekToPosition;
@@ -809,6 +810,14 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         if (!_canSeek) {
             _canSeek = !!_getSeekableEnd();
         }
+
+        // Workaround for a bug in iOS where you are unable to seek in initially muted streams
+        if (OS.iOS && _videotag.muted && !iosMuteToggle) {
+            _videotag.muted = false;
+            _videotag.muted = true;
+        }
+        iosMuteToggle = true;
+
         if (_canSeek) {
             _delayedSeek = 0;
             // setting currentTime can throw an invalid DOM state exception if the video is not ready
