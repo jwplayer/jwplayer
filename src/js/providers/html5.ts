@@ -190,8 +190,8 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
                 _setMediaType();
             }
 
-            // // Workaround for a bug in iOS and Safari where you are unable to seek in initially muted streams
-            // // Bug Report: https://feedbackassistant.apple.com/feedback/9070511
+            // Workaround for a bug in iOS and Safari where you are unable to seek in initially muted streams
+            // Bug Report: https://feedbackassistant.apple.com/feedback/9070511
             if (iosMuteToggle && _videotag.muted) {
                 const isPlaying = !_videotag.paused;
                 _videotag.muted = false;
