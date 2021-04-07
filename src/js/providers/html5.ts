@@ -100,6 +100,9 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
 
     let { loadAndParseHlsMetadata, minDvrWindow } = _playerConfig;
 
+    // Toggle for a bug in iOS and Safari where you are unable to seek in initially muted streams
+    const iosMuteToggle = OS.iOS || Browser.Safari;
+
     _this.loadAndParseHlsMetadata = loadAndParseHlsMetadata === undefined ? true : !!loadAndParseHlsMetadata;
 
     // Always render natively in iOS and Safari, where HLS is supported.
@@ -186,6 +189,20 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             if (!_androidHls) {
                 _setMediaType();
             }
+
+            // Workaround for a bug in iOS and Safari where you are unable to seek in initially muted streams
+            // Bug Report: https://feedbackassistant.apple.com/feedback/9070511
+            if (iosMuteToggle && _videotag.muted) {
+                const isPlaying = !_videotag.paused;
+                _videotag.muted = false;
+                _videotag.muted = true;
+
+                // Autostarted players may be paused after toggle
+                if (isPlaying && _videotag.paused) {
+                    _videotag.play();
+                }
+            }
+
             checkVisualQuality();
             VideoEvents.canplay.call(_this);
         },
