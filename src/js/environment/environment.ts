@@ -44,10 +44,6 @@ function supportsPassive(): boolean {
     return passiveOptionRead;
 }
 
-const isWindows = () => {
-    return userAgent.indexOf('Windows') > -1;
-};
-
 /**
  * @typedef {object} EnvironmentVersion
  * @property {string} version - The full version string.
@@ -156,7 +152,7 @@ export const OS: OSEnvironment = {
         return isIPod();
     },
     get windows(): boolean {
-        return isWindows();
+        return userAgent.indexOf('Windows') > -1;
     },
     get tizen(): boolean {
         return isTizen();
