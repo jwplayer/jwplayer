@@ -1,12 +1,10 @@
 import type { GenericObject } from 'types/generic.type';
 
-function execResult(array: RegExpExecArray | null, index: number): string | undefined {
-    let result: string | undefined;
-
-    if (array && array.length > index) {
-        result = array[index];
+function execResult(regex: RegExp, str: string): string | undefined {
+    const array: RegExpExecArray | null = regex.exec(str);
+    if (array && array.length > 1) {
+        return array[1];
     }
-    return result;
 }
 
 export function osVersion(osEnvironment: GenericObject, agent: string): GenericObject {
@@ -15,7 +13,7 @@ export function osVersion(osEnvironment: GenericObject, agent: string): GenericO
     let minor: number | undefined;
 
     if (osEnvironment.windows) {
-        version = execResult(/Windows(?: NT|)? ([._\d]+)/.exec(agent), 1);
+        version = execResult(/Windows(?: NT|)? ([._\d]+)/, agent);
         // Map the Windows NT version to the canonical Windows version
         switch (version) {
             case '6.1':
@@ -31,13 +29,13 @@ export function osVersion(osEnvironment: GenericObject, agent: string): GenericO
                 break;
         }
     } else if (osEnvironment.android) {
-        version = execResult(/Android ([._\d]+)/.exec(agent), 1);
+        version = execResult(/Android ([._\d]+)/, agent);
     } else if (osEnvironment.iOS) {
-        version = execResult(/OS ([._\d]+)/.exec(agent), 1);
+        version = execResult(/OS ([._\d]+)/, agent);
     } else if (osEnvironment.mac) {
-        version = execResult(/Mac OS X ([._\d]+)/.exec(agent), 1);
+        version = execResult(/Mac OS X ([._\d]+)/, agent);
     } else if (osEnvironment.tizen) {
-        version = execResult(/Tizen ([._\d]+)/.exec(agent), 1);
+        version = execResult(/Tizen ([._\d]+)/, agent);
     }
 
     if (version) {
