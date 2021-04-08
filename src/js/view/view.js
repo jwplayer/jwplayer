@@ -186,6 +186,12 @@ function View(_api, _model) {
             _currentlyFloating = floating;
             _this.trigger(FLOAT, { floating });
             updateVisibility();
+
+            // On iOS, an ad may receive the original resize event before wrapper is revealed.
+            // Listen for wrapper to be revealed
+            if (!containerHeight && !containerWidth) {
+                _this.responsiveListener();
+            }
         }
     };
 
