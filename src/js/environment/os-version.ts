@@ -35,7 +35,7 @@ export function osVersion(osEnvironment: GenericObject, agent: string): GenericO
     } else if (osEnvironment.iOS) {
         version = execResult(/OS ([._\d]+)/.exec(agent), 1);
     } else if (osEnvironment.mac) {
-        version = execResult(/Mac OS X (10[._\d]+)/.exec(agent), 1);
+        version = execResult(/Mac OS X ([._\d]+)/.exec(agent), 1);
     } else if (osEnvironment.tizen) {
         version = execResult(/Tizen ([._\d]+)/.exec(agent), 1);
     }
