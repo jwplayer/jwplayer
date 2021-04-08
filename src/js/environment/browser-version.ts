@@ -1,6 +1,6 @@
-import type { GenericObject } from 'types/generic.type';
+import type { BrowserEnvironment, EnvironmentVersion } from 'environment';
 
-export function browserVersion(browserEnvironment: GenericObject, agent: string): GenericObject {
+export function browserVersion(browserEnvironment: BrowserEnvironment, agent: string): EnvironmentVersion {
     let version: string | undefined;
     let major: number | undefined;
     let minor: number | undefined;
