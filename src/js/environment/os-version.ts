@@ -1,4 +1,4 @@
-import type { GenericObject } from 'types/generic.type';
+import type { OSEnvironment, EnvironmentVersion } from 'environment';
 
 function execResult(array: RegExpExecArray | null, index: number): string | undefined {
     let result: string | undefined;
@@ -9,7 +9,7 @@ function execResult(array: RegExpExecArray | null, index: number): string | unde
     return result;
 }
 
-export function osVersion(osEnvironment: GenericObject, agent: string): GenericObject {
+export function osVersion(osEnvironment: OSEnvironment, agent: string): EnvironmentVersion {
     let version: string | undefined;
     let major: number | undefined;
     let minor: number | undefined;

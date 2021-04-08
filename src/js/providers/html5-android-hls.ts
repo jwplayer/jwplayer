@@ -8,7 +8,7 @@ export function isAndroidHls(source: PlaylistItemSource): boolean | null {
         }
 
         // Allow Android hls playback on versions 4.1 and above, excluding Firefox (which does not support HLS in any version)
-        return !Browser.firefox && parseFloat(OS.version.version) >= 4.4;
+        return !Browser.firefox && parseFloat(OS.version.version || '0') >= 4.4;
     }
     return null;
 }

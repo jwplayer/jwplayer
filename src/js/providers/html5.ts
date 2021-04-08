@@ -101,7 +101,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     let { loadAndParseHlsMetadata, minDvrWindow } = _playerConfig;
 
     // Toggle for a bug in iOS and Safari where you are unable to seek in initially muted streams
-    const iosMuteToggle = OS.iOS || Browser.Safari;
+    const iosMuteToggle = OS.iOS || Browser.safari;
 
     _this.loadAndParseHlsMetadata = loadAndParseHlsMetadata === undefined ? true : !!loadAndParseHlsMetadata;
 

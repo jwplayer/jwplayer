@@ -21,7 +21,6 @@ import {
 } from 'utils/browser';
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
-import { memoize } from 'utils/underscore';
 import type { GenericObject } from 'types/generic.type';
 
 const userAgent: string = navigator.userAgent;
@@ -51,6 +50,11 @@ function supportsPassive(): boolean {
  * @property {number} major - The major version.
  * @property {number} minor - The minor version.
  */
+export type EnvironmentVersion = {
+    version: string | undefined;
+    major: number | undefined;
+    minor: number | undefined;
+ }
 
 /**
  * @typedef {object} BrowserEnvironment
@@ -64,20 +68,102 @@ function supportsPassive(): boolean {
  * @property {boolean} safari - Is the browser Safari?
  * @property {EnvironmentVersion} version - The browser version.
  */
-export const Browser: GenericObject = {};
+export type BrowserEnvironment = {
+    androidNative: boolean;
+    chrome: boolean;
+    edge: boolean;
+    facebook: boolean;
+    firefox: boolean;
+    ie: boolean;
+    msie: boolean;
+    safari: boolean;
+    version: EnvironmentVersion;
+}
+export const Browser: BrowserEnvironment = {
+    get androidNative(): boolean {
+        return isAndroidNative();
+    },
+    get chrome(): boolean {
+        return isChrome();
+    },
+    get edge(): boolean {
+        return isEdge();
+    },
+    get facebook(): boolean {
+        return isFacebook();
+    },
+    get firefox(): boolean {
+        return isFF();
+    },
+    get ie(): boolean {
+        return isIE();
+    },
+    get msie(): boolean {
+        return isMSIE();
+    },
+    get safari(): boolean {
+        return isSafari();
+    },
+    get version(): EnvironmentVersion {
+        return browserVersion(this, userAgent);
+    }
+};
 
 /**
  * @typedef {object} OSEnvironment
  * @property {boolean} android - Is the operating system Android?
  * @property {boolean} iOS - Is the operating system iOS?
  * @property {boolean} mobile - Is the operating system iOS or Android?
- * @property {boolean} osx - Is the operating system Mac OS X?
+ * @property {boolean} mac - Is the operating system Mac OS X?
  * @property {boolean} iPad - Is the device an iPad?
  * @property {boolean} iPhone - Is the device an iPhone?
  * @property {boolean} windows - Is the operating system Windows?
  * @property {EnvironmentVersion} version - The operating system version.
  */
-export const OS: GenericObject = {};
+export type OSEnvironment = {
+    android: boolean;
+    iOS: boolean;
+    mobile: boolean;
+    mac: boolean;
+    iPad: boolean;
+    iPhone: boolean;
+    windows: boolean;
+    tizen: boolean;
+    tizenApp: boolean;
+    version: EnvironmentVersion;
+}
+export const OS: OSEnvironment = {
+    get android(): boolean {
+        return isAndroid();
+    },
+    get iOS(): boolean {
+        return isIOS();
+    },
+    get mobile(): boolean {
+        return isMobile();
+    },
+    get mac(): boolean {
+        return isOSX();
+    },
+    get iPad(): boolean {
+        return isIPad();
+    },
+    get iPhone(): boolean {
+        return isIPod();
+    },
+    get windows(): boolean {
+        return userAgent.indexOf('Windows') > -1;
+    },
+    get tizen(): boolean {
+        return isTizen();
+    },
+    get tizenApp(): boolean {
+        return isTizenApp();
+    },
+    get version(): EnvironmentVersion {
+        return osVersion(this, userAgent);
+    }
+};
 
 /**
  * @typedef {object} FeatureEnvironment
@@ -85,113 +171,27 @@ export const OS: GenericObject = {};
  * @property {number} flashVersion - The version of Flash.
  * @property {boolean} iframe - Is the session in an iframe?
  */
-export const Features: GenericObject = {};
-
-const isWindows = () => {
-    return userAgent.indexOf('Windows') > -1;
+type FeatureEnvironment = {
+    flash: boolean;
+    flashVersion: number;
+    iframe: boolean;
+    passiveEvents: boolean;
+    backgroundLoading: boolean;
+}
+export const Features: FeatureEnvironment = {
+    get flash(): boolean {
+        return isFlashSupported();
+    },
+    get flashVersion(): number {
+        return flashVersion();
+    },
+    get iframe(): boolean {
+        return isIframe();
+    },
+    get passiveEvents(): boolean {
+        return supportsPassive();
+    },
+    get backgroundLoading(): boolean {
+        return __HEADLESS__ || !(OS.iOS || Browser.safari || OS.tizen);
+    }
 };
-
-Object.defineProperties(Browser, {
-    androidNative: {
-        get: memoize(isAndroidNative),
-        enumerable: true
-    },
-    chrome: {
-        get: memoize(isChrome),
-        enumerable: true
-    },
-    edge: {
-        get: memoize(isEdge),
-        enumerable: true
-    },
-    facebook: {
-        get: memoize(isFacebook),
-        enumerable: true
-    },
-    firefox: {
-        get: memoize(isFF),
-        enumerable: true
-    },
-    ie: {
-        get: memoize(isIE),
-        enumerable: true
-    },
-    msie: {
-        get: memoize(isMSIE),
-        enumerable: true
-    },
-    safari: {
-        get: memoize(isSafari),
-        enumerable: true
-    },
-    version: {
-        get: memoize(browserVersion.bind(this, Browser, userAgent)),
-        enumerable: true
-    }
-});
-
-Object.defineProperties(OS, {
-    android: {
-        get: memoize(isAndroid),
-        enumerable: true
-    },
-    iOS: {
-        get: memoize(isIOS),
-        enumerable: true
-    },
-    mobile: {
-        get: memoize(isMobile),
-        enumerable: true
-    },
-    mac: {
-        get: memoize(isOSX),
-        enumerable: true
-    },
-    iPad: {
-        get: memoize(isIPad),
-        enumerable: true
-    },
-    iPhone: {
-        get: memoize(isIPod),
-        enumerable: true
-    },
-    windows: {
-        get: memoize(isWindows),
-        enumerable: true
-    },
-    tizen: {
-        get: memoize(isTizen),
-        enumerable: true
-    },
-    tizenApp: {
-        get: memoize(isTizenApp),
-        enumerable: true
-    },
-    version: {
-        get: memoize(osVersion.bind(this, OS, userAgent)),
-        enumerable: true
-    }
-});
-
-Object.defineProperties(Features, {
-    flash: {
-        get: memoize(isFlashSupported),
-        enumerable: false,
-    },
-    flashVersion: {
-        get: memoize(flashVersion),
-        enumerable: false
-    },
-    iframe: {
-        get: memoize(isIframe),
-        enumerable: true
-    },
-    passiveEvents: {
-        get: memoize(supportsPassive),
-        enumerable: true
-    },
-    backgroundLoading: {
-        get: memoize(() => __HEADLESS__ || !(OS.iOS || Browser.safari || OS.tizen)),
-        enumerable: true
-    }
-});

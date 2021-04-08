@@ -62,7 +62,7 @@ const VideoActionsMixin: VideoActionsInt = {
         // object-fit is not implemented in IE or Android Browser in 4.4 and lower
         // http://caniuse.com/#feat=object-fit
         // feature detection may work for IE but not for browsers where object-fit works for images only
-        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
+        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && (OS.version.major || 0) < 9) || Browser.androidNative;
         if (fitVideoUsingTransforms) {
             if (stretching !== 'uniform') {
                 styles.objectFit = 'contain';
