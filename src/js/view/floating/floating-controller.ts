@@ -7,8 +7,7 @@ import { deviceIsLandscape } from 'utils/dom';
 import { isIframe } from 'utils/browser';
 import {
     addClass,
-    removeClass,
-    toggleClass
+    removeClass
 } from 'utils/dom';
 import { STATE_IDLE, STATE_COMPLETE, STATE_ERROR } from 'events/events';
 import { isNumber } from 'utils/underscore';
@@ -72,6 +71,7 @@ export default class FloatingController {
     _boundThrottledMobileFloatScrollHandler: Function;
     _playerBounds: BoundingRect;
     _boundInitFloatingBehavior: () => void;
+    _inTransition: boolean;
 
     constructor(
         model: Model,
@@ -93,6 +93,7 @@ export default class FloatingController {
         this._playerBounds = playerBounds;
         this._isMobile = isMobile;
         this._mobileCheckCanFire = true;
+        this._inTransition = false;
 
         this._boundThrottledMobileFloatScrollHandler = this.throttledMobileFloatScrollHandler.bind(this);
 
@@ -152,8 +153,8 @@ export default class FloatingController {
         if (this.getFloatingPlayer() === null) {
             this.setFloatingPlayer(this._playerEl);
 
-            this._model.set('isFloating', true);
             this.transitionFloating(true);
+            this._model.set('isFloating', true);
             addClass(this._playerEl, 'jw-flag-floating');
 
             if (mobileFloatIntoPlace) {
@@ -171,6 +172,11 @@ export default class FloatingController {
                     });
                 });
             }
+            setTimeout(() => {
+                this.transitionFloating(false);
+                // Perform resize and trigger "float" event responsively to prevent layout thrashing
+                this._model.trigger('forceResponsiveListener', {});
+            }, 50);
 
             // Copy background from preview element
             const previewEl = this._preview.el as HTMLElement;
@@ -183,9 +189,6 @@ export default class FloatingController {
             if (!this._model.get('instreamMode')) {
                 this._floatingUI.enable();
             }
-
-            // Perform resize and trigger "float" event responsively to prevent layout thrashing
-            this._model.trigger('forceResponsiveListener', {});
         } else if (this.getFloatingPlayer() !== this._playerEl && this.getFloatMode() === 'always') {
             addFPWatcher(this);
         }
@@ -220,6 +223,11 @@ export default class FloatingController {
                 transition: null,
                 'transition-timing-function': null
             });
+            setTimeout(() => {
+                this.transitionFloating(false);
+                // Perform resize and trigger "float" event responsively to prevent layout thrashing
+                this._model.trigger('forceResponsiveListener', {});
+            }, 50);
         };
 
         if (mobileFloatIntoPlace) {
@@ -237,13 +245,20 @@ export default class FloatingController {
         }
 
         this.disableFloatingUI();
-
-        // Perform resize and trigger "float" event responsively to prevent layout thrashing
-        this._model.trigger('forceResponsiveListener', {});
     }
     
     transitionFloating(isTransitionIn: boolean): void {
-        toggleClass(this._wrapperEl, 'jw-float-transition', isTransitionIn);
+        // Hiding the wrapper will impact player viewability momentarily, but reduce CLS
+        // We could hide the wrappers contents (controls, overlays) and reduce some CLS, but not as much
+        this._inTransition = isTransitionIn;
+        const wrapper = this._wrapperEl;
+        style(wrapper, {
+            display: isTransitionIn ? 'none' : null
+        });
+    }
+
+    isInTransition(): boolean {
+        return this._inTransition;
     }
 
     updateFloatingSize(): void {
@@ -368,6 +383,5 @@ export default class FloatingController {
         if (!this._floatingStoppedForever && this.getFloatingConfig() && this.getFloatMode() === 'notVisible') {
             this._boundThrottledMobileFloatScrollHandler();
         }
-        this.transitionFloating(false);
     }
 }
