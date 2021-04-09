@@ -174,8 +174,6 @@ export default class FloatingController {
             }
             setTimeout(() => {
                 this.transitionFloating(false);
-                // Perform resize and trigger "float" event responsively to prevent layout thrashing
-                this._model.trigger('forceResponsiveListener', {});
             }, 50);
 
             // Copy background from preview element
@@ -225,8 +223,6 @@ export default class FloatingController {
             });
             setTimeout(() => {
                 this.transitionFloating(false);
-                // Perform resize and trigger "float" event responsively to prevent layout thrashing
-                this._model.trigger('forceResponsiveListener', {});
             }, 50);
         };
 
@@ -248,13 +244,17 @@ export default class FloatingController {
     }
     
     transitionFloating(isTransitionIn: boolean): void {
+        this._inTransition = isTransitionIn;
         // Hiding the wrapper will impact player viewability momentarily, but reduce CLS
         // We could hide the wrappers contents (controls, overlays) and reduce some CLS, but not as much
-        this._inTransition = isTransitionIn;
         const wrapper = this._wrapperEl;
         style(wrapper, {
             display: isTransitionIn ? 'none' : null
         });
+        if (!isTransitionIn) {
+            // Perform resize and trigger "float" event responsively to prevent layout thrashing
+            this._model.trigger('forceResponsiveListener', {});
+        }
     }
 
     isInTransition(): boolean {
