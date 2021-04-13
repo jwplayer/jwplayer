@@ -196,7 +196,7 @@ function View(_api, _model) {
     this.responsiveListener = _responsiveListener;
 
     function _responsiveUpdate() {
-        if (!_this.isSetup) {
+        if (!_this.isSetup || floatingController.isInTransition()) {
             return;
         }
         _this.updateBounds();
@@ -506,7 +506,6 @@ function View(_api, _model) {
         });
         if (_this.isSetup && aspectratio && !model.get('isFloating')) {
             style(_playerElement, getPlayerSizeStyles(model, model.get('width')));
-            _responsiveUpdate();
         }
     }
 
