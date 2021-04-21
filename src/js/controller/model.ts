@@ -175,7 +175,9 @@ class Model extends SimpleModel {
         if (this._provider) {
             this._provider.off(null, null, this);
             this._provider.destroy();
+            this._provider = null;
         }
+        this.providerController = null;
     }
 
     getVideo(): ImplementedProvider | null {

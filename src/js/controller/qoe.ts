@@ -120,7 +120,7 @@ function trackFirstFrame(model: QoeModel, programController: ProgramController):
     programController.on(MEDIA_TIME, model._onTime);
 }
 
-const initQoe = function(initialModel: Model, programController: ProgramController): void {
+export function initQoe(initialModel: Model, programController: ProgramController): void {
     function onMediaModel(model: QoeModel, mediaModel: MediaModel, oldMediaModel: MediaModel): void {
         // finish previous item
         if (model._qoeItem && oldMediaModel) {
@@ -142,6 +142,12 @@ const initQoe = function(initialModel: Model, programController: ProgramControll
     }
 
     initialModel.change('mediaModel', onMediaModel);
-};
+}
 
-export default initQoe;
+export function destroyQoe(model: any): void {
+    model._qoeItem =
+    model._triggerFirstFrame =
+    model._onTime =
+    model._onPlayAttempt =
+    model._onTabVisible = null;
+}

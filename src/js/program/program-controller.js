@@ -1,7 +1,7 @@
 import Providers from 'providers/providers';
 import MediaController from 'program/media-controller';
 import cancelable from 'utils/cancelable';
-import { MediaControllerListener } from 'program/program-listeners';
+import { mediaControllerListener } from 'program/program-listeners';
 import Events from 'utils/backbone.events';
 import BackgroundMedia from 'program/background-media';
 import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED } from 'events/events';
@@ -24,7 +24,7 @@ class ProgramController extends Events {
         this.background = BackgroundMedia();
         this.mediaPool = mediaPool;
         this.mediaController = null;
-        this.mediaControllerListener = MediaControllerListener(model);
+        this.mediaControllerListener = mediaControllerListener;
         this.model = model;
         this.providers = new Providers(model.getConfiguration());
         this.loadPromise = null;
@@ -101,7 +101,8 @@ class ProgramController extends Events {
             // Resolve and exit on asyncActiveItem() itemPromiseError,
             // or if setActiveItem was called again changing itemSetContext
             if (playlistItem === null ||
-                itemSetContext !== this.itemSetContext) {
+                itemSetContext !== this.itemSetContext ||
+                this.providers === null) {
                 return null;
             }
 
@@ -430,7 +431,12 @@ class ProgramController extends Events {
         this.off();
         this._destroyBackgroundMedia();
         this._destroyActiveMedia();
-        this.apiContext = null;
+        this.asyncItems =
+            this.loadPromise =
+            this.mediaControllerListener =
+            this.model =
+            this.providers =
+            this.apiContext = null;
     }
 
     /**
@@ -798,8 +804,7 @@ function assignMediaContainer(model, mediaController) {
 }
 
 function forwardEvents(mediaController, target) {
-    const { mediaControllerListener } = target;
-    mediaController.off().on('all', mediaControllerListener, target);
+    mediaController.off().on('all', target.mediaControllerListener, target);
 }
 
 function getSource(item) {
