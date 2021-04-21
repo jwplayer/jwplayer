@@ -63,4 +63,13 @@ describe('os-version', function() {
         expect(actual.major).to.equal(13);
         expect(actual.minor).to.equal(10586);
     });
+
+    it('returns the browser version from a Microsoft user agent, Chromium Edge', function() {
+        const agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36 Edg/88.0.705.50';
+        const actual = browserVersion({ edge: true }, agent);
+
+        expect(actual.version).to.equal('88.0.705.50');
+        expect(actual.major).to.equal(88);
+        expect(actual.minor).to.equal(0);
+    });
 });
