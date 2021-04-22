@@ -113,16 +113,13 @@ function initInteractionListeners(ui) {
         removeHandlers(ui, WINDOW_GROUP);
 
         // When direct select is enabled, we prevent a click from occuring after end events. If a click is still triggered, treat it as a full interaction, as it is a synthetic event.
-        if (ui.directSelect) { 
-            preventDefault(e);
+        if (ui.directSelect) {     
             if (e.type === 'click') {
-            
                 const { target } = e;
                 const type =  USE_POINTER_EVENTS ? 'pointerup' : USE_MOUSE_EVENTS ? 'mouseup' : 'touchend';
                 const syntheticEvent = { type, target };
                 return interactEndHandler(syntheticEvent);
             }
-            return;
         }
 
         if (type === 'pointerdown' && e.isPrimary) {
@@ -182,7 +179,11 @@ function initInteractionListeners(ui) {
         releasePointerCapture(ui);
         removeHandlers(ui, WINDOW_GROUP);
         if (ui.directSelect) {
-            preventDefault(e);
+            if (e.preventDefault) {
+                e.preventDefault();
+                e.stopPropagation(); 
+                e.cancelBubble(); 
+            }   
         }
         if (ui.dragged) {
             ui.dragged = false;
