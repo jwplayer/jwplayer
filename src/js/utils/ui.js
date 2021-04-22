@@ -13,7 +13,7 @@ const keydown = 'keydown';
 
 const { passiveEvents } = Features;
 const DEFAULT_LISTENER_OPTIONS = passiveEvents ? { passive: true } : false;
-
+const END_LISTENER_OPTIONS = { passive: false };
 const MOVEMENT_THRESHOLD = 6;
 const DOUBLE_CLICK_DELAY = 300;
 const LONG_PRESS_DELAY = 500;
@@ -111,6 +111,18 @@ function initInteractionListeners(ui) {
         ui.startY = pageY;
 
         removeHandlers(ui, WINDOW_GROUP);
+        // If a click is dispatched with directSelect enabled, it is not initiated by an end event (pointerup, mousedown, touchend).
+        // In such a case, we init the interactEndHandler manually as it's a full interaction (ie. VoiceOver click, a.click() etc).
+        if (e.type === 'click') {
+            if (ui.directSelect) {
+                const { target } = e;
+                const type =  USE_POINTER_EVENTS ? 'pointerup' : USE_MOUSE_EVENTS ? 'mouseup' : 'touchend';
+                const syntheticEvent = { type, target };
+                return interactEndHandler(syntheticEvent);
+            }
+            return;
+        }
+
         if (type === 'pointerdown' && e.isPrimary) {
             if (!passive) {
                 const { pointerId } = e;
@@ -120,18 +132,18 @@ function initInteractionListeners(ui) {
 
             addEventListener(ui, WINDOW_GROUP, 'pointermove', interactDragHandler, listenerOptions);
             addEventListener(ui, WINDOW_GROUP, 'pointercancel', interactEndHandler);
-            addEventListener(ui, WINDOW_GROUP, 'pointerup', interactEndHandler);
+            addEventListener(ui, WINDOW_GROUP, 'pointerup', interactEndHandler, END_LISTENER_OPTIONS);
 
             if (el.tagName === 'BUTTON') {
                 el.focus();
             }
         } else if (type === 'mousedown') {
             addEventListener(ui, WINDOW_GROUP, 'mousemove', interactDragHandler, listenerOptions);
-            addEventListener(ui, WINDOW_GROUP, 'mouseup', interactEndHandler);
+            addEventListener(ui, WINDOW_GROUP, 'mouseup', interactEndHandler, END_LISTENER_OPTIONS);
         } else if (type === 'touchstart') {
             addEventListener(ui, WINDOW_GROUP, 'touchmove', interactDragHandler, listenerOptions);
             addEventListener(ui, WINDOW_GROUP, 'touchcancel', interactEndHandler);
-            addEventListener(ui, WINDOW_GROUP, 'touchend', interactEndHandler);
+            addEventListener(ui, WINDOW_GROUP, 'touchend', interactEndHandler, END_LISTENER_OPTIONS);
 
             // Prevent scrolling the screen while dragging on mobile.
             if (!passive) {
@@ -167,6 +179,10 @@ function initInteractionListeners(ui) {
         }
         releasePointerCapture(ui);
         removeHandlers(ui, WINDOW_GROUP);
+        // Prevents click from being dispatched on mouseup, pointerup, touchend
+        if (ui.directSelect) {
+            preventDefault(e);
+        }
         if (ui.dragged) {
             ui.dragged = false;
             triggerEvent(ui, DRAG_END, e);
@@ -201,6 +217,7 @@ function initInteractionListeners(ui) {
         // Always add this, in case we don't properly identify the device as mobile
         addEventListener(ui, initGroup, 'touchstart', interactStartHandler, listenerOptions);
     }
+    addEventListener(ui, initGroup, 'click', interactStartHandler);
     initInteractionListener();
     addEventListener(ui, initGroup, 'blur', () => {
         removeClass(el, 'jw-tab-focus');
