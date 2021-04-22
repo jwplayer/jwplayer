@@ -1,6 +1,6 @@
 import Events from 'utils/backbone.events';
 import { addClass, createElement } from 'utils/dom';
-import { addClickAction } from 'utils/add-click-action';
+import { addClickAction } from 'view/utils/add-click-action';
 import type { PlayerAPI } from 'types/generic.type';
 import type ViewModel from 'view/view-model';
 import type UI from 'utils/ui';

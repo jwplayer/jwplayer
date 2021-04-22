@@ -1,6 +1,6 @@
 import { toggleClass, createElement } from 'utils/dom';
 import { itemRadioButtonTemplate, itemTemplate } from 'view/controls/templates/menu/menu-item';
-import { addClickAction } from 'utils/add-click-action';
+import { addClickAction } from 'view/utils/add-click-action';
 export class MenuItem {
     constructor(_content, _action, _template = itemTemplate) {
         this.el = createElement(_template(_content));

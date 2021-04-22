@@ -7,7 +7,7 @@ import { cloneIcon } from 'view/controls/icons';
 import { offsetToSeconds, isPercentage } from 'utils/strings';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 import { timeFormat } from 'utils/parser';
-import { addClickAction } from 'utils/add-click-action';
+import { addClickAction } from 'view/utils/add-click-action';
 
 export default class NextUpTooltip {
     constructor(_model, _api, playerElement) {

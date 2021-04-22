@@ -1,4 +1,4 @@
-import { addClickAction } from 'utils/add-click-action';
+import { addClickAction } from 'view/utils/add-click-action';
 import type { PlayerAPI } from 'types/generic.type';
 import type PlaylistItem from 'playlist/item';
 import type Model from 'controller/model';
