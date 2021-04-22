@@ -1,8 +1,8 @@
 import type { PlayerAPI } from 'types/generic.type';
 import type PlaylistItem from 'playlist/item';
 import type Model from 'controller/model';
-import { addClickAction } from 'utils/add-click-action';
 import type UI from 'utils/ui';
+import { addClickAction } from 'utils/add-click-action';
 export default class NextDisplayIcon {
     el: HTMLElement;
     ui: UI;
