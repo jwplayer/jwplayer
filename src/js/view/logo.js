@@ -88,7 +88,7 @@ export default function Logo(_model) {
             _logo.setAttribute('aria-label', _model.get('localization').logo);
         }
 
-        this.ui = new UI(_logo).on('click tap enter', function (evt) {
+        this.ui = new UI(_logo, { directSelect: true }).on('click tap enter', function (evt) {
             if (evt && evt.stopPropagation) {
                 evt.stopPropagation();
             }
