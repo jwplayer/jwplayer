@@ -4,7 +4,7 @@ import { addClickAction } from 'utils/add-click-action';
 export class MenuItem {
     constructor(_content, _action, _template = itemTemplate) {
         this.el = createElement(_template(_content));
-        this.ui =  addClickAction(this.el, _action, this);
+        this.ui = addClickAction(this.el, _action, this);
     }
     destroy() {
         if (this.el.parentNode) {
