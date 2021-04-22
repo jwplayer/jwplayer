@@ -15,7 +15,7 @@ export default class PlayDisplayIcon extends Events {
 
         this.icon = iconDisplay;
         this.el = element;
-        this.ui = new UI(iconDisplay).on('click tap enter', (evt) => {
+        this.ui = new UI(iconDisplay, { directSelect: true }).on('click tap enter', (evt) => {
             this.trigger(evt.type);
         });
 

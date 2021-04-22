@@ -10,7 +10,7 @@ export default class RewindDisplayIcon {
         const iconDisplay = element.querySelector('.jw-icon');
 
         this.el = element;
-        this.ui = new UI(iconDisplay).on('click tap enter', function(): void {
+        this.ui = new UI(iconDisplay, { directSelect: true }).on('click tap enter', function(): void {
             const currentPosition = model.get('position');
             const duration = model.get('duration');
             const rewindPosition = currentPosition - 10;
