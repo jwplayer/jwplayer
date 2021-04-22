@@ -115,7 +115,7 @@ function initInteractionListeners(ui) {
         // When direct select is enabled, we prevent a click from occuring after end events. If a click is still triggered, treat it as a full interaction, as it is a synthetic event.
         if (ui.directSelect) {     
             if (e.type === 'click') {
-                const syntheticType =  USE_POINTER_EVENTS ? 'pointerup' : USE_MOUSE_EVENTS ? 'mouseup' : 'touchend';
+                const syntheticType = USE_POINTER_EVENTS ? 'pointerup' : USE_MOUSE_EVENTS ? 'mouseup' : 'touchend';
                 const syntheticEvent = { type: syntheticType, target };
                 return interactEndHandler(syntheticEvent);
             }
