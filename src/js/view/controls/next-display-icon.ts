@@ -10,7 +10,7 @@ export default class NextDisplayIcon {
     constructor(model: Model, api: PlayerAPI, element: HTMLElement) {
         const iconDisplay = element.querySelector('.jw-icon');
 
-        this.ui = new UI(iconDisplay).on('click tap enter', function(): void {
+        this.ui = new UI(iconDisplay, { directSelect: true  }).on('click tap enter', function(): void {
             api.next({ reason: 'interaction' });
         });
 

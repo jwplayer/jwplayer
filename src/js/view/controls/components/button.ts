@@ -30,7 +30,7 @@ export default function (
 
     element.style.display = 'none';
 
-    const ui: UI = new UI(element).on('click tap enter', apiAction || helpers.noop);
+    const ui: UI = new UI(element, { directSelect: true }).on('click tap enter', apiAction || helpers.noop);
 
     if (svgIcons) {
         Array.prototype.forEach.call(svgIcons, svgIcon => {
