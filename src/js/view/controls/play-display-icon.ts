@@ -2,6 +2,7 @@ import Events from 'utils/backbone.events';
 import { addClass, createElement } from 'utils/dom';
 import type { PlayerAPI } from 'types/generic.type';
 import type ViewModel from 'view/view-model';
+import type UI from 'utils/ui';
 import { addClickAction } from 'utils/add-click-action';
 
 export default class PlayDisplayIcon extends Events {
