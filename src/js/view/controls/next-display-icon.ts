@@ -1,16 +1,16 @@
-import UI from 'utils/ui';
 import type { PlayerAPI } from 'types/generic.type';
 import type PlaylistItem from 'playlist/item';
 import type Model from 'controller/model';
-
+import { addClickAction } from 'utils/add-click-action';
+import type UI from 'utils/ui';
 export default class NextDisplayIcon {
     el: HTMLElement;
     ui: UI;
 
     constructor(model: Model, api: PlayerAPI, element: HTMLElement) {
-        const iconDisplay = element.querySelector('.jw-icon');
+        const iconDisplay = element.querySelector('.jw-icon') as HTMLElement;
 
-        this.ui = new UI(iconDisplay, { directSelect: true }).on('click tap enter', function(): void {
+        this.ui = addClickAction(iconDisplay, function(): void {
             api.next({ reason: 'interaction' });
         });
 
