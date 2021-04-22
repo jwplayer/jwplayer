@@ -115,9 +115,8 @@ function initInteractionListeners(ui) {
         // In such a case, we init the interactEndHandler manually as it's a full interaction (ie. VoiceOver click, a.click() etc).
         if (e.type === 'click') {
             if (ui.directSelect) {
-                const { target } = e;
-                const type =  USE_POINTER_EVENTS ? 'pointerup' : USE_MOUSE_EVENTS ? 'mouseup' : 'touchend';
-                const syntheticEvent = { type, target };
+                const syntheticType = USE_POINTER_EVENTS ? 'pointerup' : USE_MOUSE_EVENTS ? 'mouseup' : 'touchend';
+                const syntheticEvent = { type: syntheticType, target };
                 return interactEndHandler(syntheticEvent);
             }
             return;
