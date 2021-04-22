@@ -3,7 +3,7 @@ import floatingCloseButton from 'templates/floating-close-button';
 import { cloneIcon } from 'view/controls/icons';
 import Events from 'utils/backbone.events';
 import { USER_ACTION } from 'events/events';
-import { addClickAction } from 'utils/add-click-action';
+import { addClickAction } from 'view/utils/add-click-action';
 
 export default class FloatingCloseButton extends Events {
     constructor(container, ariaLabel) {

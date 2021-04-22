@@ -1,4 +1,4 @@
-import { addClickAction } from 'utils/add-click-action';
+import { addClickAction } from 'view/utils/add-click-action';
 import type UI from 'utils/ui';
 import type ViewModel from 'view/view-model';
 import type { PlayerAPI } from 'types/generic.type';
