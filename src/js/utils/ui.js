@@ -83,7 +83,7 @@ function eventsApi(name) {
     return name && !(eventSplitter.test(name) || typeof name === 'object');
 }
 
-function initInteractionListeners(ui) {
+function initInteractionListeners(ui, initClick) {
     const initGroup = 'init';
     if (ui.handlers[initGroup]) {
         return;
@@ -218,7 +218,9 @@ function initInteractionListeners(ui) {
         // Always add this, in case we don't properly identify the device as mobile
         addEventListener(ui, initGroup, 'touchstart', interactStartHandler, listenerOptions);
     }
-    addEventListener(ui, initGroup, 'click', interactStartHandler);
+    if (initClick) {
+        addEventListener(ui, initGroup, 'click', interactStartHandler);
+    }
     initInteractionListener();
     addEventListener(ui, initGroup, 'blur', () => {
         removeClass(el, 'jw-tab-focus');
@@ -259,7 +261,7 @@ const eventRegisters = {
         initInteractionListeners(ui);
     },
     click(ui) {
-        initInteractionListeners(ui);
+        initInteractionListeners(ui, true);
     },
     tap(ui) {
         if (OS.iOS && OS.version.major < 11) {
