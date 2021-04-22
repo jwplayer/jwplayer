@@ -1,8 +1,7 @@
+import { addClickAction } from 'utils/add-click-action';
 import type UI from 'utils/ui';
 import type ViewModel from 'view/view-model';
 import type { PlayerAPI } from 'types/generic.type';
-import { addClickAction } from 'utils/add-click-action';
-
 export default class RewindDisplayIcon {
     el: HTMLElement;
     ui: UI;

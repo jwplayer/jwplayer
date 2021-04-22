@@ -1,8 +1,8 @@
-import type UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
 import helpers from 'utils/helpers';
-import type { PlayerAPI } from 'types/generic.type';
 import { addClickAction } from 'utils/add-click-action';
+import type UI from 'utils/ui';
+import type { PlayerAPI } from 'types/generic.type';
 
 export type Button = {
     ui: UI;

@@ -93,27 +93,29 @@ function initInteractionListeners(ui, initClick) {
 
     const interactStartHandler = (e) => {
         removeClass(el, 'jw-tab-focus');
-
         if (isRightClick(e)) {
             return;
         }
         const { target, type } = e;
-        if (ui.directSelect && target !== el) {
+        const directSelect = ui.directSelect;
+        if (directSelect && target !== el) {
             // The 'directSelect' parameter only allows interactions on the element and not children
             return;
         }
 
         const { pageX, pageY } = getCoords(e);
 
-        ui.dragged = false;
-        ui.lastStart = now();
-        ui.startX = pageX;
-        ui.startY = pageY;
+        if (!(e.type === 'click' && directSelect)) {
+            ui.dragged = false;
+            ui.lastStart = now();
+            ui.startX = pageX;
+            ui.startY = pageY;
+        }
 
         removeHandlers(ui, WINDOW_GROUP);
 
         // When direct select is enabled, we prevent a click from occuring after end events. If a click is still triggered, treat it as a full interaction, as it is a synthetic event.
-        if (ui.directSelect) {     
+        if (directSelect) {     
             if (e.type === 'click') {
                 const syntheticType = USE_POINTER_EVENTS ? 'pointerup' : USE_MOUSE_EVENTS ? 'mouseup' : 'touchend';
                 const syntheticEvent = { type: syntheticType, target };
