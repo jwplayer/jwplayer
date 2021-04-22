@@ -7,6 +7,7 @@ import { cloneIcon } from 'view/controls/icons';
 import { offsetToSeconds, isPercentage } from 'utils/strings';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 import { timeFormat } from 'utils/parser';
+import { addClickAction } from 'utils/add-click-action';
 
 export default class NextUpTooltip {
     constructor(_model, _api, playerElement) {
@@ -57,7 +58,7 @@ export default class NextUpTooltip {
         }, this);
 
         // Close button
-        this.closeUi = new UI(this.closeButton, { directSelect: true }).on('click tap enter', function() {
+        this.closeUi = addClickAction(this.closeButton, function() {
             this.nextUpSticky = false;
             this.toggle(false);
         }, this);
