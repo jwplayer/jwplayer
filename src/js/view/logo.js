@@ -88,11 +88,7 @@ export default function Logo(_model) {
             _logo.setAttribute('aria-label', _model.get('localization').logo);
         }
 
-        this.ui = addClickAction(_logo, function (evt) {
-            if (evt && evt.stopPropagation) {
-                evt.stopPropagation();
-            }
-
+        this.ui = addClickAction(_logo, function () {
             this.trigger(LOGO_CLICK, {
                 link: _settings.link,
                 linktarget: _settings.linktarget
