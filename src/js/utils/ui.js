@@ -180,11 +180,7 @@ function initInteractionListeners(ui, initClick) {
         releasePointerCapture(ui);
         removeHandlers(ui, WINDOW_GROUP);
         if (ui.directSelect) {
-            if (e.preventDefault) {
-                e.preventDefault();
-                e.stopPropagation(); 
-                e.cancelBubble(); 
-            }   
+            preventClickThrough(e); 
         }
         if (ui.dragged) {
             ui.dragged = false;
@@ -495,4 +491,12 @@ function preventDefault(evt) {
     if (evt.preventDefault) {
         evt.preventDefault();
     }
+}
+
+function preventClickThrough(evt) {
+    preventDefault(evt);
+    if (evt.stopPropagation) {
+        evt.stopPropagation();
+    }
+    evt.cancelBubble = true;
 }
