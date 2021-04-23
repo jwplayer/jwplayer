@@ -14,7 +14,7 @@ type ControlbarElement = HTMLElement | Button | TimeSlider;
 
 interface CustomButtonProps {
     btnClass: string;
-    callback: Function;
+    callback: (event: Event) => void;
     id: string;
     img: string;
     tooltip: string;

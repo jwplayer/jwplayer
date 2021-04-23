@@ -194,7 +194,8 @@ function initSelectListeners(ui) {
         } else {
             triggerEvent(ui, TAP, e);
         }
-    }
+    };
+
     const interactPreClickHandler = (e) => {
         const { target } = e;
 
@@ -207,9 +208,9 @@ function initSelectListeners(ui) {
             }
         }
         ui.lastStart = now();
-    }
+    };
 
-    initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler)
+    initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
     addEventListener(ui, SELECT_GROUP, 'click', interactClickhandler);
     initFocusListeners(ui);
 }
