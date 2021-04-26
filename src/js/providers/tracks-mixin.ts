@@ -377,8 +377,8 @@ const Tracks: TracksMixin = {
         this.removeTracksListener(tracks, 'change', handler);
         this.addTracksListener(tracks, 'change', handler);
 
-        if (Browser.edge || Browser.firefox) {
-            // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox,
+        if ((Browser.edge && Browser.ie) || Browser.firefox) {
+            // Listen for TextTracks added to the videotag after the onloadeddata event in legacy Edge and Firefox,
             // NOT Safari! Handling this event in Safari 12 and lower results in captions not rendering after
             // instream or live restart (JW8-10815, JW8-11006)
             handler = this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);

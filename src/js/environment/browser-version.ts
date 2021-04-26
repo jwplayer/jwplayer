@@ -19,7 +19,13 @@ export function browserVersion(browserEnvironment: BrowserEnvironment, agent: st
     } else if (browserEnvironment.firefox) {
         version = agent.substring(agent.indexOf('Firefox') + 8);
     } else if (browserEnvironment.edge) {
-        version = agent.substring(agent.indexOf('Edge') + 5);
+        let index = agent.indexOf('Edge');
+        if (index === -1) {
+            index = agent.indexOf('Edg') + 4;
+        } else {
+            index += 5;
+        }
+        version = agent.substring(index);
     } else if (browserEnvironment.ie) {
         // Older versions of IE use MSIE; IE11 uses rv:
         if (agent.indexOf('rv:') !== -1) {
