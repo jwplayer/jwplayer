@@ -151,7 +151,7 @@ describe('UI', function() {
         const ui = new UI(button).on('click tap', clickSpy);
         button.click();
         expect(clickSpy).to.have.callCount(1);
-        expect(!clickSpy.defaultPrevented).to.equal(true);
+        expect(!!clickSpy.defaultPrevented).to.equal(false);
         ui.destroy();
     });
 
