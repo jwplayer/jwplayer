@@ -149,29 +149,9 @@ describe('UI', function() {
         }
         const clickSpy = sandbox.spy();
         const ui = new UI(button).on('click tap', clickSpy);
-        const clickEventOptions = xyCoords(0, 0, {
-            isPrimary: true,
-            pointerType: 'mouse',
-            view: window,
-            bubbles: true,
-            cancelable: true
-        });
-        const sourceEvent = new MouseEvent('click', clickEventOptions);
-        // Event is a mouse event on mobile as well, even when triggered by touch.
-        const defaultPrevented = button.dispatchEvent(new MouseEvent('click', clickEventOptions));
-
-        expect(defaultPrevented, 'preventDefault not called').to.equal(true);
+        button.click();
         expect(clickSpy).to.have.callCount(1);
-        expect(clickSpy).calledWith({
-            type: 'click',
-            pointerType: 'mouse',
-            pageX: 0,
-            pageY: 0,
-            sourceEvent,
-            target: button,
-            currentTarget: button
-        });
-
+        expect(!clickSpy.defaultPrevented).to.equal(true);
         ui.destroy();
     });
 
@@ -183,27 +163,11 @@ describe('UI', function() {
         const ui = new UI(button, {
             enableDoubleTap: true
         }).on('doubleClick doubleTap', doubleClickSpy);
-        const clickEventOptions = xyCoords(0, 0, {
-            isPrimary: true,
-            pointerType: 'mouse',
-            view: window,
-            bubbles: true,
-            cancelable: true
-        });
-        const sourceEvent = new MouseEvent('click', clickEventOptions);
-        button.dispatchEvent(new MouseEvent('click', clickEventOptions));
-        const defaultPrevented = button.dispatchEvent(new MouseEvent('click', clickEventOptions));
-        expect(defaultPrevented, 'preventDefault not called').to.equal(true);
+        button.click();
+        button.click();
+        const defaultPrevented = !!doubleClickSpy.defaultPrevented;
+        expect(defaultPrevented, 'preventDefault not called').to.equal(false);
         expect(doubleClickSpy).to.have.callCount(1);
-        expect(doubleClickSpy).calledWith({
-            type: 'doubleClick',
-            pointerType: 'mouse',
-            pageX: 0,
-            pageY: 0,
-            sourceEvent,
-            target: button,
-            currentTarget: button
-        });
 
         ui.destroy();
     });
