@@ -45,6 +45,7 @@ export default class UI extends Events {
         this.startX = 0;
         this.startY = 0;
         this.event = null;
+        this.clicking = false;
     }
 
     on(name, callback, context) {
@@ -184,7 +185,8 @@ function initSelectListeners(ui) {
         if (!ui.el.contains(e.target)) {
             return;
         }
-        if (now() - ui.lastStart > LONG_PRESS_DELAY) { 
+        if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
+            ui.clicking = false;
             return;
         }
         const click = e.type === 'click';
@@ -208,6 +210,7 @@ function initSelectListeners(ui) {
             }
         }
         ui.lastStart = now();
+        ui.clicking = true;
     };
 
     initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
