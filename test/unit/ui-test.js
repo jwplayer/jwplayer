@@ -151,7 +151,7 @@ describe('UI', function() {
         const ui = new UI(button).on('click tap', clickSpy);
         button.click();
         expect(clickSpy).to.have.callCount(1);
-        expect(!!clickSpy.defaultPrevented).to.equal(false);
+        expect(!!clickSpy.args[0].defaultPrevented).to.equal(false);
         ui.destroy();
     });
 
@@ -165,7 +165,7 @@ describe('UI', function() {
         }).on('doubleClick doubleTap', doubleClickSpy);
         button.click();
         button.click();
-        const defaultPrevented = !!doubleClickSpy.defaultPrevented;
+        const defaultPrevented = !!doubleClickSpy.args[0].defaultPrevented;
         expect(defaultPrevented, 'preventDefault not called').to.equal(false);
         expect(doubleClickSpy).to.have.callCount(1);
 
