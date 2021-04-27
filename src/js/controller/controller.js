@@ -440,6 +440,9 @@ Object.assign(Controller.prototype, {
         function _checkPlayOnViewable(model, viewable) {
             const adState = _getAdState();
             if (model.get('playOnViewable')) {
+                if (adState) {
+                    _this._instreamAdapter.noResume = !viewable;
+                }
                 if (viewable) {
                     const reason = 'viewable';
                     const autoPauseAds = model.get('autoPause').pauseAds;
@@ -471,6 +474,7 @@ Object.assign(Controller.prototype, {
             if (adState) {
                 if (model.get('autoPause').pauseAds) {
                     _pauseWhenNotViewable(viewable);
+                    _this._instreamAdapter.noResume = !viewable;
                 } else {
                     _pauseAfterAd(viewable);
                 }

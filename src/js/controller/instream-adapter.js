@@ -215,6 +215,9 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const { newstate } = event;
         if (newstate === STATE_PLAYING) {
             _controller.trigger(AD_PLAY, event);
+            if (_this.noResume && _model.get('autoPause').pauseAds) {
+                _this.pause();
+            }
         } else if (newstate === STATE_PAUSED) {
             _controller.trigger(AD_PAUSE, event);
         }
