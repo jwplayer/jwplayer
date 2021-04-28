@@ -577,6 +577,7 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
 
             if (adState) {
+                _this._instreamAdapter.noResume = false;
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false, meta);
                 return Promise.resolve();
