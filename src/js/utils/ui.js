@@ -9,11 +9,8 @@ const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
 const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
 
 const WINDOW_GROUP = 'window';
-const INIT_GROUP = 'init';
-const FOCUS_GROUP = 'focus';
-const SELECT_GROUP = 'select';
-
 const keydown = 'keydown';
+
 const { passiveEvents } = Features;
 const DEFAULT_LISTENER_OPTIONS = passiveEvents ? { passive: true } : false;
 
@@ -45,7 +42,6 @@ export default class UI extends Events {
         this.startX = 0;
         this.startY = 0;
         this.event = null;
-        this.clicking = false;
     }
 
     on(name, callback, context) {
@@ -88,7 +84,8 @@ function eventsApi(name) {
 }
 
 function initInteractionListeners(ui) {
-    if (ui.handlers[INIT_GROUP]) {
+    const initGroup = 'init';
+    if (ui.handlers[initGroup]) {
         return;
     }
     const { el, passive } = ui;
@@ -96,6 +93,7 @@ function initInteractionListeners(ui) {
 
     const interactStartHandler = (e) => {
         removeClass(el, 'jw-tab-focus');
+
         if (isRightClick(e)) {
             return;
         }
@@ -123,6 +121,10 @@ function initInteractionListeners(ui) {
             addEventListener(ui, WINDOW_GROUP, 'pointermove', interactDragHandler, listenerOptions);
             addEventListener(ui, WINDOW_GROUP, 'pointercancel', interactEndHandler);
             addEventListener(ui, WINDOW_GROUP, 'pointerup', interactEndHandler);
+
+            if (el.tagName === 'BUTTON') {
+                el.focus();
+            }
         } else if (type === 'mousedown') {
             addEventListener(ui, WINDOW_GROUP, 'mousemove', interactDragHandler, listenerOptions);
             addEventListener(ui, WINDOW_GROUP, 'mouseup', interactEndHandler);
@@ -168,65 +170,42 @@ function initInteractionListeners(ui) {
         if (ui.dragged) {
             ui.dragged = false;
             triggerEvent(ui, DRAG_END, e);
-        }
-    };
+        } else if (e.type.indexOf('cancel') === -1 && el.contains(e.target)) {
+            if (now() - ui.lastStart > LONG_PRESS_DELAY) {
+                return;
+            }
+            const isPointerEvent = (e.type === 'pointerup' || e.type === 'pointercancel');
+            const click = e.type === 'mouseup' || isPointerEvent && e.pointerType === 'mouse';
+            checkDoubleTap(ui, e, click);
+            if (click) {
+                triggerEvent(ui, CLICK, e);
+            } else {
+                triggerEvent(ui, TAP, e);
 
-    initStartEventsListeners(ui, INIT_GROUP, interactStartHandler, listenerOptions);
-    initInteractionListener();
-    initFocusListeners(ui);
-}
-
-function initSelectListeners(ui) {
-    if (ui.handlers[SELECT_GROUP]) {
-        return;
-    }
-
-    const interactClickhandler = (e) => {
-        if (!ui.el.contains(e.target)) {
-            return;
-        }
-        if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
-            ui.clicking = false;
-            return;
-        }
-        const click = e.type === 'click';
-        checkDoubleTap(ui, e, click);
-        if (click) {
-            triggerEvent(ui, CLICK, e);
-        } else {
-            triggerEvent(ui, TAP, e);
-        }
-    };
-
-    const interactPreClickHandler = (e) => {
-        const { target } = e;
-
-        if (!ui.el.contains(target)) {
-            return;
-        }
-        if (e.isPrimary) {
-            if (target.tagName === 'BUTTON') {
-                target.focus();
+                // preventDefault to not dispatch the 300ms delayed click after a tap
+                if (e.type === 'touchend' && !passiveEvents) {
+                    preventDefault(e);
+                }
             }
         }
-        ui.lastStart = now();
-        ui.clicking = true;
     };
 
-    initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
-    addEventListener(ui, SELECT_GROUP, 'click', interactClickhandler);
-    initFocusListeners(ui);
-}
-
-function initFocusListeners(ui) {
-    if (ui.handlers[FOCUS_GROUP]) {
-        return;
+    // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
+    // (windows phones) still get listeners just in case they want to use them.
+    if (USE_POINTER_EVENTS) {
+        addEventListener(ui, initGroup, 'pointerdown', interactStartHandler, listenerOptions);
+    } else {
+        if (USE_MOUSE_EVENTS) {
+            addEventListener(ui, initGroup, 'mousedown', interactStartHandler, listenerOptions);
+        }
+        // Always add this, in case we don't properly identify the device as mobile
+        addEventListener(ui, initGroup, 'touchstart', interactStartHandler, listenerOptions);
     }
-    const { el } = ui;
-    addEventListener(ui, FOCUS_GROUP, 'blur', () => {
+    initInteractionListener();
+    addEventListener(ui, initGroup, 'blur', () => {
         removeClass(el, 'jw-tab-focus');
     });
-    addEventListener(ui, FOCUS_GROUP, 'focus', () => {
+    addEventListener(ui, initGroup, 'focus', () => {
         if (lastInteractionListener.event && lastInteractionListener.event.type === keydown) {
             addClass(el, 'jw-tab-focus');
         }
@@ -262,18 +241,25 @@ const eventRegisters = {
         initInteractionListeners(ui);
     },
     click(ui) {
-        initSelectListeners(ui);
+        initInteractionListeners(ui);
     },
     tap(ui) {
-        initSelectListeners(ui);
+        if (OS.iOS && OS.version.major < 11) {
+            const body = document.body;
+            if (body) {
+                // When controls are disabled iOS 10 does not dispatch media element touchstart/end events without this line
+                body.ontouchstart = body.ontouchstart || function() {};
+            }
+        }
+        initInteractionListeners(ui);
     },
     doubleTap(ui) {
         ui.enableDoubleTap = true;
-        initSelectListeners(ui);
+        initInteractionListeners(ui);
     },
     doubleClick(ui) {
         ui.enableDoubleTap = true;
-        initSelectListeners(ui);
+        initInteractionListeners(ui);
     },
     longPress(ui) {
         const longPress = 'longPress';
@@ -487,16 +473,4 @@ function preventDefault(evt) {
     if (evt.preventDefault) {
         evt.preventDefault();
     }
-}
-
-function initStartEventsListeners(ui, group, handler, options) {
-    // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
-    // (windows phones) still get listeners just in case they want to use them.
-    if (USE_POINTER_EVENTS) {
-        addEventListener(ui, group, 'pointerdown', handler, options);
-    } else if (USE_MOUSE_EVENTS) {
-        addEventListener(ui, group, 'mousedown', handler, options);
-    }
-    // Always add this, in case we don't properly identify the device as mobile
-    addEventListener(ui, group, 'touchstart', handler, options);
 }
