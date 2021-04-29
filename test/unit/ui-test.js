@@ -143,19 +143,91 @@ describe('UI', function() {
         ui.destroy();
     });
 
-    it('triggers click events with input', function() {
+    it('triggers click events with pointer and mouse input', function() {
         if (!USE_POINTER_EVENTS && !USE_MOUSE_EVENTS) {
             return;
         }
         const clickSpy = sandbox.spy();
         const ui = new UI(button).on('click tap', clickSpy);
-        button.click();
+        let startResult;
+        let sourceEvent;
+        if (USE_POINTER_EVENTS) {
+            const pointerMouseOptions = xyCoords(0, 0, {
+                isPrimary: true,
+                pointerType: 'mouse',
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            startResult = button.dispatchEvent(new PointerEvent('pointerdown', pointerMouseOptions));
+            sourceEvent = new PointerEvent('pointerup', pointerMouseOptions);
+        } else {
+            const mouseOptions = xyCoords(0, 0, {
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            startResult = button.dispatchEvent(new MouseEvent('mousedown', mouseOptions));
+            sourceEvent = new MouseEvent('mouseup', mouseOptions);
+        }
+        button.dispatchEvent(sourceEvent);
+
+        expect(startResult, 'preventDefault not called').to.equal(true);
         expect(clickSpy).to.have.callCount(1);
-        expect(!!clickSpy.args[0].defaultPrevented).to.equal(false);
+        expect(clickSpy).calledWith({
+            type: 'click',
+            pointerType: 'mouse',
+            pageX: 0,
+            pageY: 0,
+            sourceEvent,
+            target: button,
+            currentTarget: button
+        });
+
         ui.destroy();
     });
 
-    it('triggers doubleClick events with input', function() {
+    it('triggers tap events with pointer and touch input', function() {
+        if (!USE_POINTER_EVENTS && !TOUCH_SUPPORT) {
+            // Touch not supported in this browser
+            return;
+        }
+        const tapSpy = sandbox.spy();
+        const ui = new UI(button).on('click tap', tapSpy);
+        let startResult;
+        let sourceEvent;
+        if (USE_POINTER_EVENTS) {
+            const pointerTouchOptions = xyCoords(0, 0, {
+                isPrimary: true,
+                pointerType: 'touch',
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            startResult = button.dispatchEvent(new PointerEvent('pointerdown', pointerTouchOptions));
+            sourceEvent = new PointerEvent('pointerup', pointerTouchOptions);
+        } else if (TOUCH_SUPPORT) {
+            const touchEvent = createTouchEvent('touchstart');
+            startResult = button.dispatchEvent(touchEvent);
+            sourceEvent = createTouchEvent('touchend');
+        }
+        button.dispatchEvent(sourceEvent);
+
+        expect(startResult, 'preventDefault not called').to.equal(true);
+        expect(tapSpy).to.have.callCount(1);
+        expect(tapSpy).calledWith({
+            type: 'tap',
+            pointerType: 'touch',
+            pageX: 0,
+            pageY: 0,
+            sourceEvent,
+            target: button,
+            currentTarget: button
+        });
+        ui.destroy();
+    });
+
+    it('triggers doubleClick events with pointer and mouse input', function() {
         if (!USE_POINTER_EVENTS && !USE_MOUSE_EVENTS) {
             return;
         }
@@ -163,12 +235,92 @@ describe('UI', function() {
         const ui = new UI(button, {
             enableDoubleTap: true
         }).on('doubleClick doubleTap', doubleClickSpy);
-        button.click();
-        button.click();
-        const defaultPrevented = !!doubleClickSpy.args[0].defaultPrevented;
-        expect(defaultPrevented, 'preventDefault not called').to.equal(false);
-        expect(doubleClickSpy).to.have.callCount(1);
+        let startResult;
+        let sourceEvent;
+        if (USE_POINTER_EVENTS) {
+            const pointerMouseOptions = xyCoords(0, 0, {
+                isPrimary: true,
+                pointerType: 'mouse',
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            startResult = button.dispatchEvent(new PointerEvent('pointerdown', pointerMouseOptions));
+            button.dispatchEvent(new PointerEvent('pointerup', pointerMouseOptions));
+            button.dispatchEvent(new PointerEvent('pointerdown', pointerMouseOptions));
+            sourceEvent = new PointerEvent('pointerup', pointerMouseOptions);
+            button.dispatchEvent(sourceEvent);
+        } else {
+            const mouseOptions = xyCoords(0, 0, {
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            startResult = button.dispatchEvent(new MouseEvent('mousedown', mouseOptions));
+            button.dispatchEvent(new MouseEvent('mouseup', mouseOptions));
+            button.dispatchEvent(new MouseEvent('mousedown', mouseOptions));
+            sourceEvent = new MouseEvent('mouseup', mouseOptions);
+            button.dispatchEvent(sourceEvent);
+        }
 
+        expect(startResult, 'preventDefault not called').to.equal(true);
+        expect(doubleClickSpy).to.have.callCount(1);
+        expect(doubleClickSpy).calledWith({
+            type: 'doubleClick',
+            pointerType: 'mouse',
+            pageX: 0,
+            pageY: 0,
+            sourceEvent,
+            target: button,
+            currentTarget: button
+        });
+
+        ui.destroy();
+    });
+
+    it('triggers doubleTap events with pointer and touch input', function() {
+        const doubleTapSpy = sandbox.spy();
+        const ui = new UI(button, {
+            enableDoubleTap: true
+        }).on('doubleClick doubleTap', doubleTapSpy);
+        let startResult;
+        let sourceEvent;
+        if (USE_POINTER_EVENTS) {
+            const pointerTouchOptions = xyCoords(0, 0, {
+                isPrimary: true,
+                pointerType: 'touch',
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            startResult = button.dispatchEvent(new PointerEvent('pointerdown', pointerTouchOptions));
+            button.dispatchEvent(new PointerEvent('pointerup', pointerTouchOptions));
+            button.dispatchEvent(new PointerEvent('pointerdown', pointerTouchOptions));
+            sourceEvent = new PointerEvent('pointerup', pointerTouchOptions);
+            button.dispatchEvent(sourceEvent);
+        } else if (TOUCH_SUPPORT) {
+            const touchEvent = createTouchEvent('touchstart');
+            startResult = button.dispatchEvent(touchEvent);
+            button.dispatchEvent(createTouchEvent('touchend'));
+            button.dispatchEvent(createTouchEvent('touchstart'));
+            sourceEvent = createTouchEvent('touchend');
+            button.dispatchEvent(sourceEvent);
+        } else {
+            // Touch not supported in this browser
+            ui.destroy();
+            return;
+        }
+        expect(startResult, 'preventDefault not called').to.equal(true);
+        expect(doubleTapSpy).to.have.callCount(1);
+        expect(doubleTapSpy).calledWith({
+            type: 'doubleTap',
+            pointerType: 'touch',
+            pageX: 0,
+            pageY: 0,
+            sourceEvent,
+            target: button,
+            currentTarget: button
+        });
         ui.destroy();
     });
 
@@ -510,11 +662,11 @@ describe('UI', function() {
         ui = new UI(button)
             .on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {});
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(9);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
         }
         ui.destroy();
     });
@@ -525,14 +677,14 @@ describe('UI', function() {
             .on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {})
             .off();
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(9);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(9);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
             expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         }
         ui.destroy();
     });
@@ -543,14 +695,14 @@ describe('UI', function() {
         const ui = new UI(button).on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {});
         ui.destroy();
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(9);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(9);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
             expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         }
     });
 

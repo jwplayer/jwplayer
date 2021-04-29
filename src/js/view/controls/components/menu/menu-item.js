@@ -1,10 +1,11 @@
+import UI from 'utils/ui';
 import { toggleClass, createElement } from 'utils/dom';
 import { itemRadioButtonTemplate, itemTemplate } from 'view/controls/templates/menu/menu-item';
-import { addClickAction } from 'view/utils/add-click-action';
+
 export class MenuItem {
     constructor(_content, _action, _template = itemTemplate) {
         this.el = createElement(_template(_content));
-        this.ui = addClickAction(this.el, _action, this);
+        this.ui = new UI(this.el).on('click tap enter', _action, this);
     }
     destroy() {
         if (this.el.parentNode) {

@@ -1,16 +1,16 @@
-import { addClickAction } from 'view/utils/add-click-action';
-import type UI from 'utils/ui';
+import UI from 'utils/ui';
 import type ViewModel from 'view/view-model';
 import type { PlayerAPI } from 'types/generic.type';
+
 export default class RewindDisplayIcon {
     el: HTMLElement;
     ui: UI;
 
     constructor(model: ViewModel, api: PlayerAPI, element: HTMLElement) {
-        const iconDisplay = element.querySelector('.jw-icon') as HTMLElement;
+        const iconDisplay = element.querySelector('.jw-icon');
 
         this.el = element;
-        this.ui = addClickAction(iconDisplay, function(): void {
+        this.ui = new UI(iconDisplay).on('click tap enter', function(): void {
             const currentPosition = model.get('position');
             const duration = model.get('duration');
             const rewindPosition = currentPosition - 10;
