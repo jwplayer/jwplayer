@@ -77,7 +77,7 @@
   "scripts": {
     "build": "grunt",
     "hooks": "\\cp .github/hooks/pre-push .git/hooks/pre-push",
-    "lint": "yarn type-check && yarn lint:js && yarn lint:tests && yarn lint:styles",
+    "lint": "npm run type-check && npm run lint:js && npm run lint:tests && npm run lint:styles",
     "lint:js": "eslint './src/js' --ext .ts --ext .js",
     "lint:styles": "stylelint './src/css/**/*.less'",
     "lint:tests": "eslint './test/*.js'",

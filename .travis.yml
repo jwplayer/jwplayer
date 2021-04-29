@@ -2,10 +2,10 @@ language: node_js
 node_js:
   - 14
 
-cache: yarn
+cache: npm
 
 before_script:
-  - yarn global add grunt-cli
+  - npm install -g grunt-cli
 
 script:
   - grunt
