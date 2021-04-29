@@ -130,11 +130,6 @@ function initInteractionListeners(ui) {
             addEventListener(ui, WINDOW_GROUP, 'touchmove', interactDragHandler, listenerOptions);
             addEventListener(ui, WINDOW_GROUP, 'touchcancel', interactEndHandler);
             addEventListener(ui, WINDOW_GROUP, 'touchend', interactEndHandler);
-
-            // Prevent scrolling the screen while dragging on mobile.
-            if (!passive) {
-                preventDefault(e);
-            }
         }
     };
 
@@ -182,9 +177,6 @@ function initSelectListeners(ui) {
     }
 
     const interactClickhandler = (e) => {
-        if (!ui.el.contains(e.target)) {
-            return;
-        }
         if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
             ui.clicking = false;
             return;
@@ -201,9 +193,6 @@ function initSelectListeners(ui) {
     const interactPreClickHandler = (e) => {
         const { target } = e;
 
-        if (!ui.el.contains(target)) {
-            return;
-        }
         if (e.isPrimary) {
             if (target.tagName === 'BUTTON') {
                 target.focus();
