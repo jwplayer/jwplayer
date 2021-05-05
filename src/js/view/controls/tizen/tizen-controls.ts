@@ -105,12 +105,14 @@ class TizenControls extends Controls {
         }
 
         // Display Buttons - Buffering
-        const displayContainer = new DisplayContainer(model, api);
-        createBufferIcon(this.context, displayContainer, 'jw-tizen-buffer-draw');
-        createBufferIcon(this.context, displayContainer, 'jw-tizen-buffer-erase');
+        if (!this.displayContainer || !this.div.querySelector('.jw-display')) {
+            const displayContainer = new DisplayContainer(model, api);
+            createBufferIcon(this.context, displayContainer, 'jw-tizen-buffer-draw');
+            createBufferIcon(this.context, displayContainer, 'jw-tizen-buffer-erase');
 
-        this.div.appendChild(displayContainer.element());
-        this.displayContainer = displayContainer;
+            this.div.appendChild(displayContainer.element());
+            this.displayContainer = displayContainer;
+        }
 
         // Controlbar
         const controlbar = this.controlbar = new TizenControlbar(api, model,
