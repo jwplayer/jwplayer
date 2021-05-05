@@ -431,16 +431,34 @@ Object.assign(Controller.prototype, {
         }
 
         function _pauseWhenNotViewable(viewable) {
+            _removeInstreamStateListener();
             if (!viewable) {
-                _this.pause({ reason: 'viewable' });
-                _model.set('playOnViewable', !viewable);
+                if (_getAdState() === STATE_BUFFERING) {
+                    _this._instreamAdapter.once('state', _pauseFromViewable, _this);
+                    _this._instreamAdapter.noResume = !viewable;
+                } else {
+                    _pauseFromViewable();
+                }
             }
+        }
+
+        function _removeInstreamStateListener() {
+            if (_this._instreamAdapter) {
+                _this._instreamAdapter.off('state', _pauseFromViewable, _this);
+            }
+        }
+
+        function _pauseFromViewable() {
+            _removeInstreamStateListener();
+            _this.pause({ reason: 'viewable' });
+            _model.set('playOnViewable', true);
         }
 
         function _checkPlayOnViewable(model, viewable) {
             const adState = _getAdState();
             if (model.get('playOnViewable')) {
                 if (viewable) {
+                    _removeInstreamStateListener();
                     const reason = 'viewable';
                     const autoPauseAds = model.get('autoPause').pauseAds;
                     const pauseReason = model.get('pauseReason');
