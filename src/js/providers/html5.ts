@@ -68,6 +68,7 @@ interface HTML5Provider extends ProviderWithMixins {
     startDateTime: number;
     setStartDateTime: (time: number) => void;
     videoLoad: (this: HTMLVideoElement) => void;
+    muteToggle: boolean;
     fairplay?: unknown;
 }
 
@@ -98,12 +99,13 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     _this.retries = 0;
     _this.maxRetries = 3;
 
-    let { loadAndParseHlsMetadata, minDvrWindow } = _playerConfig;
-
     // Toggle for a bug in iOS and Safari where you are unable to seek in initially muted streams
-    const iosMuteToggle = OS.iOS || Browser.safari;
+    _this.muteToggle = OS.iOS || Browser.safari;
 
+    const loadAndParseHlsMetadata = _playerConfig.loadAndParseHlsMetadata;
     _this.loadAndParseHlsMetadata = loadAndParseHlsMetadata === undefined ? true : !!loadAndParseHlsMetadata;
+
+    let minDvrWindow = _playerConfig.minDvrWindow;
 
     // Always render natively in iOS and Safari, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
@@ -121,6 +123,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     const MediaEvents = {
         progress(this: ProviderWithMixins): void {
             VideoEvents.progress.call(_this);
+            _toggleMute();
             checkStaleStream();
         },
 
@@ -189,20 +192,6 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             if (!_androidHls) {
                 _setMediaType();
             }
-
-            // Workaround for a bug in iOS and Safari where you are unable to seek in initially muted streams
-            // Bug Report: https://feedbackassistant.apple.com/feedback/9070511
-            if (iosMuteToggle && _videotag.muted) {
-                const isPlaying = !_videotag.paused;
-                _videotag.muted = false;
-                _videotag.muted = true;
-
-                // Autostarted players may be paused after toggle
-                if (isPlaying && _videotag.paused) {
-                    _videotag.play();
-                }
-            }
-
             checkVisualQuality();
             VideoEvents.canplay.call(_this);
         },
@@ -827,6 +816,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             _canSeek = !!_getSeekableEnd();
         }
         if (_canSeek) {
+            _toggleMute();
             _delayedSeek = 0;
             // setting currentTime can throw an invalid DOM state exception if the video is not ready
             try {
@@ -1031,7 +1021,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     }
 
     function isAudioStream(): boolean | undefined {
-        if (_videotag.readyState < 2) {
+        if (_videotag.readyState < 2 && _videotag.buffered.length === 0) {
             return;
         }
 
@@ -1039,10 +1029,35 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     }
 
     function _setMediaType(): void {
-        let isAudio = isAudioStream();
+        const isAudio = isAudioStream();
         if (typeof isAudio !== 'undefined') {
             const mediaType = isAudio ? 'audio' : 'video';
             _this.trigger(MEDIA_TYPE, { mediaType });
+        }
+    }
+
+    // Workaround for a bug in iOS and Safari where you are unable to seek in initially muted streams
+    // Bug Report: https://feedbackassistant.apple.com/feedback/9070511
+    function _toggleMute(): void {
+        if (_this.muteToggle && _videotag.muted) {
+            const isAudio = isAudioStream();
+            if (typeof isAudio === 'undefined') {
+                return;
+            }
+            const isPlaying = !_videotag.paused;
+            _videotag.muted =
+                _this.muteToggle = false;
+            if (isAudio) {
+                // For audio-only set muted back to player config value
+                _videotag.muted = _playerConfig.mute;
+            } else {
+                // Only re-mute and resume if media has video (autoplay muted)
+                _videotag.muted = true;
+                // Autostart players may be paused after toggle
+                if (isPlaying && _videotag.paused) {
+                    _videotag.play();
+                }
+            }
         }
     }
 
