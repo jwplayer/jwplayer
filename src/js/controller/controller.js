@@ -431,34 +431,16 @@ Object.assign(Controller.prototype, {
         }
 
         function _pauseWhenNotViewable(viewable) {
-            _removeInstreamStateListener();
             if (!viewable) {
-                if (_getAdState() === STATE_BUFFERING) {
-                    _this._instreamAdapter.once('state', _pauseFromViewable, _this);
-                    _this._instreamAdapter.noResume = !viewable;
-                } else {
-                    _pauseFromViewable();
-                }
+                _this.pause({ reason: 'viewable' });
+                _model.set('playOnViewable', !viewable);
             }
-        }
-
-        function _removeInstreamStateListener() {
-            if (_this._instreamAdapter) {
-                _this._instreamAdapter.off('state', _pauseFromViewable, _this);
-            }
-        }
-
-        function _pauseFromViewable() {
-            _removeInstreamStateListener();
-            _this.pause({ reason: 'viewable' });
-            _model.set('playOnViewable', true);
         }
 
         function _checkPlayOnViewable(model, viewable) {
             const adState = _getAdState();
             if (model.get('playOnViewable')) {
                 if (viewable) {
-                    _removeInstreamStateListener();
                     const reason = 'viewable';
                     const autoPauseAds = model.get('autoPause').pauseAds;
                     const pauseReason = model.get('pauseReason');
@@ -591,6 +573,7 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
 
             if (adState) {
+                _this._instreamAdapter.off('state', _pauseAd, _this);
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false, meta);
                 return Promise.resolve();
@@ -750,7 +733,12 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
             if (adState && adState !== STATE_PAUSED) {
                 _updatePauseReason(meta);
-                _api.pauseAd(true, meta);
+                if (adState === STATE_BUFFERING) {
+                    _this._instreamAdapter.once('state', _pauseAd, _this);
+                    _this._instreamAdapter.noResume = true;
+                } else {
+                    _api.pauseAd(true, meta);
+                }
                 return;
             }
 
@@ -768,6 +756,11 @@ Object.assign(Controller.prototype, {
                         _interruptPlay = true;
                     }
             }
+        }
+
+        function _pauseAd() {
+            const reason = _model.get('pauseReason');
+            _api.pauseAd(true, { reason });
         }
 
         function _isIdle() {
