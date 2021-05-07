@@ -3,7 +3,6 @@ import TizenControlbar from 'view/controls/tizen/tizen-controlbar';
 import TizenSeekbar from './tizen-seekbar';
 import DisplayContainer from 'view/controls/display-container';
 import PauseDisplayTemplate from 'view/controls/tizen/templates/pause-display';
-import NextUpToolTip from 'view/controls/nextuptooltip';
 import { TizenMenu } from 'view/controls/components/menu/tizen-menu.js';
 import { addClass, removeClass, createElement } from 'utils/dom';
 import { STATE_PLAYING, STATE_PAUSED, USER_ACTION } from 'events/events';
@@ -108,20 +107,6 @@ class TizenControls extends Controls {
         const controlbar = new TizenControlbar(api, model,
             this.playerContainer.querySelector('.jw-hidden-accessibility'));
         controlbar.on('backClick', this.onBackClick, this);
-
-        // Next Up Tooltip
-        if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
-            const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
-            nextUpToolTip.setup(this.context);
-            if (model.get('nextUp')) {
-                nextUpToolTip.onNextUp(model, model.get('nextUp'));
-            }
-            controlbar.nextUpToolTip = nextUpToolTip;
-
-            // NextUp needs to be behind the controlbar to not block other tooltips
-            element.appendChild(nextUpToolTip.element());
-        }
-
         element.appendChild(controlbar.element());
 
         // Seekbar
@@ -130,7 +115,7 @@ class TizenControls extends Controls {
 
         // Settings/Tracks Menu
         const localization = model.get('localization');
-        const settingsMenu = this.settingsMenu = new TizenMenu(api, model.player, this.controlbar, localization);
+        const settingsMenu = new TizenMenu(api, model.player, this.controlbar, localization);
         settingsMenu.on(USER_ACTION, () => this.userActive());
         controlbar.on('settingsInteraction', () => {
             settingsMenu.toggle();
@@ -156,6 +141,31 @@ class TizenControls extends Controls {
 
         // To enable features like the ad skip button
         super.enable.call(this, api, model);
+
+        // Next Up Tooltip
+        const baseControlbar = this.controlbar;
+        if (baseControlbar) {
+            const nextUpToolTip = baseControlbar.nextUpToolTip;
+            nextUpToolTip.off('all');
+
+            if (model.get('nextUp')) {
+                nextUpToolTip.onNextUp(model, model.get('nextUp'));
+            }
+
+            controlbar.nextUpToolTip = nextUpToolTip;
+            element.appendChild(nextUpToolTip.element());
+
+            // Destroy the controlbar being overridden
+            baseControlbar.nextUpToolTip = null;
+            baseControlbar.destroy();
+        }
+
+        // Destroy the settings menu being overridden
+        if (this.settingsMenu) {
+            this.settingsMenu.destroy();
+        }
+
+        this.settingsMenu = settingsMenu;
         this.controlbar = controlbar;
         this.div = element;
 
