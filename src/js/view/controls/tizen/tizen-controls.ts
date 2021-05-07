@@ -3,7 +3,6 @@ import TizenControlbar from 'view/controls/tizen/tizen-controlbar';
 import TizenSeekbar from './tizen-seekbar';
 import DisplayContainer from 'view/controls/display-container';
 import PauseDisplayTemplate from 'view/controls/tizen/templates/pause-display';
-import NextUpToolTip from 'view/controls/nextuptooltip';
 import { TizenMenu } from 'view/controls/components/menu/tizen-menu.js';
 import { addClass, removeClass, createElement } from 'utils/dom';
 import { STATE_PLAYING, STATE_PAUSED, USER_ACTION } from 'events/events';
@@ -18,6 +17,19 @@ const ACTIVE_TIMEOUT = 5000;
 const reasonInteraction = () => {
     return { reason: 'interaction' };
 };
+
+function createBufferIcon(context: HTMLDocument, displayContainer: DisplayContainer, className: string): void {
+    const circle = context.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('class', className);
+    circle.setAttribute('cx', '50%');
+    circle.setAttribute('cy', '50%');
+    circle.setAttribute('r', '75');
+
+    const svgContainer = displayContainer.element().querySelector('.jw-svg-icon-buffer');
+    if (svgContainer) {
+        svgContainer.appendChild(circle);
+    }
+}
 
 class TizenControls extends Controls {
     context: HTMLDocument;
@@ -65,84 +77,57 @@ class TizenControls extends Controls {
     }
 
     enable(api: PlayerAPI, model: ViewModel): void {
-        super.enable.call(this, api, model);
-
         addClass(this.playerContainer, 'jw-tizen-app jw-flag-fullscreen');
         this.api = api;
         this.model = model;
 
         const element = this.context.createElement('div');
         element.className = 'jw-tizen-controls jw-tizen-reset';
-        this.div = element;
-    
-        if (!this.backdrop) {
-            const backdrop = this.context.createElement('div');
-            backdrop.className = 'jw-controls-backdrop jw-reset';
-            this.backdrop = backdrop;
-            this.addBackdrop();
-        }
 
         // Pause Display
         if (!this.pauseDisplay) {
             const pauseDisplay = createElement(PauseDisplayTemplate());
-
             const title = new Title(model);
             title.setup(pauseDisplay.querySelector('.jw-pause-display-container'));
-            this.div.appendChild(pauseDisplay);
+            element.appendChild(pauseDisplay);
             this.pauseDisplay = pauseDisplay;
         }
 
         // Display Buttons - Buffering
         if (!this.displayContainer) {
             const displayContainer = new DisplayContainer(model, api);
+            createBufferIcon(this.context, displayContainer, 'jw-tizen-buffer-draw');
+            createBufferIcon(this.context, displayContainer, 'jw-tizen-buffer-erase');
 
-            this.div.appendChild(displayContainer.element());
+            element.appendChild(displayContainer.element());
             this.displayContainer = displayContainer;
         }
 
         // Controlbar
-        const controlbar = this.controlbar = new TizenControlbar(api, model,
+        const controlbar = new TizenControlbar(api, model,
             this.playerContainer.querySelector('.jw-hidden-accessibility'));
-        controlbar.on('backClick', () => {
-            this.onBackClick();
-        });
-
-        // Next Up Tooltip
-        if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
-            const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
-            nextUpToolTip.setup(this.context);
-            if (model.get('nextUp')) {
-                nextUpToolTip.onNextUp(model, model.get('nextUp'));
-            }
-            controlbar.nextUpToolTip = nextUpToolTip;
-
-            // NextUp needs to be behind the controlbar to not block other tooltips
-            this.div.appendChild(nextUpToolTip.element());
-        }
-
-        this.div.appendChild(controlbar.element());
+        controlbar.on('backClick', this.onBackClick, this);
+        element.appendChild(controlbar.element());
 
         // Seekbar
-        const seekbar = this.seekbar = new TizenSeekbar(model, api, this.controlbar.elements.time);
-        this.div.appendChild(seekbar.element());
+        const seekbar = this.seekbar = new TizenSeekbar(model, api, controlbar.elements.time);
+        element.appendChild(seekbar.element());
 
         // Settings/Tracks Menu
         const localization = model.get('localization');
-        const settingsMenu = this.settingsMenu = new TizenMenu(api, model.player, this.controlbar, localization);
+        const settingsMenu = new TizenMenu(api, model.player, this.controlbar, localization);
         settingsMenu.on(USER_ACTION, () => this.userActive());
-        this.controlbar.on('settingsInteraction', () => {
+        controlbar.on('settingsInteraction', () => {
             settingsMenu.toggle();
             const activeButton = this.div && this.div.querySelector('.jw-active');
             if (settingsMenu.visible && activeButton) {
                 removeClass(activeButton, 'jw-active');
             }
         });
-        this.div.insertBefore(settingsMenu.el, controlbar.element());
+        element.insertBefore(settingsMenu.el, controlbar.element());
 
         // Trigger backClick when all videos complete      
-        api.on('playlistComplete', () => {
-            this.onBackClick();
-        }, this);
+        api.on('playlistComplete', this.onBackClick, this);
 
         // Remove event listener added in base controls
         if (this.keydownCallback) {
@@ -154,6 +139,40 @@ class TizenControls extends Controls {
         this.keydownCallback = (evt) => this.handleKeydown(evt);
         document.addEventListener('keydown', this.keydownCallback);
 
+        // To enable features like the ad skip button
+        super.enable.call(this, api, model);
+
+        // Next Up Tooltip
+        const baseControlbar = this.controlbar;
+        if (baseControlbar) {
+            const nextUpToolTip = baseControlbar.nextUpToolTip;
+
+            if (nextUpToolTip) {
+                nextUpToolTip.off('all');
+
+                if (model.get('nextUp')) {
+                    nextUpToolTip.onNextUp(model, model.get('nextUp'));
+                }
+
+                baseControlbar.nextUpToolTip = null;
+                controlbar.nextUpToolTip = nextUpToolTip;
+                element.appendChild(nextUpToolTip.element());
+            }
+
+            // Destroy the controlbar being overridden
+            baseControlbar.destroy();
+        }
+
+        // Destroy the settings menu being overridden
+        if (this.settingsMenu) {
+            this.settingsMenu.destroy();
+        }
+
+        this.settingsMenu = settingsMenu;
+        this.controlbar = controlbar;
+        this.div = element;
+
+        this.addBackdrop();
         this.addControls();
         this.playerContainer.focus({ preventScroll: true });
 

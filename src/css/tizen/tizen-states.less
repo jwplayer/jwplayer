@@ -9,6 +9,54 @@
         .jw-tizen-controlbar {
             display: none;
         }
+
+        // Buffer Icon
+        .jw-display-icon-display .jw-icon {
+            .jw-svg-icon-buffer {
+                animation: none;
+
+                path {
+                    display: none;
+                }
+
+                circle {
+                    fill: transparent;
+                    stroke: @white;
+                    stroke-width: 13;
+                    stroke-dasharray: 471;
+                }
+
+                .jw-tizen-buffer-draw {
+                    animation: jw-draw 1.5s ease-in-out infinite;
+                }
+
+                .jw-tizen-buffer-erase {
+                    animation: jw-erase  1.5s ease-in-out infinite;
+                }
+            }
+
+            @keyframes jw-draw {
+                0% {
+                    stroke-dashoffset: 0;
+                }
+
+                50%,
+                100% {
+                    stroke-dashoffset: 471;
+                }
+            }
+
+            @keyframes jw-erase {
+                0%,
+                50% {
+                    stroke-dashoffset: -471;
+                }
+
+                100% {
+                    stroke-dashoffset: 0;
+                }
+            }
+        }
     }
 
     &.jw-state-paused.jw-flag-user-inactive:not(.jw-flag-seek) {
