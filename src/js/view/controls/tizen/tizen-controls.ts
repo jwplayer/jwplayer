@@ -146,17 +146,20 @@ class TizenControls extends Controls {
         const baseControlbar = this.controlbar;
         if (baseControlbar) {
             const nextUpToolTip = baseControlbar.nextUpToolTip;
-            nextUpToolTip.off('all');
 
-            if (model.get('nextUp')) {
-                nextUpToolTip.onNextUp(model, model.get('nextUp'));
+            if (nextUpToolTip) {
+                nextUpToolTip.off('all');
+
+                if (model.get('nextUp')) {
+                    nextUpToolTip.onNextUp(model, model.get('nextUp'));
+                }
+
+                baseControlbar.nextUpToolTip = null;
+                controlbar.nextUpToolTip = nextUpToolTip;
+                element.appendChild(nextUpToolTip.element());
             }
 
-            controlbar.nextUpToolTip = nextUpToolTip;
-            element.appendChild(nextUpToolTip.element());
-
             // Destroy the controlbar being overridden
-            baseControlbar.nextUpToolTip = null;
             baseControlbar.destroy();
         }
 
