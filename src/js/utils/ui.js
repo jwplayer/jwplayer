@@ -193,10 +193,8 @@ function initSelectListeners(ui) {
     const interactPreClickHandler = (e) => {
         const { target } = e;
 
-        if (e.isPrimary) {
-            if (target.tagName === 'BUTTON') {
-                target.focus();
-            }
+        if (e.isPrimary && target.tageName === 'BUTTON') {
+            target.focus();
         }
         ui.lastStart = now();
         ui.clicking = true;
