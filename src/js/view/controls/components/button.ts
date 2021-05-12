@@ -1,6 +1,7 @@
-import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
 import helpers from 'utils/helpers';
+import { addClickAction } from 'view/utils/add-click-action';
+import type UI from 'utils/ui';
 import type { PlayerAPI } from 'types/generic.type';
 
 export type Button = {
@@ -30,7 +31,7 @@ export default function (
 
     element.style.display = 'none';
 
-    const ui: UI = new UI(element).on('click tap enter', apiAction || helpers.noop);
+    const ui: UI = addClickAction(element, apiAction || helpers.noop);
 
     if (svgIcons) {
         Array.prototype.forEach.call(svgIcons, svgIcon => {

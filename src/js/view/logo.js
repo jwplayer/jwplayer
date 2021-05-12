@@ -1,9 +1,9 @@
 import logoTemplate from 'templates/logo';
 import { LOGO_CLICK } from 'events/events';
-import UI from 'utils/ui';
 import { style } from 'utils/css';
 import { createElement } from 'utils/dom';
 import Events from 'utils/backbone.events';
+import { addClickAction } from 'view/utils/add-click-action';
 
 const LogoDefaults = {
     linktarget: '_blank',
@@ -88,11 +88,7 @@ export default function Logo(_model) {
             _logo.setAttribute('aria-label', _model.get('localization').logo);
         }
 
-        this.ui = new UI(_logo).on('click tap enter', function (evt) {
-            if (evt && evt.stopPropagation) {
-                evt.stopPropagation();
-            }
-
+        this.ui = addClickAction(_logo, function () {
             this.trigger(LOGO_CLICK, {
                 link: _settings.link,
                 linktarget: _settings.linktarget

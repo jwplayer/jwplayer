@@ -1,9 +1,9 @@
 import Events from 'utils/backbone.events';
-import UI from 'utils/ui';
 import { addClass, createElement } from 'utils/dom';
+import { addClickAction } from 'view/utils/add-click-action';
 import type { PlayerAPI } from 'types/generic.type';
 import type ViewModel from 'view/view-model';
-
+import type UI from 'utils/ui';
 export default class PlayDisplayIcon extends Events {
     icon: Element | null;
     el: HTMLElement;
@@ -15,7 +15,7 @@ export default class PlayDisplayIcon extends Events {
 
         this.icon = iconDisplay;
         this.el = element;
-        this.ui = new UI(iconDisplay).on('click tap enter', (evt) => {
+        this.ui = addClickAction(iconDisplay, (evt) => {
             this.trigger(evt.type);
         });
 
