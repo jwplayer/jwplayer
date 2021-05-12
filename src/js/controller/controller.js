@@ -78,7 +78,7 @@ Object.assign(Controller.prototype, {
         if (this._programController) {
             this._programController.destroy();
         }
-        this.instreamDestroy();
+        this.instreamDestroy(true);
         this._view =
             this._model =
             this._apiQueue =
@@ -1194,8 +1194,12 @@ Object.assign(Controller.prototype, {
             return this._instreamAdapter;
         };
 
-        this.instreamDestroy = function() {
+        this.instreamDestroy = function(noResume) {
             if (this._instreamAdapter) {
+                // When destroying the player `noResume` is passed to prevent resuming of main content
+                if (noResume) {
+                    this._instreamAdapter.noResume = true;
+                }
                 this._instreamAdapter.destroy();
                 this._instreamAdapter = null;
             }
