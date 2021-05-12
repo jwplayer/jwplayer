@@ -144,9 +144,6 @@ describe('UI', function() {
     });
 
     it('triggers click events with input', function() {
-        if (!USE_POINTER_EVENTS && !USE_MOUSE_EVENTS) {
-            return;
-        }
         const clickSpy = sandbox.spy();
         const ui = new UI(button).on('click tap', clickSpy);
         button.click();
@@ -156,9 +153,6 @@ describe('UI', function() {
     });
 
     it('triggers doubleClick events with input', function() {
-        if (!USE_POINTER_EVENTS && !USE_MOUSE_EVENTS) {
-            return;
-        }
         const doubleClickSpy = sandbox.spy();
         const ui = new UI(button, {
             enableDoubleTap: true
