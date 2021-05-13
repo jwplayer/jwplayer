@@ -91,7 +91,7 @@ export function sanitizeScriptNodes(element) {
 }
 
 // Original: https://owasp.org/www-community/OWASP_Validation_Regex_Repository
-const validUrl = new RegExp(/^(((https?):\/\/)(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:|:blank:]])?$/);
+const validUrl = new RegExp(/^((((https?):\/\/)|(mailto:))(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)([).!';/?:,][[:blank:|:blank:]])?$/);
 
 export function sanitizeElementAttributes(element) {
     const attributes = element.attributes;
