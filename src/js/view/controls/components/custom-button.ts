@@ -1,6 +1,6 @@
 import { style } from 'utils/css';
-import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
+import { addClickAction } from 'view/utils/add-click-action';
 
 let collection: Record<string, XMLDocument> = {};
 
@@ -20,7 +20,7 @@ class CustomButton {
     id: string;
     buttonElement: HTMLElement;
 
-    constructor(img: string, ariaText: string, callback: Function, id: string, btnClass: string) {
+    constructor(img: string, ariaText: string, callback: (event: Event) => void, id: string, btnClass: string) {
         const buttonElement = document.createElement('div');
         buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset ${btnClass || ''}`;
         buttonElement.setAttribute('button', id);
@@ -45,7 +45,7 @@ class CustomButton {
 
         buttonElement.appendChild(iconElement);
 
-        new UI(buttonElement).on('click tap enter', callback, this);
+        addClickAction(buttonElement, callback, this);
 
         // Prevent button from being focused on mousedown so that the tooltips don't remain visible until
         // the user interacts with another element on the page

@@ -418,47 +418,39 @@ function View(_api, _model) {
                 _getCurrentElement().focus();
 
                 if (_controls) {
+                    if (OS.mobile) {
+                        const state = model.get('state');
+                        if (controls &&
+                            ((state === STATE_IDLE || state === STATE_COMPLETE) ||
+                            (model.get('instream') && state === STATE_PAUSED))) {
+                            api.playToggle(reasonInteraction());
+                        }
+                        if (controls && state === STATE_PAUSED) {
+                            // Toggle visibility of the controls when tapping the media
+                            // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
+                            if (model.get('instream') || model.get('castActive') || (model.get('mediaType') === 'audio')) {
+                                return;
+                            }
+                            toggleClass(_playerElement, 'jw-flag-controls-hidden');
+                            if (_this.dismissible) {
+                                toggleClass(_playerElement, 'jw-floating-dismissible', hasClass(_playerElement, 'jw-flag-controls-hidden'));
+                            }
+                            _captionsRenderer.renderCues(true);
+                        } else {
+                            if (!_controls.showing) {
+                                _controls.userActive();
+                            } else {
+                                _controls.userInactive();
+                            }
+                        }
+                        return;
+                    }
                     if (settingsMenuVisible()) {
                         _controls.settingsMenu.close();
                     } else if (infoOverlayVisible()) {
                         _controls.infoOverlay.close();
                     } else {
                         api.playToggle(reasonInteraction());
-                    }
-                }
-            },
-            tap: () => {
-                _this.trigger(DISPLAY_CLICK);
-                if (settingsMenuVisible()) {
-                    _controls.settingsMenu.close();
-                }
-                if (infoOverlayVisible()) {
-                    _controls.infoOverlay.close();
-                }
-                const state = model.get('state');
-
-                if (controls &&
-                    ((state === STATE_IDLE || state === STATE_COMPLETE) ||
-                    (model.get('instream') && state === STATE_PAUSED))) {
-                    api.playToggle(reasonInteraction());
-                }
-
-                if (controls && state === STATE_PAUSED) {
-                    // Toggle visibility of the controls when tapping the media
-                    // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-                    if (model.get('instream') || model.get('castActive') || (model.get('mediaType') === 'audio')) {
-                        return;
-                    }
-                    toggleClass(_playerElement, 'jw-flag-controls-hidden');
-                    if (_this.dismissible) {
-                        toggleClass(_playerElement, 'jw-floating-dismissible', hasClass(_playerElement, 'jw-flag-controls-hidden'));
-                    }
-                    _captionsRenderer.renderCues(true);
-                } else if (_controls) {
-                    if (!_controls.showing) {
-                        _controls.userActive();
-                    } else {
-                        _controls.userInactive();
                     }
                 }
             },

@@ -11,6 +11,7 @@ import { prependChild, setAttribute, toggleClass, openLink, addClass } from 'uti
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
+import { addClickAction } from 'view/utils/add-click-action';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -344,7 +345,7 @@ export default class Controlbar {
             this.ui.push(castUi);
         }
 
-        const durationUi = new UI(elements.duration).on('click tap enter', function () {
+        const durationUi = addClickAction(elements.duration, function () {
             if (this._model.get('streamType') === 'DVR') {
                 // Seek to "Live" position within live buffer, but not before current position
                 const currentPosition = this._model.get('position');
