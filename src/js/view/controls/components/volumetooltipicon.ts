@@ -75,7 +75,7 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         });
 
         this.ui = new UI(this.el, { directSelect: true })
-            .on('click', this.handleClick, this)
+            .on('click', this.handleClick, this);
 
         this.addSliderHandlers(this.ui);
         this.addSliderHandlers(this.horizontalSlider.uiOver);
@@ -108,9 +108,9 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         this.horizontalContainer.blur();
     }
 
-    handleClick(evt): void {
+    handleClick(evt: Event): void {
         if (OS.mobile) {
-            this.toggleOpenState(evt)
+            this.toggleOpenState(evt);
         } else {
             this.trigger('toggleValue');
         }
