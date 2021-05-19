@@ -46,7 +46,7 @@ export default class ClickHandler extends Events {
             this.alternateClickHandler(evt);
             return;
         }
-        this.trigger('click');
+        this.trigger(CLICK);
     }
 
     element(): HTMLElement | null {
