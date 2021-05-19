@@ -177,7 +177,7 @@ function initSelectListeners(ui) {
 
     const interactClickhandler = (e) => {
         // Don't accept clicks from enter key, there is a separate handler for that.
-        if (e.detail === 0) {
+        if (e.detail === 0 && e.isTrusted) {
             return;
         }
         if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
