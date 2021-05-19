@@ -10,7 +10,7 @@ const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
 
 const WINDOW_GROUP = 'window';
 const INIT_GROUP = 'init';
-const FOCUS_GROUP = 'focus';
+const FOCUS_BLUR_GROUP = 'focus_blur';
 const SELECT_GROUP = 'select';
 
 const keydown = 'keydown';
@@ -206,14 +206,14 @@ function initSelectListeners(ui) {
 }
 
 function initFocusListeners(ui) {
-    if (ui.handlers[FOCUS_GROUP]) {
+    if (ui.handlers[FOCUS_BLUR_GROUP]) {
         return;
     }
     const { el } = ui;
-    addEventListener(ui, FOCUS_GROUP, 'blur', () => {
+    addEventListener(ui, FOCUS_BLUR_GROUP, 'blur', () => {
         removeClass(el, 'jw-tab-focus');
     });
-    addEventListener(ui, FOCUS_GROUP, 'focus', () => {
+    addEventListener(ui, FOCUS_BLUR_GROUP, 'focus', () => {
         if (lastInteractionListener.event && lastInteractionListener.event.type === keydown) {
             addClass(el, 'jw-tab-focus');
         }
