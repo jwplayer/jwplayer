@@ -176,10 +176,6 @@ function initSelectListeners(ui) {
     }
 
     const interactClickhandler = (e) => {
-        // Don't accept clicks from enter key, there is a separate handler for that.
-        if (e.detail === 0 && e.isTrusted) {
-            return;
-        }
         if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
             ui.clicking = false;
             return;
@@ -339,9 +335,10 @@ const eventRegisters = {
         addEventListener(ui, ENTER, keydown, (e) => {
             if (e.key === 'Enter' || e.keyCode === 13) {
                 e.stopPropagation();
+                e.preventDefault();
                 triggerSimpleEvent(ui, ENTER, e);
             }
-        });
+        }, false);
     },
     keydown(ui) {
         addEventListener(ui, keydown, keydown, (e) => {

@@ -400,8 +400,7 @@ describe('UI', function() {
             cancelable: true
         });
         sandbox.spy(sourceEvent, 'stopPropagation');
-        const result = button.dispatchEvent(sourceEvent);
-        expect(result, 'preventDefault not called').to.equal(true);
+        button.dispatchEvent(sourceEvent);
         expect(enterSpy).to.have.callCount(1);
         expect(enterSpy).calledWith({
             type: 'enter',
