@@ -28,6 +28,13 @@ describe('UI', function() {
         }
     }());
 
+    const clickEvt = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        detail: 1
+      });
+
     let sandbox;
     let button;
 
@@ -146,7 +153,7 @@ describe('UI', function() {
     it('triggers click events with input', function() {
         const clickSpy = sandbox.spy();
         const ui = new UI(button).on('click tap', clickSpy);
-        button.click();
+        button.dispatchEvent(clickEvt);
         expect(clickSpy).to.have.callCount(1);
         expect(!!clickSpy.args[0].defaultPrevented).to.equal(false);
         ui.destroy();
@@ -157,8 +164,8 @@ describe('UI', function() {
         const ui = new UI(button, {
             enableDoubleTap: true
         }).on('doubleClick doubleTap', doubleClickSpy);
-        button.click();
-        button.click();
+        button.dispatchEvent(clickEvt);
+        button.dispatchEvent(clickEvt);
         const defaultPrevented = !!doubleClickSpy.args[0].defaultPrevented;
         expect(defaultPrevented, 'preventDefault not called').to.equal(false);
         expect(doubleClickSpy).to.have.callCount(1);
