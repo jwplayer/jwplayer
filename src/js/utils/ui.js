@@ -10,7 +10,6 @@ const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
 
 const WINDOW_GROUP = 'window';
 const INIT_GROUP = 'init';
-const FOCUS_GROUP = 'focus';
 const SELECT_GROUP = 'select';
 
 const keydown = 'keydown';
@@ -168,7 +167,7 @@ function initInteractionListeners(ui) {
 
     initStartEventsListeners(ui, INIT_GROUP, interactStartHandler, listenerOptions);
     initInteractionListener();
-    initFocusListeners(ui);
+    initFocusListeners(ui, INIT_GROUP);
 }
 
 function initSelectListeners(ui) {
@@ -202,18 +201,18 @@ function initSelectListeners(ui) {
 
     initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
     addEventListener(ui, SELECT_GROUP, 'click', interactClickhandler);
-    initFocusListeners(ui);
+    initFocusListeners(ui, SELECT_GROUP);
 }
 
-function initFocusListeners(ui) {
-    if (ui.handlers[FOCUS_GROUP]) {
+function initFocusListeners(ui, group) {
+    if (ui.handlers[INIT_GROUP] || ui.handlers[SELECT_GROUP]) {
         return;
     }
     const { el } = ui;
-    addEventListener(ui, FOCUS_GROUP, 'blur', () => {
+    addEventListener(ui, group, 'blur', () => {
         removeClass(el, 'jw-tab-focus');
     });
-    addEventListener(ui, FOCUS_GROUP, 'focus', () => {
+    addEventListener(ui, group, 'focus', () => {
         if (lastInteractionListener.event && lastInteractionListener.event.type === keydown) {
             addClass(el, 'jw-tab-focus');
         }
