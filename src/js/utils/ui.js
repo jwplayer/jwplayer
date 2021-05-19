@@ -1,5 +1,5 @@
 import { OS, Features } from 'environment/environment';
-import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
+import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, OVER } from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 import { addClass, removeClass } from 'utils/dom';
@@ -33,7 +33,7 @@ export default class UI extends Events {
 
         this.directSelect = !!options.directSelect;
         this.dragged = false;
-        this.enableDoubleTap = false;
+        this.enableDoubleClick = false;
         this.el = element;
         this.handlers = {};
         this.options = {};
@@ -176,21 +176,12 @@ function initSelectListeners(ui) {
     }
 
     const interactClickhandler = (e) => {
-        // Don't accept clicks from enter key, there is a separate handler for that.
-        if (e.detail === 0 && e.isTrusted) {
-            return;
-        }
         if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
             ui.clicking = false;
             return;
         }
-        const click = e.type === 'click';
-        checkDoubleTap(ui, e, click);
-        if (click) {
-            triggerEvent(ui, CLICK, e);
-        } else {
-            triggerEvent(ui, TAP, e);
-        }
+        checkDoubleClick(ui, e);
+        triggerEvent(ui, CLICK, e);
     };
 
     const interactPreClickHandler = (e) => {
@@ -229,11 +220,10 @@ function initInteractionListener() {
     }
 }
 
-function checkDoubleTap(ui, e, click) {
-    if (ui.enableDoubleTap) {
+function checkDoubleClick(ui, e) {
+    if (ui.enableDoubleClick) {
         if (now() - ui.lastClick < DOUBLE_CLICK_DELAY) {
-            const doubleType = (click) ? DOUBLE_CLICK : DOUBLE_TAP;
-            triggerEvent(ui, doubleType, e);
+            triggerEvent(ui, DOUBLE_CLICK, e);
             ui.lastClick = 0;
         } else {
             ui.lastClick = now();
@@ -254,15 +244,8 @@ const eventRegisters = {
     click(ui) {
         initSelectListeners(ui);
     },
-    tap(ui) {
-        initSelectListeners(ui);
-    },
-    doubleTap(ui) {
-        ui.enableDoubleTap = true;
-        initSelectListeners(ui);
-    },
     doubleClick(ui) {
-        ui.enableDoubleTap = true;
+        ui.enableDoubleClick = true;
         initSelectListeners(ui);
     },
     longPress(ui) {
@@ -334,14 +317,6 @@ const eventRegisters = {
                 }
             });
         }
-    },
-    enter(ui) {
-        addEventListener(ui, ENTER, keydown, (e) => {
-            if (e.key === 'Enter' || e.keyCode === 13) {
-                e.stopPropagation();
-                triggerSimpleEvent(ui, ENTER, e);
-            }
-        });
     },
     keydown(ui) {
         addEventListener(ui, keydown, keydown, (e) => {
