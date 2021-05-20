@@ -165,9 +165,9 @@ function initInteractionListeners(ui) {
         }
     };
 
+    initFocusListeners(ui, INIT_GROUP);
     initStartEventsListeners(ui, INIT_GROUP, interactStartHandler, listenerOptions);
     initInteractionListener();
-    initFocusListeners(ui, INIT_GROUP);
 }
 
 function initSelectListeners(ui) {
@@ -199,9 +199,9 @@ function initSelectListeners(ui) {
         ui.clicking = true;
     };
 
+    initFocusListeners(ui, SELECT_GROUP);
     initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
     addEventListener(ui, SELECT_GROUP, 'click', interactClickhandler);
-    initFocusListeners(ui, SELECT_GROUP);
 }
 
 function initFocusListeners(ui, group) {
@@ -335,9 +335,10 @@ const eventRegisters = {
         addEventListener(ui, ENTER, keydown, (e) => {
             if (e.key === 'Enter' || e.keyCode === 13) {
                 e.stopPropagation();
+                e.preventDefault();
                 triggerSimpleEvent(ui, ENTER, e);
             }
-        });
+        }, false);
     },
     keydown(ui) {
         addEventListener(ui, keydown, keydown, (e) => {
