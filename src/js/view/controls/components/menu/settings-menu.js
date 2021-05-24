@@ -342,6 +342,9 @@ class SettingsMenu extends Menu {
                 }
                 focusEl = gearButton;
                 break;
+            case 'Esc':
+                focusEl = gearButton;
+                break;
             default:
                 break;
         }
