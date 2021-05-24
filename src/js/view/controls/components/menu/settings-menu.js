@@ -340,8 +340,7 @@ class SettingsMenu extends Menu {
                     focusEl = previousSibling(gearButton);
                     break;
                 }
-                focusEl = gearButton;
-                break;
+                /* falls through */    
             case 'Esc':
                 focusEl = gearButton;
                 break;
