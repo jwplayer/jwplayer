@@ -123,7 +123,11 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     const MediaEvents = {
         progress(this: ProviderWithMixins): void {
             VideoEvents.progress.call(_this);
-            _toggleMute();
+            // Workaround for an issue in Safari 14 that causes muted, autostarted HLS streams to infinitely buffer.
+            // Bug Report: https://feedbackassistant.apple.com/feedback/9097587
+            if (isAudioStream()) {
+                _toggleMute();
+            }
             checkStaleStream();
         },
 
@@ -1045,8 +1049,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
                 return;
             }
             const isPlaying = !_videotag.paused;
-            _videotag.muted =
-                _this.muteToggle = false;
+            _videotag.muted = _this.muteToggle = false;
             if (isAudio) {
                 // For audio-only set muted back to player config value
                 _videotag.muted = _playerConfig.mute;
