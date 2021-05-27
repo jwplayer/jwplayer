@@ -481,9 +481,11 @@ function initStartEventsListeners(ui, group, handler, options) {
     // (windows phones) still get listeners just in case they want to use them.
     if (USE_POINTER_EVENTS) {
         addEventListener(ui, group, 'pointerdown', handler, options);
-    } else if (USE_MOUSE_EVENTS) {
-        addEventListener(ui, group, 'mousedown', handler, options);
+    } else {
+        if (USE_MOUSE_EVENTS) {
+            addEventListener(ui, group, 'mousedown', handler, options);
+        }
+        // Always add this, in case we don't properly identify the device as mobile
+        addEventListener(ui, group, 'touchstart', handler, options);
     }
-    // Always add this, in case we don't properly identify the device as mobile
-    addEventListener(ui, group, 'touchstart', handler, options);
 }
