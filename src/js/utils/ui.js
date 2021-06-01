@@ -113,9 +113,7 @@ function initInteractionListeners(ui) {
         removeHandlers(ui, WINDOW_GROUP);
         if (type === 'pointerdown' && e.isPrimary) {
             if (!passive) {
-                const { pointerId } = e;
-                ui.pointerId = pointerId;
-                el.setPointerCapture(pointerId);
+                setPointerCapture(ui, e);
             }
 
             addEventListener(ui, WINDOW_GROUP, 'pointermove', interactDragHandler, listenerOptions);
@@ -176,6 +174,7 @@ function initSelectListeners(ui) {
 
     const interactClickHandler = (e) => {
         if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
+            ui.clicking = false;
             return;
         }
 
@@ -186,27 +185,28 @@ function initSelectListeners(ui) {
         } else {
             triggerEvent(ui, TAP, e);
         }
+
+        ui.clicking = false;
+        releasePointerCapture(ui);
     };
 
     const interactPreClickHandler = (e) => {
-        const { target } = e;
+        const { target, type } = e;
 
         if (e.isPrimary && target.tageName === 'BUTTON') {
             target.focus();
         }
         ui.lastStart = now();
         ui.clicking = true;
-    };
 
-    const interactPostClickHandler = () => {
-        ui.clicking = false;
+        if (type === 'pointerdown') {
+            setPointerCapture(ui, e);
+        }
     };
 
     initFocusListeners(ui, SELECT_GROUP);
     initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
     addEventListener(ui, SELECT_GROUP, 'click', interactClickHandler);
-    // Ensure ui.clicking is always set to false on click (even if user has moved mouse) by listening for event on document
-    addEventListener(ui, WINDOW_GROUP, 'click', interactPostClickHandler);
 }
 
 function initFocusListeners(ui, group) {
@@ -407,6 +407,17 @@ function removeHandlers(ui, triggerName) {
         handlers[triggerName] = null;
         options[triggerName] = null;
     }
+}
+
+function setPointerCapture(ui, e) {
+    if (ui.pointerId !== null) {
+        return;
+    }
+
+    const { pointerId } = e;
+    const { el } = ui;
+    ui.pointerId = pointerId;
+    el.setPointerCapture(pointerId);
 }
 
 function releasePointerCapture(ui) {
