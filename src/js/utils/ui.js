@@ -107,7 +107,6 @@ function initInteractionListeners(ui) {
         const { pageX, pageY } = getCoords(e);
 
         ui.dragged = false;
-        ui.lastStart = now();
         ui.startX = pageX;
         ui.startY = pageY;
 
@@ -175,11 +174,11 @@ function initSelectListeners(ui) {
         return;
     }
 
-    const interactClickhandler = (e) => {
+    const interactClickHandler = (e) => {
         if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
-            ui.clicking = false;
             return;
         }
+
         const click = e.type === 'click';
         checkDoubleTap(ui, e, click);
         if (click) {
@@ -199,9 +198,15 @@ function initSelectListeners(ui) {
         ui.clicking = true;
     };
 
+    const interactPostClickHandler = () => {
+        ui.clicking = false;
+    };
+
     initFocusListeners(ui, SELECT_GROUP);
     initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
-    addEventListener(ui, SELECT_GROUP, 'click', interactClickhandler);
+    addEventListener(ui, SELECT_GROUP, 'click', interactClickHandler);
+    // Ensure ui.clicking is always set to false on click (even if user has moved mouse) by listening for event on document
+    addEventListener(ui, WINDOW_GROUP, 'click', interactPostClickHandler);
 }
 
 function initFocusListeners(ui, group) {
