@@ -175,7 +175,12 @@ function initSelectListeners(ui) {
         return;
     }
 
+    const { el } = ui;
+
     const interactClickhandler = (e) => {
+        if (!!ui.directSelect && e.target !== el) {
+            return;
+        }
         if (now() - ui.lastStart > LONG_PRESS_DELAY && ui.clicking === true) { 
             ui.clicking = false;
             return;
@@ -186,7 +191,9 @@ function initSelectListeners(ui) {
 
     const interactPreClickHandler = (e) => {
         const { target } = e;
-
+        if (!!ui.directSelect && target !== el) {
+            return;
+        }
         if (e.isPrimary && target.tageName === 'BUTTON') {
             target.focus();
         }
