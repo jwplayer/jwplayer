@@ -157,6 +157,7 @@ export default class AdProgramController extends ProgramController {
                 this.provider.remove();
                 this.provider = null;
             }
+            model.off();
             return;
         }
 

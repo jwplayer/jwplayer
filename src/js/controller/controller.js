@@ -511,7 +511,7 @@ Object.assign(Controller.prototype, {
                             return _this.updatePlaylist(Playlist(data.playlist), data);
                         }
                     });
-                    loadPromise = _loadPlaylist(item).then(updatePlaylistCancelable.async);
+                    loadPromise = _loadPlaylist(item).then(() => updatePlaylistCancelable.async());
                     break;
                 }
                 case 'object':
@@ -529,7 +529,7 @@ Object.assign(Controller.prototype, {
                 _this.triggerError(composePlayerError(error, ERROR_LOADING_PLAYLIST));
             });
 
-            loadPromise.then(checkAutoStartCancelable.async).catch(noop);
+            loadPromise.then(() => checkAutoStartCancelable.async()).catch(noop);
         }
 
         function _loadPlaylist(toLoad) {

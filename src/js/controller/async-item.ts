@@ -112,4 +112,14 @@ export class AsyncItemController {
     clear (): void {
         this.async = null;
     }
+
+    destroy(): void {
+        this.model =
+            this.api =
+            this.promise =
+            this.resolve =
+            this.reject =
+            this.async =
+            this.asyncPromise = null as any;
+    }
 }
