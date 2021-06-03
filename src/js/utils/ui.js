@@ -113,7 +113,9 @@ function initInteractionListeners(ui) {
         removeHandlers(ui, WINDOW_GROUP);
         if (type === 'pointerdown' && e.isPrimary) {
             if (!passive) {
-                setPointerCapture(ui, e);
+                const { pointerId } = e;
+                ui.pointerId = pointerId;
+                el.setPointerCapture(pointerId);
             }
 
             addEventListener(ui, WINDOW_GROUP, 'pointermove', interactDragHandler, listenerOptions);
@@ -174,6 +176,7 @@ function initSelectListeners(ui) {
 
     const { el } = ui;
 
+    
     const interactClickHandler = (e) => {
         if (!!ui.directSelect && e.target !== el) {
             return;
@@ -186,11 +189,10 @@ function initSelectListeners(ui) {
         triggerEvent(ui, CLICK, e);
 
         ui.clicking = false;
-        releasePointerCapture(ui);
     };
 
     const interactPreClickHandler = (e) => {
-        const { target, type } = e;
+        const { target } = e;
 
         if (!!ui.directSelect && target !== el) {
             return;
@@ -201,15 +203,11 @@ function initSelectListeners(ui) {
         }
         ui.lastStart = now();
         ui.clicking = true;
-
-        if (type === 'pointerdown') {
-            setPointerCapture(ui, e);
-        }
     };
 
     initFocusListeners(ui, SELECT_GROUP);
-    initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
-    addEventListener(ui, SELECT_GROUP, 'click', interactClickHandler);
+    initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler, { passive: passiveEvents });
+    addEventListener(ui, SELECT_GROUP, 'click', interactClickHandler, { passive: passiveEvents });
 }
 
 function initFocusListeners(ui, group) {
@@ -219,6 +217,7 @@ function initFocusListeners(ui, group) {
     const { el } = ui;
     addEventListener(ui, group, 'blur', () => {
         removeClass(el, 'jw-tab-focus');
+        ui.clicking = false;
     });
     addEventListener(ui, group, 'focus', () => {
         if (lastInteractionListener.event && lastInteractionListener.event.type === keydown) {
@@ -393,17 +392,6 @@ function removeHandlers(ui, triggerName) {
         handlers[triggerName] = null;
         options[triggerName] = null;
     }
-}
-
-function setPointerCapture(ui, e) {
-    if (ui.pointerId !== null) {
-        return;
-    }
-
-    const { pointerId } = e;
-    const { el } = ui;
-    ui.pointerId = pointerId;
-    el.setPointerCapture(pointerId);
 }
 
 function releasePointerCapture(ui) {

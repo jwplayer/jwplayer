@@ -479,11 +479,11 @@ describe('UI', function() {
         ui = new UI(button)
             .on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {});
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
         }
         ui.destroy();
     });
@@ -494,14 +494,14 @@ describe('UI', function() {
             .on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {})
             .off();
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
             expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         }
         ui.destroy();
     });
@@ -512,14 +512,14 @@ describe('UI', function() {
         const ui = new UI(button).on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {});
         ui.destroy();
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
             expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(12);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         }
     });
 
