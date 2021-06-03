@@ -66,7 +66,7 @@ Object.assign(Controller.prototype, {
             this._view.destroy();
         }
         if (this._model) {
-            destroyQoe(this._model);
+            destroyQoe(this._model, this._programController);
             this._model.destroy();
         }
         if (this._apiQueue) {
