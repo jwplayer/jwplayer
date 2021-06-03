@@ -89,6 +89,9 @@ export default class MediaController extends Events {
             this.eventQueue.destroy();
         }
         delete provider.instreamMode;
+        if (this.thenPlayPromise) {
+            this.thenPlayPromise.cancel();
+        }
         this.provider =
             this.mediaModel =
             this.model =
@@ -185,10 +188,10 @@ export default class MediaController extends Events {
         const providerSetupPromise = provider.load(item);
         if (providerSetupPromise) {
             const thenPlayPromise = cancelable(() => {
-                return provider.play() || Promise.resolve();
+                return this.provider.play() || Promise.resolve();
             });
             this.thenPlayPromise = thenPlayPromise;
-            return providerSetupPromise.then(thenPlayPromise.async);
+            return providerSetupPromise.then(() => thenPlayPromise.async());
         }
         return provider.play() || Promise.resolve();
     }

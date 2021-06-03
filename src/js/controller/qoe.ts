@@ -61,6 +61,7 @@ function unbindFirstFrameEvents(model: QoeModel, programController: ProgramContr
     programController.off(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
     programController.off(MEDIA_TIME, model._onTime);
     model.off('change:activeTab', model._onTabVisible);
+    model._triggerFirstFrame = model._onTime = null as any;
 }
 
 function trackFirstFrame(model: QoeModel, programController: ProgramController): void {
@@ -102,20 +103,20 @@ function trackFirstFrame(model: QoeModel, programController: ProgramController):
     model._onTime = onTimeIncreasesGenerator(model._triggerFirstFrame);
 
     model._onPlayAttempt = function(): void {
-        model._qoeItem.tick(MEDIA_PLAY_ATTEMPT);
+        this._qoeItem.tick(MEDIA_PLAY_ATTEMPT);
     };
 
     // track visibility change
     model._onTabVisible = function(modelChanged: QoeModel, activeTab: boolean): void {
         if (activeTab) {
-            model._qoeItem.tick(TAB_VISIBLE);
+            modelChanged._qoeItem.tick(TAB_VISIBLE);
         } else {
-            model._qoeItem.tick(TAB_HIDDEN);
+            modelChanged._qoeItem.tick(TAB_HIDDEN);
         }
     };
 
     model.on('change:activeTab', model._onTabVisible);
-    programController.on(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+    programController.on(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt, model);
     programController.once(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
     programController.on(MEDIA_TIME, model._onTime);
 }
@@ -144,10 +145,13 @@ export function initQoe(initialModel: Model, programController: ProgramControlle
     initialModel.change('mediaModel', onMediaModel);
 }
 
-export function destroyQoe(model: any): void {
+export function destroyQoe(model: QoeModel, programController: ProgramController): void {
+    if (model._onTabVisible) {
+        unbindFirstFrameEvents(model, programController);
+    }
     model._qoeItem =
     model._triggerFirstFrame =
     model._onTime =
     model._onPlayAttempt =
-    model._onTabVisible = null;
+    model._onTabVisible = null as any;
 }

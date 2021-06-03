@@ -177,6 +177,9 @@ class Model extends SimpleModel {
             this._provider.destroy();
             this._provider = null;
         }
+        if (this.mediaModel) {
+            this.mediaModel.off();
+        }
         this.providerController = null;
     }
 
