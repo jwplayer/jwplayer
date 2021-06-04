@@ -206,8 +206,8 @@ function initSelectListeners(ui) {
     };
 
     initFocusListeners(ui, SELECT_GROUP);
-    initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler, { passive: passiveEvents });
-    addEventListener(ui, SELECT_GROUP, 'click', interactClickHandler, { passive: passiveEvents });
+    initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
+    addEventListener(ui, SELECT_GROUP, 'click', interactClickHandler);
 }
 
 function initFocusListeners(ui, group) {
