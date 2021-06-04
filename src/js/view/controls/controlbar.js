@@ -334,10 +334,10 @@ export default class Controlbar {
         }
 
         if (elements.cast && elements.cast.button) {
-            const castUi = elements.cast.ui.on('click tap enter', function(evt) {
+            const castUi = elements.cast.ui.on('click', function(evt) {
                 // controlbar cast button needs to manually trigger a click
                 // on the native cast button for taps and enter key
-                if (evt.type !== 'click') {
+                if (evt.sourceEvent.detail !== 1) {
                     elements.cast.button.click();
                 }
                 this._model.set('castClicked', true);
@@ -356,7 +356,7 @@ export default class Controlbar {
         this.ui.push(durationUi);
 
         // When the control bar is interacted with, trigger a user action event
-        const controlbarUi = new UI(this.el).on('click tap drag', function () {
+        const controlbarUi = new UI(this.el).on('click drag', function () {
             this.trigger(USER_ACTION);
         }, this);
         this.ui.push(controlbarUi);
