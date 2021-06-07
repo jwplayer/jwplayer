@@ -117,7 +117,7 @@ export default class Controls extends Events {
         if (!this.displayContainer) {
             const displayContainer = new DisplayContainer(model, api);
 
-            displayContainer.buttons.display.on('click', () => {
+            displayContainer.buttons.display.on('click enter', () => {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
                 api.playToggle(reasonInteraction());

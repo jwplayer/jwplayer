@@ -1,5 +1,5 @@
 import { OS, Features } from 'environment/environment';
-import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, OVER } from 'events/events';
+import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, ENTER, MOVE, OUT, OVER } from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 import { addClass, removeClass } from 'utils/dom';
@@ -329,6 +329,15 @@ const eventRegisters = {
                 }
             });
         }
+    },
+    enter(ui) {
+        addEventListener(ui, ENTER, keydown, (e) => {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.stopPropagation();
+                e.preventDefault();
+                triggerSimpleEvent(ui, ENTER, e);
+            }
+        }, { passive: false });
     },
     keydown(ui) {
         addEventListener(ui, keydown, keydown, (e) => {

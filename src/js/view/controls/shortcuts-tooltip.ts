@@ -147,7 +147,7 @@ export default function (
         //  Append modal to container
         container.appendChild(template);
 
-        shortcutToggleUi.on('click', toggleClickHandler);
+        shortcutToggleUi.on('click enter', toggleClickHandler);
     };
 
     render();

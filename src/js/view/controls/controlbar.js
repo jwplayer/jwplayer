@@ -334,10 +334,10 @@ export default class Controlbar {
         }
 
         if (elements.cast && elements.cast.button) {
-            const castUi = elements.cast.ui.on('click', function(evt) {
+            const castUi = elements.cast.ui.on('click enter', function(evt) {
                 // controlbar cast button needs to manually trigger a click
                 // on the native cast button for taps and enter key
-                if (evt.sourceEvent.detail !== 1) {
+                if (evt.type === 'keydown') {
                     elements.cast.button.click();
                 }
                 this._model.set('castClicked', true);
