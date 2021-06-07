@@ -205,9 +205,21 @@ function initSelectListeners(ui) {
         ui.clicking = true;
     };
 
+    const enterHandler = (e) => {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            e.stopPropagation();
+            triggerEvent(ui, CLICK, e);
+        }
+    };
+
     initFocusListeners(ui, SELECT_GROUP);
     initStartEventsListeners(ui, SELECT_GROUP, interactPreClickHandler);
     addEventListener(ui, SELECT_GROUP, 'click', interactClickHandler);
+
+    // Only buttons dispatch a click on enter. For other elements we need to listen for the keydown event.
+    if (ui.el.tagName !== 'BUTTON') {
+        addEventListener(ui, SELECT_GROUP, 'keydown', enterHandler)
+    }
 }
 
 function initFocusListeners(ui, group) {

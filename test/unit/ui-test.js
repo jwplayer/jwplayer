@@ -29,7 +29,7 @@ describe('UI', function() {
     }());
 
     let sandbox;
-    let button;
+    let div;
 
     // Polyfill Event constructors in IE to avoid TypeError "Object doesn't support this action".
     let FocusEvent = window.FocusEvent;
@@ -54,9 +54,9 @@ describe('UI', function() {
         // add fixture
         const fixture = document.createElement('div');
         fixture.id = 'test-container';
-        button = document.createElement('div');
-        button.id = 'button';
-        fixture.appendChild(button);
+        div = document.createElement('div');
+        div.id = 'button';
+        fixture.appendChild(div);
         document.body.appendChild(fixture);
     });
 
@@ -128,7 +128,7 @@ describe('UI', function() {
     });
 
     it('extends events', function() {
-        const ui = new UI(button);
+        const ui = new UI(div);
         expect(ui).to.have.property('on').which.is.a('function');
         expect(ui).to.have.property('once').which.is.a('function');
         expect(ui).to.have.property('off').which.is.a('function');
@@ -138,15 +138,15 @@ describe('UI', function() {
     });
 
     it('implements a destroy method', function() {
-        const ui = new UI(button);
+        const ui = new UI(div);
         expect(ui).to.have.property('destroy').which.is.a('function');
         ui.destroy();
     });
 
     it('triggers click events with input', function() {
         const clickSpy = sandbox.spy();
-        const ui = new UI(button).on('click', clickSpy);
-        button.click();
+        const ui = new UI(div).on('click', clickSpy);
+        div.click();
         expect(clickSpy).to.have.callCount(1);
         expect(!!clickSpy.args[0].defaultPrevented).to.equal(false);
         ui.destroy();
@@ -154,11 +154,11 @@ describe('UI', function() {
 
     it('triggers doubleClick events with input', function() {
         const doubleClickSpy = sandbox.spy();
-        const ui = new UI(button, {
+        const ui = new UI(div, {
             enableDoubleClick: true
         }).on('doubleClick', doubleClickSpy);
-        button.click();
-        button.click();
+        div.click();
+        div.click();
         const defaultPrevented = !!doubleClickSpy.args[0].defaultPrevented;
         expect(defaultPrevented, 'preventDefault not called').to.equal(false);
         expect(doubleClickSpy).to.have.callCount(1);
@@ -170,7 +170,7 @@ describe('UI', function() {
         const dragStartSpy = sandbox.spy();
         const dragSpy = sandbox.spy();
         const dragEndSpy = sandbox.spy();
-        const ui = new UI(button).on('dragStart', dragStartSpy).on('drag', dragSpy).on('dragEnd', dragEndSpy);
+        const ui = new UI(div).on('dragStart', dragStartSpy).on('drag', dragSpy).on('dragEnd', dragEndSpy);
         let startResult;
         let downSourceEvent;
         let moveSourceEvent;
@@ -218,9 +218,9 @@ describe('UI', function() {
             moveSourceEvent = new MouseEvent('mousemove', xyCoords(5, 5, mouseOptions));
             upSourceEvent = new MouseEvent('mouseup', mouseOptions);
         }
-        startResult = button.dispatchEvent(downSourceEvent);
-        button.dispatchEvent(moveSourceEvent);
-        button.dispatchEvent(upSourceEvent);
+        startResult = div.dispatchEvent(downSourceEvent);
+        div.dispatchEvent(moveSourceEvent);
+        div.dispatchEvent(upSourceEvent);
 
         expect(startResult, 'preventDefault not called').to.equal(true);
         expect(dragStartSpy, 'dragStart listener').to.have.callCount(1);
@@ -265,7 +265,7 @@ describe('UI', function() {
         const overSpy = sandbox.spy();
         const outSpy = sandbox.spy();
         const moveSpy = sandbox.spy();
-        const ui = new UI(button).on('over', overSpy).on('out', outSpy).on('move', moveSpy);
+        const ui = new UI(div).on('over', overSpy).on('out', outSpy).on('move', moveSpy);
         let overSourceEvent;
         let outSourceEvent;
         let moveSourceEvent;
@@ -290,9 +290,9 @@ describe('UI', function() {
             outSourceEvent = new MouseEvent('mouseout', mouseOptions);
             moveSourceEvent = new MouseEvent('mousemove', mouseOptions);
         }
-        const startResult = button.dispatchEvent(overSourceEvent);
-        button.dispatchEvent(outSourceEvent);
-        button.dispatchEvent(moveSourceEvent);
+        const startResult = div.dispatchEvent(overSourceEvent);
+        div.dispatchEvent(outSourceEvent);
+        div.dispatchEvent(moveSourceEvent);
 
         expect(startResult, 'preventDefault not called').to.equal(true);
         expect(overSpy, 'over listener').to.have.callCount(1);
@@ -332,7 +332,7 @@ describe('UI', function() {
     it('triggers focus and blur events with focus and blur input', function() {
         const overSpy = sandbox.spy();
         const outSpy = sandbox.spy();
-        const ui = new UI(button).on('focus', overSpy).on('blur', outSpy);
+        const ui = new UI(div).on('focus', overSpy).on('blur', outSpy);
         const eventOptions = xyCoords(0, 0, {
             view: window,
             bubbles: true,
@@ -340,8 +340,8 @@ describe('UI', function() {
         });
         const overSourceEvent = new FocusEvent('focus', eventOptions);
         const outSourceEvent = new FocusEvent('blur', eventOptions);
-        const startResult = button.dispatchEvent(overSourceEvent);
-        button.dispatchEvent(outSourceEvent);
+        const startResult = div.dispatchEvent(overSourceEvent);
+        div.dispatchEvent(outSourceEvent);
 
         expect(startResult, 'preventDefault not called').to.equal(true);
         expect(overSpy, 'over listener').to.have.callCount(1);
@@ -369,7 +369,7 @@ describe('UI', function() {
         const overSpy = sandbox.spy();
         const outSpy = sandbox.spy();
         const moveSpy = sandbox.spy();
-        const ui = new UI(button).on('over', overSpy).on('out', outSpy);
+        const ui = new UI(div).on('over', overSpy).on('out', outSpy);
         const pointerOptions = {
             isPrimary: true,
             pointerType: 'touch',
@@ -377,9 +377,9 @@ describe('UI', function() {
             bubbles: true,
             cancelable: true
         };
-        const result = button.dispatchEvent(new PointerEvent('pointerover', pointerOptions));
-        button.dispatchEvent(new PointerEvent('pointerout', pointerOptions));
-        button.dispatchEvent(new PointerEvent('pointermove', pointerOptions));
+        const result = div.dispatchEvent(new PointerEvent('pointerover', pointerOptions));
+        div.dispatchEvent(new PointerEvent('pointerout', pointerOptions));
+        div.dispatchEvent(new PointerEvent('pointermove', pointerOptions));
 
         expect(result, 'preventDefault not called').to.equal(true);
         expect(overSpy).to.have.callCount(0);
@@ -390,7 +390,7 @@ describe('UI', function() {
     });
 
     it('preventScrolling uses setPointerCapture and preventDefault', function() {
-        const ui = new UI(button, {
+        const ui = new UI(div, {
             preventScrolling: true
         }).on('drag');
         let result;
@@ -407,14 +407,14 @@ describe('UI', function() {
             const pointerMouseOptions = xyCoords(0, 0, pointerCoordsOptions);
 
             event = new PointerEvent('pointerdown', pointerMouseOptions);
-            sandbox.stub(button, 'setPointerCapture').callsFake(sinon.spy());
-            sandbox.stub(button, 'releasePointerCapture').callsFake(sinon.spy());
+            sandbox.stub(div, 'setPointerCapture').callsFake(sinon.spy());
+            sandbox.stub(div, 'releasePointerCapture').callsFake(sinon.spy());
             sandbox.spy(event, 'preventDefault');
-            result = button.dispatchEvent(event);
-            button.dispatchEvent(new PointerEvent('pointermove', xyCoords(5, 5, pointerCoordsOptions)));
-            button.dispatchEvent(new PointerEvent('pointerup', pointerMouseOptions));
-            expect(button.setPointerCapture).to.have.callCount(1);
-            expect(button.releasePointerCapture).to.have.callCount(1);
+            result = div.dispatchEvent(event);
+            div.dispatchEvent(new PointerEvent('pointermove', xyCoords(5, 5, pointerCoordsOptions)));
+            div.dispatchEvent(new PointerEvent('pointerup', pointerMouseOptions));
+            expect(div.setPointerCapture).to.have.callCount(1);
+            expect(div.releasePointerCapture).to.have.callCount(1);
         } else if (USE_MOUSE_EVENTS) {
             event = new MouseEvent('mousedown', {
                 view: window,
@@ -422,7 +422,7 @@ describe('UI', function() {
                 cancelable: true
             });
             sandbox.spy(event, 'preventDefault');
-            result = button.dispatchEvent(event);
+            result = div.dispatchEvent(event);
         } else {
             const touch = createTouch({
                 identifier: 1,
@@ -435,7 +435,7 @@ describe('UI', function() {
                 cancelable: true
             });
             sandbox.spy(event, 'preventDefault');
-            result = button.dispatchEvent(event);
+            result = div.dispatchEvent(event);
         }
         if (USE_POINTER_EVENTS || USE_MOUSE_EVENTS) {
             expect(result, 'preventDefault not called').to.equal(true);
@@ -456,70 +456,95 @@ describe('UI', function() {
             button
         ]);
 
-        const ui = new UI(button).on('over out focus blur move', () => {});
+        const ui = new UI(div).on('over out focus blur move', () => {});
         expect(window.addEventListener, 'window').to.have.callCount(0);
         expect(window.removeEventListener, 'window').to.have.callCount(0);
         expect(document.addEventListener, 'document').to.have.callCount(0);
         expect(document.removeEventListener, 'document').to.have.callCount(0);
         expect(document.body.addEventListener, 'body').to.have.callCount(0);
         expect(document.body.removeEventListener, 'body').to.have.callCount(0);
-        expect(button.removeEventListener, 'button').to.have.callCount(0);
+        expect(div.removeEventListener, 'button').to.have.callCount(0);
         ui.destroy();
     });
 
     it('adds event listeners based on listeners', function() {
         let ui;
 
-        spyOnDomEventListenerMethods([ button ]);
-        ui = new UI(button);
-        expect(button.addEventListener, 'button without options').to.have.callCount(0);
+        spyOnDomEventListenerMethods([ div ]);
+        ui = new UI(div);
+        expect(div.addEventListener, 'div without options').to.have.callCount(0);
         ui.destroy();
 
-        spyOnDomEventListenerMethods([ button ]);
-        ui = new UI(button)
+        spyOnDomEventListenerMethods([ div ]);
+        ui = new UI(div)
             .on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {});
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(11);
         } else if (!USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(11);
         }
         ui.destroy();
     });
 
+    it.only('handles enter-click by additing additional enter listener to non button elements', function() {
+        let ui_div;
+        let ui_button;
+
+        const button = document.createElement('button')
+        div.parentElement.appendChild(button);
+        console.info(button.tagName);
+        spyOnDomEventListenerMethods([ div, button ]);
+        ui_div = new UI(div);
+        ui_button = new UI(button);
+        expect(div.addEventListener, 'div without options').to.have.callCount(0);
+        expect(button.addEventListener, 'button without options').to.have.callCount(0);
+        ui_div.destroy();
+        ui_button.destroy();
+
+        spyOnDomEventListenerMethods([ div, button ]);
+        ui_div = new UI(div).on('click', () => {});
+        ui_button = new UI(button).on('click', () => {});
+
+        expect(div.addEventListener, 'div with all listeners').to.have.callCount(5);
+        expect(button.addEventListener, 'button with all listeners').to.have.callCount(4);
+        ui_div.destroy();
+        ui_button.destroy();
+    });
+
     it('remove event listeners with off()', function() {
-        spyOnDomEventListenerMethods([ button ]);
-        const ui = new UI(button)
+        spyOnDomEventListenerMethods([ div ]);
+        const ui = new UI(div)
             .on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {})
             .off();
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(11);
+            expect(div.removeEventListener, 'div with all listeners').to.have.callCount(11);
         } else if (!USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(6);
+            expect(div.removeEventListener, 'div with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(11);
+            expect(div.removeEventListener, 'div with all listeners').to.have.callCount(11);
         }
         ui.destroy();
     });
 
     it('removes all event listeners on destroy', function() {
-        spyOnDomEventListenerMethods([ button ]);
+        spyOnDomEventListenerMethods([ div ]);
 
-        const ui = new UI(button).on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {});
+        const ui = new UI(div).on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {});
         ui.destroy();
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(11);
+            expect(div.removeEventListener, 'div with all listeners').to.have.callCount(11);
         } else if (!USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(6);
+            expect(div.removeEventListener, 'div with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(div.addEventListener, 'div with all listeners').to.have.callCount(11);
+            expect(div.removeEventListener, 'div with all listeners').to.have.callCount(11);
         }
     });
 
