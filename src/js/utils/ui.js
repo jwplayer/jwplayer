@@ -333,11 +333,9 @@ const eventRegisters = {
     enter(ui) {
         addEventListener(ui, ENTER, keydown, (e) => {
             if (e.key === 'Enter' || e.keyCode === 13) {
-                e.stopPropagation();
-                e.preventDefault();
                 triggerSimpleEvent(ui, ENTER, e);
             }
-        }, { passive: false });
+        });
     },
     keydown(ui) {
         addEventListener(ui, keydown, keydown, (e) => {
