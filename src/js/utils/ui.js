@@ -333,6 +333,7 @@ const eventRegisters = {
     enter(ui) {
         addEventListener(ui, ENTER, keydown, (e) => {
             if (e.key === 'Enter' || e.keyCode === 13) {
+                e.stopPropagation();
                 triggerSimpleEvent(ui, ENTER, e);
             }
         });
