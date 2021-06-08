@@ -356,7 +356,13 @@ const eventRegisters = {
         };
         addEventListener(ui, interaction, 'mousedown', triggerGesture, true);
         addEventListener(ui, interaction, keydown, triggerGesture, true);
-    }
+    },
+    tap() {
+        //noop for backwards compatibilility
+    },
+    doubleTap() {
+        //noop for backwards compatibility
+    },
 };
 
 export function getElementWindow(element) {
