@@ -3,7 +3,7 @@ import { LOGO_CLICK } from 'events/events';
 import { style } from 'utils/css';
 import { createElement } from 'utils/dom';
 import Events from 'utils/backbone.events';
-import UI from '../utils/ui';
+import UI from 'utils/ui';
 
 const LogoDefaults = {
     linktarget: '_blank',
