@@ -75,7 +75,8 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         });
 
         this.ui = new UI(this.el, { directSelect: true })
-            .on('click', this.handleClick, this);
+            .on('click', this.handleClick, this)
+            .on('enter', () => this.trigger('toggleValue'));
 
         this.addSliderHandlers(this.ui);
         this.addSliderHandlers(this.horizontalSlider.uiOver);
