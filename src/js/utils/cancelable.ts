@@ -9,7 +9,7 @@ class Cancelable {
     async(...args: any[]): Promise<any> {
         return Promise.resolve().then(() => {
             if (this.callback !== null) {
-                return this.callback(args);
+                return this.callback(...args);
             }
         });
     }
