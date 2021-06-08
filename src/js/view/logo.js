@@ -3,7 +3,7 @@ import { LOGO_CLICK } from 'events/events';
 import { style } from 'utils/css';
 import { createElement } from 'utils/dom';
 import Events from 'utils/backbone.events';
-import { addClickAction } from 'view/utils/add-click-action';
+import UI from '../utils/ui';
 
 const LogoDefaults = {
     linktarget: '_blank',
@@ -88,7 +88,8 @@ export default function Logo(_model) {
             _logo.setAttribute('aria-label', _model.get('localization').logo);
         }
 
-        this.ui = addClickAction(_logo, function () {
+        // Doesn't use add click action because not a directly selectable element.
+        this.ui = new UI(_logo).on('click enter', function () {
             this.trigger(LOGO_CLICK, {
                 link: _settings.link,
                 linktarget: _settings.linktarget
