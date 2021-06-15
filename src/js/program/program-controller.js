@@ -457,10 +457,6 @@ class ProgramController extends Events {
         model.setMediaModel(mediaModel);
         model.setProvider(provider);
 
-        // if (model.get('pip') && mediaElement.requestPictureInPicture) {
-        //     mediaElement.requestPictureInPicture();
-        // }
-
         forwardEvents(mediaController, this);
         model.set('itemReady', true);
     }
