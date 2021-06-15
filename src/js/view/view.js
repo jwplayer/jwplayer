@@ -833,7 +833,6 @@ function View(_api, _model) {
     };
 
     const _pip = function(model, state) {
-        // Unmute the video so volume can be adjusted with native controls in fullscreen
         if (state) {
             _this.requestPip();
         } else if (document.pictureInPictureElement) {
@@ -854,7 +853,6 @@ function View(_api, _model) {
         const video = videoElement || _model.get('mediaElement');
         if (video.requestPictureInPicture) {
             removePipListeners();
-            let timeout;
             const enter = () => {
                 removePipListeners();
                 video.requestPictureInPicture().then(() => {

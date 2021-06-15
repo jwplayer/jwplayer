@@ -448,12 +448,12 @@ class ProgramController extends Events {
      */
     _setActiveMedia(mediaController) {
         const { model } = this;
-        const { mediaModel, provider, mediaElement } = mediaController;
+        const { mediaModel, provider } = mediaController;
 
         assignMediaContainer(model, mediaController);
         this.mediaController = mediaController;
 
-        model.set('mediaElement', mediaElement);
+        model.set('mediaElement', mediaController.mediaElement);
         model.setMediaModel(mediaModel);
         model.setProvider(provider);
 
