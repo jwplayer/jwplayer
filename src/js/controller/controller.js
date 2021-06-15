@@ -1054,12 +1054,6 @@ Object.assign(Controller.prototype, {
         this.detachMedia = _detachMedia;
         this.attachMedia = _attachMedia;
 
-        this.requestPip = (target) => {
-            if (this._view) {
-                this._view.requestPip(target);
-            }
-        };
-
         // Program Controller passthroughs
         this.routeEvents = (target) => _programController.routeEvents(target);
         this.forwardEvents = () => _programController.forwardEvents();
@@ -1233,6 +1227,11 @@ Object.assign(Controller.prototype, {
 
         if (_view) {
             _view.setup();
+        }
+    },
+    requestPip(target) {
+        if (this._view) {
+            this._view.requestPip(target);
         }
     },
     get(property) {
