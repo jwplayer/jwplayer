@@ -842,8 +842,7 @@ function View(_api, _model) {
 
     function removePipListeners() {
         if (_pipVideoListeners) {
-            const { video, enter, leave, timeout } = _pipVideoListeners;
-            clearTimeout(timeout);
+            const { video, enter, leave } = _pipVideoListeners;
             video.removeEventListener('loadedmetadata', enter);
             video.removeEventListener('leavepictureinpicture', leave);
         }
@@ -886,7 +885,7 @@ function View(_api, _model) {
                 video.addEventListener('loadedmetadata', enter);
             }
 
-            _pipVideoListeners = { video, enter, leave, timeout };
+            _pipVideoListeners = { video, enter, leave };
         }
     };
 
