@@ -448,14 +448,18 @@ class ProgramController extends Events {
      */
     _setActiveMedia(mediaController) {
         const { model } = this;
-        const { mediaModel, provider } = mediaController;
+        const { mediaModel, provider, mediaElement } = mediaController;
 
         assignMediaContainer(model, mediaController);
         this.mediaController = mediaController;
 
-        model.set('mediaElement', mediaController.mediaElement);
+        model.set('mediaElement', mediaElement);
         model.setMediaModel(mediaModel);
         model.setProvider(provider);
+
+        // if (model.get('pip') && mediaElement.requestPictureInPicture) {
+        //     mediaElement.requestPictureInPicture();
+        // }
 
         forwardEvents(mediaController, this);
         model.set('itemReady', true);

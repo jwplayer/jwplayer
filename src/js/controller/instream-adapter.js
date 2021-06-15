@@ -453,6 +453,9 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (evt.width && evt.height && _view) {
             _view.resizeMedia();
         }
+        if (_model.get('pip')) {
+            _controller.requestPip(_adProgram.primedElement);
+        }
     }
 
     /**
@@ -507,6 +510,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // Re-attach the controller & resume playback
         // when instream was inited and the player was not destroyed\
         _controller.attachMedia();
+
+        if (_model.get('pip')) {
+            _controller.requestPip();
+        }
 
         if (this.noResume) {
             return;

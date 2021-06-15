@@ -69,6 +69,22 @@ function createCastButton(castToggle, localization) {
     }
 }
 
+function createPipButton(pipIcon, pipToggle, localization) {
+    if (OS.mobile || pipIcon === 'disabled') {
+        return;
+    }
+    if (Browser.chrome || Browser.edge || Browser.safari) {
+        const pipButton = button(
+            'jw-icon-pip jw-off',
+            pipToggle,
+            localization.pipIcon,
+            cloneIcons('pip-on,pip-off'));
+
+        SimpleTooltip(pipButton.element(), 'pip', localization.pipIcon);
+        return pipButton;
+    }
+}
+
 function reasonInteraction() {
     return { reason: 'interaction' };
 }
@@ -171,6 +187,9 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
+            pip: createPipButton(_model.get('pipIcon'), () => {
+                _api.setPip();
+            }, localization),
             imaFullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
             }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
@@ -244,6 +263,7 @@ export default class Controlbar {
             elements.cast,
             elements.captionsButton,
             elements.settingsButton,
+            elements.pip,
             elements.fullscreen
         ].filter(e => e);
 
@@ -269,6 +289,9 @@ export default class Controlbar {
         if (elements.mute) {
             elements.mute.show();
         }
+        if (elements.pip) {
+            elements.pip.show();
+        }
 
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
@@ -287,6 +310,11 @@ export default class Controlbar {
                 const fullscreenText = model.get('fullscreen') ? localization.exitFullscreen : localization.fullscreen;
                 fullscreenTips[i].setText(fullscreenText);
                 setAttribute(element, 'aria-label', fullscreenText);
+            }
+        }, this);
+        _model.change('pip', (model, val) => {
+            if (this.elements.pip) {
+                toggleClass(this.elements.pip.element(), 'jw-off', val);
             }
         }, this);
         _model.change('streamType', this.onStreamTypeChange, this);
@@ -404,6 +432,9 @@ export default class Controlbar {
     onCastActive(model, val) {
         this.elements.fullscreen.toggle(!val);
         this.elements.imaFullscreen.toggle(!val);
+        if (this.elements.pip) {
+            this.elements.pip.toggle(!val);
+        }
         if (this.elements.cast.button) {
             toggleClass(this.elements.cast.button, 'jw-off', !val);
         }

@@ -370,6 +370,9 @@ Object.assign(Controller.prototype, {
             _model.on('change:itemReady', (changeModel, itemReady) => {
                 if (itemReady) {
                     apiQueue.flush();
+                    if (_model.get('pip') && !_this._instreamAdapter) {
+                        _view.requestPip();
+                    }
                 }
             });
         }
@@ -945,6 +948,14 @@ Object.assign(Controller.prototype, {
             }
         }
 
+        function _setPip(state) {
+            if (!isBoolean(state)) {
+                state = !_model.get('pip');
+            }
+
+            _model.set('pip', state);
+        }
+
         function addProgramControllerListeners() {
             _programController
                 .on('all', _trigger, _this)
@@ -986,6 +997,7 @@ Object.assign(Controller.prototype, {
         this.setCurrentCaptions = _setCurrentCaptions;
         this.setCurrentQuality = _setCurrentQuality;
         this.setFullscreen = _setFullscreen;
+        this.setPip = _setPip;
         this.getCurrentQuality = _getCurrentQuality;
         this.getQualityLevels = _getQualityLevels;
         this.setCurrentAudioTrack = _setCurrentAudioTrack;
@@ -1041,6 +1053,12 @@ Object.assign(Controller.prototype, {
         };
         this.detachMedia = _detachMedia;
         this.attachMedia = _attachMedia;
+
+        this.requestPip = (target) => {
+            if (this._view) {
+                this._view.requestPip(target);
+            }
+        };
 
         // Program Controller passthroughs
         this.routeEvents = (target) => _programController.routeEvents(target);

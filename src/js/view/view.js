@@ -96,6 +96,9 @@ function View(_api, _model) {
     let _breakpoint = null;
     let _controls = null;
 
+    let _pipEnabled = false;
+    let _pipVideoListeners = null;
+
     function reasonInteraction() {
         return { reason: 'interaction' };
     }
@@ -329,6 +332,7 @@ function View(_api, _model) {
         this.updateBounds();
 
         _model.on('change:fullscreen', _fullscreen);
+        _model.on('change:pip', _pip);
         _model.on('change:activeTab', updateVisibility);
         _model.on('change:fullscreen', updateVisibility);
         _model.on('change:intersectionRatio', updateVisibility);
@@ -826,6 +830,66 @@ function View(_api, _model) {
 
         // reset display click handler
         displayClickHandler.revertAlternateClickHandlers();
+    };
+
+    const _pip = function(model, state) {
+        // Unmute the video so volume can be adjusted with native controls in fullscreen
+        if (state) {
+            _this.requestPip();
+        } else if (document.pictureInPictureElement) {
+            document.exitPictureInPicture();
+        }
+    };
+
+    function removePipListeners() {
+        if (_pipVideoListeners) {
+            const { video, enter, leave, timeout } = _pipVideoListeners;
+            clearTimeout(timeout);
+            video.removeEventListener('loadedmetadata', enter);
+            video.removeEventListener('leavepictureinpicture', leave);
+        }
+    }
+
+    this.requestPip = function (videoElement) {
+        const video = videoElement || _model.get('mediaElement');
+        if (video.requestPictureInPicture) {
+            removePipListeners();
+            let timeout;
+            const enter = () => {
+                removePipListeners();
+                video.requestPictureInPicture().then(() => {
+                    if (!_pipEnabled) {
+                        _pipEnabled = true;
+                        _this.trigger('pipEnter', { video });
+                    }
+                    video.addEventListener('leavepictureinpicture', leave);
+                });
+                video.removeEventListener('loadedmetadata', enter);
+            };
+
+            // Video tag's leavepictureinpicture event listener
+            // Event triggered when exitPictureInPicture api is called or the close button on PiP display is clicked
+            const leave = () => {
+                if (_pipEnabled) {
+                    _pipEnabled = false;
+                    _this.trigger('pipLeave', { video });
+                    // Set to handle the close button click
+                    _model.set('pip', false);
+                    if (document.pictureInPictureElement) {
+                        document.exitPictureInPicture();
+                    }
+                }
+            };
+
+            if (video.readyState) {
+                enter();
+            } else {
+                // Wait for the video tag to have loaded metadata to be able to turn pip mode on
+                video.addEventListener('loadedmetadata', enter);
+            }
+
+            _pipVideoListeners = { video, enter, leave, timeout };
+        }
     };
 
     this.setAltText = function (text) {

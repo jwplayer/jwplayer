@@ -238,6 +238,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         },
 
         webkitbeginfullscreen(e: Event): void {
+            console.log('11111 fullscreen', e);
             _iosFullscreenState = true;
             _sendFullscreen(e);
         },

@@ -37,6 +37,7 @@ export default {
     "notLive": "Not Live",
     "off": "Off",
     "pause": "Pause",
+    "pipIcon": "Picture in Picture (PiP)",
     "play": "Play",
     "playback": "Play",
     "playbackRates": "Playback Rates",
