@@ -63,7 +63,7 @@ export default class NextUpTooltip {
             this.toggle(false);
         }, this);
         // Tooltip
-        this.tooltipUi = new UI(this.tooltip).on('click tap', this.click, this);
+        this.tooltipUi = new UI(this.tooltip).on('click', this.click, this);
     }
 
     loadThumbnail(url) {

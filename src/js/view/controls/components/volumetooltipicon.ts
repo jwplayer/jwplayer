@@ -3,6 +3,7 @@ import Slider from 'view/controls/components/slider';
 import UI from 'utils/ui';
 import { setAttribute, toggleClass } from 'utils/dom';
 import type Model from 'controller/model';
+import { OS } from 'environment/environment';
 
 class VolumeSlider extends Slider {
     uiOver: UI;
@@ -74,8 +75,8 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         });
 
         this.ui = new UI(this.el, { directSelect: true })
-            .on('click enter', this.toggleValue, this)
-            .on('tap', this.toggleOpenState, this);
+            .on('click', this.handleClick, this)
+            .on('enter', () => this.trigger('toggleValue'));
 
         this.addSliderHandlers(this.ui);
         this.addSliderHandlers(this.horizontalSlider.uiOver);
@@ -108,8 +109,12 @@ export default class VolumeTooltipIcon extends TooltipIcon {
         this.horizontalContainer.blur();
     }
 
-    toggleValue(): void {
-        this.trigger('toggleValue');
+    handleClick(evt: Event): void {
+        if (OS.mobile) {
+            this.toggleOpenState(evt);
+        } else {
+            this.trigger('toggleValue');
+        }
     }
 
     destroy(): void {

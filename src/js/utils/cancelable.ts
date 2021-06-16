@@ -1,24 +1,28 @@
-type Cancelable = {
-    async: (...args: any[]) => Promise<any>;
-    cancel: () => void;
-    cancelled: () => boolean;
+
+class Cancelable {
+    private callback: ((result?: any) => any) | null;
+
+    constructor(callback: (result?: any) => any) {
+        this.callback = callback;
+    }
+
+    async(...args: any[]): Promise<any> {
+        return Promise.resolve().then(() => {
+            if (this.callback !== null) {
+                return this.callback(...args);
+            }
+        });
+    }
+
+    cancel(): void {
+        this.callback = null;
+    }
+
+    cancelled(): boolean {
+        return this.callback === null;
+    }
 }
 
 export default function cancelable(callback: (result?: any) => any): Cancelable {
-    let cancelled = false;
-
-    return {
-        async: function(...args: any[]): Promise<any> {
-            return Promise.resolve().then(() => {
-                if (cancelled) {
-                    return;
-                }
-                return callback.apply(this, args);
-            });
-        },
-        cancel: () => {
-            cancelled = true;
-        },
-        cancelled: () => cancelled
-    };
+    return new Cancelable(callback);
 }

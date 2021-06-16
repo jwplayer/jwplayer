@@ -258,6 +258,11 @@ export default function Api(element) {
                 // core = null;
             }
 
+            // Clear this.plugins
+            Object.keys(pluginsMap).forEach((name) => {
+                delete pluginsMap[name];
+            });
+
             return this;
         },
 
@@ -1121,11 +1126,11 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
     addPlugin(name, pluginInstance) {
         this.plugins[name] = pluginInstance;
 
-        this.on('ready', pluginInstance.addToPlayer);
-
-        // A swf plugin may rely on resize events
-        if (pluginInstance.resize) {
-            this.on('resize', pluginInstance.resizeHandler);
+        if (!__HEADLESS__) {
+            this.on('ready', pluginInstance.addToPlayer);
+            if (pluginInstance.resize) {
+                this.on('resize', pluginInstance.resizeHandler);
+            }
         }
     },
 
