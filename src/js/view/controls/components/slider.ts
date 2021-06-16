@@ -50,7 +50,7 @@ class Slider extends Events {
             .on('dragStart', this.dragStart, this)
             .on('drag', this.dragMove, this)
             .on('dragEnd', this.dragEnd, this)
-            .on('click tap', this.tap, this);
+            .on('click', this.tap, this);
     }
 
     dragStart(): void {
