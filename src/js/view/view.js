@@ -687,6 +687,11 @@ function View(_api, _model) {
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
+        // get out of pip mode for audio
+        if (isAudioFile && model.get('pip')) {
+            model.set('pip', false);
+        }
+
         const element = isAudioFile ? _videoLayer : _videoLayer.nextSibling;
         // Put the preview element before the media element in order to display browser captions
         // otherwise keep it on top of the media element to display captions with the captions renderer
@@ -867,6 +872,7 @@ function View(_api, _model) {
             // Video tag's leavepictureinpicture event listener
             // Event triggered when exitPictureInPicture api is called or the close button on PiP display is clicked
             const leave = () => {
+                video.removeEventListener('leavepictureinpicture', leave);
                 if (_pipEnabled) {
                     _pipEnabled = false;
                     _this.trigger('pipLeave', { video });

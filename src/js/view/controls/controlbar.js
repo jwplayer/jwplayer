@@ -317,6 +317,11 @@ export default class Controlbar {
                 toggleClass(this.elements.pip.element(), 'jw-off', val);
             }
         }, this);
+        _model.change('mediaType', (model, val) => {
+            if (this.elements.pip) {
+                this.elements.pip.toggle(val !== 'audio');
+            }
+        }, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
             const { liveBroadcast, notLive } = localization;
