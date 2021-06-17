@@ -46,7 +46,7 @@ const Plugin = function(url) {
 Object.defineProperties(Plugin.prototype, {
     promise: {
         get() {
-            return this.promise_ || this.load();
+            return this.load();
         },
         set() {}
     }
@@ -58,12 +58,11 @@ Object.assign(Plugin.prototype, {
         let promise = this.promise_;
         if (!promise) {
             if (getPluginPathType(this.url) === PLUGIN_PATH_TYPE_CDN) {
-                promise = Promise.resolve(this);
-            } else {
-                const loader = new ScriptLoader(getJSPath(this.url));
-                this.loader = loader;
-                promise = loader.load().then(() => this);
+                return Promise.resolve(this);
             }
+            const loader = new ScriptLoader(getJSPath(this.url));
+            this.loader = loader;
+            promise = loader.load().then(() => this);
             this.promise_ = promise;
         }
 
@@ -83,10 +82,12 @@ Object.assign(Plugin.prototype, {
         }
         const pluginInstance = new PluginClass(api, config, div);
 
+        if (__HEADLESS__) {
+            pluginInstance.addToPlayer = pluginInstance.resizeHandler = function() {};
+            return pluginInstance;
+        }
+
         pluginInstance.addToPlayer = function() {
-            if (__HEADLESS__) {
-                return;
-            }
             const overlaysElement = this.getContainer().querySelector('.jw-overlays');
             if (!overlaysElement) {
                 return;
@@ -94,13 +95,12 @@ Object.assign(Plugin.prototype, {
             div.left = overlaysElement.style.left;
             div.top = overlaysElement.style.top;
             overlaysElement.appendChild(div);
-            pluginInstance.displayArea = overlaysElement;
         };
 
         pluginInstance.resizeHandler = function() {
-            const displayarea = pluginInstance.displayArea;
-            if (displayarea) {
-                pluginInstance.resize(displayarea.clientWidth, displayarea.clientHeight);
+            const overlaysElement = this.getContainer().querySelector('.jw-overlays');
+            if (overlaysElement) {
+                pluginInstance.resize(overlaysElement.clientWidth, overlaysElement.clientHeight);
             }
         };
 

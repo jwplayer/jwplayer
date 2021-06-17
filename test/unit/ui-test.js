@@ -145,7 +145,7 @@ describe('UI', function() {
 
     it('triggers click events with input', function() {
         const clickSpy = sandbox.spy();
-        const ui = new UI(button).on('click tap', clickSpy);
+        const ui = new UI(button).on('click', clickSpy);
         button.click();
         expect(clickSpy).to.have.callCount(1);
         expect(!!clickSpy.args[0].defaultPrevented).to.equal(false);
@@ -155,8 +155,8 @@ describe('UI', function() {
     it('triggers doubleClick events with input', function() {
         const doubleClickSpy = sandbox.spy();
         const ui = new UI(button, {
-            enableDoubleTap: true
-        }).on('doubleClick doubleTap', doubleClickSpy);
+            enableDoubleClick: true
+        }).on('doubleClick', doubleClickSpy);
         button.click();
         button.click();
         const defaultPrevented = !!doubleClickSpy.args[0].defaultPrevented;
@@ -389,30 +389,6 @@ describe('UI', function() {
         ui.destroy();
     });
 
-    it('triggers enter events with keyboard input', function() {
-        const enterSpy = sandbox.spy();
-        const ui = new UI(button).on('enter', enterSpy);
-        const sourceEvent = new KeyboardEvent('keydown', {
-            key: 'Enter',
-            keyCode: 13,
-            view: window,
-            bubbles: true,
-            cancelable: true
-        });
-        sandbox.spy(sourceEvent, 'stopPropagation');
-        button.dispatchEvent(sourceEvent);
-        expect(enterSpy).to.have.callCount(1);
-        expect(enterSpy).calledWith({
-            type: 'enter',
-            sourceEvent,
-            target: button,
-            currentTarget: button
-        });
-        expect(sourceEvent.stopPropagation).to.have.callCount(1);
-
-        ui.destroy();
-    });
-
     it('preventScrolling uses setPointerCapture and preventDefault', function() {
         const ui = new UI(button, {
             preventScrolling: true
@@ -480,7 +456,7 @@ describe('UI', function() {
             button
         ]);
 
-        const ui = new UI(button).on('enter over out focus blur move', () => {});
+        const ui = new UI(button).on('over out focus blur move', () => {});
         expect(window.addEventListener, 'window').to.have.callCount(0);
         expect(window.removeEventListener, 'window').to.have.callCount(0);
         expect(document.addEventListener, 'document').to.have.callCount(0);
@@ -501,13 +477,13 @@ describe('UI', function() {
 
         spyOnDomEventListenerMethods([ button ]);
         ui = new UI(button)
-            .on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {});
+            .on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {});
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
         }
         ui.destroy();
     });
@@ -515,17 +491,17 @@ describe('UI', function() {
     it('remove event listeners with off()', function() {
         spyOnDomEventListenerMethods([ button ]);
         const ui = new UI(button)
-            .on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {})
+            .on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {})
             .off();
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(11);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
             expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(11);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         }
         ui.destroy();
     });
@@ -533,17 +509,17 @@ describe('UI', function() {
     it('removes all event listeners on destroy', function() {
         spyOnDomEventListenerMethods([ button ]);
 
-        const ui = new UI(button).on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {});
+        const ui = new UI(button).on('click doubleClick dragStart drag dragEnd over out focus blur move', () => {});
         ui.destroy();
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(11);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         } else if (!USE_MOUSE_EVENTS) {
             expect(button.addEventListener, 'button with all listeners').to.have.callCount(6);
             expect(button.removeEventListener, 'button with all listeners').to.have.callCount(6);
         } else {
-            expect(button.addEventListener, 'button with all listeners').to.have.callCount(11);
-            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(11);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(10);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(10);
         }
     });
 

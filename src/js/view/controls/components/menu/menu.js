@@ -368,7 +368,9 @@ export default class Menu extends Events {
         this.visible = true;
         this.el.setAttribute('aria-expanded', 'true');
         if (focusEl) {
-            focusEl.focus();
+            setTimeout(() => {
+                focusEl.focus();
+            });
         }
     }
     close(evt) {

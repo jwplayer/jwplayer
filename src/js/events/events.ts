@@ -94,16 +94,6 @@ export const CLICK = 'click';
 export const DOUBLE_CLICK = 'doubleClick';
 
 /**
- * Event triggered when a user taps the observed element once.
-*/
-export const TAP = 'tap';
-
-/**
- * Event triggered when a user taps the observed element twice consecutively.
-*/
-export const DOUBLE_TAP = 'doubleTap';
-
-/**
  * Event triggered when the mouse is over the observed element.
 */
 export const OVER = 'over';
@@ -116,8 +106,8 @@ export const MOVE = 'move';
 /**
  * Event triggered when a user presses the enter key on the observed element.
  */
-export const ENTER = 'enter';
-
+ export const ENTER = 'enter';
+ 
 /**
  * Event triggered when the mouse is no longer over the observed element.
 */

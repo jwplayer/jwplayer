@@ -223,7 +223,7 @@ class ProgramController extends Events {
                     // Fail the playPromise to trigger "playAttemptFailed"
                     throw error;
                 })
-                .then(thenPlayPromise.async);
+                .then(() => thenPlayPromise.async());
         }
 
         return playPromise;
@@ -431,6 +431,13 @@ class ProgramController extends Events {
         this.off();
         this._destroyBackgroundMedia();
         this._destroyActiveMedia();
+        if (this.asyncItems) {
+            this.asyncItems.forEach(asyncItem => {
+                if (asyncItem) {
+                    asyncItem.destroy();
+                }
+            });
+        }
         this.asyncItems =
             this.loadPromise =
             this.mediaControllerListener =

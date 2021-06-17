@@ -66,7 +66,7 @@ Object.assign(Controller.prototype, {
             this._view.destroy();
         }
         if (this._model) {
-            destroyQoe(this._model);
+            destroyQoe(this._model, this._programController);
             this._model.destroy();
         }
         if (this._apiQueue) {
@@ -78,7 +78,7 @@ Object.assign(Controller.prototype, {
         if (this._programController) {
             this._programController.destroy();
         }
-        this.instreamDestroy();
+        this.instreamDestroy(true);
         this._view =
             this._model =
             this._apiQueue =
@@ -514,7 +514,7 @@ Object.assign(Controller.prototype, {
                             return _this.updatePlaylist(Playlist(data.playlist), data);
                         }
                     });
-                    loadPromise = _loadPlaylist(item).then(updatePlaylistCancelable.async);
+                    loadPromise = _loadPlaylist(item).then((data) => updatePlaylistCancelable.async(data));
                     break;
                 }
                 case 'object':
@@ -532,7 +532,7 @@ Object.assign(Controller.prototype, {
                 _this.triggerError(composePlayerError(error, ERROR_LOADING_PLAYLIST));
             });
 
-            loadPromise.then(checkAutoStartCancelable.async).catch(noop);
+            loadPromise.then(() => checkAutoStartCancelable.async()).catch(noop);
         }
 
         function _loadPlaylist(toLoad) {
@@ -1206,8 +1206,12 @@ Object.assign(Controller.prototype, {
             return this._instreamAdapter;
         };
 
-        this.instreamDestroy = function() {
+        this.instreamDestroy = function(noResume) {
             if (this._instreamAdapter) {
+                // When destroying the player `noResume` is passed to prevent resuming of main content
+                if (noResume) {
+                    this._instreamAdapter.noResume = true;
+                }
                 this._instreamAdapter.destroy();
                 this._instreamAdapter = null;
             }

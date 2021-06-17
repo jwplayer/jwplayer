@@ -15,7 +15,7 @@ export default (settingsMenu: Menu, localization: Localization): Button => {
         const key = sourceEvent.key.replace(/(Arrow|ape)/, '');
         // Close settings menu when enter is pressed on the close button
         // or when tab or right arrow key is pressed since it is the last element in topbar
-        if (key === 'Enter' || key === 'Right' || (key === 'Tab' && !sourceEvent.shiftKey)) {
+        if (key === 'Right' || (key === 'Tab' && !sourceEvent.shiftKey)) {
             settingsMenu.close(e);
         }
     });
