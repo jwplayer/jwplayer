@@ -479,6 +479,15 @@ export default function Api(element) {
         },
 
         /**
+         * Gets the player's picture-in-picture mode.
+         * @returns {boolean} Whether or not the player is in picture-in-picture mode.
+         * @since v8.21.0
+         */
+        getPip() {
+            return core.get('pip');
+        },
+
+        /**
          * Gets the rate at which playback should occur while media is playing.
          * @default 1.0
          * @returns {number} The playback rate of the media element (`HTMLMediaElement.playbackRate`).
@@ -710,6 +719,16 @@ export default function Api(element) {
         },
 
         /**
+         * Toggles Picture-in-Picture mode.
+         * @param {boolean} [toggle] - Specifies whether to enable or disable PiP mode.
+         * @returns {Api} The Player API instance.
+         */
+        setPip(toggle) {
+            core.setPip(toggle);
+            return this;
+        },
+
+        /**
          * Sets the player's default playeback rate. During playback, the rate of the current media will be set immediately if supported. Not supported when streaming live.
          * @param {number} playbackRate - The desired rate of playback. Limited to numbers between 0.25-4.0.
          * @returns {Api} The Player API instance.
@@ -868,6 +887,17 @@ export default function Api(element) {
         },
 
         /**
+         * Requests the player to go into picture-in-picture mode.
+         * @param { video } [target] - An optional video tag
+         * @returns {Api} The Player API instance.
+         * @since v8.21.0
+         */
+        requestPip(target) {
+            core.requestPip(target);
+            return this;
+        },
+
+        /**
          * Toggles the presence of the Airplay button in Safari (calls `HTMLMediaElement.webkitShowPlaybackTargetPicker`).
          * Does not affect the Chromecast button in Chrome.
          * @returns {Api} The Player API instance.
@@ -877,7 +907,7 @@ export default function Api(element) {
             return this;
         },
 
-         /**
+        /**
          * Stops casting immediately (Chromecast only).
          * @return {Api} The Player API instance.
          * @since v8.18.0

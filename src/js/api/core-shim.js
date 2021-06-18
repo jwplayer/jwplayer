@@ -48,6 +48,8 @@ const CoreShim = function(originalContainer) {
         'setCurrentCaptions',
         'setCurrentQuality',
         'setFullscreen',
+        'setPip',
+        'requestPip',
         'addButton',
         'removeButton',
         'castToggle',

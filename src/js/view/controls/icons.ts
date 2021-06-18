@@ -21,6 +21,8 @@ import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
+import PIP_ON_ICON from 'assets/SVG/pip-on.svg';
+import PIP_OFF_ICON from 'assets/SVG/pip-off.svg';
 import CLOSE_ICON from 'assets/SVG/close.svg';
 import JW_LOGO from 'assets/SVG/jw-logo.svg';
 import svgParse from 'utils/svgParser';
@@ -84,6 +86,8 @@ function parseCollection(): XMLDocument {
         SETTINGS_ICON +
         AUDIO_TRACKS_ICON +
         QUALITY_ICON +
+        PIP_ON_ICON +
+        PIP_OFF_ICON +
         FULLSCREEN_EXIT_ICON +
         FULLSCREEN_ENTER_ICON +
         CLOSE_ICON +
