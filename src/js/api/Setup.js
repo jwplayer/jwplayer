@@ -1,11 +1,11 @@
 import { loadCore } from 'api/core-loader';
 import { loadCoreBundle } from 'api/core-bundle-loader';
-import loadPlugins from 'plugins/plugins';
 import {
     loadProvider,
     loadModules,
     loadSkin,
-    loadTranslations
+    loadTranslations,
+    loadPlugins
 } from 'api/setup-steps';
 import { PlayerError, SETUP_ERROR_TIMEOUT, MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
