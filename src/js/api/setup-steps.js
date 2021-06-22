@@ -133,7 +133,9 @@ export function loadModules(/* model, api */) {
     return Promise.resolve();
 }
 
-export const loadPlugins = pluginsPromise;
+export function loadPlugins(model, api) {
+    return pluginsPromise(model, api);
+}
 
 function destroyed(_model) {
     return _model.attributes._destroyed;
