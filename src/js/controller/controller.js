@@ -776,6 +776,9 @@ Object.assign(Controller.prototype, {
             if (state === STATE_ERROR) {
                 return;
             }
+            if (state === STATE_PLAYING && _model.get('playReason') !== meta.reason) {
+                _model.set('playReason', meta.reason);
+            }
             _programController.position = pos;
             const isIdle = state === STATE_IDLE;
             if (!_model.get('scrubbing') && (isIdle || state === STATE_COMPLETE)) {
