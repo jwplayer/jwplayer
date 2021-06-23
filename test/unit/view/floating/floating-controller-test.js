@@ -305,11 +305,12 @@ describe('FloatingController', function() {
                 fc.updateFloatingSize = sinon.spy();
                 fc._model.trigger = sinon.spy();
                 fc.startFloating();
-                expect(fc._model.get('isFloating'), 'isFloating').to.be.true;
-                expect(fc._playerEl.classList.contains('jw-flag-floating'), 'contains jw-flag-floating').to.be.true;
+                expect(fc._model.get('isFloating')).to.be.true;
+                expect(fc._playerEl.classList.contains('jw-flag-floating')).to.be.true;
                 expect(fc._playerEl.style.backgroundImage).to.eq('url("preview.img")');
-                expect(fc.updateFloatingSize).to.be.called;
-                expect(fc._floatingUI.enable).to.be.called;
+                expect(fc.updateFloatingSize.called).to.be.true;
+                expect(fc._floatingUI.enable.called).to.be.true;
+                expect(fc._model.trigger.calledWith('forceResponsiveListener', {})).to.be.true;
                 // reset currently floating player
                 fc.stopFloating();
             });
@@ -406,6 +407,8 @@ describe('FloatingController', function() {
                 expect(fc._model.get('isFloating')).to.be.false;
                 expect(fc.getFloatingPlayer()).to.eq(null);
                 expect(fc.disableFloatingUI.called).to.be.true;
+                expect(fc._model.trigger.calledWith('forceResponsiveListener', {})).to.be.true;
+                expect(fc._model.trigger.calledWith('forceAspectRatioChange', {})).to.be.true;
                 expect(fc._playerEl.style.backgroundImage).to.eq('');
                 expect(fc._wrapperEl.style.width).to.eq('');
                 expect(fc._wrapperEl.style.maxWidth).to.eq('');
