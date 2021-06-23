@@ -776,7 +776,7 @@ Object.assign(Controller.prototype, {
             if (state === STATE_ERROR) {
                 return;
             }
-            if (state === STATE_PLAYING && _model.get('playReason') !== meta.reason) {
+            if (meta && state === STATE_PLAYING && _model.get('playReason') !== meta.reason) {
                 _model.set('playReason', meta.reason);
             }
             _programController.position = pos;
