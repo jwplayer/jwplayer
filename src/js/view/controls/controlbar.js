@@ -312,6 +312,7 @@ export default class Controlbar {
                 setAttribute(element, 'aria-label', fullscreenText);
             }
         }, this);
+        _model.change('allowFullscreen', this.onAllowFullscreenToggle, this);
         _model.change('pip', (model, val) => {
             if (this.elements.pip) {
                 toggleClass(this.elements.pip.element(), 'jw-off', val);
@@ -529,6 +530,12 @@ export default class Controlbar {
             }
         }
         setAttribute(this.elements.play.element(), 'aria-label', label);
+    }
+
+    onAllowFullscreenToggle(model, allowFullscreen) {
+        [this.elements.fullscreen.element(), this.elements.imaFullscreen.element()].forEach(element => {
+            toggleClass(element, 'jw-fullscreen-disallowed', !allowFullscreen);
+        });
     }
 
     onStreamTypeChange(model, streamType) {

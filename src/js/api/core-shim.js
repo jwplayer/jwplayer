@@ -43,6 +43,7 @@ const CoreShim = function(originalContainer) {
         'preload',
 
         // These should just update state that could be acted on later, but need to be queued given v7 model
+        'setAllowFullscreen',
         'setConfig',
         'setCurrentAudioTrack',
         'setCurrentCaptions',

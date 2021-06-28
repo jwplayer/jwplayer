@@ -945,9 +945,19 @@ Object.assign(Controller.prototype, {
 
             // TODO: rather than the player responding to this state change this should be view / provider based with
             //  Promise resolution for modern browsers
-            _model.set('fullscreen', state);
-            if (_this._instreamAdapter && _this._instreamAdapter._adModel) {
-                _this._instreamAdapter._adModel.set('fullscreen', state);
+            // Still allows user to exit fullscreen if fullscreen not allowed.
+            if (_model.get('allowFullscreen') || !state) {
+                _model.set('fullscreen', state);
+                if (_this._instreamAdapter && _this._instreamAdapter._adModel) {
+                    _this._instreamAdapter._adModel.set('fullscreen', state);
+                }
+            }
+        }
+
+        function _setAllowFullscreen(allowFullscreen) {
+            _model.set('allowFullscreen', allowFullscreen);
+            if (!allowFullscreen && _model.get('fullscreen')) {
+                _this.setFullscreen(false);
             }
         }
 
@@ -1000,6 +1010,7 @@ Object.assign(Controller.prototype, {
         this.setCurrentCaptions = _setCurrentCaptions;
         this.setCurrentQuality = _setCurrentQuality;
         this.setFullscreen = _setFullscreen;
+        this.setAllowFullscreen = _setAllowFullscreen;
         this.setPip = _setPip;
         this.getCurrentQuality = _getCurrentQuality;
         this.getQualityLevels = _getQualityLevels;
@@ -1227,6 +1238,7 @@ Object.assign(Controller.prototype, {
             'setCurrentAudioTrack',
             'setCurrentCaptions',
             'setCurrentQuality',
+            'setAllowFullscreen',
             'setFullscreen',
         ], () => !this._model.get('itemReady') || eventsReadyQueue);
         // Add commands from CoreLoader to queue
