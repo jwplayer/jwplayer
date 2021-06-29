@@ -62,8 +62,9 @@ export default class RightClick {
                 type: 'keyboardShortcuts'
             });
         }
-        if (!OS.mobile && model.get('pipIcon') !== 'disabled' && (Browser.chrome || Browser.edge || Browser.safari)) {
-            this.pipMenu = true;
+        this.pipMenu = !OS.mobile && model.get('pipIcon') !== 'disabled'
+            && (Browser.chrome || Browser.edge || Browser.safari);
+        if (this.pipMenu) {
             menuItems.splice(menuItems.length - 1, 0, {
                 type: 'pip'
             });
