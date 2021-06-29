@@ -166,9 +166,14 @@ export function mediaControllerListener<E extends keyof AllProviderEventsListene
             /* falls through to to trigger model event off model */
         case MEDIA_SEEK:
         case MEDIA_SEEKED:
-        case NATIVE_FULLSCREEN:
         case SUBTITLES_TRACKS:
         case 'subtitlesTracksData':
+            model.trigger(type, event);
+            break;
+        case NATIVE_FULLSCREEN:
+            if (model.get('pip')) {
+                return;
+            }
             model.trigger(type, event);
             break;
         case BANDWIDTH_ESTIMATE: {

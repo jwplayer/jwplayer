@@ -939,6 +939,9 @@ Object.assign(Controller.prototype, {
         }
 
         function _setFullscreen(state) {
+            if (_view.pipEnabled) {
+                return;
+            }
             if (!isBoolean(state)) {
                 state = !_model.get('fullscreen');
             }
