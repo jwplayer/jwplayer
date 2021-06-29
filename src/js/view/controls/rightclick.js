@@ -2,7 +2,7 @@ import rightclickTemplate from 'view/controls/templates/rightclick';
 import { cloneIcon } from 'view/controls/icons';
 import { version } from 'version';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
-import { OS } from 'environment/environment';
+import { Browser, OS } from 'environment/environment';
 import UI from 'utils/ui';
 import { isRtl } from 'utils/language';
 
@@ -60,6 +60,12 @@ export default class RightClick {
         if (this.shortcutsTooltip) {
             menuItems.splice(menuItems.length - 1, 0, {
                 type: 'keyboardShortcuts'
+            });
+        }
+        if (!OS.mobile && model.get('pipIcon') !== 'disabled' && (Browser.chrome || Browser.edge || Browser.safari)) {
+            this.pipMenu = true;
+            menuItems.splice(menuItems.length - 1, 0, {
+                type: 'pip'
             });
         }
 
@@ -152,6 +158,9 @@ export default class RightClick {
             this.hideMenu();
             this.infoOverlay.open();
         };
+        this.pipHandler = () => {
+            this.model.set('pip', !this.model.get('pip'));
+        };
         this.shortcutsTooltipHandler = () => {
             // Open the info overlay if clicked, and hide the rightclick menu
             this.mouseOverContext = false;
@@ -183,6 +192,10 @@ export default class RightClick {
         }
         this.el.querySelector('.jw-info-overlay-item').addEventListener('click', this.infoOverlayHandler);
 
+        if (this.pipMenu) {
+            this.el.querySelector('.jw-pip-item').addEventListener('click', this.pipHandler);
+        }
+
         if (this.shortcutsTooltip) {
             this.el.querySelector('.jw-shortcuts-item').addEventListener('click', this.shortcutsTooltipHandler);
         }
@@ -197,6 +210,9 @@ export default class RightClick {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
             this.el.removeEventListener('mouseover', this.overHandler);
             this.el.removeEventListener('mouseout', this.outHandler);
+            if (this.pipMenu) {
+                this.el.querySelector('.jw-pip-item').removeEventListener('click', this.pipHandler);
+            }
             if (this.shortcutsTooltip) {
                 this.el.querySelector('.jw-shortcuts-item').removeEventListener('click', this.shortcutsTooltipHandler);
             }
