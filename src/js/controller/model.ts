@@ -71,6 +71,7 @@ export type PlayerModelAttributes = {
     nextUp: PlaylistItem;
     nextUpDisplay: boolean;
     pauseReason: PauseReason;
+    pip: boolean;
     playbackRate: number;
     playlist: PlaylistItem[];
     playlistItem: PlaylistItem | null;

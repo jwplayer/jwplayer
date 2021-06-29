@@ -939,6 +939,9 @@ Object.assign(Controller.prototype, {
         }
 
         function _setFullscreen(state) {
+            if (_model.get('pip')) {
+                _model.set('pip', false);
+            }
             if (!isBoolean(state)) {
                 state = !_model.get('fullscreen');
             }
@@ -952,6 +955,9 @@ Object.assign(Controller.prototype, {
         }
 
         function _setPip(state) {
+            if (_model.get('fullscreen')) {
+                _model.set('fullscreen', false);
+            }
             if (!isBoolean(state)) {
                 state = !_model.get('pip');
             }
