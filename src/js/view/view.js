@@ -645,6 +645,9 @@ function View(_api, _model) {
     }
 
     function _nativeFullscreenChangeHandler(event) {
+        if (!OS.mobile) {
+            return;
+        }
         toggleClass(_playerElement, 'jw-flag-ios-fullscreen', event.jwstate);
         _fullscreenChangeHandler(event);
     }
