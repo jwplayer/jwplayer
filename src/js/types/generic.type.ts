@@ -71,5 +71,3 @@ export type BoundingRect = {
     top: number;
     bottom: number;
 };
-
-export type GenericUIEvent = MouseEvent & { sourceEvent: Event };

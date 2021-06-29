@@ -4,7 +4,7 @@ import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import { between } from 'utils/math';
 import { bounds, createElement } from 'utils/dom';
-import type { BoundingRect, GenericUIEvent } from 'types/generic.type';
+import type { BoundingRect } from 'types/generic.type';
 
 interface Slider {
     className: string;
@@ -59,18 +59,14 @@ class Slider extends Events {
     }
 
     dragEnd(evt: Event): void {
-        this.dragMove(evt as GenericUIEvent);
+        this.dragMove(evt as MouseEvent);
         this.trigger('dragEnd');
     }
 
-    dragMove(evt: GenericUIEvent): boolean {
+    dragMove(evt: MouseEvent): boolean {
         const railBounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail);
         let dimension: number;
         let percentage: number;
-
-        if (evt.sourceEvent.type === 'pointercancel') {
-            return false;
-        }
 
         if (this.orientation === 'horizontal') {
             dimension = evt.pageX;
@@ -101,7 +97,7 @@ class Slider extends Events {
 
     tap(evt: Event): void {
         this.railBounds = getRailBounds(this.elementRail);
-        this.dragMove(evt as GenericUIEvent);
+        this.dragMove(evt as MouseEvent);
     }
 
     limit(percentage: number): number {
