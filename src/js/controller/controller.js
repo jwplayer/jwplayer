@@ -939,7 +939,6 @@ Object.assign(Controller.prototype, {
         }
 
         function _setFullscreen(state) {
-            console.log('pip fullscreen');
             if (_model.get('pip')) {
                 _model.set('pip', false);
             }
