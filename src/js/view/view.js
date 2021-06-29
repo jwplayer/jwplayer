@@ -96,7 +96,7 @@ function View(_api, _model) {
     let _breakpoint = null;
     let _controls = null;
 
-    this.pipEnabled = false;
+    let _pipEnabled = false;
     let _pipVideoListeners = null;
 
     function reasonInteraction() {
@@ -860,8 +860,8 @@ function View(_api, _model) {
             const enter = () => {
                 removePipListeners();
                 video.requestPictureInPicture().then(() => {
-                    if (!_this.pipEnabled) {
-                        _this.pipEnabled = true;
+                    if (!_pipEnabled) {
+                        _pipEnabled = true;
                         _this.trigger('pipEnter', { video });
                     }
                     video.addEventListener('leavepictureinpicture', leave);
@@ -873,8 +873,8 @@ function View(_api, _model) {
             // Event triggered when exitPictureInPicture api is called or the close button on PiP display is clicked
             const leave = () => {
                 video.removeEventListener('leavepictureinpicture', leave);
-                if (_this.pipEnabled) {
-                    _this.pipEnabled = false;
+                if (_pipEnabled) {
+                    _pipEnabled = false;
                     _this.trigger('pipLeave', { video });
                     // Set to handle the close button click
                     _model.set('pip', false);
