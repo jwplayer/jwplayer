@@ -943,14 +943,14 @@ Object.assign(Controller.prototype, {
                 state = !_model.get('fullscreen');
             }
 
+            if (!_model.get('allowFullscreen') && state) {
+                return;
+            }
             // TODO: rather than the player responding to this state change this should be view / provider based with
             //  Promise resolution for modern browsers
-            // Still allows user to exit fullscreen if fullscreen not allowed.
-            if (_model.get('allowFullscreen') || !state) {
-                _model.set('fullscreen', state);
-                if (_this._instreamAdapter && _this._instreamAdapter._adModel) {
-                    _this._instreamAdapter._adModel.set('fullscreen', state);
-                }
+            _model.set('fullscreen', state);
+            if (_this._instreamAdapter && _this._instreamAdapter._adModel) {
+                _this._instreamAdapter._adModel.set('fullscreen', state);
             }
         }
 
