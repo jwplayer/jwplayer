@@ -58,8 +58,8 @@ class Slider extends Events {
         this.railBounds = getRailBounds(this.elementRail as HTMLElement);
     }
 
-    dragEnd(evt: Event): void {
-        this.dragMove(evt as GenericUIEvent);
+    dragEnd(evt: GenericUIEvent): void {
+        this.dragMove(evt);
         this.trigger('dragEnd');
     }
 
@@ -99,9 +99,9 @@ class Slider extends Events {
         return false;
     }
 
-    tap(evt: Event): void {
+    tap(evt: GenericUIEvent): void {
         this.railBounds = getRailBounds(this.elementRail);
-        this.dragMove(evt as GenericUIEvent);
+        this.dragMove(evt);
     }
 
     limit(percentage: number): number {
