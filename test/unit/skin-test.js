@@ -53,6 +53,11 @@ describe('Skin Customization', function() {
             expect(skinName).to.equal('ethan-skin');
         });
 
+        it('should return file name from stylesheet url with extra parameters', function() {
+            const skinName = getSkinName('https://playertest.longtailvideo.com/ethan.css?param');
+            expect(skinName).to.equal('ethan');
+        });
+
         it('should return input from non-url', function() {
             const skinName = getSkinName('test');
             expect(skinName).to.equal('test');
