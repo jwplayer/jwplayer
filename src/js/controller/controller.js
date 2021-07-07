@@ -773,11 +773,16 @@ Object.assign(Controller.prototype, {
 
         function _seek(pos, meta) {
             const state = _model.get('state');
+            const activeEl = document.activeElement;
+
             if (state === STATE_ERROR) {
                 return;
             }
             if (meta && state === STATE_PLAYING && _model.get('playReason') !== meta.reason) {
                 _model.set('playReason', meta.reason);
+            }
+            if (meta && !activeEl.classList.contains('jw-slider-time')) {
+                _model.set('playReason', 'external');
             }
             _programController.position = pos;
             const isIdle = state === STATE_IDLE;
@@ -785,6 +790,9 @@ Object.assign(Controller.prototype, {
                 if (isIdle) {
                     meta = meta || {};
                     meta.startTime = pos;
+                }
+                if (meta.reason !== _model.get('playReason')) {
+                    meta.reason = 'external';
                 }
                 this.play(meta);
             }
