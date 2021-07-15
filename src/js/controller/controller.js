@@ -563,6 +563,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _play(meta) {
+            const activeEl = document.activeElement;
             checkAutoStartCancelable.cancel();
             _stopPlaylist = false;
 
@@ -570,7 +571,10 @@ Object.assign(Controller.prototype, {
                 return Promise.resolve();
             }
 
-            const playReason = _getReason(meta);
+            let playReason = _getReason(meta);
+            if (meta && !activeEl.classList.contains('jwplayer') && !activeEl.classList.contains('jw-icon-playback') && !_model.get('interaction')) {
+                playReason = 'external';
+            }
             _model.set('playReason', playReason);
 
             const adState = _getAdState();
@@ -724,7 +728,11 @@ Object.assign(Controller.prototype, {
         }
 
         function _updatePauseReason(meta) {
-            const pauseReason = _getReason(meta);
+            const activeEl = document.activeElement;
+            let pauseReason = _getReason(meta);
+            if (meta && !activeEl.classList.contains('jwplayer') && !activeEl.classList.contains('jw-icon-playback') && !_model.get('interaction')) {
+                pauseReason = 'external';
+            }
             _model.set('pauseReason', pauseReason);
             _model.set('playOnViewable', (pauseReason === 'viewable'));
         }
@@ -781,7 +789,7 @@ Object.assign(Controller.prototype, {
             if (meta && state === STATE_PLAYING && _model.get('playReason') !== meta.reason) {
                 _model.set('playReason', meta.reason);
             }
-            if (meta && !activeEl.classList.contains('jw-slider-time')) {
+            if (meta && !activeEl.classList.contains('jw-slider-time') && !_model.get('interaction')) {
                 _model.set('playReason', 'external');
             }
             _programController.position = pos;
@@ -790,8 +798,6 @@ Object.assign(Controller.prototype, {
                 if (isIdle) {
                     meta = meta || {};
                     meta.startTime = pos;
-                }
-                if (meta.reason !== _model.get('playReason')) {
                     meta.reason = 'external';
                 }
                 this.play(meta);

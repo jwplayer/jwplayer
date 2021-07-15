@@ -278,7 +278,9 @@ export default class Controls extends Events {
                 max = Math.max(position, -dvrSeekLimit);
             }
             const newSeek = between(position + amount, min, max);
+            model.set('interaction', true);
             api.seek(newSeek, reasonInteraction());
+            model.set('interaction', false);
         }
 
         function adjustVolume(amount) {
@@ -330,7 +332,9 @@ export default class Controls extends Events {
                         // Let event bubble up so the spacebar can control the toggle if focused on
                         return true;
                     }
+                    model.set('interaction', true);
                     api.playToggle(reasonInteraction());
+                    model.set('interaction', false);
                     break;
                 case 37: // left-arrow, if shortcuts are enabled, not adMode, and settings menu is hidden
                     if (!adMode && menuHidden) {
