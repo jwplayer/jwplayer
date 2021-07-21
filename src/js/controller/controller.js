@@ -963,6 +963,9 @@ Object.assign(Controller.prototype, {
             }
 
             _model.set('pip', state);
+            if (_model.get('fullscreen')) {
+                _model.set('fullscreen', false);
+            }
         }
 
         function addProgramControllerListeners() {
