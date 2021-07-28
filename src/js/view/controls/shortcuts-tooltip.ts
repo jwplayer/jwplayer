@@ -96,7 +96,6 @@ export default function (
         template.querySelector('.jw-shortcuts-close').focus();
         document.addEventListener('click', documentClickHandler);
         isOpen = true;
-        api.pause(settingsInteraction);
         onVisibility(true);
     };
 
@@ -104,9 +103,6 @@ export default function (
         removeClass(template, 'jw-open');
         document.removeEventListener('click', documentClickHandler);
         isOpen = false;
-        if (lastState === STATE_PLAYING) {
-            api.play(settingsInteraction);
-        }
         onVisibility(false);
     };
 

@@ -40,6 +40,7 @@ export default class RightClick {
         const majorMinorPatchPre = semverParts[0];
         const model = this.model;
         const edition = model.get('edition');
+        debugger;
         const poweredBy = model.get('localization').poweredBy;
         const versionSpan = `<span class="jw-reset">JW Player ${majorMinorPatchPre}</span>`;
 
