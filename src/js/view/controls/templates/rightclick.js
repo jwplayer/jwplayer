@@ -17,7 +17,6 @@ const rightClickItem = (item, localization) => {
 
 const itemContentTypes = {
     link: ({ link, title, logo }) => `<a href="${link || ''}" class="jw-rightclick-link jw-reset-text" target="_blank" rel="noreferrer" dir="auto">${logo}${title || ''}</a>`,
-    info: (item, localization) => `<button type="button" class="jw-reset-text jw-rightclick-link jw-info-overlay-item" dir="auto">${localization.videoInfo}</button>`,
     share: (item, localization) => `<button type="button" class="jw-reset-text jw-rightclick-link jw-share-item" dir="auto">${localization.sharing.heading}</button>`,
     pip: (item, localization) => `<button type="button" class="jw-reset-text jw-rightclick-link jw-pip-item" dir="auto">${localization.pipIcon}</button>`,
     keyboardShortcuts: (item, localization) => `<button type="button" class="jw-reset-text jw-rightclick-link jw-shortcuts-item" dir="auto">${localization.shortcuts.keyboardShortcuts}</button>`,
