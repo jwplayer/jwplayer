@@ -43,8 +43,7 @@ export default class RightClick {
         const versionSpan = `<span class="jw-reset">JW Player ${majorMinorPatchPre}</span>`;
 
         const menu = {
-            items: [
-            {
+            items: [{
                 title: isRtl(poweredBy) ? `${versionSpan} ${poweredBy}` : `${poweredBy} ${versionSpan}`,
                 type: 'link',
                 featured: true,
