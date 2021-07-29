@@ -3,7 +3,6 @@ import { createElement, removeClass, addClass, prependChild } from 'utils/dom';
 import UI from 'utils/ui';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
-import { STATE_PLAYING } from 'events/events';
 import type { PlayerAPI, StringObject } from 'types/generic.type';
 import type ViewModel from 'view/view-model';
 
@@ -80,19 +79,16 @@ export default function (
     onVisibility: (visible: boolean) => void
 ): ShortcutsTooltip {
     let isOpen = false;
-    let lastState = null;
     const shortcuts = model.get('localization').shortcuts;
     const template = createElement(
         shortcutTooltipTemplate(getShortcuts(shortcuts), shortcuts.keyboardShortcuts)
     );
-    const settingsInteraction = { reason: 'settingsInteraction' };
     const shortcutToggleUi = new UI(template.querySelector('.jw-switch'));
 
     const open = () => {
         shortcutToggleUi.el.setAttribute('aria-checked', model.get('enableShortcuts'));
 
         addClass(template, 'jw-open');
-        lastState = model.get('state');
         template.querySelector('.jw-shortcuts-close').focus();
         document.addEventListener('click', documentClickHandler);
         isOpen = true;

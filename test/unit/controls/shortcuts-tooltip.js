@@ -2,7 +2,6 @@ import sinon from 'sinon';
 import MockModel from 'mock/mock-model';
 import MockApi from 'mock/mock-api';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
-import { STATE_PLAYING } from 'events/events';
 
 require('css/controls/imports/shortcuts-tooltip.less');
 
@@ -23,8 +22,6 @@ describe('Keyboard Shortcuts Modal Test', function() {
         player = document.createElement('div');
         player.classList.add('jwplayer');
         model.setup({});
-        api.play = sinon.spy();
-        api.pause = sinon.spy();
         visHandle = sinon.spy();
         shortcutsTooltip = new ShortcutsTooltip(player, api, model, visHandle);
         document.body.appendChild(player);
@@ -33,8 +30,6 @@ describe('Keyboard Shortcuts Modal Test', function() {
         document.body.removeChild(player);
         shortcutsTooltip = null;
         player = null;
-        api.play = null;
-        api.pause = null;
     });
     it('should be hidden initially', function() {
         const isInitiallyHidden = isHidden(shortcutsTooltip.el);
@@ -67,16 +62,6 @@ describe('Keyboard Shortcuts Modal Test', function() {
         const closeButton = player.querySelector('.jw-shortcuts-close');
         shortcutsTooltip.open();
         expect(document.activeElement.isSameNode(closeButton)).to.equal(true);
-    });
-    it('pauses video when openened', function() {
-        shortcutsTooltip.open();
-        expect(api.pause.calledOnce).to.equal(true);
-    });
-    it('plays video when closed', function() {
-        model.set('state', STATE_PLAYING);
-        shortcutsTooltip.open();
-        shortcutsTooltip.close();
-        expect(api.play.calledOnce).to.equal(true);
     });
     it('should call vis handler with proper args when opened', () => {
         shortcutsTooltip.open();
