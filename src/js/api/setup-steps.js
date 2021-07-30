@@ -7,6 +7,7 @@ import { composePlayerError, PlayerError,
     ERROR_LOADING_TRANSLATIONS, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE } from 'api/errors';
 import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation } from 'utils/language';
 import { bundleContainsProviders } from 'api/core-loader';
+import pluginsPromise from 'plugins/plugins';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -130,6 +131,10 @@ export function loadTranslations(_model) {
 
 export function loadModules(/* model, api */) {
     return Promise.resolve();
+}
+
+export function loadPlugins(model, api) {
+    return pluginsPromise(model, api);
 }
 
 function destroyed(_model) {

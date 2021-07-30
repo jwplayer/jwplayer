@@ -1,5 +1,5 @@
 import _ from 'test/underscore';
-import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
+import { getSkinName, normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { clearCss } from 'utils/css';
 import diff from 'fast-diff';
 
@@ -40,6 +40,29 @@ describe('Skin Customization', function() {
     beforeEach(clearPlayerStyleSheets);
 
     after(clearPlayerStyleSheets);
+
+    describe('getSkinName', function() {
+
+        it('should return file name from stylesheet url', function() {
+            const skinName = getSkinName('https://playertest.longtailvideo.com/ethan.css');
+            expect(skinName).to.equal('ethan');
+        });
+
+        it('should return dashed file name from stylesheet url', function() {
+            const skinName = getSkinName('https://playertest.longtailvideo.com/ethan-skin.css');
+            expect(skinName).to.equal('ethan-skin');
+        });
+
+        it('should return file name from stylesheet url with extra parameters', function() {
+            const skinName = getSkinName('https://playertest.longtailvideo.com/ethan.css?param');
+            expect(skinName).to.equal('ethan');
+        });
+
+        it('should return input from non-url', function() {
+            const skinName = getSkinName('test');
+            expect(skinName).to.equal('test');
+        });
+    });
 
     describe('normalizeSkin', function() {
 

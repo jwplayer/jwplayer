@@ -1,6 +1,11 @@
 import { prefix } from 'utils/strings';
 import { css, getRgba } from 'utils/css';
 
+export function getSkinName(url) {
+    // Regex locates the characters after the last slash, until it encounters the file extension.
+    return url.replace(/^(.*\/)?(.*)-?.*\.(css).*$/, '$2');
+}
+
 export function normalizeSkin(skinConfig) {
     if (!skinConfig) {
         skinConfig = {};
