@@ -576,7 +576,6 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
 
             if (adState) {
-                _this._instreamAdapter.off('state', _pauseAd, _this);
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false, meta);
                 return Promise.resolve();
@@ -736,12 +735,7 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
             if (adState && adState !== STATE_PAUSED) {
                 _updatePauseReason(meta);
-                if (adState === STATE_BUFFERING) {
-                    _this._instreamAdapter.once('state', _pauseAd, _this);
-                    _this._instreamAdapter.noResume = true;
-                } else {
-                    _api.pauseAd(true, meta);
-                }
+                _api.pauseAd(true, meta);
                 return;
             }
 
@@ -759,11 +753,6 @@ Object.assign(Controller.prototype, {
                         _interruptPlay = true;
                     }
             }
-        }
-
-        function _pauseAd() {
-            const reason = _model.get('pauseReason');
-            _api.pauseAd(true, { reason });
         }
 
         function _isIdle() {
