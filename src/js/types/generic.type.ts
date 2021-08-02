@@ -73,3 +73,19 @@ export type BoundingRect = {
 };
 
 export type GenericUIEvent = MouseEvent & { sourceEvent: Event };
+
+export type FullscreenHelpers = {
+    events: string[];
+    supportsDomFullscreen: () => boolean;
+    requestFullscreen: () => void;
+    exitFullscreen: () => void;
+    fullscreenElement: () => void;
+    destroy: () => void; 
+};
+
+export type FullscreenElement = {
+    fullscreenElement: any | undefined;
+    webkitCurrentFullScreenElement: any| undefined;
+    mozFullScreenElement: any| undefined;
+    msFullscreenElement: any| undefined;
+};

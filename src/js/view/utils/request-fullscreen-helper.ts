@@ -1,20 +1,4 @@
-import type { HTMLTemplateString } from 'types/generic.type';
-
-export type FullscreenHelpers = {
-    events: string[];
-    supportsDomFullscreen: () => boolean;
-    requestFullscreen: () => void;
-    exitFullscreen: () => void;
-    fullscreenElement: () => void;
-    destroy: () => void; 
-};
-
-export type FullscreenElement = {
-    fullscreenElement: any | undefined;
-    webkitCurrentFullScreenElement: any| undefined;
-    mozFullScreenElement: any| undefined;
-    msFullscreenElement: any| undefined;
-};
+import type { FullscreenElement, FullscreenHelpers, HTMLTemplateString } from 'types/generic.type';
 
 const DOCUMENT_FULLSCREEN_EVENTS = [
     'fullscreenchange',
