@@ -279,3 +279,8 @@ export function deviceIsLandscape() {
 
     return isLandscape || (window.orientation === 90 || window.orientation === -90);
 }
+
+// Removes all non-text tags and removes all HTML attributes.
+export function sanitizeHTMLStringText(str) {
+    return str.replaceAll(/<(?!(\/?)(br|b|strong|i|em|p|h.|ol|li|ul)\s*\/?)[^>]+>/g, '').replaceAll(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/g, '<$1>');
+}
