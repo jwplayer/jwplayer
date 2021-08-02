@@ -30,7 +30,7 @@ import {
     style,
 } from 'utils/css';
 import { isNumber } from 'utils/underscore';
-import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
+import { requestFullscreenHelper } from 'view/utils/request-fullscreen-helper';
 import UI from 'utils/ui';
 import ClickHandler from 'view/utils/clickhandler';
 import CaptionsRenderer from 'view/captionsrenderer';
@@ -440,12 +440,10 @@ function View(_api, _model) {
                                 toggleClass(_playerElement, 'jw-floating-dismissible', hasClass(_playerElement, 'jw-flag-controls-hidden'));
                             }
                             _captionsRenderer.renderCues(true);
+                        } else if (!_controls.showing) {
+                            _controls.userActive();
                         } else {
-                            if (!_controls.showing) {
-                                _controls.userActive();
-                            } else {
-                                _controls.userInactive();
-                            }
+                            _controls.userInactive();
                         }
                         return;
                     }
