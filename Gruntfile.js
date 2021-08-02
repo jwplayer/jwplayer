@@ -64,7 +64,7 @@ module.exports = function(grunt) {
             }
         },
 
-        watch : {
+        watch: {
             options: {
                 interrupt: false,
                 spawn: false,
@@ -101,7 +101,7 @@ module.exports = function(grunt) {
                 port: 3000,
                 // change this to '0.0.0.0' to access the server from outside
                 // change this to 'localhost' to restrict access to the server from outside
-                hostname: 'localhost'
+                hostname: '0.0.0.0'
             },
             livereload: {
                 options: {
@@ -214,7 +214,9 @@ module.exports = function(grunt) {
         const output = './bin-release/notice.txt';
         const done = this.async();
         fs.writeFile(output, notice, function(err4) {
-            if (err4) { throw err4; }
+            if (err4) {
+                throw err4; 
+            }
             console.log('Wrote file', output);
             done();
         });
@@ -232,7 +234,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('type-check', 'Run type-check on ts files', function() {
-        runCommand('npm run type-check', '.')
+        runCommand('npm run type-check', '.');
     });
 
     // grunt.registerTask('docs', 'Generate API documentation', function() {
