@@ -248,6 +248,11 @@ export default function Api(element) {
          * @returns {Api} The Player API instance
          */
         remove() {
+            // disable pip if enabled
+            if (this.getPip()) {
+                this.setPip(false);
+            }
+
             // Remove from array of players
             removePlayer(this);
 
