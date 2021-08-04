@@ -70,6 +70,7 @@ export default {
     requestPip: null,
     resize: null,
     seek: null,
+    setAllowFullscreen: null,
     setCaptions: null,
     setConfig: null,
     setControls: null,

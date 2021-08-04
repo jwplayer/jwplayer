@@ -16,6 +16,7 @@ export const Defaults = {
         pauseAds: false
     },
     autostart: false,
+    allowFullscreen: true,
     bandwidthEstimate: null,
     bitrateSelection: null,
     castAvailable: false,

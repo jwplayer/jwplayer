@@ -68,6 +68,7 @@ export const addedProperties = {
 
 export default {
     id: '',
+    allowFullscreen: true,
     autoPause: {
         viewability: false,
         pauseAds: false

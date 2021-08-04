@@ -709,6 +709,16 @@ export default function Api(element) {
         },
 
         /**
+         * Sets whether or not to enable fullscreen capability/UI.
+         * @param {boolean} allowFullscreen - Specifies whether or not to enable fullscreen capability/UI.
+         * @returns {void}
+         */
+        setAllowFullscreen(allowFullscreen) {
+            core.setAllowFullscreen(allowFullscreen);
+            return this;
+        },
+
+        /**
          * Toggles the player's mute state.
          * @param {boolean} [toggle] - Specifies whether to mute or unmute the player.
          * @returns {Api} The Player API instance.

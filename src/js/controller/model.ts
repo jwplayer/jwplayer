@@ -26,6 +26,7 @@ export type PlayerModelAttributes = {
     __ab_truncated?: boolean;
     _destroyed: boolean;
     advertising: GenericObject;
+    allowFullscreen: boolean;
     aspectratio: string | null;
     audioMode: boolean;
     autostart: AutoStart;
