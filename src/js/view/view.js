@@ -30,7 +30,7 @@ import {
     style,
 } from 'utils/css';
 import { isNumber } from 'utils/underscore';
-import { requestFullscreenHelper } from 'view/utils/request-fullscreen-helper';
+import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
 import UI from 'utils/ui';
 import ClickHandler from 'view/utils/clickhandler';
 import CaptionsRenderer from 'view/captionsrenderer';

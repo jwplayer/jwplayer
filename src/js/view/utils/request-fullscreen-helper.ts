@@ -7,9 +7,7 @@ const DOCUMENT_FULLSCREEN_EVENTS = [
     'MSFullscreenChange'
 ];
 
-// TODO talk to Zack about the playerElement
-// TODO talk to Zack about the documentContext
-export function requestFullscreenHelper(_playerElement: HTMLTemplateString, documentContext: Document, callback: Function): FullscreenHelpers {
+export default function requestFullscreenHelper(_playerElement: HTMLTemplateString, documentContext: Document, callback: Function): FullscreenHelpers {
     const element: any = _playerElement;
     const requestFullscreen = element.requestFullscreen ||
         element.webkitRequestFullscreen ||
