@@ -218,7 +218,7 @@ Object.assign(Controller.prototype, {
         _model.on('change:scrubbing', function(model, state) {
             if (state) {
                 _resumeAfterScrubbing = _model.get('state') !== STATE_PAUSED;
-                _pause();
+                _pause({ reason: 'interaction' });
             } else if (_resumeAfterScrubbing) {
                 _play({ reason: 'interaction' });
             }
