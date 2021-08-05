@@ -282,5 +282,5 @@ export function deviceIsLandscape() {
 
 // Removes all non-text tags and removes all HTML attributes.
 export function sanitizeHTMLStringText(str) {
-    return str.replaceAll(/<(?!(\/?)(br|b|strong|i|em|p|h.|ol|li|ul)\s*\/?)[^>]+>/g, '').replaceAll(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/g, '<$1>');
+    return str.replaceAll(/<(?!(\/?)(br|b|strong|i>|em|p|h.|ol|li|ul)\s*\/?)[^>]+>/g, '').replaceAll(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/g, '<$1>');
 }
