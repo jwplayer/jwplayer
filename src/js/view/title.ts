@@ -1,7 +1,7 @@
 import { style } from 'utils/css';
 import {
     replaceInnerHtml,
-    sanitizeHTMLStringText
+    HTMLSafeString
 } from 'utils/dom';
 import { Browser } from 'environment/environment';
 import type ViewModel from './view-model';
@@ -92,8 +92,8 @@ class Title {
         if (!this.title || !this.description) {
             return;
         }
-        replaceInnerHtml(this.title, sanitizeHTMLStringText(title));
-        replaceInnerHtml(this.description, sanitizeHTMLStringText(description));
+        replaceInnerHtml(this.title, HTMLSafeString(title));
+        replaceInnerHtml(this.description, HTMLSafeString(description));
 
         if (this.title.firstChild || this.description.firstChild) {
             this.show();
