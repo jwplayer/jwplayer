@@ -280,7 +280,7 @@ export function deviceIsLandscape() {
     return isLandscape || (window.orientation === 90 || window.orientation === -90);
 }
 
-// Removes all HTML attributes
+// Removes all unallowed HTML tags/attributes from a template string. Useful for user created HTML.
 export function HTMLSafeString(str) {
     return str.replaceAll(/&|<|>|"|''/g, function(i) {
         return '&#'+i.charCodeAt(0)+';';
