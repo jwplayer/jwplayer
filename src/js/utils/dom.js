@@ -282,7 +282,7 @@ export function deviceIsLandscape() {
 
 // Removes all unallowed HTML tags/attributes from a template string. Useful for user created HTML.
 export function HTMLSafeString(str) {
-    return str.replaceAll(/&|<|>|"|''/gm, function(i) {
+    return str.replace(/&|<|>|"|''/gm, function(i) {
         return '&#'+i.charCodeAt(0)+';';
-     }).replaceAll(/&#60;(\/?)(b|strong|i|em|p|br|ul|ol|li|h.)&#62;/gmi, '<$1$2>');
+     }).replace(/&#60;(\/?)(b|strong|i|em|p|br|ul|ol|li|h.)&#62;/gmi, '<$1$2>');
 }
