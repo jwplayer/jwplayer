@@ -207,6 +207,9 @@ Object.assign(Controller.prototype, {
             if (reason === 'clickthrough' || reason === 'interaction' || reason === 'external') {
                 _model.set('playOnViewable', false);
                 _model.off('change:playReason change:pauseReason', changeReason);
+            } else if (!reason && _model.get('autostart') && _getAdState() === 'playing') {
+                // set playReason to autoStart if autostart is true and ad complete or skipped
+                _model.set('playReason', 'autostart');
             }
         };
         _model.on('change:playReason change:pauseReason', changeReason);
@@ -576,6 +579,10 @@ Object.assign(Controller.prototype, {
             const adState = _getAdState();
 
             if (adState) {
+                // prevents the interaction with controls during ad playback to overwrite autostart playReason
+                if (_model.get('autostart') && adState === 'paused') {
+                    _model.set('playReason', 'autostart');
+                }
                 _this._instreamAdapter.off('state', _pauseAd, _this);
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false, meta);
