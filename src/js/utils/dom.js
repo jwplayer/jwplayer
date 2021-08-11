@@ -280,7 +280,9 @@ export function deviceIsLandscape() {
     return isLandscape || (window.orientation === 90 || window.orientation === -90);
 }
 
-// Removes all non-text tags and removes all HTML attributes.
-export function sanitizeHTMLStringText(str) {
-    return str.replaceAll(/<(?!(\/?)(br|b|strong|i>|em|p|h.|ol|li|ul)\s*\/?)[^>]+>/g, '').replaceAll(/<([a-z][a-z0-9]*)[^>]*?(\/?)>/g, '<$1>');
+// Removes all HTML attributes
+export function HTMLSafeString(str) {
+    return str.replaceAll(/&|<|>|"|''/g, function(i) {
+        return '&#'+i.charCodeAt(0)+';';
+     }).replaceAll(/&#60;(\/?)(b|strong|i|em|p|br|ul|ol|li|h.)&#62;/gmi, '<$1$2>');
 }
