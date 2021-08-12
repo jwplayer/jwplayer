@@ -1,6 +1,7 @@
 import { style } from 'utils/css';
 import {
-    replaceInnerHtml
+    replaceInnerHtml,
+    HTMLSafeString
 } from 'utils/dom';
 import { Browser } from 'environment/environment';
 import type ViewModel from './view-model';
@@ -74,10 +75,10 @@ class Title {
             let title = '';
             let description = '';
 
-            if (item.title && model.get('displaytitle')) {
+            if (typeof item.title === 'string' && model.get('displaytitle')) {
                 title = item.title;
             }
-            if (item.description && model.get('displaydescription')) {
+            if (typeof item.description === 'string' && model.get('displaydescription')) {
                 description = item.description;
             }
 
@@ -91,8 +92,8 @@ class Title {
         if (!this.title || !this.description) {
             return;
         }
-        replaceInnerHtml(this.title, title);
-        replaceInnerHtml(this.description, description);
+        replaceInnerHtml(this.title, HTMLSafeString(title));
+        replaceInnerHtml(this.description, HTMLSafeString(description));
 
         if (this.title.firstChild || this.description.firstChild) {
             this.show();
