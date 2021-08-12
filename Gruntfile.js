@@ -64,7 +64,7 @@ module.exports = function(grunt) {
             }
         },
 
-        watch : {
+        watch: {
             options: {
                 interrupt: false,
                 spawn: false,
@@ -214,7 +214,9 @@ module.exports = function(grunt) {
         const output = './bin-release/notice.txt';
         const done = this.async();
         fs.writeFile(output, notice, function(err4) {
-            if (err4) { throw err4; }
+            if (err4) {
+                throw err4; 
+            }
             console.log('Wrote file', output);
             done();
         });
@@ -232,7 +234,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('type-check', 'Run type-check on ts files', function() {
-        runCommand('npm run type-check', '.')
+        runCommand('npm run type-check', '.');
     });
 
     // grunt.registerTask('docs', 'Generate API documentation', function() {
