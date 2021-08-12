@@ -2,7 +2,7 @@ import { OS } from 'environment/environment';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import { between } from 'utils/math';
-import { addClass, removeClass, toggleClass } from 'utils/dom';
+import { addClass, removeClass } from 'utils/dom';
 import { now } from 'utils/date';
 import button from 'view/controls/components/button';
 import Controlbar from 'view/controls/controlbar';
@@ -14,7 +14,6 @@ import { getBreakpoint } from 'view/utils/breakpoint';
 import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
-import InfoOverlay from 'view/controls/info-overlay';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
 import FloatingCloseButton from 'view/floating/floating-close-button';
 
@@ -70,7 +69,6 @@ export default class Controls extends Events {
         this.logo = null;
         this.div = null;
         this.dimensions = {};
-        this.infoOverlay = null;
         this.userInactiveTimeout = () => {
             // Rerun at the scheduled time if remaining time is greater than the display refresh rate
             const remainingTime = this.inactiveTime - now();
@@ -128,16 +126,6 @@ export default class Controls extends Events {
             this.displayContainer = displayContainer;
         }
 
-        // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
-        this.infoOverlay = new InfoOverlay(element, model, api, visible => {
-            toggleClass(this.div, 'jw-info-open', visible);
-            if (visible) {
-                //  Focus modal close button on open
-                this.div.querySelector('.jw-info-close').focus();
-            } else {
-                this.focusPlayerElement();
-            }
-        });
         //  Add keyboard shortcuts if not on mobi;e
         if (!OS.mobile) {
             this.shortcutsTooltip = new ShortcutsTooltip(this.wrapperElement, api, model, visible => {
@@ -146,7 +134,7 @@ export default class Controls extends Events {
                 }
             });
         }
-        this.rightClickMenu = new RightClick(this.infoOverlay, this.shortcutsTooltip);
+        this.rightClickMenu = new RightClick(this.shortcutsTooltip);
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
         }
@@ -316,8 +304,8 @@ export default class Controls extends Events {
                     if (this.rightClickMenu.el) {
                         this.rightClickMenu.hideMenuHandler();
                     }
-                    if (this.infoOverlay.visible) {
-                        this.infoOverlay.close();
+                    if (model.get('displayStats')) {
+                        model.set('displayStats', false);
                     }
                     if (this.shortcutsTooltip) {
                         this.shortcutsTooltip.close();
@@ -459,7 +447,6 @@ export default class Controls extends Events {
         const {
             nextUpToolTip,
             settingsMenu,
-            infoOverlay,
             controlbar,
             rightClickMenu,
             shortcutsTooltip,
@@ -516,8 +503,8 @@ export default class Controls extends Events {
             settingsMenu.destroy();
         }
 
-        if (infoOverlay) {
-            infoOverlay.destroy();
+        if (model.get('displayStats')) {
+            model.set('displayStats', false);
         }
 
         if (shortcutsTooltip) {

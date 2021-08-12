@@ -30,8 +30,7 @@ function createDomElement(html) {
 }
 
 export default class RightClick {
-    constructor(infoOverlay, shortcutsTooltip) {
-        this.infoOverlay = infoOverlay;
+    constructor(shortcutsTooltip) {
         this.shortcutsTooltip = shortcutsTooltip;
     }
 
@@ -45,9 +44,6 @@ export default class RightClick {
 
         const menu = {
             items: [{
-                type: 'info'
-            },
-            {
                 title: isRtl(poweredBy) ? `${versionSpan} ${poweredBy}` : `${poweredBy} ${versionSpan}`,
                 type: 'link',
                 featured: true,
@@ -153,17 +149,11 @@ export default class RightClick {
                 this.hideMenu();
             }
         };
-        this.infoOverlayHandler = () => {
-            // Open the info overlay if clicked, and hide the rightclick menu
-            this.mouseOverContext = false;
-            this.hideMenu();
-            this.infoOverlay.open();
-        };
         this.pipHandler = () => {
             this.model.set('pip', !this.model.get('pip'));
         };
         this.shortcutsTooltipHandler = () => {
-            // Open the info overlay if clicked, and hide the rightclick menu
+            // Open the shortcuts tooltip if clicked, and hide the rightclick menu
             this.mouseOverContext = false;
             this.hideMenu();
             this.shortcutsTooltip.open();
@@ -191,7 +181,6 @@ export default class RightClick {
             this.el.addEventListener('mouseover', this.overHandler);
             this.el.addEventListener('mouseout', this.outHandler);
         }
-        this.el.querySelector('.jw-info-overlay-item').addEventListener('click', this.infoOverlayHandler);
 
         if (this.pipMenu) {
             this.el.querySelector('.jw-pip-item').addEventListener('click', this.pipHandler);
@@ -208,7 +197,6 @@ export default class RightClick {
             this.wrapperElement.removeEventListener('touchstart', this.hideMenuHandler);
         }
         if (this.el) {
-            this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
             this.el.removeEventListener('mouseover', this.overHandler);
             this.el.removeEventListener('mouseout', this.outHandler);
             if (this.pipMenu) {

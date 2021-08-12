@@ -451,8 +451,8 @@ function View(_api, _model) {
                     }
                     if (settingsMenuVisible()) {
                         _controls.settingsMenu.close();
-                    } else if (infoOverlayVisible()) {
-                        _controls.infoOverlay.close();
+                    } else if (model.get('displayStats')) {
+                        model.set('displayStats', false);
                     } else {
                         api.playToggle(reasonInteraction());
                     }
@@ -796,11 +796,6 @@ function View(_api, _model) {
     const settingsMenuVisible = () => {
         const settingsMenu = _controls && _controls.settingsMenu;
         return !!(settingsMenu && settingsMenu.visible);
-    };
-
-    const infoOverlayVisible = () => {
-        const info = _controls && _controls.infoOverlay;
-        return !!(info && info.visible);
     };
 
     const setupInstream = function() {
