@@ -282,7 +282,14 @@ export function deviceIsLandscape() {
 
 // Removes all unallowed HTML tags/attributes from a template string. Useful for user created HTML.
 export function HTMLSafeString(str) {
-    return str.replace(/&|<|>|"|''/gm, function(i) {
-        return '&#'+i.charCodeAt(0)+';';
+    return parseHTMLEntities(str).replace(/&|<|>|"|''/gm, function(character) {
+        return '&#' + character.charCodeAt(0) + ';';
      }).replace(/&#60;(\/?)(b|strong|i|em|p|br|ul|ol|li|h.)&#62;/gmi, '<$1$2>');
+}
+
+function parseHTMLEntities(str) {
+    const textArea = document.createElement("textarea");
+     // eslint-disable-next-line no-unsanitized/property
+    textArea.innerHTML = str;
+    return textArea.value;
 }
