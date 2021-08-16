@@ -139,7 +139,12 @@ export default class RightClick {
         this.el = createDomElement(this.html);
         this.wrapperElement.appendChild(this.el);
 
-        this.hideMenuHandler = e => this.hideMenu(e);
+        this.hideMenuHandler = e => {
+            if (e.ctrlKey || e.button) {
+                return;
+            }
+            this.hideMenu(e);
+        }
         this.overHandler = () => {
             this.mouseOverContext = true;
         };

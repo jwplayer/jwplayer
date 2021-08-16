@@ -178,6 +178,9 @@ function initSelectListeners(ui) {
 
     
     const interactClickHandler = (e) => {
+        if (e.ctrlKey || e.button) {
+            return;
+        }
         if (!!ui.directSelect && e.target !== el) {
             return;
         }
@@ -193,7 +196,9 @@ function initSelectListeners(ui) {
 
     const interactPreClickHandler = (e) => {
         const { target } = e;
-
+        if (e.ctrlKey || e.button) {
+            return;
+        }
         if (!!ui.directSelect && target !== el) {
             return;
         }
