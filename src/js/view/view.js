@@ -440,12 +440,10 @@ function View(_api, _model) {
                                 toggleClass(_playerElement, 'jw-floating-dismissible', hasClass(_playerElement, 'jw-flag-controls-hidden'));
                             }
                             _captionsRenderer.renderCues(true);
+                        } else if (!_controls.showing) {
+                            _controls.userActive();
                         } else {
-                            if (!_controls.showing) {
-                                _controls.userActive();
-                            } else {
-                                _controls.userInactive();
-                            }
+                            _controls.userInactive();
                         }
                         return;
                     }
