@@ -67,6 +67,9 @@
 @controlbar-height: (@mobile-touch-target + @slider-fixed-knob-height);
 @controlbar-icon-size: 0.5em;
 
+// Overlays
+@overlay-background-color: fade(@menu-background-color, 80%);
+
 // Rails and sliders
 @rail-height: 5px;
 @slider-height: @rail-height;
@@ -99,11 +102,10 @@
 // Next up display
 @nextup-border-radius: 0;
 @nextup-header-background: @controlbar-background;
-@nextup-body-background: @menu-background-color;
 @nextup-text-color: @white;
 
 // Settings Menu
-@menu-background-color: lighten(@black, 20%);
+@menu-background-color: lighten(@black, 15%);
 @menu-color: fade(@white, 90%);
 @menu-active-color: @white;
 
