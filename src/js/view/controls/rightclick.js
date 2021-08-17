@@ -144,7 +144,7 @@ export default class RightClick {
                 return;
             }
             this.hideMenu(e);
-        }
+        };
         this.overHandler = () => {
             this.mouseOverContext = true;
         };
