@@ -178,6 +178,9 @@ function initSelectListeners(ui) {
 
     
     const interactClickHandler = (e) => {
+        if (isRightClick(e)) {
+            return;
+        }
         if (!!ui.directSelect && e.target !== el) {
             return;
         }
@@ -193,7 +196,9 @@ function initSelectListeners(ui) {
 
     const interactPreClickHandler = (e) => {
         const { target } = e;
-
+        if (isRightClick(e)) {
+            return;
+        }
         if (!!ui.directSelect && target !== el) {
             return;
         }
@@ -463,7 +468,7 @@ function getCoords(e) {
     return ((e.type.indexOf('touch') === 0) ? (e.originalEvent || e).changedTouches[0] : e);
 }
 
-function isRightClick(e) {
+export function isRightClick(e) {
     if ('which' in e) {
         // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
         return (e.which === 3);
@@ -471,7 +476,8 @@ function isRightClick(e) {
         // IE and Opera
         return (e.button === 2);
     }
-    return false;
+
+    return e.ctrlKey && e.type === 'click';
 }
 
 function preventDefault(evt) {

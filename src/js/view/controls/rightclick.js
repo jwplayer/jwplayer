@@ -3,7 +3,7 @@ import { cloneIcon } from 'view/controls/icons';
 import { version } from 'version';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { Browser, OS } from 'environment/environment';
-import UI from 'utils/ui';
+import UI, { isRightClick } from 'utils/ui';
 import { isRtl } from 'utils/language';
 
 const EDITION_MAP = {
@@ -139,7 +139,12 @@ export default class RightClick {
         this.el = createDomElement(this.html);
         this.wrapperElement.appendChild(this.el);
 
-        this.hideMenuHandler = e => this.hideMenu(e);
+        this.hideMenuHandler = e => {
+            if (isRightClick(e)) {
+                return;
+            }
+            this.hideMenu(e);
+        };
         this.overHandler = () => {
             this.mouseOverContext = true;
         };
