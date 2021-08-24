@@ -469,6 +469,9 @@ function getCoords(e) {
 }
 
 export function isRightClick(e) {
+    if (!!e.ctrlKey && e.type === 'click') {
+        return true;
+    }
     if ('which' in e) {
         // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
         return (e.which === 3);
@@ -476,8 +479,7 @@ export function isRightClick(e) {
         // IE and Opera
         return (e.button === 2);
     }
-
-    return e.ctrlKey && e.type === 'click';
+    return false;
 }
 
 function preventDefault(evt) {
