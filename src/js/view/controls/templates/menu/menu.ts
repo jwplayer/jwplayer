@@ -6,8 +6,8 @@ export const MenuTemplate = (isSubmenu: boolean, name: string): HTMLTemplateStri
             `<div class="jw-reset jw-settings-submenu-items"></div>` +
         `</div>`
     ) : (
-        `<div id="jw-settings-menu" class="jw-reset jw-settings-menu" role="menu" aria-expanded="false">` +
-            `<div class="jw-reset jw-settings-topbar" role="menubar">` +
+        `<div id="jw-settings-menu" class="jw-reset jw-settings-menu" aria-expanded="false">` +
+            `<div class="jw-reset jw-settings-topbar">` +
                 `<div class="jw-reset jw-settings-topbar-text" tabindex="0"></div>` +
                 `<div class="jw-reset jw-settings-topbar-buttons"></div>` +
             `</div>` +
@@ -21,7 +21,7 @@ export const TizenMenuTemplate = (isSubmenu: boolean, name: string) => {
             `<div class="jw-reset jw-settings-submenu-items"></div>` +
         `</div>`
     ) : (
-        `<div id="jw-settings-menu-tizen" class="jw-reset jw-settings-menu-tizen" role="menu" aria-expanded="false"></div>`
+        `<div id="jw-settings-menu-tizen" class="jw-reset jw-settings-menu-tizen" aria-expanded="false"></div>`
     );
 };
 

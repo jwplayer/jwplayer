@@ -33,10 +33,9 @@ const categoryButton: (menu: Menu) => CategoryButton | undefined = (menu) => {
 
     const buttonElement = menuCategoryButton.element();
     buttonElement.setAttribute('name', name);
-    buttonElement.setAttribute('role', 'menuitemradio');
+    buttonElement.setAttribute('role', 'button');
     buttonElement.setAttribute('type', 'button');
     buttonElement.setAttribute('aria-expanded', 'false');
-    buttonElement.setAttribute('aria-haspopup', 'true');
     buttonElement.setAttribute('aria-controls', menu.el.id);
 
     if (!('ontouchstart' in window)) {
