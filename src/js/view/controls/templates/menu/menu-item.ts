@@ -23,7 +23,7 @@ export const itemMenuTemplate = ({ label, name, currentSelection }: MenuItem): H
     );
 };
 
-export const itemRadioButtonTemplate = (content: string): HTMLTemplateString => {
+export const itemButtonTemplate = (content: string): HTMLTemplateString => {
     return (
         `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${content}" role="menuitem" aria-checked="false" dir="auto">` +
             `${content}` +

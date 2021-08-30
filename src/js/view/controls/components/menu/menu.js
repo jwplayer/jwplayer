@@ -8,7 +8,7 @@ import {
 } from 'utils/dom';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
-import { RadioMenuItem } from 'view/controls/components/menu/menu-item';
+import { ButtonMenuItem } from 'view/controls/components/menu/menu-item';
 import { MenuTemplate } from 'view/controls/templates/menu/menu';
 import { normalizeKey } from './utils';
 import menuCategoryButton from 'view/controls/components/menu/category-button';
@@ -182,7 +182,7 @@ export default class Menu extends Events {
         prependChild(this.el, topbar);
         return topbar;
     }
-    createItems(genericItems, action, options = {}, Item = RadioMenuItem) {
+    createItems(genericItems, action, options = {}, Item = ButtonMenuItem) {
         const itemType = this.name;
         const menuItems = genericItems.map((item, index) => {
             let content;
