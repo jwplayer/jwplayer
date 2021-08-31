@@ -153,13 +153,11 @@ export default class Controlbar {
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', (event) => {
             this.trigger('settingsInteraction', 'quality', true, event);
         }, localization.settings, cloneIcons('settings'));
-        setAttribute(settingsButton.element(), 'aria-haspopup', 'true');
         setAttribute(settingsButton.element(), 'aria-controls', 'jw-settings-menu');
 
         const captionsButton = button('jw-icon-cc jw-settings-submenu-button', (event) => {
             this.trigger('settingsInteraction', 'captions', false, event);
         }, localization.cc, cloneIcons('cc-off,cc-on'));
-        setAttribute(captionsButton.element(), 'aria-haspopup', 'true');
         setAttribute(captionsButton.element(), 'aria-controls', 'jw-settings-submenu-captions');
 
         const liveButton = button('jw-text-live', () => {

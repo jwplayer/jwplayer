@@ -1,5 +1,5 @@
 import { toggleClass, createElement } from 'utils/dom';
-import { itemRadioButtonTemplate, itemTemplate } from 'view/controls/templates/menu/menu-item';
+import { itemButtonTemplate, itemTemplate } from 'view/controls/templates/menu/menu-item';
 import { addClickAction } from 'view/utils/add-click-action';
 export class MenuItem {
     constructor(_content, _action, _template = itemTemplate) {
@@ -14,8 +14,8 @@ export class MenuItem {
     }
 }
 
-export class RadioMenuItem extends MenuItem {
-    constructor(_content, _action, _template = itemRadioButtonTemplate) {
+export class ButtonMenuItem extends MenuItem {
+    constructor(_content, _action, _template = itemButtonTemplate) {
         super(_content, _action, _template);
     }
     activate() {
