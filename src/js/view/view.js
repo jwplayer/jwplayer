@@ -325,6 +325,9 @@ function View(_api, _model) {
     };
 
     function updateVisibility() {
+        if (_model.get('pip')) {
+            return;
+        }
         _model.set('visibility', getVisibility(_model, _playerElement));
     }
 
