@@ -14,6 +14,37 @@ import type Item from 'playlist/item';
 
 export type TimeSliderWithMixins = TimeSlider & ChaptersMixinInt & ThumbnailsMixinInt;
 
+const SEEK_EVENT_UPDATE_INTERVAL_MS = 400;
+
+// Number of milliseconds minimum between aria updates
+const ARIA_TEXT_UPDATE_INTERVAL_MS = 1000;
+
+// Maximum number of times that the aria text is updated without
+// an event (focus & seek) reseting the count
+const ARIA_TEXT_UPDATE_TIMES = 4;
+
+// Helper function to wrap a function so that it can only be executed
+// a limited number of times before being "silenced"
+// Can be reset to allow the target function to be invoked again
+const maxTimes = (fn: Function, maxTimes: number) => {
+    let times = 0;
+    const wrapper = function(...args) {
+        times++;
+        if (times < maxTimes) {
+            return fn.apply(this, args);
+        }
+    };
+
+    wrapper.reset = () => {
+        times = 0;
+    };
+    wrapper.shush = () => {
+        times = Infinity;
+    };
+
+    return wrapper;
+};
+
 class TimeTipIcon extends TooltipIcon {
     text?: HTMLElement;
     img?: HTMLElement;
@@ -109,7 +140,12 @@ class TimeSlider extends Slider {
         this.cues = [];
 
         // Store the attempted seek, until the previous one completes
-        this.seekThrottled = throttle(this.performSeek, 400);
+        this.seekThrottled = throttle(this.performSeek, SEEK_EVENT_UPDATE_INTERVAL_MS);
+        this._updateAriaTextLimitedThrottled = maxTimes(
+            throttle(
+                this.updateAriaText,
+                ARIA_TEXT_UPDATE_INTERVAL_MS),
+            ARIA_TEXT_UPDATE_TIMES);
         this.mobileHoverDistance = 5;
 
         this.setup();
@@ -124,7 +160,8 @@ class TimeSlider extends Slider {
             .on('change:cues', this.updateCues, this)
             .on('seeked', () => {
                 if (!this._model.get('scrubbing')) {
-                    this.updateAriaText();
+                    this._updateAriaTextLimitedThrottled.reset();
+                    this._updateAriaTextLimitedThrottled();
                 }
             });
         this._model.change('position', this.onPosition, this)
@@ -146,7 +183,9 @@ class TimeSlider extends Slider {
             .on('move drag', this.showTimeTooltip, this)
             .on('dragEnd out', this.hideTimeTooltip, this)
             .on('click', () => sliderElement.focus())
-            .on('focus', this.updateAriaText, this);
+            .on('focus', () => this._updateAriaTextLimitedThrottled.reset())
+            .on('blur', () => this._updateAriaTextLimitedThrottled.shush());
+
     }
 
     update(percent: number): void {
@@ -197,6 +236,7 @@ class TimeSlider extends Slider {
                 pct = position / duration * 100;
             }
         }
+        this._updateAriaTextLimitedThrottled();
         this.render(pct);
     }
 
@@ -347,6 +387,7 @@ class TimeSlider extends Slider {
         this.resetThumbnails();
         this.timeTip.resetWidth();
         this.textLength = 0;
+        this._updateAriaTextLimitedThrottled.reset();
     }
 }
 
