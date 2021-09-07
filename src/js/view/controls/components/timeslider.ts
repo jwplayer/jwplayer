@@ -81,7 +81,7 @@ class TimeTipIcon extends TooltipIcon {
         this.text.textContent = txt;
     }
 
-    getWidth (): number {
+    getWidth(): number {
         if (!this.containerWidth) {
             this.setWidth();
         }
@@ -89,7 +89,7 @@ class TimeTipIcon extends TooltipIcon {
         return this.containerWidth as number;
     }
 
-    setWidth (width?: number): void {
+    setWidth(width?: number): void {
         const tolerance = 16; // add a little padding so the tooltip isn't flush against the edge
 
         if (width) {
@@ -104,7 +104,7 @@ class TimeTipIcon extends TooltipIcon {
         this.containerWidth = bounds(this.container).width + tolerance;
     }
 
-    resetWidth (): void {
+    resetWidth(): void {
         this.containerWidth = 0;
     }
 }
