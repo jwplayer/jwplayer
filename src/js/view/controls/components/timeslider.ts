@@ -3,6 +3,7 @@ import { between } from 'utils/math';
 import { style, transform } from 'utils/css';
 import { timeFormat, timeFormatAria } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
+import { limit } from 'utils/function-wrappers';
 import UI from 'utils/ui';
 import Slider from 'view/controls/components/slider';
 import TooltipIcon from 'view/controls/components/tooltipicon';
@@ -22,28 +23,6 @@ const ARIA_TEXT_UPDATE_INTERVAL_MS = 1000;
 // Maximum number of times that the aria text is updated without
 // an event (focus & seek) reseting the count
 const ARIA_TEXT_UPDATE_TIMES = 4;
-
-// Helper function to wrap a function so that it can only be executed
-// a limited number of times before being "silenced"
-// Can be reset to allow the target function to be invoked again
-const maxTimes = (fn: Function, maxTimes: number) => {
-    let times = 0;
-    const wrapper = function(...args) {
-        times++;
-        if (times < maxTimes) {
-            return fn.apply(this, args);
-        }
-    };
-
-    wrapper.reset = () => {
-        times = 0;
-    };
-    wrapper.shush = () => {
-        times = Infinity;
-    };
-
-    return wrapper;
-};
 
 class TimeTipIcon extends TooltipIcon {
     text?: HTMLElement;
@@ -116,6 +95,7 @@ function reasonInteraction(): { reason: string } {
 class TimeSlider extends Slider {
     _model: ViewModel;
     _api: PlayerAPI;
+    _updateAriaTextLimitedThrottled: any;
     timeUpdateKeeper: HTMLElement;
     timeTip: TimeTipIcon;
     cues: Cue[];
@@ -141,7 +121,7 @@ class TimeSlider extends Slider {
 
         // Store the attempted seek, until the previous one completes
         this.seekThrottled = throttle(this.performSeek, SEEK_EVENT_UPDATE_INTERVAL_MS);
-        this._updateAriaTextLimitedThrottled = maxTimes(
+        this._updateAriaTextLimitedThrottled = limit(
             throttle(
                 this.updateAriaText,
                 ARIA_TEXT_UPDATE_INTERVAL_MS),
