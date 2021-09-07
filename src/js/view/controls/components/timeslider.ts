@@ -1,7 +1,7 @@
 import { throttle, each } from 'utils/underscore';
 import { between } from 'utils/math';
 import { style, transform } from 'utils/css';
-import { timeFormat } from 'utils/parser';
+import { timeFormat, timeFormatAria } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
 import UI from 'utils/ui';
 import Slider from 'view/controls/components/slider';
@@ -176,7 +176,7 @@ class TimeSlider extends Slider {
     onDuration(this: TimeSliderWithMixins, model: ViewModel, duration: number): void {
         this.updateTime(model.get('position'), duration);
         setAttribute(this.el, 'aria-valuemin', 0);
-        setAttribute(this.el, 'aria-valuemax', duration);
+        setAttribute(this.el, 'aria-valuemax', Math.abs(duration));
         this.drawCues();
     }
 
@@ -324,20 +324,23 @@ class TimeSlider extends Slider {
 
     updateAriaText(): void {
         const model = this._model;
-        const position = model.get('position');
-        const duration = model.get('duration');
-
-        let ariaText = timeFormat(position);
-        if (this.streamType !== 'DVR') {
-            ariaText += ` of ${timeFormat(duration)}`;
-        }
-
         const sliderElement = this.el;
-        if (document.activeElement !== sliderElement) {
-            this.timeUpdateKeeper.textContent = ariaText;
+        let position = model.get('position');
+        let duration = model.get('duration');
+
+        if (this.streamType === 'DVR') {
+            duration = Math.abs(duration);
+            position = duration + position;
         }
+
+        const ariaPositionText = timeFormatAria(position);
+        const ariaDurationText = timeFormatAria(duration);
+        const ariaString = `${ariaPositionText} of ${ariaDurationText}`;
+
+        this.timeUpdateKeeper.textContent = ariaString;
+
+        setAttribute(sliderElement, 'aria-valuetext', ariaString);
         setAttribute(sliderElement, 'aria-valuenow', position);
-        setAttribute(sliderElement, 'aria-valuetext', ariaText);
     }
 
     reset(this: TimeSliderWithMixins): void {

@@ -114,3 +114,25 @@ export function timeFormat(sec: number, allowNegative?: boolean): string {
 
     return prefix + (hrs ? hrs + ':' : '') + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
 }
+
+// Returns a formatted time string from "mm:ss" to "hh:mm:ss" for the given number of seconds
+export function timeFormatAria(sec: number): string {
+    if (isNaN(sec)) {
+        sec = parseInt(sec.toString());
+    }
+
+    if (isNaN(sec) || !isFinite(sec) || sec <= 0) {
+        return '0 seconds';
+    }
+
+    const hrs = Math.floor(sec / 3600);
+    const mins = Math.floor((sec - hrs * 3600) / 60);
+    const secs = Math.floor(sec % 60);
+
+    const hrsString = (hrs > 1 ? ' hours, ' : (hrs === 1 ? ' hour, ' : ''));
+    const minsString = (mins > 1 ? ' minutes, ' : (mins === 1 ? ' minute, ' : ''));
+    const secsString = (secs !== 1 ? ' seconds' : (secs === 1 ? ' second' : ''));
+
+    // TODO: I18n!!
+    return (hrs ? hrs + hrsString : '') + (mins ? mins + minsString : '') + secs + secsString;
+}
