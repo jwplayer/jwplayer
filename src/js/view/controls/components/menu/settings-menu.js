@@ -304,6 +304,9 @@ class SettingsMenu extends Menu {
     }
 
     open(evt) {
+        const gearButton = this.controlbar.elements.settingsButton.element();
+        gearButton.setAttribute('aria-expanded', true);
+
         if (this.visible) {
             return;
         }
@@ -326,6 +329,8 @@ class SettingsMenu extends Menu {
         // If closed by keypress, focus appropriate element.
         const key = normalizeKey(evt && evt.sourceEvent && evt.sourceEvent.key);
         const gearButton = this.controlbar.elements.settingsButton.element();
+        gearButton.setAttribute('aria-expanded', false);
+
         let focusEl;
 
         switch (key) {
