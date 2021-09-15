@@ -310,7 +310,7 @@ class SettingsMenu extends Menu {
 
         const gearButton = this.controlbar.elements.settingsButton.element();
         gearButton.setAttribute('aria-expanded', true);
-        
+
         this.el.parentNode.classList.add('jw-settings-open');
         this.trigger('visibility', { visible: true, evt });
         document.addEventListener('click', this.onDocumentClick);
@@ -319,6 +319,7 @@ class SettingsMenu extends Menu {
     }
 
     close(evt) {
+        this.el.setAttribute('aria-expanded', 'false');
         this.el.parentNode.classList.remove('jw-settings-open');
         this.trigger('visibility', { visible: false, evt });
         document.removeEventListener('click', this.onDocumentClick);
