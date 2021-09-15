@@ -309,7 +309,9 @@ class SettingsMenu extends Menu {
         }
 
         const gearButton = this.controlbar.elements.settingsButton.element();
-        gearButton.setAttribute('aria-expanded', true);
+        if (gearButton) {
+            gearButton.setAttribute('aria-expanded', true);
+        }
 
         this.el.parentNode.classList.add('jw-settings-open');
         this.trigger('visibility', { visible: true, evt });
@@ -331,7 +333,10 @@ class SettingsMenu extends Menu {
         // If closed by keypress, focus appropriate element.
         const key = normalizeKey(evt && evt.sourceEvent && evt.sourceEvent.key);
         const gearButton = this.controlbar.elements.settingsButton.element();
-        gearButton.setAttribute('aria-expanded', false);
+        
+        if (gearButton) {
+            gearButton.setAttribute('aria-expanded', false);
+        }
 
         let focusEl;
 
