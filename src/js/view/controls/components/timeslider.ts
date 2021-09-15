@@ -1,8 +1,9 @@
 import { throttle, each } from 'utils/underscore';
 import { between } from 'utils/math';
 import { style, transform } from 'utils/css';
-import { timeFormat } from 'utils/parser';
+import { timeFormat, timeFormatAria } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
+import { limit } from 'utils/function-wrappers';
 import UI from 'utils/ui';
 import Slider from 'view/controls/components/slider';
 import TooltipIcon from 'view/controls/components/tooltipicon';
@@ -13,6 +14,15 @@ import type { PlayerAPI, GenericObject, TextTrackLike } from 'types/generic.type
 import type Item from 'playlist/item';
 
 export type TimeSliderWithMixins = TimeSlider & ChaptersMixinInt & ThumbnailsMixinInt;
+
+const SEEK_EVENT_UPDATE_INTERVAL_MS = 400;
+
+// Number of milliseconds minimum between aria updates
+const ARIA_TEXT_UPDATE_INTERVAL_MS = 1000;
+
+// Maximum number of times that the aria text is updated without
+// an event (focus & seek) reseting the count
+const ARIA_TEXT_UPDATE_TIMES = 4;
 
 class TimeTipIcon extends TooltipIcon {
     text?: HTMLElement;
@@ -50,7 +60,7 @@ class TimeTipIcon extends TooltipIcon {
         this.text.textContent = txt;
     }
 
-    getWidth (): number {
+    getWidth(): number {
         if (!this.containerWidth) {
             this.setWidth();
         }
@@ -58,7 +68,7 @@ class TimeTipIcon extends TooltipIcon {
         return this.containerWidth as number;
     }
 
-    setWidth (width?: number): void {
+    setWidth(width?: number): void {
         const tolerance = 16; // add a little padding so the tooltip isn't flush against the edge
 
         if (width) {
@@ -73,7 +83,7 @@ class TimeTipIcon extends TooltipIcon {
         this.containerWidth = bounds(this.container).width + tolerance;
     }
 
-    resetWidth (): void {
+    resetWidth(): void {
         this.containerWidth = 0;
     }
 }
@@ -85,6 +95,7 @@ function reasonInteraction(): { reason: string } {
 class TimeSlider extends Slider {
     _model: ViewModel;
     _api: PlayerAPI;
+    _updateAriaTextLimitedThrottled: any;
     timeUpdateKeeper: HTMLElement;
     timeTip: TimeTipIcon;
     cues: Cue[];
@@ -109,7 +120,12 @@ class TimeSlider extends Slider {
         this.cues = [];
 
         // Store the attempted seek, until the previous one completes
-        this.seekThrottled = throttle(this.performSeek, 400);
+        this.seekThrottled = throttle(this.performSeek, SEEK_EVENT_UPDATE_INTERVAL_MS);
+        this._updateAriaTextLimitedThrottled = limit(
+            throttle(
+                this.updateAriaText,
+                ARIA_TEXT_UPDATE_INTERVAL_MS),
+            ARIA_TEXT_UPDATE_TIMES);
         this.mobileHoverDistance = 5;
 
         this.setup();
@@ -124,7 +140,8 @@ class TimeSlider extends Slider {
             .on('change:cues', this.updateCues, this)
             .on('seeked', () => {
                 if (!this._model.get('scrubbing')) {
-                    this.updateAriaText();
+                    this._updateAriaTextLimitedThrottled.reset();
+                    this._updateAriaTextLimitedThrottled();
                 }
             });
         this._model.change('position', this.onPosition, this)
@@ -146,7 +163,9 @@ class TimeSlider extends Slider {
             .on('move drag', this.showTimeTooltip, this)
             .on('dragEnd out', this.hideTimeTooltip, this)
             .on('click', () => sliderElement.focus())
-            .on('focus', this.updateAriaText, this);
+            .on('focus', () => this._updateAriaTextLimitedThrottled.reset())
+            .on('blur', () => this._updateAriaTextLimitedThrottled.shush());
+
     }
 
     update(percent: number): void {
@@ -176,7 +195,7 @@ class TimeSlider extends Slider {
     onDuration(this: TimeSliderWithMixins, model: ViewModel, duration: number): void {
         this.updateTime(model.get('position'), duration);
         setAttribute(this.el, 'aria-valuemin', 0);
-        setAttribute(this.el, 'aria-valuemax', duration);
+        setAttribute(this.el, 'aria-valuemax', Math.abs(duration));
         this.drawCues();
     }
 
@@ -197,6 +216,7 @@ class TimeSlider extends Slider {
                 pct = position / duration * 100;
             }
         }
+        this._updateAriaTextLimitedThrottled();
         this.render(pct);
     }
 
@@ -324,26 +344,30 @@ class TimeSlider extends Slider {
 
     updateAriaText(): void {
         const model = this._model;
-        const position = model.get('position');
-        const duration = model.get('duration');
-
-        let ariaText = timeFormat(position);
-        if (this.streamType !== 'DVR') {
-            ariaText += ` of ${timeFormat(duration)}`;
-        }
-
         const sliderElement = this.el;
-        if (document.activeElement !== sliderElement) {
-            this.timeUpdateKeeper.textContent = ariaText;
+        let position = model.get('position');
+        let duration = model.get('duration');
+
+        if (this.streamType === 'DVR') {
+            duration = Math.abs(duration);
+            position = duration + position;
         }
+
+        const ariaPositionText = timeFormatAria(position);
+        const ariaDurationText = timeFormatAria(duration);
+        const ariaString = `${ariaPositionText} of ${ariaDurationText}`;
+
+        this.timeUpdateKeeper.textContent = ariaString;
+
+        setAttribute(sliderElement, 'aria-valuetext', ariaString);
         setAttribute(sliderElement, 'aria-valuenow', position);
-        setAttribute(sliderElement, 'aria-valuetext', ariaText);
     }
 
     reset(this: TimeSliderWithMixins): void {
         this.resetThumbnails();
         this.timeTip.resetWidth();
         this.textLength = 0;
+        this._updateAriaTextLimitedThrottled.reset();
     }
 }
 

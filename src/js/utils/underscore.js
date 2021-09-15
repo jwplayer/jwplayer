@@ -518,16 +518,17 @@ export const throttle = function(func, wait, options) {
         context = args = null;
     };
     return function() {
+        const rightnow = now();
         if (!previous && options.leading === false) {
-            previous = now;
+            previous = rightnow;
         }
-        const remaining = wait - (now - previous);
+        const remaining = wait - (rightnow - previous);
         context = this;
         args = arguments;
         if (remaining <= 0) {
             clearTimeout(timeout);
             timeout = null;
-            previous = now;
+            previous = rightnow;
             result = func.apply(context, args);
             context = args = null;
         } else if (!timeout && options.trailing !== false) {
