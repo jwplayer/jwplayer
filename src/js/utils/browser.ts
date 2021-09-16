@@ -4,7 +4,7 @@ function userAgentMatch(regex: RegExp): boolean {
 
 const isIPadOS13 = () => navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
 
-export const isFF = () => userAgentMatch(/gecko\//i) && !isTizen();
+export const isFF = () => userAgentMatch(/firefox\//i);
 
 export const isIETrident = () => userAgentMatch(/trident\/.+rv:\s*11/i);
 
