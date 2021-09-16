@@ -4,7 +4,7 @@ function userAgentMatch(regex: RegExp): boolean {
 
 const isIPadOS13 = () => navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
 
-export const isFF = () => userAgentMatch(/gecko\//i);
+export const isFF = () => userAgentMatch(/gecko\//i) && !isTizen();
 
 export const isIETrident = () => userAgentMatch(/trident\/.+rv:\s*11/i);
 
@@ -27,15 +27,14 @@ export const isTizenApp = () => isTizen() && !userAgentMatch(/SamsungBrowser/);
 
 export const isChrome = () => userAgentMatch(/\s(?:(?:Headless)?Chrome|CriOS)\//i) &&
     !isEdge() &&
-    !userAgentMatch(/UCBrowser/i) &&
-    !isTizen();
+    !userAgentMatch(/UCBrowser/i);
 
 // Exclude Chromium Edge ("Edg/") from isIE
 export const isIE = () => !userAgentMatch(/\sEdg\/\d+/i) && (isEdge() || isIETrident() || isMSIE());
 
 export const isSafari = () => (userAgentMatch(/safari/i) &&
-    !userAgentMatch(/(?:Chrome|CriOS|chromium|android|phantom)/i)) ||
-    isTizen();
+    !userAgentMatch(/(?:Chrome|CriOS|chromium|android|phantom)/i)) &&
+    !isTizen();
 
 export const isIOS = () => userAgentMatch(/iP(hone|ad|od)/i) || isIPadOS13();
 

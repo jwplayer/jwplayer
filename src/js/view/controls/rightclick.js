@@ -3,6 +3,7 @@ import { cloneIcon } from 'view/controls/icons';
 import { version } from 'version';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { Browser, OS } from 'environment/environment';
+import { isTizen } from 'utils/browser';
 import UI, { isRightClick } from 'utils/ui';
 import { isRtl } from 'utils/language';
 
@@ -59,7 +60,7 @@ export default class RightClick {
             });
         }
         this.pipMenu = !OS.mobile && model.get('pipIcon') !== 'disabled'
-            && (Browser.chrome || Browser.edge || Browser.safari);
+            && ((Browser.chrome &&!isTizen()) || Browser.edge || Browser.safari);
         if (this.pipMenu) {
             menuItems.splice(menuItems.length - 1, 0, {
                 type: 'pip'
