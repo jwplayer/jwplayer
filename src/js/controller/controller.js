@@ -1310,6 +1310,16 @@ Object.assign(Controller.prototype, {
         } catch (error) {
             return Promise.reject(error);
         }
+
+        // Under very special conditions, we enable the html5 looping attribute
+        if (playlist.length === 1
+            && playlist[0].sources.length === 1
+            && playlist[0].sources[0].type === 'mp4'
+            && model.get('repeat')) {
+            model.set('repeat', false);
+            model.set('loop', true);
+        }
+
         return this.setItemIndex(model.get('item'));
     }
 });
