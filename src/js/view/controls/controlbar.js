@@ -7,6 +7,7 @@ import VolumeTooltipIcon from 'view/controls/components/volumetooltipicon';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import Events from 'utils/backbone.events';
+import { isTizen } from 'utils/browser';
 import { prependChild, setAttribute, toggleClass, openLink, addClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
@@ -73,7 +74,7 @@ function createPipButton(pipIcon, pipToggle, localization) {
     if (OS.mobile || pipIcon === 'disabled') {
         return;
     }
-    if (Browser.chrome || Browser.edge || Browser.safari) {
+    if (Browser.chrome && !isTizen() || Browser.edge || Browser.safari) {
         const pipButton = button(
             'jw-icon-pip jw-off',
             pipToggle,
