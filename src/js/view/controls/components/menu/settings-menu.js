@@ -321,23 +321,24 @@ class SettingsMenu extends Menu {
     }
 
     close(evt) {
-        this.el.setAttribute('aria-expanded', 'false');
-        this.el.parentNode.classList.remove('jw-settings-open');
-        this.trigger('visibility', { visible: false, evt });
-        document.removeEventListener('click', this.onDocumentClick);
-        this.visible = false;
-        if (this.openMenus.length) {
-            this.closeChildren();
-        }
-
-        // If closed by keypress, focus appropriate element.
         const key = normalizeKey(evt && evt.sourceEvent && evt.sourceEvent.key);
         const gearButton = this.controlbar.elements.settingsButton.element();
         
         if (gearButton) {
             gearButton.setAttribute('aria-expanded', false);
         }
-
+        
+        this.el.setAttribute('aria-expanded', 'false');
+        this.el.parentNode.classList.remove('jw-settings-open');
+        
+        this.trigger('visibility', { visible: false, evt });
+        document.removeEventListener('click', this.onDocumentClick);
+        this.visible = false;
+        if (this.openMenus.length) {
+            this.closeChildren();
+        }
+        
+        // If closed by keypress, focus appropriate element.
         let focusEl;
 
         switch (key) {
