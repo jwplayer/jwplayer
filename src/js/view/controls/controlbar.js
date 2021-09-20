@@ -155,6 +155,7 @@ export default class Controlbar {
             this.trigger('settingsInteraction', 'quality', true, event);
         }, localization.settings, cloneIcons('settings'));
         setAttribute(settingsButton.element(), 'aria-controls', 'jw-settings-menu');
+        setAttribute(settingsButton.element(), 'aria-expanded', false);
 
         const captionsButton = button('jw-icon-cc jw-settings-submenu-button', (event) => {
             this.trigger('settingsInteraction', 'captions', false, event);
