@@ -249,7 +249,7 @@ export default function Api(element) {
          */
         remove() {
             // disable pip if enabled
-            if (this.getPip()) {
+            if (core.get('pip')) {
                 this.setPip(false);
             }
 
