@@ -89,7 +89,6 @@ export default {
     playbackRate: 1,
     playRejected: false,
     repeat: false,
-    loop: false,
     localization: {},
     nextUpDisplay: true,
     volume: 90,
