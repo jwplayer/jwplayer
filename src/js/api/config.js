@@ -39,8 +39,6 @@ export const Defaults = {
     playbackRates: [0.5, 1, 1.25, 1.5, 2],
     renderCaptionsNatively: false,
     repeat: false,
-    // loop is only used on native html5 providers to loop mp4
-    loop: false,
     stretching: 'uniform',
     volume: 90,
     width: 640

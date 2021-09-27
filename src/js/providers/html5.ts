@@ -779,7 +779,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     this.load = function(item: PlaylistItem): void {
         setPlaylistItem(item);
 
-        _videotag.loop = _playerConfig.loop;
+        _videotag.loop = _playerConfig.get('loop');
 
         _completeLoad(item.starttime);
         this.setupSideloadedTracks(item.tracks);

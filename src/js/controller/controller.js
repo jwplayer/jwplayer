@@ -1320,6 +1320,8 @@ Object.assign(Controller.prototype, {
             && model.get('repeat')) {
             model.set('repeat', false);
             model.set('loop', true);
+        } else {
+            model.set('loop', false);
         }
 
         return this.setItemIndex(model.get('item'));
