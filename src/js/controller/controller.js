@@ -1312,6 +1312,8 @@ Object.assign(Controller.prototype, {
         }
 
         // Under very special conditions, we enable the html5 looping attribute
+        // TODO: This should be moved out of controller.js when we refactor the
+        // controller into two (or more) more specific controllers
         if (playlist.length === 1
             && playlist[0].sources.length === 1
             && playlist[0].sources[0].type === 'mp4'
