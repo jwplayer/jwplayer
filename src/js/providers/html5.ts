@@ -327,8 +327,9 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             _canSeek = false;
             // If we were mid-seek when detached, we want to allow it to resume
             this.seeking = false;
+
             // In case the video tag was modified while we shared it
-            _videotag.loop = false;
+            _videotag.loop = _playerConfig.get('loop');
 
             // override load so that it's not used to reset the video tag by external JavaScript (iOS ads)
             if (OS.iOS && !this.videoLoad) {
@@ -777,6 +778,9 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
 
     this.load = function(item: PlaylistItem): void {
         setPlaylistItem(item);
+
+        _videotag.loop = _playerConfig.get('loop');
+
         _completeLoad(item.starttime);
         this.setupSideloadedTracks(item.tracks);
     };
