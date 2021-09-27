@@ -100,7 +100,6 @@ class TimeSlider extends Slider {
     timeTip: TimeTipIcon;
     cues: Cue[];
     seekThrottled: Function;
-    mobileHoverDistance: number;
     seekTo?: number;
     streamType?: string;
     activeCue?: Cue | null;
@@ -126,7 +125,6 @@ class TimeSlider extends Slider {
                 this.updateAriaText,
                 ARIA_TEXT_UPDATE_INTERVAL_MS),
             ARIA_TEXT_UPDATE_TIMES);
-        this.mobileHoverDistance = 5;
 
         this.setup();
     }
@@ -278,26 +276,13 @@ class TimeSlider extends Slider {
         }
 
         let timetipText;
+        const timeText = timeFormat(time, true);
 
-        // With touch events, we never will get the hover events on the cues that cause cues to be active.
-        // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
-        if (evt.pointerType === 'touch') {
-            this.activeCue = this.cues.reduce((closeCue, cue) => {
-                if (
-                    Math.abs(position - (parseInt(cue.pct as string) / 100 * railBounds.width))
-                        < this.mobileHoverDistance
-                ) {
-                    return cue;
-                }
-                return closeCue;
-            }, undefined);
-        }
-
+        this.setActiveCue(time);
         if (this.activeCue) {
-            timetipText = this.activeCue.text;
+            timetipText = this.activeCue.text + '\n' + timeText;
         } else {
-            const allowNegativeTime = true;
-            timetipText = timeFormat(time, allowNegativeTime);
+            timetipText = timeText;
 
             // If DVR and within live buffer
             if (duration < 0 && time > -1) {

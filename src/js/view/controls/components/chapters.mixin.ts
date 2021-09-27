@@ -39,6 +39,7 @@ export interface ChaptersMixinInt {
     chaptersFailed: () => void;
     addCue: (this: TimeSliderWithMixins, obj: GenericObject) => void;
     drawCues: (this: TimeSliderWithMixins) => void;
+    setActiveCue: (this: TimeSliderWithMixins, time: number) => void;
     resetCues: (this: TimeSliderWithMixins) => void;
 }
 
@@ -75,16 +76,26 @@ const ChaptersMixin: ChaptersMixinInt = {
 
         this.cues.forEach((cue) => {
             cue.align(duration);
-            cue.el.addEventListener('mouseover', () => {
-                this.activeCue = cue;
-            });
-            cue.el.addEventListener('mouseout', () => {
-                this.activeCue = null;
-            });
             this.elementRail.appendChild(cue.el);
         });
     },
 
+    setActiveCue: function (this: TimeSliderWithMixins, time: number): void {
+        // Activate the latest cue from the time to display chapter text for duration of chapter.
+        this.activeCue = this.cues.reduce((closeCue: Cue | null, cue: Cue) => {
+            if (time < cue.time) {
+                return closeCue;
+            }
+            if (!closeCue) {
+                return cue;
+            }
+            if (cue.time > closeCue.time) {
+                return cue;
+            }
+            return closeCue;
+        }, null);
+    },
+    
     resetCues: function(this: TimeSliderWithMixins): void {
         this.cues.forEach((cue: Cue) => {
             if (cue.el.parentNode) {
