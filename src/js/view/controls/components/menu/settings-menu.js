@@ -170,6 +170,7 @@ class SettingsMenu extends Menu {
                     itemMenu.open, 
                     itemMenuTemplate
                 );
+                itemMenu.buttonContainer = item;
                 const items = itemMenu.createItems(
                     captionItem.options, 
                     (index) => {
