@@ -280,7 +280,7 @@ class TimeSlider extends Slider {
 
         this.setActiveCue(time);
         if (this.activeCue) {
-            timetipText = this.activeCue.text + '\n' + timeText;
+            timetipText = this.activeCue.text + '<br>' + timeText;
         } else {
             timetipText = timeText;
 
