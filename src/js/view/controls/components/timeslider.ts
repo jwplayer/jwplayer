@@ -25,7 +25,8 @@ const ARIA_TEXT_UPDATE_INTERVAL_MS = 1000;
 const ARIA_TEXT_UPDATE_TIMES = 4;
 
 class TimeTipIcon extends TooltipIcon {
-    text?: HTMLElement;
+    textChapter?: HTMLElement;
+    textTime?: HTMLElement;
     img?: HTMLElement;
     containerWidth?: number;
     container?: HTMLElement;
@@ -33,8 +34,11 @@ class TimeTipIcon extends TooltipIcon {
     dragJustReleased?: boolean;
 
     setup(): void {
-        this.text = document.createElement('span');
-        this.text.className = 'jw-text jw-reset';
+        this.textChapter = document.createElement('span');
+        this.textChapter.className = 'jw-time-chapter jw-text jw-reset';
+        this.textChapter.style.display = 'none';
+        this.textTime = document.createElement('span');
+        this.textTime.className = 'jw-time-time jw-text jw-reset';
         this.img = document.createElement('div');
         this.img.className = 'jw-time-thumb jw-reset';
         this.containerWidth = 0;
@@ -44,7 +48,8 @@ class TimeTipIcon extends TooltipIcon {
         const wrapper = document.createElement('div');
         wrapper.className = 'jw-time-tip jw-reset';
         wrapper.appendChild(this.img);
-        wrapper.appendChild(this.text);
+        wrapper.appendChild(this.textChapter);
+        wrapper.appendChild(this.textTime);
 
         this.addContent(wrapper);
     }
@@ -53,11 +58,26 @@ class TimeTipIcon extends TooltipIcon {
         style(this.img, styles);
     }
 
-    update(txt: string): void {
-        if (!this.text) {
+    update(txtTime: string, txtChapter?: string): void {
+        if (!this.textTime) {
             return;
         }
-        this.text.textContent = txt;
+        this.textTime.textContent = txtTime;
+
+        if (!txtChapter) {
+            if (this.textChapter) {
+                this.textChapter.style.display = 'none';
+                this.textChapter.textContent = '';
+            }
+
+            return;
+        }
+
+        if (!this.textChapter) {
+            return;
+        }
+        this.textChapter.textContent = txtChapter;
+        this.textChapter.style.removeProperty('display');
     }
 
     getWidth(): number {
@@ -275,26 +295,29 @@ class TimeSlider extends Slider {
             time = duration - time;
         }
 
-        let timetipText;
+        let timetipTextLength;
         const timeText = timeFormat(time, true);
+        const timeTip = this.timeTip;
 
         this.setActiveCue(time);
+
         if (this.activeCue) {
-            timetipText = this.activeCue.text + '\n' + timeText;
+            timeTip.update(timeText, this.activeCue.text);
+            timetipTextLength = this.activeCue.text.length + timeText.length;
         } else {
-            timetipText = timeText;
+            let timetipText = timeText;
 
             // If DVR and within live buffer
             if (duration < 0 && time > -1) {
                 timetipText = 'Live';
             }
+            timeTip.update(timetipText);
+            timetipTextLength = timetipText.length;
         }
-        const timeTip = this.timeTip;
 
-        timeTip.update(timetipText);
-        if (this.textLength !== timetipText.length) {
+        if (this.textLength !== timetipTextLength) {
             // An activeCue may cause the width of the timeTip container to change
-            this.textLength = timetipText.length;
+            this.textLength = timetipTextLength;
             timeTip.resetWidth();
         }
         this.showThumbnail(time);
