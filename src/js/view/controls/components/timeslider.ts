@@ -25,8 +25,8 @@ const ARIA_TEXT_UPDATE_INTERVAL_MS = 1000;
 const ARIA_TEXT_UPDATE_TIMES = 4;
 
 class TimeTipIcon extends TooltipIcon {
-    text1?: HTMLElement;
-    text2?: HTMLElement;
+    textChapter?: HTMLElement;
+    textTime?: HTMLElement;
     img?: HTMLElement;
     containerWidth?: number;
     container?: HTMLElement;
@@ -34,11 +34,11 @@ class TimeTipIcon extends TooltipIcon {
     dragJustReleased?: boolean;
 
     setup(): void {
-        this.text1 = document.createElement('span');
-        this.text1.className = 'jw-text jw-reset';
-        this.text2 = document.createElement('span');
-        this.text2.className = 'jw-text jw-reset';
-        this.text2.style.display = 'none';
+        this.textChapter = document.createElement('span');
+        this.textChapter.className = 'jw-text jw-reset';
+        this.textChapter.style.display = 'none';
+        this.textTime = document.createElement('span');
+        this.textTime.className = 'jw-text jw-reset';
         this.img = document.createElement('div');
         this.img.className = 'jw-time-thumb jw-reset';
         this.containerWidth = 0;
@@ -48,8 +48,8 @@ class TimeTipIcon extends TooltipIcon {
         const wrapper = document.createElement('div');
         wrapper.className = 'jw-time-tip jw-reset';
         wrapper.appendChild(this.img);
-        wrapper.appendChild(this.text1);
-        wrapper.appendChild(this.text2);
+        wrapper.appendChild(this.textChapter);
+        wrapper.appendChild(this.textTime);
 
         this.addContent(wrapper);
     }
@@ -58,26 +58,26 @@ class TimeTipIcon extends TooltipIcon {
         style(this.img, styles);
     }
 
-    update(txt1: string, txt2?: string): void {
-        if (!this.text1) {
+    update(txtTime: string, txtChapter?: string): void {
+        if (!this.textTime) {
             return;
         }
-        this.text1.textContent = txt1;
+        this.textTime.textContent = txtTime;
 
-        if (!txt2 ) {
-            if (this.text2) {
-                this.text2.style.display = 'none';
-                this.text2.textContent = '';
+        if (!txtChapter) {
+            if (this.textChapter) {
+                this.textChapter.style.display = 'none';
+                this.textChapter.textContent = '';
             }
 
             return;
         }
 
-        if (!this.text2) {
+        if (!this.textChapter) {
             return;
         }
-        this.text2.textContent = txt2;
-        this.text2.style.display = 'inline-block';
+        this.textChapter.textContent = txtChapter;
+        this.textChapter.style.removeProperty('display');
     }
 
     getWidth(): number {
@@ -301,9 +301,8 @@ class TimeSlider extends Slider {
 
         this.setActiveCue(time);
 
-
         if (this.activeCue) {
-            timeTip.update(this.activeCue.text, timeText);
+            timeTip.update(timeText, this.activeCue.text);
             timetipTextLength = this.activeCue.text.length + timeText.length;
         } else {
             let timetipText = timeText;
