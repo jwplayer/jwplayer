@@ -35,10 +35,10 @@ class TimeTipIcon extends TooltipIcon {
 
     setup(): void {
         this.textChapter = document.createElement('span');
-        this.textChapter.className = 'jw-text jw-reset';
+        this.textChapter.className = 'jw-time-chapter jw-text jw-reset';
         this.textChapter.style.display = 'none';
         this.textTime = document.createElement('span');
-        this.textTime.className = 'jw-text jw-reset';
+        this.textTime.className = 'jw-time-time jw-text jw-reset';
         this.img = document.createElement('div');
         this.img.className = 'jw-time-thumb jw-reset';
         this.containerWidth = 0;
