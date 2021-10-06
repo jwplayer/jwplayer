@@ -202,7 +202,7 @@ function initSelectListeners(ui) {
         if (!!ui.directSelect && target !== el) {
             return;
         }
-
+        initInteractionListener();
         if (e.isPrimary && target.tageName === 'BUTTON') {
             target.focus();
         }
