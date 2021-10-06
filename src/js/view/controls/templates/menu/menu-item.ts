@@ -11,9 +11,8 @@ export interface MenuItem {
 export const itemTemplate = (content: string): HTMLTemplateString => `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${content}" dir="auto">${content}</button>`;
 
 export const itemMenuTemplate = ({ label, name, currentSelection }: MenuItem): HTMLTemplateString => {
-
     return (
-        `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${label}" aria-controls="jw-settings-submenu-${name}" dir="auto">` +
+        `<button type="button" class="jw-reset-text jw-settings-content-item" aria-label="${label}" aria-controls="jw-settings-submenu-${name}" aria-expanded="false" dir="auto">` +
             `${label}` +
             `<div class='jw-reset jw-settings-value-wrapper'>` +
                 `<div class="jw-reset-text jw-settings-content-item-value">${currentSelection}</div>` +

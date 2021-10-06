@@ -343,6 +343,9 @@ export default class Menu extends Events {
             this.setBackButtonAriaLabel(parentMenuTitle);
             mainMenu.backButton.show();
             this.mainMenu.backButtonTarget = this.parentMenu;
+            if (this.buttonContainer) {
+                this.buttonContainer.el.setAttribute('aria-expanded', true);
+            }
             focusEl = menuTitleElement;
         } else {
             mainMenu.topbar.el.classList.remove('jw-nested-menu-open');
@@ -381,6 +384,9 @@ export default class Menu extends Events {
         this.visible = false;
         this.el.setAttribute('aria-expanded', 'false'); 
         this.el.classList.remove('jw-settings-submenu-active');
+        if (this.buttonContainer) {
+            this.buttonContainer.el.setAttribute('aria-expanded', false);
+        }
         if (this.categoryButton) {
             this.categoryButton.element().setAttribute('aria-expanded', 'false');
         }
