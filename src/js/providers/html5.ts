@@ -329,7 +329,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             this.seeking = false;
 
             // In case the video tag was modified while we shared it
-            _videotag.loop = _playerConfig.get('loop');
+            _videotag.loop = !!_playerConfig.loop;
 
             // override load so that it's not used to reset the video tag by external JavaScript (iOS ads)
             if (OS.iOS && !this.videoLoad) {
@@ -779,7 +779,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     this.load = function(item: PlaylistItem): void {
         setPlaylistItem(item);
 
-        _videotag.loop = _playerConfig.get('loop');
+        _videotag.loop = !!_playerConfig.loop;
 
         _completeLoad(item.starttime);
         this.setupSideloadedTracks(item.tracks);
