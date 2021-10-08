@@ -166,7 +166,6 @@ function initInteractionListeners(ui) {
 
     initFocusListeners(ui, INIT_GROUP);
     initStartEventsListeners(ui, INIT_GROUP, interactStartHandler, listenerOptions);
-    initInteractionListener();
 }
 
 function initSelectListeners(ui) {
@@ -216,6 +215,9 @@ function initSelectListeners(ui) {
 }
 
 function initFocusListeners(ui, group) {
+    if (!lastInteractionListener) {
+        lastInteractionListener = new UI(document).on('interaction');
+    }
     if (ui.handlers[INIT_GROUP] || ui.handlers[SELECT_GROUP]) {
         return;
     }
@@ -229,12 +231,6 @@ function initFocusListeners(ui, group) {
             addClass(el, 'jw-tab-focus');
         }
     });
-}
-
-function initInteractionListener() {
-    if (!lastInteractionListener) {
-        lastInteractionListener = new UI(document).on('interaction');
-    }
 }
 
 function checkDoubleClick(ui, e) {
