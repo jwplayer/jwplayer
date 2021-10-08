@@ -131,6 +131,10 @@ export default class ViewModel extends PlayerViewModel {
 
     set instreamModel(instreamModel: Model) {
         const previousInstream = this._instreamModel;
+        if (!previousInstream && !instreamModel) {
+            return;
+        }
+
         removeListeners(previousInstream, this);
 
         this._model.off('change:mediaModel', null, this);
