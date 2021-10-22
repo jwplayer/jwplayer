@@ -115,6 +115,12 @@ function View(_api, _model) {
         playerBounds = bounds(_playerElement);
         floatingController.updatePlayerBounds(playerBounds);
 
+        // If we have bad values for either dimension, return early
+        if (!containerWidth || !containerHeight) {
+            _responsiveListener();
+            return;
+        }
+
         // If the container is the same size as before, return early
         if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
             // Listen for player to be added to DOM
@@ -124,18 +130,12 @@ function View(_api, _model) {
             _model.set('inDom', inDOM);
             return;
         }
-        // If we have bad values for either dimension, return early
-        if (!containerWidth || !containerHeight) {
-            // If we haven't established player size, try again
-            if (!_lastWidth || !_lastHeight) {
-                _responsiveListener();
-            }
-        }
 
         // Don't update container dimensions to 0, 0 when not in DOM
-        if (containerWidth || containerHeight || inDOM) {
+        if (containerWidth && containerHeight && inDOM) {
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
+            _responsiveListener();
         }
         _model.set('inDom', inDOM);
 
@@ -199,6 +199,7 @@ function View(_api, _model) {
     this.responsiveListener = _responsiveListener;
 
     function _responsiveUpdate() {
+        console.log('.');
         if (!_this.isSetup || floatingController.isInTransition()) {
             return;
         }
