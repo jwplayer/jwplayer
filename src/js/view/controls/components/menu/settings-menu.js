@@ -383,7 +383,7 @@ class SettingsMenu extends Menu {
         if (controlBarButton) {
             const isVisible = !!children[menuName];
             controlBarButton.toggle(isVisible);
-        } else if (!controlBarButton && shouldShowGear) {
+        } else if (shouldShowGear) {
             let childrenNames = Object.keys(this.children);
             for (let i = 0; i < childrenNames.length; i++) {
                 let menu = this.children[childrenNames[i]];
