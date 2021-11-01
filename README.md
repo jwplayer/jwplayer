@@ -80,8 +80,6 @@ git remote add upstream https://github.com/jwplayer/jwplayer
 # Install dependencies
 npm install -g eslint grunt-cli jsdoc karma-cli stylelint webpack webpack-cli
 npm install
-# Optionally, install webpack-dev-server
-npm install -g webpack-dev-server
 ````
  
 3. Build the player:
@@ -90,10 +88,8 @@ npm install -g webpack-dev-server
 grunt
 # Complete Watch - builds JS, lints, and tests on each change
 grunt serve
-# Quick JS Watch - build only. Requires webpack-dev-server to be installed globally
-webpack-dev-server -w --env.debug --port 8888 --output-public-path /bin-debug/
 # Open the test page from another terminal window
-open http://localhost:8888/test/manual/
+open http://localhost:3000/test/manual/
 ````
  
 4. Test your code:
