@@ -359,10 +359,10 @@ const eventRegisters = {
         addEventListener(ui, interaction, keydown, triggerGesture, true);
     },
     tap() {
-        //noop for backwards compatibilility
+        // noop for backwards compatibilility
     },
     doubleTap() {
-        //noop for backwards compatibility
+        // noop for backwards compatibility
     },
 };
 

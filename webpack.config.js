@@ -58,9 +58,11 @@ const webpackConfig = {
                     {
                         loader: 'less-loader',
                         options: {
-                            compress: true,
-                            strictMath: true,
-                            noIeCompat: true
+                            lessOptions: {
+                                compress: true,
+                                strictMath: true,
+                                ieCompat: false
+                            }
                         }
                     }
                 ]
@@ -114,7 +116,7 @@ const configVariants = [
         devtool: 'cheap-module-source-map',
         output: {
             path: `${__dirname}/bin-debug/`,
-            sourceMapFilename: '[name].[hash].map',
+            sourceMapFilename: '[name].[fullhash].map',
             pathinfo: true
         },
         plugins: [

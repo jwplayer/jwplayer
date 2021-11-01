@@ -284,12 +284,12 @@ export function deviceIsLandscape() {
 export function HTMLSafeString(str) {
     return parseHTMLEntities(str).replace(/&|<|>|"|''/gm, function(character) {
         return '&#' + character.charCodeAt(0) + ';';
-     }).replace(/&#60;(\/?)(b|strong|i|em|p|br|ul|ol|li|h.)&#62;/gmi, '<$1$2>');
+    }).replace(/&#60;(\/?)(b|strong|i|em|p|br|ul|ol|li|h.)&#62;/gmi, '<$1$2>');
 }
 
 function parseHTMLEntities(str) {
-    const textArea = document.createElement("textarea");
-     // eslint-disable-next-line no-unsanitized/property
+    const textArea = document.createElement('textarea');
+    // eslint-disable-next-line no-unsanitized/property
     textArea.innerHTML = str;
     return textArea.value;
 }

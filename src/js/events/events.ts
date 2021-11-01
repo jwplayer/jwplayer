@@ -106,7 +106,7 @@ export const MOVE = 'move';
 /**
  * Event triggered when a user presses the enter key on the observed element.
  */
- export const ENTER = 'enter';
+export const ENTER = 'enter';
  
 /**
  * Event triggered when the mouse is no longer over the observed element.

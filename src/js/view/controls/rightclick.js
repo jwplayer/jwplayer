@@ -60,7 +60,7 @@ export default class RightClick {
             });
         }
         this.pipMenu = !OS.mobile && model.get('pipIcon') !== 'disabled'
-            && ((Browser.chrome &&!isTizen()) || Browser.edge || Browser.safari);
+            && ((Browser.chrome && !isTizen()) || Browser.edge || Browser.safari);
         if (this.pipMenu) {
             menuItems.splice(menuItems.length - 1, 0, {
                 type: 'pip'

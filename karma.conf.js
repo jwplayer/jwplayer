@@ -9,8 +9,8 @@ const merge = require('webpack-merge');
 const webpackConfig = require('./webpack.config.js')({ debug: true });
 
 const webpackTestConfig = merge(webpackConfig, {
-    entry: null,
-    output: null,
+    entry: {},
+    output: {},
     devtool: false,
     externals: {
         sinon: 'sinon'
@@ -75,7 +75,7 @@ module.exports = function(config) {
     const packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
     config.set({
-        frameworks: ['mocha', 'sinon-chai'],
+        frameworks: ['mocha', 'sinon-chai', 'webpack'],
         reporters: testReporters,
         port: serverPort, // web server port
         colors: true, // colors in the output (reporters and logs)
