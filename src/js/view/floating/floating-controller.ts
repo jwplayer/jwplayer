@@ -342,7 +342,7 @@ export default class FloatingController {
             return;
         }
         clearTimeout(this._mobileDebounceTimeout);
-        this._mobileDebounceTimeout = setTimeout(this.checkFloatOnScroll.bind(this), 150);
+        this._mobileDebounceTimeout = window.setTimeout(this.checkFloatOnScroll.bind(this), 150);
 
         if (!this._mobileCheckCanFire) {
             return;
