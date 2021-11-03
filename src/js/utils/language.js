@@ -25,7 +25,8 @@ const codeToLang = {
     id: 'Indonesian',
     ko: 'Korean',
     th: 'Thai',
-    vi: 'Vietnamese'
+    vi: 'Vietnamese',
+    ar: 'Arabic',
 };
 
 const langToCode = invert(codeToLang);
