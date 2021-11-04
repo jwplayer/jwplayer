@@ -286,6 +286,7 @@ export default class Controlbar {
         // Initial State
         elements.play.show();
         elements.fullscreen.show();
+        elements.imaFullscreen.show();
         if (elements.mute) {
             elements.mute.show();
         }
