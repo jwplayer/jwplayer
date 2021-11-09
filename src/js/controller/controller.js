@@ -617,8 +617,6 @@ Object.assign(Controller.prototype, {
                 }
 
                 if (_interruptPlay) {
-                    // Force tags to prime if we're about to play an ad
-                    // Resetting the source in order to prime is OK since we'll be switching it anyway
                     if (inInteraction() && !_backgroundLoading) {
                         const video = _model.get('mediaElement');
                         if (_this._instreamAdapter) {
