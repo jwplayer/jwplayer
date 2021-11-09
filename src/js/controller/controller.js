@@ -622,7 +622,7 @@ Object.assign(Controller.prototype, {
                     if (inInteraction() && !_backgroundLoading) {
                         const video = _model.get('mediaElement');
                         if (_this._instreamAdapter) {
-                            video.src = '';
+                            video.preload = 'none';
                         }
                         video.load();
                     }
