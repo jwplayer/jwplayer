@@ -164,7 +164,8 @@
         "max-params": 0,
         "max-statements": 0,
         "object-curly-spacing": ["error", "always"],
-        "keyword-spacing": 2
+        "keyword-spacing": 2,
+        "no-prototype-builtins": 0
     },
     "overrides": [
         {
