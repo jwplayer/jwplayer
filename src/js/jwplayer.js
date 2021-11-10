@@ -9,6 +9,7 @@ import ApiSettings from 'api/api-settings';
 
 /* global __webpack_public_path__:true*/
 /* eslint camelcase: 0 */
+/* eslint no-unused-vars: 0 */
 __webpack_public_path__ = loadFrom();
 
 /**

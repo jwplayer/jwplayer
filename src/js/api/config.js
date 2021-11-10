@@ -8,6 +8,7 @@ import { getLanguage, getCustomLocalization, applyTranslation, normalizeIntl } f
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
+/* eslint no-unused-vars: 0 */
 // Defaults
 // Alphabetical order
 export const Defaults = {

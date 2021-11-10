@@ -153,7 +153,7 @@ export function parseID3(activeCues = []) {
         }
 
         // These friendly names mapping provides compatibility with our implementation prior to 7.3
-        if (friendlyNames.hasOwnProperty(cue.value.key)) {
+        if (Object.prototype.hasOwnProperty.call(friendlyNames, cue.value.key)) {
             data[friendlyNames[cue.value.key]] = cue.value.data;
         }
         /* The meta event includes a metadata object with flattened cue key/data pairs

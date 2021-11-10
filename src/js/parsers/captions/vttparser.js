@@ -454,6 +454,7 @@ VTTParser.prototype = {
     },
     flush: function () {
         const self = this;
+        /* eslint no-useless-catch: 0 */
         try {
             // Finish decoding the stream.
             self.buffer += self.decoder.decode();

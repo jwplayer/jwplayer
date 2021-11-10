@@ -383,7 +383,7 @@ function StyleBox() {
 StyleBox.prototype.applyStyles = function (styles, div) {
     div = div || this.div;
     for (const prop in styles) {
-        if (styles.hasOwnProperty(prop)) {
+        if (Object.prototype.hasOwnProperty.call(styles, prop)) {
             div.style[prop] = styles[prop];
         }
     }
