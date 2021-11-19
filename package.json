@@ -50,7 +50,7 @@
     "karma-safari-launcher": "1.0.0",
     "karma-sinon": "1.0.5",
     "karma-sinon-chai": "2.0.2",
-    "karma-webpack": "4.0.0",
+    "karma-webpack": "4.0.2",
     "less": "3.9.0",
     "less-loader": "6.0.0",
     "load-grunt-tasks": "3.5.2",
