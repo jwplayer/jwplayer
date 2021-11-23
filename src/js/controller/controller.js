@@ -386,14 +386,23 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        function _checkAutoStart() {
+        const _checkAutoStart = () => {
             if (!apiQueue) {
                 // this player has been destroyed
                 return;
             }
 
+            const searchParams = new URLSearchParams(window.location.search);
+
+            // autostart playback at a specific point if we have a jw_start query
+            // parameter.
+            if (searchParams.has('jw_start')) {
+                // set autostart to viewable for analytics
+                this._model.setAutoStart('viewable');
+                _seek.call(this, parseInt(searchParams.get('jw_start')));
+
             // Autostart immediately if we're not waiting for the player to become viewable first.
-            if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
+            } else if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
                 _autoStart('autostart');
             }
             apiQueue.flush();
