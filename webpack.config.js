@@ -25,10 +25,12 @@ const webpackConfig = {
     },
     output: {
         filename: '[name].js',
-        library: 'jwplayer',
-        libraryExport: 'default',
-        libraryTarget: 'window',
-        umdNamedDefine: true
+        library: {
+            name: 'jwplayer',
+            export: 'default',
+            type: 'window',
+            umdNamedDefine: true
+        }
     },
     optimization: {
         splitChunks: false
@@ -116,8 +118,9 @@ const configVariants = [
         devtool: 'cheap-module-source-map',
         output: {
             path: `${__dirname}/bin-debug/`,
-            sourceMapFilename: '[name].[hash].map',
-            pathinfo: true
+            sourceMapFilename: '[name].[fullhash].map',
+            pathinfo: true,
+            clean: true
         },
         plugins: [
             new webpack.DefinePlugin(Object.assign({}, compileConstants, {
