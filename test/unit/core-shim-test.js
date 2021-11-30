@@ -17,6 +17,9 @@ describe('CoreShim', function() {
     afterEach(function() {
         sandbox.restore();
         window.history.replaceState({ path: this.oldurl }, '', this.oldurl);
+        if (core) {
+            core.destroy();
+        }
     });
 
     function expectError(expectedCode) {
