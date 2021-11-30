@@ -392,14 +392,24 @@ Object.assign(Controller.prototype, {
                 return;
             }
 
-            const searchParams = new URLSearchParams(window.location.search);
+            // search for jw_start query parameter
+            const params = (window.location.search || '').replace(/^\?/, '').split('&');
+            let jwStartIndex = -1;
+
+            for (let i = 0; i < params.length; i++) {
+                if ((/^jw_start=/).test(params[i])) {
+                    jwStartIndex = i;
+                    break;
+                }
+            }
 
             // autostart playback at a specific point if we have a jw_start query
             // parameter.
-            if (searchParams.has('jw_start') && _model.get('generateSEOMetadata')) {
+            if (_model.get('generateSEOMetadata') && jwStartIndex !== -1) {
+                const jwStartValue = parseFloat(params[jwStartIndex].replace('jw_start=', ''));
                 // set autostart to viewable for analytics
                 this._model.setAutoStart('viewable');
-                _seek.call(this, parseFloat(searchParams.get('jw_start')));
+                _seek.call(this, jwStartValue);
 
             // Autostart immediately if we're not waiting for the player to become viewable first.
             } else if (_model.get('autostart') === true && !_model.get('playOnViewable')) {

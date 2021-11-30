@@ -3,6 +3,22 @@ import CoreShim from 'api/core-shim';
 import { PlayerError } from 'api/errors';
 import { SETUP_ERROR, READY } from 'events/events';
 
+const addJwStartParam = function(parsedUrl, time) {
+    const string = `jw_start=${time}`;
+    let {search, hash, origin, pathname} = parsedUrl;
+
+    if (search) {
+        const params = search.replace(/^\?/, '').split('&');
+
+        params.push(string)
+        search = `?${params.join('&')}`;
+    } else {
+        search = `?${string}`;
+    }
+
+    return (origin || '') + (pathname || '') + (search || '') + (hash || '');
+};
+
 describe('CoreShim', function() {
     const sandbox = sinon.createSandbox();
 
@@ -17,7 +33,7 @@ describe('CoreShim', function() {
     afterEach(function() {
         sandbox.restore();
         window.history.replaceState({ path: this.oldurl }, '', this.oldurl);
-        if (core) {
+        if (core && core.destroy) {
             core.destroy();
         }
     });
@@ -90,13 +106,7 @@ describe('CoreShim', function() {
     });
 
     it('uses jw_start when generateSEOMetadata is true', function () {
-        const url = new URL(window.location.href);
-        const params = new URLSearchParams(window.location.search);
-
-        params.append('jw_start', '5');
-
-        url.search = params.toString();
-        const path = url.toString();
+        const path = addJwStartParam(window.location, 5);
 
         window.history.replaceState({ path }, '', path);
 
@@ -121,13 +131,7 @@ describe('CoreShim', function() {
     });
 
     it('does not use jw_start without generateSEOMetadata', function () {
-        const url = new URL(window.location.href);
-        const params = new URLSearchParams(window.location.search);
-
-        params.append('jw_start', '5');
-
-        url.search = params.toString();
-        const path = url.toString();
+        const path = addJwStartParam(window.location, 5);
 
         window.history.replaceState({ path }, '', path);
 
@@ -147,13 +151,7 @@ describe('CoreShim', function() {
     });
 
     it('does not use jw_start with generateSEOMetadata false', function () {
-        const url = new URL(window.location.href);
-        const params = new URLSearchParams(window.location.search);
-
-        params.append('jw_start', '5');
-
-        url.search = params.toString();
-        const path = url.toString();
+        const path = addJwStartParam(window.location, 5);
 
         window.history.replaceState({ path }, '', path);
 
