@@ -399,7 +399,7 @@ Object.assign(Controller.prototype, {
             if (searchParams.has('jw_start')) {
                 // set autostart to viewable for analytics
                 this._model.setAutoStart('viewable');
-                _seek.call(this, parseInt(searchParams.get('jw_start')));
+                _seek.call(this, parseFloat(searchParams.get('jw_start')));
 
             // Autostart immediately if we're not waiting for the player to become viewable first.
             } else if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
