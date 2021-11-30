@@ -406,7 +406,7 @@ Object.assign(Controller.prototype, {
                 _autoStart('autostart');
             }
             apiQueue.flush();
-        }
+        };
 
         function viewableChange(model, viewable) {
             _this.trigger('viewable', {
