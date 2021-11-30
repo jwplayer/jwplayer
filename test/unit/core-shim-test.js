@@ -86,7 +86,38 @@ describe('CoreShim', function() {
         });
     });
 
-    it('uses jw_start', function () {
+    it('uses jw_start when generateSEOMetadata is true', function () {
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(window.location.search);
+
+        params.append('jw_start', '5');
+
+        url.search = params.toString();
+        const path = url.toString();
+
+        window.history.replaceState({ path }, '', path);
+
+        const options = {file: 'foo.mp4', generateSEOMetadata: true};
+        const api = {};
+        let event;
+
+        core.on('beforePlay', function(_event) {
+            event = _event;
+        });
+
+        return core.init(options, api).then(function() {
+            expect(core._model.get('autostart')).to.be.equal('viewable');
+            expect(core._model.get('playReason')).to.be.equal('unknown');
+            expect(event).to.be.eql({
+                playReason: 'unknown',
+                startTime: 5,
+                viewable: 0
+            });
+
+        });
+    });
+
+    it('does not use jw_start without generateSEOMetadata', function () {
         const url = new URL(window.location.href);
         const params = new URLSearchParams(window.location.search);
 
@@ -106,15 +137,38 @@ describe('CoreShim', function() {
         });
 
         return core.init(options, api).then(function() {
-            expect(core._model.get('autostart')).to.be.equal('viewable');
-            expect(core._model.get('playReason')).to.be.equal('unknown');
-            expect(event).to.be.eql({
-                playReason: 'unknown',
-                startTime: 5,
-                viewable: 0
-            });
-
+            expect(core._model.get('autostart')).to.be.false;
+            expect(core._model.get('playReason')).to.be.undefined;
+            expect(event).to.be.undefined;
         });
     });
+
+    it('does not use jw_start with generateSEOMetadata false', function () {
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(window.location.search);
+
+        params.append('jw_start', '5');
+
+        url.search = params.toString();
+        const path = url.toString();
+
+        window.history.replaceState({ path }, '', path);
+
+        const options = {file: 'foo.mp4', generateSEOMetadata: false};
+        const api = {};
+        let event;
+
+        core.on('beforePlay', function(_event) {
+            event = _event;
+        });
+
+        return core.init(options, api).then(function() {
+            expect(core._model.get('autostart')).to.be.false;
+            expect(core._model.get('playReason')).to.be.undefined;
+            expect(event).to.be.undefined;
+        });
+    });
+
+
 
 });

@@ -396,7 +396,7 @@ Object.assign(Controller.prototype, {
 
             // autostart playback at a specific point if we have a jw_start query
             // parameter.
-            if (searchParams.has('jw_start')) {
+            if (searchParams.has('jw_start') && _model.get('generateSEOMetadata')) {
                 // set autostart to viewable for analytics
                 this._model.setAutoStart('viewable');
                 _seek.call(this, parseFloat(searchParams.get('jw_start')));
