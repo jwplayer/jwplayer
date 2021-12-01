@@ -113,11 +113,18 @@ export default class NextUpTooltip {
     setNextUpItem(nextUpItem) {
         // Give the previous item time to complete its animation
         setTimeout(() => {
+            const { mediaid, image, title, duration } = nextUpItem;
             // Set thumbnail
             this.thumbnail = this.content.querySelector('.jw-nextup-thumbnail');
-            toggleClass(this.content, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
-            if (nextUpItem.image) {
-                const thumbnailStyle = this.loadThumbnail(nextUpItem.image);
+            toggleClass(this.content, 'jw-nextup-thumbnail-visible', !!image);
+            if (image || mediaid) {
+                let thumbnailSrc;
+                if (mediaid) {
+                    thumbnailSrc = `https://cdn.jwplayer.com/v2/media/${mediaid}/poster.jpg?width=120`;
+                } else {
+                    thumbnailSrc = image;
+                }
+                const thumbnailStyle = this.loadThumbnail(thumbnailSrc);
                 style(this.thumbnail, thumbnailStyle);
             }
 
@@ -127,12 +134,10 @@ export default class NextUpTooltip {
 
             // Set title
             this.title = this.content.querySelector('.jw-nextup-title');
-            const title = nextUpItem.title;
             // createElement is used to leverage 'textContent', to protect against developers passing a title with html styling.
             this.title.textContent = title ? createElement(title).textContent : '';
 
             // Set duration
-            const duration = nextUpItem.duration;
             if (duration) {
                 this.duration = this.content.querySelector('.jw-nextup-duration');
                 this.duration.textContent = typeof duration === 'number' ? timeFormat(duration) : duration;
