@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { getJwStartQueryParam } from 'controller/controller';
+import getJwStartQueryParam from 'controller/get-jw-start-param';
 import { PlayerError } from 'api/errors';
 import { SETUP_ERROR, READY } from 'events/events';
 

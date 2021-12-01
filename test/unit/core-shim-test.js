@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import CoreShim from 'api/core-shim';
+import CoreShim from '../../src/js/api/core-shim';
 import { PlayerError } from 'api/errors';
 import { SETUP_ERROR, READY } from 'events/events';
 
@@ -111,12 +111,15 @@ describe('CoreShim', function() {
         window.history.replaceState({ path }, '', path);
 
         const options = {file: 'foo.mp4', generateSEOMetadata: true};
-        const api = {};
+        const api = {getPlaylist: () => []};
         let event;
 
-        core.on('beforePlay', function(_event) {
+        const beforePlayListener = function(_event) {
             event = _event;
-        });
+            core.off('beforePlay', beforePlayListener);
+        };
+
+        core.on('beforePlay', beforePlayListener);
 
         return core.init(options, api).then(function() {
             expect(core._model.get('autostart')).to.be.equal('viewable');
@@ -126,7 +129,7 @@ describe('CoreShim', function() {
                 startTime: 5,
                 viewable: 0
             });
-
+            core.off('beforePlay', beforePlayListener);
         });
     });
 
@@ -136,17 +139,21 @@ describe('CoreShim', function() {
         window.history.replaceState({ path }, '', path);
 
         const options = {file: 'foo.mp4'};
-        const api = {};
+        const api = {getPlaylist: () => []};
         let event;
 
-        core.on('beforePlay', function(_event) {
+        const beforePlayListener = function(_event) {
             event = _event;
-        });
+            core.off('beforePlay', beforePlayListener);
+        };
+
+        core.on('beforePlay', beforePlayListener);
 
         return core.init(options, api).then(function() {
             expect(core._model.get('autostart')).to.be.false;
             expect(core._model.get('playReason')).to.be.undefined;
             expect(event).to.be.undefined;
+            core.off('beforePlay', beforePlayListener);
         });
     });
 
@@ -156,20 +163,22 @@ describe('CoreShim', function() {
         window.history.replaceState({ path }, '', path);
 
         const options = {file: 'foo.mp4', generateSEOMetadata: false};
-        const api = {};
+        const api = {getPlaylist: () => []};
         let event;
 
-        core.on('beforePlay', function(_event) {
+        const beforePlayListener = function(_event) {
             event = _event;
-        });
+            core.off('beforePlay', beforePlayListener);
+        };
+
+        core.on('beforePlay', beforePlayListener);
 
         return core.init(options, api).then(function() {
             expect(core._model.get('autostart')).to.be.false;
             expect(core._model.get('playReason')).to.be.undefined;
             expect(event).to.be.undefined;
+            core.off('beforePlay', beforePlayListener);
         });
     });
-
-
 
 });
