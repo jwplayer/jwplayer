@@ -40,6 +40,43 @@ import {
     ASYNC_PLAYLIST_ITEM_REJECTED
 } from 'api/errors';
 
+/**
+ * Get the value of a jw_start query parameter given a query parameter string.
+ * NOTE: This was added for ie 11 support, once we drop ie 11 we should use
+ * URL and URLSearchParams.
+ *
+ * @param {string} search
+ *                 The query parameter string
+ *
+ * @return {number} the jw_start value or -1 if there isn't one.
+ */
+export const getJwStartQueryParam = function(search) {
+    // search for jw_start query parameter
+    const params = (search || '').replace(/^\?/, '').split('&');
+    let jwStartIndex = -1;
+
+    for (let i = 0; i < params.length; i++) {
+        if ((/^jw_start=/).test(params[i])) {
+            jwStartIndex = i;
+            break;
+        }
+    }
+
+    // no jw_start query parameter
+    if (jwStartIndex === -1) {
+        return -1;
+    }
+
+    const value = parseFloat(params[jwStartIndex].replace('jw_start=', ''));
+
+    // only return valid parsed values
+    if (typeof value !== 'number' || isNaN(value) || value < 0) {
+        return -1;
+    }
+
+    return value;
+};
+
 // The model stores a different state than the provider
 function normalizeState(newstate) {
     if (newstate === STATE_LOADING || newstate === STATE_STALLED) {
@@ -393,20 +430,11 @@ Object.assign(Controller.prototype, {
             }
 
             // search for jw_start query parameter
-            const params = (window.location.search || '').replace(/^\?/, '').split('&');
-            let jwStartIndex = -1;
-
-            for (let i = 0; i < params.length; i++) {
-                if ((/^jw_start=/).test(params[i])) {
-                    jwStartIndex = i;
-                    break;
-                }
-            }
+            const jwStartValue = getJwStartQueryParam(window.location.search);
 
             // autostart playback at a specific point if we have a jw_start query
             // parameter.
-            if (_model.get('generateSEOMetadata') && jwStartIndex !== -1) {
-                const jwStartValue = parseFloat(params[jwStartIndex].replace('jw_start=', ''));
+            if (_model.get('generateSEOMetadata') && jwStartValue >= 0) {
                 // set autostart to viewable for analytics
                 this._model.setAutoStart('viewable');
                 _seek.call(this, jwStartValue);
