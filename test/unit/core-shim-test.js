@@ -33,8 +33,8 @@ describe('CoreShim', function() {
     afterEach(function() {
         sandbox.restore();
         window.history.replaceState({ path: this.oldurl }, '', this.oldurl);
-        if (core && core.destroy) {
-            core.destroy();
+        if (core && core.playerDestroy) {
+            core.playerDestroy();
         }
     });
 
