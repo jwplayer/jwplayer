@@ -26,7 +26,6 @@ describe('CoreShim', function() {
 
     beforeEach(function() {
         core = new CoreShim(document.createElement('div'));
-        this.clock = sinon.useFakeTimers();
         sandbox.spy(console, 'error');
         this.oldurl = window.location.href;
     });
@@ -37,7 +36,6 @@ describe('CoreShim', function() {
         if (core && core.playerDestroy) {
             core.playerDestroy();
         }
-        this.clock.restore();
     });
 
     function expectError(expectedCode) {
