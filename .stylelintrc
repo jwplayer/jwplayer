@@ -1,4 +1,5 @@
 {
+    "customSyntax": "postcss-less",
     "rules": {
         "color-hex-case": "lower",
         "color-hex-length": "short",
