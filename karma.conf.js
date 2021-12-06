@@ -135,6 +135,12 @@ module.exports = function(config) {
         webpack: webpackTestConfig,
 
         // number of browsers to run at once
-        concurrency: Infinity
+        concurrency: Infinity,
+
+        client: {
+            mocha: {
+                reporter: 'html'
+            }
+        }
     });
 };

@@ -39,6 +39,7 @@ import {
     ERROR_LOADING_PLAYLIST_ITEM,
     ASYNC_PLAYLIST_ITEM_REJECTED
 } from 'api/errors';
+import getJwStartQueryParam from './get-jw-start-param.js';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -386,18 +387,28 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        function _checkAutoStart() {
+        const _checkAutoStart = () => {
             if (!apiQueue) {
                 // this player has been destroyed
                 return;
             }
 
+            // search for jw_start query parameter
+            const jwStartValue = getJwStartQueryParam(window.location.search);
+
+            // autostart playback at a specific point if we have a jw_start query
+            // parameter.
+            if (_model.get('generateSEOMetadata') && jwStartValue >= 0) {
+                // set autostart to viewable for analytics
+                this._model.setAutoStart('viewable');
+                _seek.call(this, jwStartValue);
+
             // Autostart immediately if we're not waiting for the player to become viewable first.
-            if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
+            } else if (_model.get('autostart') === true && !_model.get('playOnViewable')) {
                 _autoStart('autostart');
             }
             apiQueue.flush();
-        }
+        };
 
         function viewableChange(model, viewable) {
             _this.trigger('viewable', {

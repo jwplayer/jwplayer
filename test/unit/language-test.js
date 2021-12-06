@@ -227,9 +227,8 @@ describe('languageUtils', function() {
             expect(getLanguage()).to.equal(htmlLanguage);
         });
 
-        it('should return the top htlm lang attribute when iframe has no lang attribute', function() {
+        it('should return the top html lang attribute when iframe has no lang attribute', function() {
             const topHtmlLanguage = 'topHtmlLanguage';
-            stubHtmlLanguage(document, null);
             stubHtmlLanguage(window.top.document, topHtmlLanguage);
             sandbox.stub(Browser, 'isIframe').returns(true);
             expect(getLanguage()).to.equal(topHtmlLanguage);
@@ -260,7 +259,7 @@ describe('languageUtils', function() {
                     code = 'no';
                 }
                 expect(languageCodes.indexOf(code) > -1);
-            }); 
+            });
         });
 
 
@@ -315,7 +314,7 @@ describe('languageUtils', function() {
                 expect(Object.keys(result.response)).to.deep.equal(Object.keys(en));
             });
         });
-     
+
         it('should fetch Norwegian for all appropriate language codes', function() {
             const checkCode = (code) => {
                 loadJsonTranslation('/base/test/files/', code).then(result => {
@@ -325,7 +324,7 @@ describe('languageUtils', function() {
                     expect(result).to.have.property('response').which.is.an('object');
                     expect(result).to.have.property('responseURL').which.contains('no.json');
                 });
-            }                
+            }
             checkCode('nb')
             checkCode('no');
             checkCode('nn');
