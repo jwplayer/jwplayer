@@ -3,7 +3,7 @@ import * as errors from 'api/errors';
 
 // A helper function to convert \r\n windows newlines back to
 // \n newlines
-const unifyNewLines = (string) => string.split(/\r?\n/).join('\n');
+const unifyNewLines = (string) => string.split(/\r\n|\n|\r/).join('\n');
 
 describe('utils.ajax', function() {
     this.timeout(8000);
