@@ -75,7 +75,7 @@ describe('utils.ajax', function() {
             responseType: 'text'
         }).then(({ result, xhr }) => {
             validateXHR(xhr);
-            expect(result).to.have.property('responseText').which.is.a('string').and.has.lengthOf(2401);
+            expect(unifyNewLines(result.responseText)).to.be.a('string').with.a.lengthOf(2401);
             expect(result).to.have.property('status').which.equals(200);
         });
     });
