@@ -1,6 +1,10 @@
 import { ajax } from 'utils/ajax';
 import * as errors from 'api/errors';
 
+// A helper function to convert \r\n windows newlines back to
+// \n newlines
+const unifyNewLines = (string) => string.split(/\r?\n/).join('\n');
+
 describe('utils.ajax', function() {
     this.timeout(8000);
 
@@ -59,7 +63,7 @@ describe('utils.ajax', function() {
             validateXHR(xhr);
         }).then(({ result, xhr }) => {
             expect(result).to.equal(xhr);
-            expect(result).to.have.property('responseText').which.is.a('string').and.has.lengthOf(2401);
+            expect(unifyNewLines(result.responseText)).to.be.a('string').with.a.lengthOf(2401);
             expect(result).to.have.property('responseXML').which.does.not.equal(undefined);
             expect(result).to.have.property('status').which.equals(200);
         });
