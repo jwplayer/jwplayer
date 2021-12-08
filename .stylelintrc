@@ -1,4 +1,5 @@
 {
+    "customSyntax": "postcss-less",
     "rules": {
         "color-hex-case": "lower",
         "color-hex-length": "short",
@@ -22,7 +23,7 @@
 
         "length-zero-no-unit": true,
 
-        "unit-blacklist": ["pt"],
+        "unit-disallowed-list": ["pt"],
         "unit-case": "lower",
         "unit-no-unknown": true,
 
@@ -88,7 +89,7 @@
 
         "comment-no-empty": true,
         "comment-whitespace-inside": "always",
-        "comment-word-blacklist": ["/^TODO:/"],
+        "comment-word-disallowed-list": ["/^TODO:/"],
 
         "indentation": [4, {
             "indentClosingBrace": false
