@@ -402,7 +402,6 @@ describe('dom', function() {
             return;
         }
 
-        const _createElement = document.createElement;
         let result;
 
         const doc = {
@@ -432,7 +431,5 @@ describe('dom', function() {
         expect(result.rel).to.equal('noreferrer');
         expect(result.id).to.equal('testLink');
         expect(result.onclick).to.have.been.calledOnce;
-
-        document.createElement = _createElement;
     });
 });
