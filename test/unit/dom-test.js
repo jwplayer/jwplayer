@@ -411,6 +411,11 @@ describe('dom', function() {
                     click() {
                         this.onclick();
                     },
+                    dispatchEvent(e) {
+                        if (e.type === 'click') {
+                            this.onclick();
+                        }
+                    },
                     attributes: [],
                     tagName,
                     onclick: sinon.spy()
