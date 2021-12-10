@@ -402,25 +402,34 @@ describe('dom', function() {
             return;
         }
 
-        const _createElement = document.createElement;
         let result;
 
-        // Wrapper required to test result, it's never appended to document.
-        document.createElement = function() {
-            result = _createElement.apply(document, Array.prototype.slice.call(arguments, 0));
-            result.onclick = sinon.spy();
-            return result;
+        const doc = {
+            createElement(tagName) {
+                result = {
+                    click() {
+                        this.onclick();
+                    },
+                    dispatchEvent(e) {
+                        if (e.type === 'click') {
+                            this.onclick();
+                        }
+                    },
+                    attributes: [],
+                    tagName,
+                    onclick: sinon.spy()
+                };
+
+                return result;
+            }
         };
 
-        openLink('http://localhost/', '_blank', { rel: 'noreferrer', id: 'testLink' });
+        openLink('http://localhost/', '_blank', { rel: 'noreferrer', id: 'testLink' }, doc);
 
-        expect(result.tagName).to.equal('A');
         expect(result.href).to.equal('http://localhost/');
         expect(result.target).to.equal('_blank');
         expect(result.rel).to.equal('noreferrer');
         expect(result.id).to.equal('testLink');
         expect(result.onclick).to.have.been.calledOnce;
-
-        document.createElement = _createElement;
     });
 });

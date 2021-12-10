@@ -254,11 +254,11 @@ export function previousSibling(element) {
     return element.previousElementSibling;
 }
 
-export function openLink(link, target, additionalOptions = {}) {
+export function openLink(link, target, additionalOptions = {}, doc = document) {
     if (!validUrl.test(link)) {
         return;
     }
-    let a = document.createElement('a');
+    let a = doc.createElement('a');
     a.href = link;
     a.target = target;
     a = sanitizeElementAttributes(Object.assign(a, additionalOptions));
