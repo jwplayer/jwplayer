@@ -8,6 +8,8 @@ import type { TextTrackLike } from 'types/generic.type';
 import type { ProviderEvents, ProviderWithMixins } from './default';
 import type { PlaylistItemTrack } from 'playlist/track';
 
+type DataCue = VTTCue & {data: ArrayBufferLike}
+
 type TrackCue = (VTTCue | DataCue | TextTrackCue) & {
     value?: any;
 }
@@ -294,9 +296,9 @@ const Tracks: TracksMixin = {
 
             for (i; i < len; i++) {
                 const track = tracks[i] as TextTrackLike;
-                let trackId: string = track._id || '';                
+                let trackId: string = track._id || '';
 
-                if (!trackId) {   
+                if (!trackId) {
                     if (track.inuse === false && isCaptionsOrSubtitles(track.kind) && this.renderNatively) {
                         // ignore native captions tracks from previous items that no longer can be re-used
                         track._id = 'native' + track.kind + i;
