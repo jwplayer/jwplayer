@@ -165,14 +165,14 @@ export default class FloatingController {
                     transform: `translateY(-${FLOATING_TOP_OFFSET - playerBounds.top}px)`
                 });
 
-                setTimeout(() => {
+                window.setTimeout(() => {
                     style(this._wrapperEl, {
                         transform: 'translateY(0)',
                         transition: 'transform 150ms cubic-bezier(0, 0.25, 0.25, 1)'
                     });
                 });
             }
-            setTimeout(() => {
+            window.setTimeout(() => {
                 this.transitionFloating(false);
             }, 50);
 
@@ -221,7 +221,7 @@ export default class FloatingController {
                 transition: null,
                 'transition-timing-function': null
             });
-            setTimeout(() => {
+            window.setTimeout(() => {
                 this.transitionFloating(false);
             }, 50);
         };
@@ -235,7 +235,7 @@ export default class FloatingController {
                 'transition-timing-function': 'ease-out'
             });
 
-            setTimeout(resetFloatingStyles, 150);
+            window.setTimeout(resetFloatingStyles, 150);
         } else {
             resetFloatingStyles();
         }
@@ -342,7 +342,7 @@ export default class FloatingController {
             return;
         }
         clearTimeout(this._mobileDebounceTimeout);
-        this._mobileDebounceTimeout = setTimeout(this.checkFloatOnScroll.bind(this), 150);
+        this._mobileDebounceTimeout = window.setTimeout(this.checkFloatOnScroll.bind(this), 150);
 
         if (!this._mobileCheckCanFire) {
             return;
@@ -351,7 +351,7 @@ export default class FloatingController {
         this._mobileCheckCanFire = false;
         this.checkFloatOnScroll();
 
-        setTimeout(() => {
+        window.setTimeout(() => {
             this._mobileCheckCanFire = true;
         }, 50);
     }
