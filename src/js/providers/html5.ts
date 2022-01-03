@@ -1080,7 +1080,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         // Don't end if we have noting buffered yet, or cannot get any information about the buffer
         if (live && endOfBuffer && _lastEndOfBuffer === endOfBuffer) {
             if (_staleStreamTimeout === -1) {
-                _staleStreamTimeout = setTimeout(function(): void {
+                _staleStreamTimeout = window.setTimeout(function(): void {
                     _stale = true;
                     checkStreamEnded();
                 }, _staleStreamDuration);

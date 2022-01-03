@@ -63,7 +63,7 @@ class Preview {
         }
 
         clearTimeout(this.zoomThumbnailTimeout);
-        this.zoomThumbnailTimeout = setTimeout(() => {
+        this.zoomThumbnailTimeout = window.setTimeout(() => {
             if (this.imageEl) {
                 this.imageEl.classList.add('jw-ab-zoom-thumbnail');
                 this.imageEl.style.transformOrigin = this.zoomOriginX + ' ' + this.zoomOriginY;
