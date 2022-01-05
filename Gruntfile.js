@@ -196,10 +196,10 @@ module.exports = function(grunt) {
             }
             const jsonStats = stats.toJson();
             if (jsonStats.errors.length) {
-                throw jsonStats.errors;
+                throw JSON.stringify(jsonStats.errors, null, 2);
             }
             if (jsonStats.warnings.length) {
-                console.warn(jsonStats.warnings);
+                console.warn(JSON.stringify(jsonStats.warnings), null, 2);
             }
             done();
         });
@@ -208,14 +208,14 @@ module.exports = function(grunt) {
     grunt.registerTask('hooks', 'Install Pre Push Hook', function() {
         runCommand('npm run hooks', '.');
     });
-    
+
     grunt.registerTask('notice', 'Create notice.txt file', function() {
         const notice = require('./jwplayer.license.notice.js');
         const output = './bin-release/notice.txt';
         const done = this.async();
         fs.writeFile(output, notice, function(err4) {
             if (err4) {
-                throw err4; 
+                throw err4;
             }
             console.log('Wrote file', output);
             done();
