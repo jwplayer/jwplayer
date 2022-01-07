@@ -859,7 +859,9 @@ Object.assign(Controller.prototype, {
                     // This prevents media from replaying when a completed video scrolls into view
                     _model.set('playOnViewable', false);
                     _model.set('state', STATE_COMPLETE);
-                    _this.trigger(PLAYLIST_COMPLETE, {});
+                    if (!_model.get('related') || _model.get('item') === _model.get('playlist').length - 1) {
+                        _this.trigger(PLAYLIST_COMPLETE, {});
+                    }
                 }
                 return;
             }
