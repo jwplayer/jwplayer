@@ -1,4 +1,4 @@
-import type { BrowserEnvironment, EnvironmentVersion } from 'environment';
+import type { BrowserEnvironment, EnvironmentVersion } from './environment';
 
 export function browserVersion(browserEnvironment: BrowserEnvironment, agent: string): EnvironmentVersion {
     let version: string | undefined;

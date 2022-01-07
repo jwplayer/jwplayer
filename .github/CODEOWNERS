@@ -2,15 +2,4 @@
 # Each line is a file pattern followed by one or more owners.
 # See https://help.github.com/en/articles/about-code-owners#example-of-a-codeowners-file for more details and examples
 
-*            @pajong
-/test/unit/  @pajong @zetagame @mamaddox
-/src/css/ @pajong @zetagame @mamaddox
-/src/js/program @pajong
-/src/js/view/controls/tizen @mamaddox
-/src/js/providers @mamaddox @pajong
-
-# Auto-translate
-/src/assets/translations @pajong @zetagame
-/src/js/utils/language.js @pajong @zetagame
-/src/js/api/setup-steps.js @pajong
-/test/unit/language-test.js @karimMourra @pajong @zetagame
+* @dawolee @imbcmdth @jwbrandon @mamaddox @zetagame 

@@ -1,4 +1,4 @@
-import type { OSEnvironment, EnvironmentVersion } from 'environment';
+import type { OSEnvironment, EnvironmentVersion } from './environment';
 
 function execResult(regex: RegExp, str: string): string | undefined {
     const array: RegExpExecArray | null = regex.exec(str);

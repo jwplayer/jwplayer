@@ -5,12 +5,10 @@
 
 const path = require('path');
 const puppeteer = require('puppeteer');
-const merge = require('webpack-merge');
+const {merge} = require('webpack-merge');
 const webpackConfig = require('./webpack.config.js')({ debug: true });
 
 const webpackTestConfig = merge(webpackConfig, {
-    entry: null,
-    output: null,
     devtool: false,
     externals: {
         sinon: 'sinon'
@@ -30,7 +28,7 @@ const webpackTestConfig = merge(webpackConfig, {
                 test: /\.js$/,
                 include: path.resolve('src/js/'),
                 use: {
-                    loader: 'coverage-istanbul-loader',
+                    loader: '@jsdevtools/coverage-istanbul-loader',
                     options: { esModules: true }
                 }
             }
@@ -40,6 +38,9 @@ const webpackTestConfig = merge(webpackConfig, {
         ]
     }
 });
+
+delete webpackTestConfig.entry;
+delete webpackTestConfig.output;
 
 module.exports = function(config) {
     const env = process.env;
@@ -75,7 +76,7 @@ module.exports = function(config) {
     const packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
     config.set({
-        frameworks: ['mocha', 'sinon-chai'],
+        frameworks: ['mocha', 'sinon-chai', 'webpack'],
         reporters: testReporters,
         port: serverPort, // web server port
         colors: true, // colors in the output (reporters and logs)
