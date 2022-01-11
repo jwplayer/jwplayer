@@ -2,6 +2,7 @@ import type { HTMLTemplateString } from 'types/generic.type';
 import { Browser } from 'environment/environment';
 
 export default (header = '', title = '', duration = '', closeAriaLabel = ''): HTMLTemplateString => {
+    // When using firefox this adds opacity to stop the firefox PiP button getting clicked instead of the next up div
     const firefoxPipFix = Browser.firefox ? ' jw-nextup-firefox-pip-fix' : '';
 
     return (
