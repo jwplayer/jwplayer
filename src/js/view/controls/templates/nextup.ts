@@ -2,7 +2,7 @@ import type { HTMLTemplateString } from 'types/generic.type';
 import { Browser } from 'environment/environment';
 
 export default (header = '', title = '', duration = '', closeAriaLabel = ''): HTMLTemplateString => {
-    let firefoxPipFix = Browser.firefox ? ' jw-nextup-firefox-pip-fix' : '';
+    const firefoxPipFix = Browser.firefox ? ' jw-nextup-firefox-pip-fix' : '';
 
     return (
         `<div class="jw-nextup jw-background-color jw-reset${firefoxPipFix}">` +
