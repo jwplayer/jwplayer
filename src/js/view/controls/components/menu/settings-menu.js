@@ -149,8 +149,6 @@ class SettingsMenu extends Menu {
             this.model.set('captions', newStyles);
         };
         const persistedOptions = model.get('captions');
-
-
         const renderCaptionsSettings = (isReset) => {
             const resetItem = new ResetMenuItem(this.localization.reset, () => {
                 this.model.set('captions', Object.assign({}, CaptionsDefaults));
@@ -198,7 +196,7 @@ class SettingsMenu extends Menu {
             }
         };
         renderCaptionsSettings();
-        
+
     }
 
     onPlaylistItem() {
