@@ -45,6 +45,5 @@ export class ResetMenuItem extends MenuItem {
         this.statusEl.setAttribute('role', 'status');
         this.el.appendChild(this.statusEl);
         this.el.setAttribute('aria-controls', 'reset-status-message');
-        console.trace(this.statusEl);
     }
 }
