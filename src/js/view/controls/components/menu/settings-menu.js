@@ -149,12 +149,23 @@ class SettingsMenu extends Menu {
             this.model.set('captions', newStyles);
         };
         const persistedOptions = model.get('captions');
+        
+        const resetItem = new MenuItem(this.localization.reset, () => {
+            this.model.set('captions', Object.assign({}, CaptionsDefaults));
+            renderCaptionsSettings(true);
+        });
         const renderCaptionsSettings = (isReset) => {
-            const resetItem = new MenuItem(this.localization.reset, () => {
-                this.model.set('captions', Object.assign({}, CaptionsDefaults));
-                renderCaptionsSettings(true);
-            });
             resetItem.el.classList.add('jw-settings-reset');
+            resetItem.el.setAttribute('aria-live', 'polite');
+            resetItem.el.addEventListener('blur', () => resetItem.el.setAttribute('aria-label', 'Reset Caption Styles'));
+            resetItem.el.addEventListener('click', () => resetItem.el.setAttribute('aria-label', 'Reset Captions Successful'));
+            resetItem.el.onkeyup = (e) => {
+                if (e.key === 'Enter') {
+                    resetItem.el.setAttribute('aria-label', 'Reset Captions Successful');
+                    resetItem.el.focus();
+                }
+            };
+
             const captionsSettingsItems = [];
             captionStyleItems(captionsLocalization).forEach(captionItem => {
                 if (!isReset && persistedOptions && persistedOptions[captionItem.name]) {
@@ -190,7 +201,7 @@ class SettingsMenu extends Menu {
             captionsSettingsMenu.setMenuItems(captionsSettingsItems);
         };
         renderCaptionsSettings();
-    
+        
     }
 
     onPlaylistItem() {
