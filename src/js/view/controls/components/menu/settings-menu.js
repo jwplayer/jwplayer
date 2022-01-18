@@ -196,7 +196,6 @@ class SettingsMenu extends Menu {
             }
         };
         renderCaptionsSettings();
-
     }
 
     onPlaylistItem() {
