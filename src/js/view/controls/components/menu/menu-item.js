@@ -40,10 +40,8 @@ export class ResetMenuItem extends MenuItem {
     constructor(_content, _action, _template = itemButtonTemplate) {
         super(_content, _action, _template);
         this.statusEl = document.createElement('span');
-        this.statusEl.id = 'reset-status-message';
-        this.statusEl.style = 'font-size: 0;';
+        this.statusEl.classList.add('jw-reset-status-message');
         this.statusEl.setAttribute('role', 'status');
         this.el.appendChild(this.statusEl);
-        this.el.setAttribute('aria-controls', 'reset-status-message');
     }
 }

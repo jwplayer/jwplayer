@@ -191,6 +191,7 @@ class SettingsMenu extends Menu {
             if (isReset) {
                 resetItem.statusEl.innerHTML = 'Reset Captions Successful';
                 resetItem.el.focus();
+                resetItem.el.addEventListener('blur', () => resetItem.statusEl.innerHTML = '');
             } else {
                 resetItem.statusEl.innerHTML = '';
             }
