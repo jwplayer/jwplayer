@@ -111,6 +111,7 @@ export default class Controlbar {
         this._model = _model;
         this._isMobile = OS.mobile;
         this._volumeAnnouncer = _accessibilityContainer.querySelector('.jw-volume-update');
+        this._exitFullscreenAnnouncer = _accessibilityContainer.querySelector('.jw-exit-fullscreen-confirmation');
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api, _accessibilityContainer.querySelector('.jw-time-update'));
         const menus = this.menus = [];
@@ -304,6 +305,15 @@ export default class Controlbar {
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', (model, val) => {
             const fullscreenElements = [this.elements.fullscreen.element(), this.elements.imaFullscreen.element()];
+
+            if (fullscreenElements[0].getAttribute('aria-label') === 'Exit Fullscreen') {
+                // Uses setTimeout to prevent 'Exit Fullscreen Successful' voice line from being cutoff by other voice lines when using a screen reader
+                setTimeout(() => {
+                    this._exitFullscreenAnnouncer.textContent = 'Exit Fullscreen Successful';
+                }, 1450);
+            } else if (fullscreenElements[0].getAttribute('aria-label') === 'Fullscreen') {
+                this._exitFullscreenAnnouncer.textContent = '';
+            }
 
             for (let i = 0; i < fullscreenElements.length; i++) {
                 const element = fullscreenElements[i];
