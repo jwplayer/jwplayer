@@ -7,6 +7,18 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const {merge} = require('webpack-merge');
 const webpackConfig = require('./webpack.config.js')({ debug: true })[0];
+const pkg = require('./package.json');
+
+const karmaPlugins = ['karma-*'];
+
+Object.keys(pkg.devDependencies).forEach(function(pkgName) {
+  const parts = pkgName.split('/');
+  const name = parts[parts.length - 1];
+
+  if ((/^karma-/).test(name)) {
+    karmaPlugins.push(require(pkgName));
+  }
+});
 
 const webpackTestConfig = merge(webpackConfig, {
     devtool: false,

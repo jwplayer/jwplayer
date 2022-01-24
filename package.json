@@ -74,7 +74,7 @@
     "webpack-merge": "5.8.0"
   },
   "scripts": {
-    "clean": "shx rm -rf ./bin-*",
+    "clean": "shx rm -rf ./bin-* && shx mkdir -p ./bin-release ./bin-debug",
     "build": "npm-run-all -s clean -p build:*",
     "build:js": "webpack --config webpack.config.js",
     "build:css": "npm-run-all build:css:less build:css:postcss",
