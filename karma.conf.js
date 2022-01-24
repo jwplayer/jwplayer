@@ -6,7 +6,7 @@
 const path = require('path');
 const puppeteer = require('puppeteer');
 const {merge} = require('webpack-merge');
-const webpackConfig = require('./webpack.config.js')({ debug: true });
+const webpackConfig = require('./webpack.config.js')({ debug: true })[0];
 
 const webpackTestConfig = merge(webpackConfig, {
     devtool: false,
@@ -53,12 +53,7 @@ module.exports = function(config) {
     let browsers = [
         'ChromeHeadless',
         'Chrome',
-        'Safari',
         'Firefox',
-        'edge',
-        'ie11',
-        'iphone',
-        'android'
     ];
     if (isJenkins) {
         testReporters.push('junit');
@@ -67,10 +62,6 @@ module.exports = function(config) {
             'ChromeHeadless',
             'chrome',
             'firefox',
-            'edge',
-            'ie11',
-            'iphone',
-            'android'
         ];
     }
     const packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
