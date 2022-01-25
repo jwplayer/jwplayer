@@ -59,11 +59,11 @@
     "postcss-safe-parser": "6.0.0",
     "promise-polyfill": "7.1.1",
     "puppeteer": "1.13.0",
+    "serve-static": "1.14.2",
     "shx": "^0.3.4",
     "simple-style-loader": "0.4.4",
     "sinon": "7.2.3",
     "sinon-chai": "3.3.0",
-    "static-server": "^2.2.1",
     "style-loader": "^3.3.1",
     "stylelint": "14.1.0",
     "svg-inline-loader": "0.8.0",
@@ -95,7 +95,6 @@
     "test": "npm-run-all -c -p lint test:*",
     "test:unit": "karma start karma.conf.js",
     "preversion": "npm run build",
-
     "hooks": "\\cp .github/hooks/pre-push .git/hooks/pre-push",
     "squash": "node parse-squashed-files.js"
   }
