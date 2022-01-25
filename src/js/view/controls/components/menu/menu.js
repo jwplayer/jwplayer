@@ -352,6 +352,7 @@ export default class Menu extends Events {
             if (mainMenu.backButton) {
                 mainMenu.backButton.hide();
             }
+            this.mainMenu.backButtonTarget = null;
         }
         this.el.classList.add('jw-settings-submenu-active');
         if (mainMenuVisible && isKeydown) {
