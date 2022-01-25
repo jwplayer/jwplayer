@@ -18,6 +18,10 @@ const buildList = [{
 const lessc = ({src, dest}) =>
   execPromise(`node ${lesscBin} --line-numbers=comments ${src} ${dest}`, {stdio: 'inherit', cwd: BASE}).then(function() {
     console.log(`lessc ${path.relative(BASE, src)} -> ${path.relative(BASE, dest)}`);
+
+    return execPromise(`postcss ${dest} --use autoprefixer --replace`, {stdio: 'inherit', cwd: BASE});
+  }).then(function() {
+    console.log(`ran autoprefixer on ${path.relative(BASE, dest)}`);
     return Promise.resolve();
   });
 
