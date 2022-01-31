@@ -142,10 +142,21 @@ const configVariants = [
 
 module.exports = (envArgs) => {
     if (envArgs) {
-        const variantName = Object.keys(envArgs)[0];
-        const selected = configVariants.find(variant => variant.name === variantName);
-        if (selected) {
-            return merge(webpackConfig, selected);
+
+        const selectedVariants = []
+
+        Object.keys(envArgs).forEach(function(envKey) {
+            for (let i = 0; i < configVariants.length; i++) {
+                const variant = configVariants[i];
+
+                if (envKey === variant.name) {
+                    selectedVariants.push(variant);
+                }
+            }
+        });
+
+        if (selectedVariants.length) {
+            return selectedVariants.map(variant => merge(webpackConfig, variant));
         }
     }
     return configVariants.map(variant => merge(webpackConfig, variant));
