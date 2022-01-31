@@ -1,4 +1,4 @@
-# <img height="70px" src="assets/logo.png" alt="JW Player Logo" title="JW Player Logo"/>
+# <img height="70px" src="assets/logo.svg" alt="JW Player Logo" title="JW Player Logo"/>
 
 > Plays everywhere, every time.
 
