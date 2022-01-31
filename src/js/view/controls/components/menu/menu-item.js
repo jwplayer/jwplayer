@@ -41,7 +41,7 @@ export class ResetMenuItem extends MenuItem {
         super(_content, _action, _template);
         this.statusEl = document.createElement('span');
         this.statusEl.classList.add('jw-reset-status-message');
-        this.statusEl.setAttribute('role', 'status');
+        this.statusEl.setAttribute('aria-live', 'polite');
         this.el.appendChild(this.statusEl);
     }
 }
