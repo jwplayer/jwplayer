@@ -1,4 +1,4 @@
-# <img height="70px" src="http://www.jwplayer.com/wp-content/uploads/JWP-GitHub-Banner-1.png" alt="JW Player Logo" title="JW Player Logo"/>
+# <img height="70px" src="assets/logo.svg" alt="JW Player Logo" title="JW Player Logo"/>
 
 > Plays everywhere, every time.
 
