@@ -215,6 +215,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const { newstate } = event;
         if (newstate === STATE_PLAYING) {
             _controller.trigger(AD_PLAY, event);
+            _model.set('isAdPlaying', true);
         } else if (newstate === STATE_PAUSED) {
             _controller.trigger(AD_PAUSE, event);
         }
@@ -275,6 +276,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             data.tag = _options.tag;
         }
         this.trigger(MEDIA_COMPLETE, data);
+        _model.set('isAdPlaying', false);
         _instreamItemNext.call(this, e);
     }
 

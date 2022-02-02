@@ -548,7 +548,7 @@ function View(_api, _model) {
 
         controls.on('dismissFloating', () => {
             this.stopFloating(true);
-            if (_model.get('autoPause') && !_model.get('autoPause').pauseAds) {
+            if (_model.get('autoPause') && !_model.get('autoPause').pauseAds && _model.get('isAdPlaying')) {
                 return;
             }
             _api.pause({ reason: 'interaction' });
