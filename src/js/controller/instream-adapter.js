@@ -448,6 +448,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _skipAd.call(this, {
             type: skipAdType
         });
+        _model.set('isAdPlaying', false);
     };
 
     function _instreamMeta(evt) {
