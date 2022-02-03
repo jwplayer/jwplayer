@@ -331,6 +331,10 @@ Object.assign(Controller.prototype, {
             _model.change('playlistItem', function(model, playlistItem) {
                 if (playlistItem) {
                     const { title, image } = playlistItem;
+
+                    _beforePlay = false;
+                    _interruptPlay = false;
+
                     if ('mediaSession' in navigator && window.MediaMetadata && (title || image)) {
                         try {
                             navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -617,7 +621,6 @@ Object.assign(Controller.prototype, {
                     playReason,
                     startTime: meta && meta.startTime ? meta.startTime : _model.get('playlistItem').starttime
                 });
-                _beforePlay = false;
 
                 if (inInteraction() && !mediaPool.primed()) {
                     mediaPool.prime();

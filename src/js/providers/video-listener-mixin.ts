@@ -39,7 +39,7 @@ const VideoListenerMixin: VideoListenerInt = {
 
     play(this: ProviderWithMixins): void {
         this.stallTime = -1;
-        if (!this.video.paused && this.state !== STATE_PLAYING) {
+        if (!this.video.paused && this.state !== STATE_PAUSED && this.state !== STATE_PLAYING) {
             this.setState(STATE_LOADING);
         }
     },
