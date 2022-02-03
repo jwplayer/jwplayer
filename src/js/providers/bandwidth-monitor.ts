@@ -8,6 +8,7 @@ export type BandwidthMonitor = {
     getEstimate: () => number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export default function BandwidthMonitor(provider: ProviderWithMixins, initialEstimate: number): BandwidthMonitor {
     let bandwidthMonitorInterval: number | undefined;
     let bandwidthEstimate = initialEstimate;

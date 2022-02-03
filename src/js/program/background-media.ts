@@ -28,6 +28,7 @@ interface BackgroundMedia {
  * @property {Promise} nextMedia - A promise representing the media loading in the background. Resolves with the mediaController.
  * @constructor
  */
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export default function BackgroundMedia(): BackgroundMedia {
     let currentMedia: MediaController | null = null;
     let nextMedia: MediaObject | null = null;

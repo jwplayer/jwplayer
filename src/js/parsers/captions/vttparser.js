@@ -454,6 +454,7 @@ VTTParser.prototype = {
     },
     flush: function () {
         const self = this;
+        /* eslint-disable no-useless-catch */
         try {
             // Finish decoding the stream.
             self.buffer += self.decoder.decode();
@@ -471,6 +472,7 @@ VTTParser.prototype = {
         } catch (e) {
             throw e;
         }
+        /* eslint-enable no-useless-catch */
         if (self.onflush) {
             self.onflush();
         }

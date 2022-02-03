@@ -383,7 +383,7 @@ function StyleBox() {
 StyleBox.prototype.applyStyles = function (styles, div) {
     div = div || this.div;
     for (const prop in styles) {
-        if (styles.hasOwnProperty(prop)) {
+        if (Object.prototype.hasOwnProperty.call(styles, prop)) {
             div.style[prop] = styles[prop];
         }
     }
@@ -696,7 +696,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
         if (!b.height || !b.width) {
             return specifiedPosition;
         }
-    
+
         for (let i = 0; i < axis.length; i++) {
             while (b.overlapsOppositeAxis(containerBox, axis[i]) ||
             (b.within(containerBox) && b.overlapsAny(boxPositions))) {

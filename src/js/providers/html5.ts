@@ -73,6 +73,7 @@ interface HTML5Provider extends ProviderWithMixins {
 }
 
 type WebkitHTMLVideoElement = HTMLVideoElement & {
+    // eslint-disable-next-line no-undef
     readonly audioTracks?: AudioTrackList;
     webkitEnterFullScreen?(): void;
     webkitEnterFullscreen?(): void;
@@ -979,6 +980,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
 
     this.getCurrentAudioTrack = _getCurrentAudioTrack;
 
+    // eslint-disable-next-line no-undef
     function _setAudioTracks(tracks: AudioTrackList | undefined): void {
         _audioTracks = null;
         if (!tracks) {
