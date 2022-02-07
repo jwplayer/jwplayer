@@ -241,7 +241,7 @@ function extractLanguage(doc) {
     return htmlTag ? htmlTag.getAttribute('lang') : null;
 }
 
-export function getLanguage() {
+export const getLanguage = function() {
     // Used in tests to override the value we return;
     if (typeof getLanguage.mock_ === 'string') {
         return getLanguage.mock_;
@@ -257,7 +257,7 @@ export function getLanguage() {
         } catch (e) {/* ignore */}
     }
     return language || navigator.language || 'en';
-}
+};
 
 getLanguage.mock_ = null;
 
@@ -275,12 +275,12 @@ export function isRtl(message) {
     return message.charCodeAt(0) === 8207 || rtlRegex.test(message);
 }
 
-export function isTranslationAvailable(language) {
+export const isTranslationAvailable = function(language) {
     if (typeof isTranslationAvailable.mock_ === 'boolean') {
         return isTranslationAvailable.mock_;
     }
     return translatedLanguageCodes.indexOf(normalizeLanguageCode(language)) >= 0;
-}
+};
 
 isTranslationAvailable.mock_ = null;
 
@@ -341,7 +341,7 @@ function mergeProperty(localizationObj, allOptionsObj, prop) {
     }
 }
 
-export function isLocalizationComplete(customLocalization) {
+export const isLocalizationComplete = function(customLocalization) {
     if (typeof isLocalizationComplete.mock_ === 'boolean') {
         return isLocalizationComplete.mock_;
     }
@@ -349,7 +349,7 @@ export function isLocalizationComplete(customLocalization) {
         const value = obj[key];
         return typeof value === 'string';
     });
-}
+};
 
 isLocalizationComplete.mock_ = null;
 
@@ -359,7 +359,10 @@ function normalizeNorwegian(language) {
     return /^n[bn]$/.test(language) ? 'no' : language;
 }
 
-export function loadJsonTranslation(base, languageCode) {
+export const loadJsonTranslation = function(base, languageCode) {
+    if (typeof loadJsonTranslation.mock_ === 'function') {
+        return loadJsonTranslation.mock_;
+    }
     let translationLoad = translationPromises[languageCode];
     if (!translationLoad) {
         const url = `${base}translations/${normalizeNorwegian(normalizeLanguageCode(languageCode))}.json`;
@@ -372,7 +375,9 @@ export function loadJsonTranslation(base, languageCode) {
         });
     }
     return translationLoad;
-}
+};
+
+loadJsonTranslation.mock_ = null;
 
 export function applyTranslation(baseLocalization, customization) {
     const localization = Object.assign({}, baseLocalization, customization);
