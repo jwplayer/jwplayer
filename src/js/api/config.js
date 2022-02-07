@@ -48,9 +48,6 @@ export function getLiveSyncDuration(liveSyncDuration) {
     if (liveSyncDuration < 5) {
         return 5;
     }
-    if (liveSyncDuration > 30) {
-        return 30;
-    } 
     return liveSyncDuration;
 }
 

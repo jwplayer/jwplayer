@@ -2,12 +2,23 @@ import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist, wrapPlaylistIndex } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
-import { composePlayerError, PlayerError,
-    SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER,
+import { composePlayerError, convertToPlayerError, PlayerError,
+    SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER, SETUP_ERROR_LIVESYNCDURATION,
     ERROR_LOADING_TRANSLATIONS, ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE } from 'api/errors';
 import { getCustomLocalization, isLocalizationComplete, loadJsonTranslation, isTranslationAvailable, applyTranslation } from 'utils/language';
 import { bundleContainsProviders } from 'api/core-loader';
 import pluginsPromise from 'plugins/plugins';
+
+export const validateConfig = (model) => {
+    return new Promise((accept, reject) => {
+        if (model.attributes.liveSyncDuration > 45) {
+            // console.log('validateConfig model if lsd > 45', model);
+            // accept(model.set('errorEvent', convertToPlayerError(null, SETUP_ERROR_LIVESYNCDURATION, null)));
+            accept(composePlayerError(new Error(), SETUP_ERROR_LIVESYNCDURATION));
+        }
+        accept();
+    });
+};
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');

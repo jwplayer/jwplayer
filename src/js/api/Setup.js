@@ -5,7 +5,8 @@ import {
     loadModules,
     loadSkin,
     loadTranslations,
-    loadPlugins
+    loadPlugins,
+    validateConfig
 } from 'api/setup-steps';
 import { PlayerError, SETUP_ERROR_TIMEOUT, MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
@@ -34,12 +35,14 @@ const Setup = function(_model) {
         const setup = __HEADLESS__ ?
             Promise.all([
                 loadCore(_model),
+                validateConfig(_model),
                 pluginsPromise,
                 loadProvider(_model),
                 new Promise((resolve) => setTimeout(resolve, 0))
             ]) :
             Promise.all([
                 loadCoreBundle(_model),
+                validateConfig(_model),
                 pluginsPromise,
                 loadProvider(_model),
                 loadModules(_model, api),

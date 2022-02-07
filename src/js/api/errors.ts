@@ -73,6 +73,11 @@ export const ASYNC_PLAYLIST_ITEM_REJECTED = 203700;
 export const ERROR_LOADING_PROVIDER = 204000;
 
 /**
+ * @enum {ErrorCode} The play attempt failed because no supported source was found.
+ */
+ export const SETUP_ERROR_LIVESYNCDURATION = 300100;
+
+/**
  * @enum {ErrorCode} The play attempt failed for unknown reasons.
  */
 const PLAY_ATTEMPT_FAILED_MISC = 303200;
