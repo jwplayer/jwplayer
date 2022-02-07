@@ -12,8 +12,6 @@ import pluginsPromise from 'plugins/plugins';
 export const validateConfig = (model) => {
     return new Promise((accept, reject) => {
         if (model.attributes.liveSyncDuration > 45) {
-            // console.log('validateConfig model if lsd > 45', model);
-            // accept(model.set('errorEvent', convertToPlayerError(null, SETUP_ERROR_LIVESYNCDURATION, null)));
             accept(composePlayerError(new Error(), SETUP_ERROR_LIVESYNCDURATION));
         }
         accept();

@@ -73,7 +73,7 @@ export const ASYNC_PLAYLIST_ITEM_REJECTED = 203700;
 export const ERROR_LOADING_PROVIDER = 204000;
 
 /**
- * @enum {ErrorCode} The play attempt failed because no supported source was found.
+ * @enum {ErrorCode} The LiveSyncDuration is higher than 45
  */
  export const SETUP_ERROR_LIVESYNCDURATION = 300100;
 
