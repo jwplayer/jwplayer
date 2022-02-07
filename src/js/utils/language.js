@@ -242,6 +242,10 @@ function extractLanguage(doc) {
 }
 
 export function getLanguage() {
+    // Used in tests to override the value we return;
+    if (typeof getLanguage.mock_ === 'string') {
+        return getLanguage.mock_;
+    }
     if (__HEADLESS__) {
         return navigator.language || 'en';
     }
@@ -254,6 +258,8 @@ export function getLanguage() {
     }
     return language || navigator.language || 'en';
 }
+
+getLanguage.mock_ = null;
 
 // TODO: Deprecate "no", keep "nn" and "nb"
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'el', 'es', 'fi', 'fr', 'he', 'id', 'it', 'ja', 'ko', 'nb', 'nl', 'nn', 'no', 'oc', 'pt', 'ro', 'ru', 'sl', 'sv', 'th', 'tr', 'vi', 'zh'];
@@ -270,8 +276,13 @@ export function isRtl(message) {
 }
 
 export function isTranslationAvailable(language) {
+    if (typeof isTranslationAvailable.mock_ === 'boolean') {
+        return isTranslationAvailable.mock_;
+    }
     return translatedLanguageCodes.indexOf(normalizeLanguageCode(language)) >= 0;
 }
+
+isTranslationAvailable.mock_ = null;
 
 export function getCustomLocalization(config, intl, languageAndCountryCode) {
     return Object.assign({}, getCustom(config), intl[normalizeLanguageCode(languageAndCountryCode)], intl[normalizeLanguageAndCountryCode(languageAndCountryCode)]);
@@ -331,13 +342,18 @@ function mergeProperty(localizationObj, allOptionsObj, prop) {
 }
 
 export function isLocalizationComplete(customLocalization) {
+    if (typeof isLocalizationComplete.mock_ === 'boolean') {
+        return isLocalizationComplete.mock_;
+    }
     return isDeepKeyCompliant(en, customLocalization, (key, obj) => {
         const value = obj[key];
         return typeof value === 'string';
     });
 }
 
-// Used to ensure nb/nn language codes both return 'no'. 
+isLocalizationComplete.mock_ = null;
+
+// Used to ensure nb/nn language codes both return 'no'.
 // TODO: Deprecate and replace with nn and nb
 function normalizeNorwegian(language) {
     return /^n[bn]$/.test(language) ? 'no' : language;

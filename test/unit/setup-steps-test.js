@@ -17,12 +17,13 @@ describe('Load Translations', function () {
     };
 
     beforeEach(function() {
-        sandbox.stub(Language, 'isTranslationAvailable').returns(true);
-        sandbox.stub(Language, 'isLocalizationComplete').returns(false);
+        isTranslationAvailable.mock_ = true;
+        isLocalizationComplete.mock_ = false;
     });
 
     afterEach(function() {
-        sandbox.restore();
+        isTranslationAvailable.mock_ = null;
+        isLocalizationComplete.mock_ = null;
     });
 
     function testLoadTranslations(expectedCode) {
