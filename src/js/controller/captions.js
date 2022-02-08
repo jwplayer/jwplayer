@@ -31,6 +31,7 @@ const Captions = function(_model) {
         const tracks = item.tracks;
         const len = tracks && tracks.length;
         if (len && !_model.get('renderCaptionsNatively')) {
+            debugger;
             for (let i = 0; i < len; i++) {
                 /* eslint-disable no-loop-func */
                 const track = tracks[i];
@@ -115,6 +116,10 @@ const Captions = function(_model) {
             id: 'off',
             label: 'Off'
         }];
+
+        if (!!_model.get('castActive')) {
+            _tracks = _tracks.filter(tr => tr._id.indexOf('nativesubtitles') !== -1);
+        }
         for (let i = 0; i < _tracks.length; i++) {
             list.push({
                 id: _tracks[i]._id,
