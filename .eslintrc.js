@@ -1,4 +1,4 @@
-{
+module.exports = {
     "root": true,
     "env": {
         "browser": true,
@@ -195,11 +195,16 @@
                 }],
                 "@typescript-eslint/no-explicit-any": 0,
                 "@typescript-eslint/adjacent-overload-signatures": "error",
-                "@typescript-eslint/ban-ts-ignore": "error",
-                "@typescript-eslint/ban-types": "error",
-                "@typescript-eslint/class-name-casing": "error",
+                "@typescript-eslint/ban-ts-comment": "error",
+                "@typescript-eslint/naming-convention": ["error", {
+                    "selector": "class",
+                    "format": ["PascalCase"]
+                }, {
+                    "selector": "interface",
+                    "format": ["PascalCase"],
+                    "custom": { "regex": "^I[A-Z]", "match": false }
+                }],
                 "@typescript-eslint/consistent-type-assertions": "error",
-                "@typescript-eslint/interface-name-prefix": "error",
                 "@typescript-eslint/member-delimiter-style": "error",
                 "@typescript-eslint/no-empty-function": "error",
                 "@typescript-eslint/no-empty-interface": "error",

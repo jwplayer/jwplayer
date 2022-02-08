@@ -221,17 +221,18 @@ describe('languageUtils', function() {
             }
         }
 
-        it('should return the htlm lang attribute', function() {
+        it('should return the html lang attribute', function() {
             const htmlLanguage = 'htmlLanguage';
             stubHtmlLanguage(document, htmlLanguage);
             expect(getLanguage()).to.equal(htmlLanguage);
         });
 
         it('should return the top html lang attribute when iframe has no lang attribute', function() {
+            Browser.isIframe.mock_ = true;
             const topHtmlLanguage = 'topHtmlLanguage';
             stubHtmlLanguage(window.top.document, topHtmlLanguage);
-            sandbox.stub(Browser, 'isIframe').returns(true);
             expect(getLanguage()).to.equal(topHtmlLanguage);
+            Browser.isIframe.mock_ = null;
         });
 
         it('should fallback to navigator.language when html lang attribute is absent', function() {
@@ -431,7 +432,7 @@ describe('languageUtils', function() {
         });
 
         it('should only use custom localization block if "forceLocalizationDefaults" is true', function() {
-            sandbox.stub(Language, 'getLanguage').returns('fr');
+            getLanguage.mock_ = 'fr';
             const config = new Config({
                 forceLocalizationDefaults: true,
                 localization,
@@ -449,6 +450,7 @@ describe('languageUtils', function() {
                 }
                 expect(configLocalization[key]).to.deep.equal(en[key]);
             });
+            getLanguage.mock_ = null;
         });
     });
 

@@ -308,6 +308,8 @@ interface DefaultProvider {
  * @property {number} [bitrate]
  */
 
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 const DefaultProvider: DefaultProvider = {
     // This function is required to determine if a provider can work on a given source
     supports: returnFalse,

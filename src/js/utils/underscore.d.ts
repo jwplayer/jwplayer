@@ -12,6 +12,9 @@
 
 /* eslint spaced-comment: 0 */
 /* eslint @typescript-eslint/no-empty-interface: 0 */
+/* eslint @typescript-eslint/no-shadow: 0 */
+/* eslint @typescript-eslint/no-unused-vars: 0 */
+/* eslint @typescript-eslint/no-redeclare: 0 */
 
 declare let _: _.UnderscoreStatic;
 export = _;
@@ -5070,7 +5073,7 @@ declare namespace _ {
         value<TResult>(): TResult;
     }
 
-    /* eslint-disable-next-line @typescript-eslint/class-name-casing */
+    /* eslint-disable-next-line @typescript-eslint/naming-convention */
     interface _Chain<T, V = T> {
 
         /* *************
@@ -6117,12 +6120,12 @@ declare namespace _ {
         value(): V;
     }
 
-    /* eslint-disable-next-line @typescript-eslint/class-name-casing */
+    /* eslint-disable-next-line @typescript-eslint/naming-convention */
     interface _ChainSingle<T> {
         value(): T;
     }
 
-    /* eslint-disable-next-line @typescript-eslint/class-name-casing */
+    /* eslint-disable-next-line @typescript-eslint/naming-convention */
     interface _ChainOfArrays<T> extends _Chain<T[]> {
         flatten(shallow?: boolean): _Chain<T>;
     }

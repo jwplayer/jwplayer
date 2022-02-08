@@ -17,12 +17,14 @@ describe('Load Translations', function () {
     };
 
     beforeEach(function() {
-        sandbox.stub(Language, 'isTranslationAvailable').returns(true);
-        sandbox.stub(Language, 'isLocalizationComplete').returns(false);
+        Language.isTranslationAvailable.mock_ = true;
+        Language.isLocalizationComplete.mock_ = false;
     });
 
     afterEach(function() {
-        sandbox.restore();
+        Language.isTranslationAvailable.mock_ = null;
+        Language.isLocalizationComplete.mock_ = null;
+        Language.loadJsonTranslation.mock_ = null;
     });
 
     function testLoadTranslations(expectedCode) {
@@ -34,13 +36,13 @@ describe('Load Translations', function () {
     }
 
     it('Triggers the translation load empty response warning when the response is empty', function() {
-        sandbox.stub(Language, 'loadJsonTranslation').resolves({ response: null });
+        Language.loadJsonTranslation.mock_ = () => Promise.resolve({response: null});
         testLoadTranslations(ERROR_LOADING_TRANSLATIONS_EMPTY_RESPONSE);
     });
 
     it('Triggers a warning composed of the translation loading base code and the ajax error code when ajax fails', function() {
         const ERROR_AJAX = 999;
-        sandbox.stub(Language, 'loadJsonTranslation').rejects({ code: ERROR_AJAX });
+        Language.loadJsonTranslation.mock_ = () => Promise.resolve({code: ERROR_AJAX});
         testLoadTranslations(ERROR_LOADING_TRANSLATIONS + ERROR_AJAX);
     });
 });

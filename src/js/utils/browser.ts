@@ -50,13 +50,18 @@ export const isAndroid = () => userAgentMatch(/Android/i) && !userAgentMatch(/Wi
 
 export const isMobile = () => isIOS() || isAndroid() || userAgentMatch(/Windows Phone/i);
 
-export function isIframe(): boolean {
+export const isIframe = function(): boolean {
+    if (typeof isIframe.mock_ === 'boolean') {
+        return isIframe.mock_;
+    }
     try {
         return window.self !== window.top;
     } catch (e) {
         return true;
     }
-}
+};
+
+isIframe.mock_ = null;
 
 // Always returns false as flash support is discontinued
 export const isFlashSupported = () => false;
