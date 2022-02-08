@@ -314,6 +314,12 @@ class SettingsMenu extends Menu {
             gearButton.setAttribute('aria-expanded', true);
         }
 
+        if (document.querySelector('.jw-breakpoint-0') || document.querySelector('.jw-breakpoint-1')) {
+            const mediaState = this.model._mediaModel.attributes.mediaState;
+            this.mediaStateWhenOpened = mediaState;
+            this.api.pause()
+        }
+
         this.el.parentNode.classList.add('jw-settings-open');
         this.trigger('visibility', { visible: true, evt });
         document.addEventListener('click', this.onDocumentClick);
@@ -329,6 +335,12 @@ class SettingsMenu extends Menu {
             gearButton.setAttribute('aria-expanded', false);
         }
         
+        if (document.querySelector('.jw-breakpoint-0') || document.querySelector('.jw-breakpoint-1')) {
+            if (this.mediaStateWhenOpened === 'playing') {
+                this.api.play();
+            }
+        }
+
         this.el.setAttribute('aria-expanded', 'false');
         this.el.parentNode.classList.remove('jw-settings-open');
         
