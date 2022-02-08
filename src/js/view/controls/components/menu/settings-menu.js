@@ -7,6 +7,7 @@ import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { normalizeKey, destroyMenu, selectMenuItem } from './utils';
 import UI from 'utils/ui';
+import { getBreakpoint } from 'view/utils/breakpoint';
 import { 
     nextSibling, 
     previousSibling,
@@ -314,8 +315,8 @@ class SettingsMenu extends Menu {
             gearButton.setAttribute('aria-expanded', true);
         }
 
-        if (document.querySelector('.jw-breakpoint-0') || document.querySelector('.jw-breakpoint-1')) {
-            const mediaState = this.model._mediaModel.attributes.mediaState;
+        if (getBreakpoint(this.model.get('containerWidth')) === 0 || getBreakpoint(this.model.get('containerWidth')) === 1) {
+            const mediaState = this.model.get('state')
             this.mediaStateWhenOpened = mediaState;
             this.api.pause()
         }
@@ -335,7 +336,7 @@ class SettingsMenu extends Menu {
             gearButton.setAttribute('aria-expanded', false);
         }
         
-        if (document.querySelector('.jw-breakpoint-0') || document.querySelector('.jw-breakpoint-1')) {
+        if (getBreakpoint(this.model.get('containerWidth')) === 0 || getBreakpoint(this.model.get('containerWidth')) === 1) {
             if (this.mediaStateWhenOpened === 'playing') {
                 this.api.play();
             }
