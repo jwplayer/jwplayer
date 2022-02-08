@@ -22,7 +22,9 @@ export default class SimpleModel extends Events {
     add(attr: string, value: any): void {
         Object.defineProperty(this, attr, {
             get: () => this.attributes[attr],
-            set: (val) => this.set(attr, val),
+            set: (val) => {
+                this.set(attr, val);
+            },
             enumerable: false
         });
         this.attributes[attr] = value;

@@ -454,22 +454,19 @@ VTTParser.prototype = {
     },
     flush: function () {
         const self = this;
-        try {
-            // Finish decoding the stream.
-            self.buffer += self.decoder.decode();
-            // Synthesize the end of the current cue or region.
-            if (self.cue || self.state === 'HEADER') {
-                self.buffer += '\n\n';
-                self.parse(undefined, true);
-            }
-            // If we've flushed, parsed, and we're still on the INITIAL state then
-            // that means we don't have enough of the stream to parse the first
-            // line.
-            if (self.state === 'INITIAL') {
-                throw new Error('Malformed WebVTT signature.');
-            }
-        } catch (e) {
-            throw e;
+
+        // Finish decoding the stream.
+        self.buffer += self.decoder.decode();
+        // Synthesize the end of the current cue or region.
+        if (self.cue || self.state === 'HEADER') {
+            self.buffer += '\n\n';
+            self.parse(undefined, true);
+        }
+        // If we've flushed, parsed, and we're still on the INITIAL state then
+        // that means we don't have enough of the stream to parse the first
+        // line.
+        if (self.state === 'INITIAL') {
+            throw new Error('Malformed WebVTT signature.');
         }
         if (self.onflush) {
             self.onflush();

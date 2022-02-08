@@ -63,7 +63,7 @@ function utf16BigEndianArrayToStr(array, startingIndex) {
     }
     return out;
 }
-    
+
 export function syncSafeInt(sizeArray) {
     const size = arrayToInt(sizeArray);
     return (size & 0x0000007F) |
@@ -82,7 +82,7 @@ function arrayToInt(array) {
     }
     return parseInt(sizeString);
 }
-    
+
 export function parseID3(activeCues = []) {
     return activeCues.reduce(function(data, cue) {
         if (!('value' in cue)) {
@@ -153,7 +153,7 @@ export function parseID3(activeCues = []) {
         }
 
         // These friendly names mapping provides compatibility with our implementation prior to 7.3
-        if (friendlyNames.hasOwnProperty(cue.value.key)) {
+        if (Object.prototype.hasOwnProperty.call(friendlyNames, cue.value.key)) {
             data[friendlyNames[cue.value.key]] = cue.value.data;
         }
         /* The meta event includes a metadata object with flattened cue key/data pairs
