@@ -316,8 +316,7 @@ class SettingsMenu extends Menu {
         }
 
         if (getBreakpoint(this.model.get('containerWidth')) === 0 || getBreakpoint(this.model.get('containerWidth')) === 1) {
-            const mediaState = this.model.get('state')
-            this.mediaStateWhenOpened = mediaState;
+            this.mediaStateWhenOpened = this.model.get('state')
             this.api.pause()
         }
 
