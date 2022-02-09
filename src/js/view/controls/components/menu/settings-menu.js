@@ -306,6 +306,8 @@ class SettingsMenu extends Menu {
     }
 
     open(evt) {
+        const currentBreakpoint = getBreakpoint(this.model.get('containerWidth'));
+
         if (this.visible) {
             return;
         }
@@ -315,7 +317,7 @@ class SettingsMenu extends Menu {
             gearButton.setAttribute('aria-expanded', true);
         }
 
-        if (getBreakpoint(this.model.get('containerWidth')) === 0 || getBreakpoint(this.model.get('containerWidth')) === 1) {
+        if (currentBreakpoint < 2) {
             this.mediaStateWhenOpened = this.model.get('state')
             this.api.pause()
         }
@@ -330,12 +332,13 @@ class SettingsMenu extends Menu {
     close(evt) {
         const key = normalizeKey(evt && evt.sourceEvent && evt.sourceEvent.key);
         const gearButton = this.controlbar.elements.settingsButton.element();
-        
+        const currentBreakpoint = getBreakpoint(this.model.get('containerWidth'));
+
         if (gearButton) {
             gearButton.setAttribute('aria-expanded', false);
         }
         
-        if (getBreakpoint(this.model.get('containerWidth')) === 0 || getBreakpoint(this.model.get('containerWidth')) === 1) {
+        if (currentBreakpoint < 2) {
             if (this.mediaStateWhenOpened === 'playing') {
                 this.api.play();
             }
@@ -350,7 +353,7 @@ class SettingsMenu extends Menu {
         if (this.openMenus.length) {
             this.closeChildren();
         }
-        
+
         // If closed by keypress, focus appropriate element.
         let focusEl;
 
