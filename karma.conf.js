@@ -51,6 +51,30 @@ const webpackTestConfig = merge(webpackConfig, {
     }
 });
 
+const inServerMode = () => {
+  for (let i = 0; i < process.argv.length; i++) {
+    const arg = process.argv[i];
+
+    if ((/^(--no-single-run|--noSingleRun|--no-singleRun|--single-run=false|--singleRun=false)$/i).test(arg)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+// detect if we are being run in "server mode" with --no-single-run
+if (inServerMode()) {
+    for (let i = 0; i < webpackTestConfig.module.rules.length;i++) {
+        const rule = webpackTestConfig.module.rules[i];
+
+        if (rule.use && rule.use.loader && rule.use.loader === '@jsdevtools/coverage-istanbul-loader') {
+            webpackTestConfig.module.rules.splice(i, 1);
+            break;
+        }
+    }
+}
+
 delete webpackTestConfig.entry;
 delete webpackTestConfig.output;
 

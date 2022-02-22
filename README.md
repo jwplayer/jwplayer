@@ -3,13 +3,13 @@
 > Plays everywhere, every time.
 
 Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
-  
+
 ## Disclaimer
 This is the non-commercial version of JW Player. It does not contain the same features as the commercial-use player available from [jwplayer.com](https://www.jwplayer.com/). Commercial use and access to features requires a license. Learn more at https://www.jwplayer.com/pricing/. If you are a paid customer and want a player, please download it from the "Downloads" section of your JW Dashboard.
-  
+
 ## Official Documentation
 - [Developer Portal](https://developer.jwplayer.com/)
-- [API Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/api/javascript_api_reference/) 
+- [API Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/api/javascript_api_reference/)
 - [Configuration Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/)
 - [Demos](https://developer.jwplayer.com/jw-player/demos/)
 - [Support](http://support.jwplayer.com/)
@@ -59,9 +59,7 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
 
 #### Requirements:
 
-- [Node.js](http://nodejs.org/download/) with npm
-- Install global npm dependencies
-`npm install -g eslint grunt-cli jsdoc karma-cli stylelint webpack webpack-cli`
+- [Node.js](http://nodejs.org/download/) 16 with npm v8
 
 #### Steps:
 
@@ -78,42 +76,31 @@ git remote add upstream https://github.com/jwplayer/jwplayer
 2. Install the dependencies:
 ````bash
 # Install dependencies
-npm install -g eslint grunt-cli jsdoc karma-cli stylelint webpack webpack-cli
 npm install
-# Optionally, install webpack-dev-server
-npm install -g webpack-dev-server
 ````
- 
+
 3. Build the player:
 ````bash
 # Build once
-grunt
+npm run build
 # Complete Watch - builds JS, lints, and tests on each change
-grunt serve
-# Quick JS Watch - build only. Requires webpack-dev-server to be installed globally
-webpack-dev-server -w --env.debug --port 8888 --output-public-path /bin-debug/
+npm run start
 # Open the test page from another terminal window
-open http://localhost:8888/test/manual/
+open http://localhost:3000/test/manual/
 ````
- 
+
 4. Test your code:
 ````bash
-# All browsers
-grunt test
+# All configured browsers
+npm run test
 # Individual browsers - chrome, firefox, safari
-grunt karma:{BROWSER} e.g. grunt karma:chrome
+npm run test -- --browsers=Chrome,Firefox
 ````
- 
+
 5. Lint your code:
 ````bash
 npm run lint
 ````
-
-6. Setup git pre-push hook
-This will add a `pre-push` script to the project's .git/hooks folder that will lint and run unit tests on the branch before any push.
-````bash
-grunt hooks
-```` 
 
 ## Framework Integration
 
