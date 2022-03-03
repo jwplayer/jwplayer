@@ -58,8 +58,8 @@ export const captionStyleItems = (localization: CaptionsLocalization) => [
     {
         name: 'fontOpacity',
         label: localization.fontOpacity,
-        options: ['100%', '75%', '25%'],
-        values: [100, 75, 25],
+        options: ['100%', '75%','50%', '25%'],
+        values: [100, 75, 50, 25],
         defaultVal: 100,
         
     },
