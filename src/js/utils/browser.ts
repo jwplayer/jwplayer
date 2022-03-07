@@ -46,7 +46,14 @@ export function isAndroidNative(): boolean {
     return isAndroid();
 }
 
-export const isAndroid = () => userAgentMatch(/Android/i) && !userAgentMatch(/Windows Phone/i);
+export const isAndroid = function(): boolean {
+    if (typeof isAndroid.mock_ === 'boolean') {
+        return isAndroid.mock_;
+    }
+    return userAgentMatch(/Android/i) && !userAgentMatch(/Windows Phone/i);
+};
+
+isAndroid.mock_ = null;
 
 export const isMobile = () => isIOS() || isAndroid() || userAgentMatch(/Windows Phone/i);
 

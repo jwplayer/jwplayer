@@ -668,6 +668,11 @@ function View(_api, _model) {
             _model.set('fullscreen', newState);
         }
 
+        // Lock orientation to Landscape in fullscreen on android
+        if (OS.android && newState) {
+            screen.orientation.lock('landscape-primary');
+        }
+
         _responsiveListener();
         clearTimeout(_resizeMediaTimeout);
         _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
