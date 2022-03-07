@@ -27,7 +27,7 @@ const webpackTestConfig = merge(webpackConfig, {
     },
     resolve: {
         alias: {
-            'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
+            'test/underscore': require.resolve('underscore/underscore.js'),
             'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
             sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
             data: path.resolve(__dirname + '/test/data'),
@@ -59,7 +59,6 @@ module.exports = function(config) {
     const isJenkins = !!env.JENKINS_HOME;
     const serverPort = env.KARMA_PORT || 9876;
     const testReporters = [
-        'mocha',
         'coverage-istanbul'
     ];
     let browsers = [
@@ -117,7 +116,7 @@ module.exports = function(config) {
         captureTimeout: 120 * 1000, // default 60000
 
         files: [
-            { pattern: './node_modules/intersection-observer/intersection-observer.js' },
+            { pattern: require.resolve('intersection-observer/intersection-observer.js') },
             { pattern: './test/index.js' },
             { pattern: './test/files/**', included: false },
             { pattern: './src/js/*', included: false }

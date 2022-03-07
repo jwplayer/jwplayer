@@ -115,7 +115,7 @@ const Captions = function(_model) {
             id: 'off',
             label: 'Off'
         }];
-        if (!!_model.get('castActive')) {
+        if (_model.get('castActive')) {
             _tracks = _tracks.filter(tr => tr._id.indexOf('nativesubtitles') !== -1);
         }
         for (let i = 0; i < _tracks.length; i++) {

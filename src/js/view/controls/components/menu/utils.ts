@@ -29,14 +29,14 @@ export interface CaptionsLocalization {
 const colorValues: string[] = ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#ffff00', 'ff00ff', '#00ffff'];
 
 const fontValues: string[] = [
-    'Arial', 
-    'Courier', 
-    'Georgia', 
-    'Impact', 
-    'Lucida Console', 
-    'Tahoma', 
-    'Times New Roman', 
-    'Trebuchet MS', 
+    'Arial',
+    'Courier',
+    'Georgia',
+    'Impact',
+    'Lucida Console',
+    'Tahoma',
+    'Times New Roman',
+    'Trebuchet MS',
     'Verdana'
 ];
 
@@ -53,15 +53,15 @@ export const captionStyleItems = (localization: CaptionsLocalization) => [
         options: colors || colorOptions(localization),
         values: colorValues,
         defaultVal: '#ffffff',
-        
+
     },
     {
         name: 'fontOpacity',
         label: localization.fontOpacity,
-        options: ['100%', '75%','50%', '25%'],
+        options: ['100%', '75%', '50%', '25%'],
         values: [100, 75, 50, 25],
         defaultVal: 100,
-        
+
     },
     {
         name: 'userFontScale',
@@ -115,7 +115,7 @@ export const captionStyleItems = (localization: CaptionsLocalization) => [
     },
 ];
 
-export const normalizeKey = (sourceEventKey?: string): string | undefined => 
+export const normalizeKey = (sourceEventKey?: string): string | undefined =>
     sourceEventKey && sourceEventKey.replace(/(Arrow|ape)/, '');
 
 const colorOptions = (localization: CaptionsLocalization): string[] => {
