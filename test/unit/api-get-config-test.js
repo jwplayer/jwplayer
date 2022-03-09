@@ -12,6 +12,7 @@ describe('Api.getConfig', function() {
         container.id = 'player';
         document.body.appendChild(container);
         sandbox.spy(console, 'error');
+        localStorage.clear();
     });
 
     afterEach(() => {
@@ -24,6 +25,7 @@ describe('Api.getConfig', function() {
             instances[i].remove();
         }
         sandbox.restore();
+        localStorage.clear();
     });
 
     it('has expected model members', function() {
