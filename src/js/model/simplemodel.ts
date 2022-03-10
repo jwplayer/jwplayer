@@ -34,16 +34,12 @@ export default class SimpleModel extends Events {
         return this.attributes[attr];
     }
 
-    set(attr: string, val: any, cast?: boolean): void {
+    set(attr: string, val: any): void {
         if (this.attributes[attr] === val) {
             return;
         }
         const oldVal = this.attributes[attr];
         this.attributes[attr] = val;
-        // if set is being called on cast model, return early before triggering duplicate event.
-        if (cast) {
-            return;
-        }
         this.trigger('change:' + attr, this, val, oldVal);
     }
 

@@ -26,6 +26,12 @@ const Captions = function(_model) {
 
     // Update tracks once we know "renderCaptionsNatively" based on provider
     _model.on('change:itemReady', () => {
+        // updating captionsList while casted. Since cast no longer sets playlistItem, we need to mimic the change:playlistItem functionality here
+        if (_model.get('castActive')) {
+            _tracks = [];
+            _tracksById = {};
+            _unknownCount = 0;
+        }
         // Sideload tracks when not rendering natively
         const item = _model.get('playlistItem');
         const tracks = item.tracks;
