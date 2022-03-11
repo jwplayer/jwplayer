@@ -7,6 +7,8 @@ import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { normalizeKey, destroyMenu, selectMenuItem } from './utils';
 import UI from 'utils/ui';
+import { STATE_PLAYING, STATE_BUFFERING } from 'events/events';
+import { getBreakpoint } from 'view/utils/breakpoint';
 import { 
     nextSibling, 
     previousSibling,
@@ -305,8 +307,15 @@ class SettingsMenu extends Menu {
     }
 
     open(evt) {
+        const currentBreakpoint = getBreakpoint(this.model.get('containerWidth'));
+
         if (this.visible) {
             return;
+        }
+
+        if (currentBreakpoint < 2) {
+            this.mediaStateWhenOpened = this.model.get('state');
+            this.api.pause();
         }
 
         const gearButton = this.controlbar.elements.settingsButton.element();
@@ -324,9 +333,16 @@ class SettingsMenu extends Menu {
     close(evt) {
         const key = normalizeKey(evt && evt.sourceEvent && evt.sourceEvent.key);
         const gearButton = this.controlbar.elements.settingsButton.element();
-        
+        const currentBreakpoint = getBreakpoint(this.model.get('containerWidth'));
+
         if (gearButton) {
             gearButton.setAttribute('aria-expanded', false);
+        }
+
+        if (currentBreakpoint < 2) {
+            if (this.mediaStateWhenOpened === STATE_PLAYING || this.mediaStateWhenOpened === STATE_BUFFERING) {
+                this.api.play();
+            }
         }
         
         this.el.setAttribute('aria-expanded', 'false');

@@ -13,7 +13,7 @@ describe('Menu', () => {
 
     beforeEach(() => {
         viewModel = new SimpleModel();
-        api = MockApi;
+        api = new MockApi();
         controlbar = {};
         controlbar.on = sinon.stub();
         controlbar.elements = {
