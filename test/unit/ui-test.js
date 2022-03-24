@@ -170,7 +170,10 @@ describe('UI', function() {
         const dragStartSpy = sandbox.spy();
         const dragSpy = sandbox.spy();
         const dragEndSpy = sandbox.spy();
-        const ui = new UI(button).on('dragStart', dragStartSpy).on('drag', dragSpy).on('dragEnd', dragEndSpy);
+        const ui = new UI(button)
+            .on('dragStart', dragStartSpy)
+            .on('drag', dragSpy)
+            .on('dragEnd', dragEndSpy);
         let startResult;
         let downSourceEvent;
         let moveSourceEvent;
@@ -228,8 +231,8 @@ describe('UI', function() {
         expect(dragStartSpy).calledWith({
             type: 'dragStart',
             pointerType,
-            pageX: 5,
-            pageY: 5,
+            pageX: 5 + window.pageXOffset,
+            pageY: 5 + window.pageYOffset,
             sourceEvent: moveSourceEvent,
             target: button,
             currentTarget: button
@@ -238,8 +241,8 @@ describe('UI', function() {
         expect(dragSpy).calledWith({
             type: 'drag',
             pointerType,
-            pageX: 5,
-            pageY: 5,
+            pageX: 5 + window.pageXOffset,
+            pageY: 5 + window.pageYOffset,
             sourceEvent: moveSourceEvent,
             target: button,
             currentTarget: button
@@ -248,8 +251,8 @@ describe('UI', function() {
         expect(dragEndSpy).calledWith({
             type: 'dragEnd',
             pointerType,
-            pageX: 5,
-            pageY: 5,
+            pageX: 5 + window.pageXOffset,
+            pageY: 5 + window.pageYOffset,
             sourceEvent: upSourceEvent,
             target: button,
             currentTarget: button
@@ -299,8 +302,8 @@ describe('UI', function() {
         expect(overSpy).calledWith({
             type: 'over',
             pointerType: 'mouse',
-            pageX: 0,
-            pageY: 0,
+            pageX: 0 + window.pageXOffset,
+            pageY: 0 + window.pageYOffset,
             sourceEvent: overSourceEvent,
             target: button,
             currentTarget: button
@@ -309,8 +312,8 @@ describe('UI', function() {
         expect(outSpy).calledWith({
             type: 'out',
             pointerType: 'mouse',
-            pageX: 0,
-            pageY: 0,
+            pageX: 0 + window.pageXOffset,
+            pageY: 0 + window.pageYOffset,
             sourceEvent: outSourceEvent,
             target: button,
             currentTarget: button
@@ -319,8 +322,8 @@ describe('UI', function() {
         expect(moveSpy).calledWith({
             type: 'move',
             pointerType: 'mouse',
-            pageX: 0,
-            pageY: 0,
+            pageX: 0 + window.pageXOffset,
+            pageY: 0 + window.pageYOffset,
             sourceEvent: moveSourceEvent,
             target: button,
             currentTarget: button
