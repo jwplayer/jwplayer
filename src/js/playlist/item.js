@@ -16,7 +16,7 @@ const isArray = Array.isArray;
  * @property {number} [dvrSeekLimit] - For live streams, the number of seconds away from the live edge the user is allowed to seek to
  */
 
-const Item = function(config) {
+const item = function(config) {
     config = config || {};
     if (!isArray(config.tracks)) {
         delete config.tracks;
@@ -79,4 +79,4 @@ const Item = function(config) {
     return playlistItem;
 };
 
-export default Item;
+export default item;
