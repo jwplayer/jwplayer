@@ -71,6 +71,7 @@ export default class AdProgramController extends ProgramController {
     }
 
     setActiveItem(index) {
+        this.adPlaying = true;
         this.stopVideo();
         this.provider = null;
         return super.setActiveItem(index)
@@ -148,6 +149,7 @@ export default class AdProgramController extends ProgramController {
     }
 
     destroy() {
+        this.adPlaying = false;
         const { model, mediaPool, playerModel } = this;
         model.off();
 
