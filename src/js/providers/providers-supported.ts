@@ -58,9 +58,8 @@ export function supportsType(source: PlaylistItemSource): boolean {
     // Ex: ['video/webm; codecs="vp9"', 'audio/webm; codecs="vorbis"']
     const mediaTypes = source.mediaTypes;
     if (mediaTypes && mediaTypes.length) {
-        mimeType = [mimeType].concat(mediaTypes.slice()).join('; ');
+        return mediaTypes.every((mt) => Boolean(video && video.canPlayType && video.canPlayType(mt)));
     }
-
     // Last, but not least, we ask the browser
     // (But only if it's a video with an extension known to work in HTML5)
     return !!video.canPlayType(mimeType);
