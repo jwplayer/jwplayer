@@ -16,7 +16,7 @@
     "@typescript-eslint/eslint-plugin": "5.9.0",
     "@typescript-eslint/eslint-plugin-tslint": "5.9.0",
     "@typescript-eslint/parser": "5.9.0",
-    "async": "2.6.0",
+    "async": "3.2.2",
     "autoprefixer": "10.4.2",
     "babel-loader": "8.2.3",
     "chai": "4.3.6",
