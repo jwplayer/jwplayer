@@ -104,7 +104,6 @@ export function sanitizeElementAttributes(element) {
             const link = attributes[i].value;
             if (/javascript:|javascript&colon;/.test(link) || !validUrl.test(link)) {
                 element.removeAttribute(name);
-            } else {
                 console.warn('Invalid or unsafe URL');
             }
         }
