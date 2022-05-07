@@ -753,8 +753,8 @@ Object.assign(Controller.prototype, {
             if (adState && adState !== STATE_PAUSED) {
                 _updatePauseReason(meta);
                 if (adState === STATE_BUFFERING) {
-                    _this._instreamAdapter.once('state', _pauseAd, _this);
-                    _this._instreamAdapter.noResume = true;
+                    // If floating is dismissed during ad buffering, pause playback
+                    _view.once('dismissFloating', _noResumeAd);
                 } else {
                     _api.pauseAd(true, meta);
                 }
@@ -775,6 +775,11 @@ Object.assign(Controller.prototype, {
                         _interruptPlay = true;
                     }
             }
+        }
+
+        function _noResumeAd() {
+            _this._instreamAdapter.once('state', _pauseAd);
+            _this._instreamAdapter.noResume = true;
         }
 
         function _pauseAd() {
@@ -1248,9 +1253,13 @@ Object.assign(Controller.prototype, {
                 if (noResume) {
                     this._instreamAdapter.noResume = true;
                 }
+                this._instreamAdapter.off('state', _pauseAd);
+
                 this._instreamAdapter.destroy();
                 this._instreamAdapter = null;
             }
+
+            _view.off('dismissFloating', _noResumeAd);
         };
 
         // Setup ApiQueueDecorator after instance methods have been assigned
