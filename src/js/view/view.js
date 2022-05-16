@@ -244,7 +244,7 @@ function View(_api, _model) {
         displayClickHandler = clickHandlerHelper(_api, _model, _videoLayer);
 
         focusHelper = new UI(_playerElement).on('click', function() {});
-        fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler, _model);
+        fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
         _model.on('change:hideAdsControls', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
