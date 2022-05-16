@@ -313,7 +313,7 @@ class SettingsMenu extends Menu {
             return;
         }
 
-        if (currentBreakpoint < 2) {
+        if (currentBreakpoint < 2 && this.model.get('streamType') !== 'LIVE') {
             this.mediaStateWhenOpened = this.model.get('state');
             this.api.pause();
         }
