@@ -4,6 +4,12 @@
     background-size: cover;
     background-color: #000;
 
+    // When the player is dismissible it needs a little more space
+    // on the bottom for the float-bar
+    &.jw-floating-dismissible .jw-wrapper {
+        bottom: 3rem;
+    }
+
     .jw-wrapper {
         position: fixed;
         //  Maximum allowable z-index to ensure always on top.
@@ -48,24 +54,69 @@
         }
     }
 
-    .jw-float-icon {
-        pointer-events: all;
-        cursor: pointer;
-        display: none;
-
-        .jw-svg-icon {
-            filter: drop-shadow(0 0 1px #000);
-        }
+    .jw-icon {
+        margin: 0;
+        padding: 0;
     }
 
-    &.jw-floating-dismissible .jw-dismiss-icon {
-        display: none;
+    .jw-float-bar-icon {
+        pointer-events: all;
+        cursor: pointer;
+        display: flex;
+        height: 24px;
+        width: 24px;
+
+        &:hover {
+            background: #1d1d1d;
+            border-radius: 100px;
+        }
+
+        .jw-svg-icon {
+            display: block;
+            margin: auto;
+            padding: 0;
+            height: 10px;
+            width: 10px;
+        }
     }
 }
 
 .jw-flag-floating.jw-floating-dismissible {
-    &.jw-flag-ads .jw-float-icon {
-        display: flex;
+    // The floating dismiss button is hidden during Ads UNLESS we are in
+    // outstream mode and the outstream player is dismissible
+    &.jw-flag-ads:not(.jw-flag-ad-dismissible) .jw-float-bar-icon {
+        display: none;
+    }
+
+    // When floating, we hide the outstream player's dismiss button
+    // because we are using the floating player dismiss button instead
+    .jw-dismiss-icon {
+        display: none;
+    }
+
+    .jw-float-bar {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        position: fixed;
+        //  Maximum allowable z-index to ensure always on top.
+        z-index: 2147483647;
+        top: 100%;
+        height: 32px;
+        width: 100%;
+        max-height: 32px;
+        margin: 0 auto;
+
+        @media screen and (min-width : 481px) {
+            &:not(.jw-floating-dragged) {
+                animation: jw-float-to-bottom 150ms cubic-bezier(0, 0.25, 0.25, 1) forwards 1;
+            }
+        }
+        @media screen and (max-width : 480px) {
+            left: 0;
+            right: 0;
+            top: auto;
+        }
     }
 
     &.jw-state-paused,
@@ -73,20 +124,31 @@
         .jw-logo {
             display: none;
         }
-
-        .jw-float-icon {
-            display: flex;
-        }
     }
 }
 
-.jw-float-icon {
+.jw-float-bar {
     display: none;
     position: absolute;
-    top: @dismiss-top-padding;
-    right: @dismiss-right-padding;
-    align-items: center;
-    justify-content: center;
+    padding: 4px 8px;
+    background: #2f2d2d;
+}
+
+.jw-float-bar-title {
+    width: 100%;
+    max-height: 24px;
+    font-family: "Arial", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 16px;
+    margin-left: 0;
+    padding-right: 22px;
+    /* stylelint-disable-next-line */
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 @keyframes jw-float-to-bottom {

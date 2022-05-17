@@ -171,6 +171,10 @@ export default class FloatingController {
                         transition: 'transform 150ms cubic-bezier(0, 0.25, 0.25, 1)'
                     });
                 });
+            } else {
+                style(this._wrapperEl, {
+                    transform: 'translate(0)'
+                });
             }
             window.setTimeout(() => {
                 this.transitionFloating(false);
@@ -303,6 +307,9 @@ export default class FloatingController {
         if (this.getFloatingConfig() && this._isMobile) {
             viewsManager.removeScrollHandler(this._boundThrottledMobileFloatScrollHandler);
         }
+
+        // Basically the same as destroy
+        this._floatingUI.disable();
 
         removeFPWatcher(this);
         this._model.off('change:floating', this._boundInitFloatingBehavior);

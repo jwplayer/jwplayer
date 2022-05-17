@@ -15,7 +15,7 @@ import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
 import ShortcutsTooltip from 'view/controls/shortcuts-tooltip';
-import FloatingCloseButton from 'view/floating/floating-close-button';
+import FloatingCloseBar from '../floating/floating-close-bar';
 
 require('css/controls.less');
 
@@ -142,16 +142,10 @@ export default class Controls extends Events {
         this.rightClickMenu.setup(model, this.playerContainer, this.wrapperElement);
 
         // Floating Close Button
-        let floatingConfig = model.get('floating');
+        const floatingConfig = model.get('floating');
 
         if (floatingConfig) {
-            const floatCloseButton = new FloatingCloseButton(element, model.get('localization').close);
-            const doNotForward = true;
-            floatCloseButton.on(USER_ACTION, () => this.trigger('dismissFloating', { doNotForward }));
-
-            if (floatingConfig.dismissible !== false) {
-                addClass(this.playerContainer, 'jw-floating-dismissible');
-            }
+            this.setupFloating(api, model);
         }
 
         // Controlbar
@@ -624,6 +618,7 @@ export default class Controls extends Events {
         }
         removeClass(this.playerContainer, 'jw-flag-autostart');
         this.controlbar.elements.time.element().setAttribute('tabindex', '-1');
+        this.trigger('instreamchange');
     }
 
     destroyInstream(model) {
@@ -633,5 +628,68 @@ export default class Controls extends Events {
             addClass(this.playerContainer, 'jw-flag-autostart');
         }
         this.controlbar.elements.time.element().setAttribute('tabindex', '0');
+        this.trigger('instreamchange');
+    }
+
+    setupFloating(api, model) {
+        const l10n = model.get('localization');
+        const adConfig = model.get('advertising');
+        const floatingConfig = model.get('floating');
+        const doNotForward = true;
+
+        const dismissPlayer = () => this.trigger('dismissFloating', { doNotForward });
+        const destroyPlayer = () => api.remove();
+        const getCurrentTitle = () => {
+            let title = model.get('playlistItem').title;
+
+            if (!floatingConfig.showTitle) {
+                return ' ';
+            }
+            if (this.instreamState) {
+                if (l10n.advertising && l10n.advertising.displayHeading) {
+                    return l10n.advertising.displayHeading;
+                }
+                return ' ';
+            }
+
+            return title;
+        };
+
+        const floatCloseBar = new FloatingCloseBar(this.wrapperElement, l10n.close, getCurrentTitle());
+
+        // When the outstream player is in use and the ad is set to dismissible,
+        // then we completely destroy the player rather than just closing the float
+        if (adConfig && adConfig.outstream && adConfig.dismissible) {
+            floatCloseBar.on(USER_ACTION, destroyPlayer);
+        } else {
+            floatCloseBar.on(USER_ACTION, dismissPlayer);
+        }
+
+        // Float is dismissible by default so even an undefined `floating.dismissible` needs to evaluate to true
+        const floatDismissible = floatingConfig && floatingConfig.dismissible !== false;
+
+        if (floatDismissible) {
+            addClass(this.playerContainer, 'jw-floating-dismissible');
+        }
+
+        // Basically, the rule currently is:
+        // If an outstream player is dismissible OR we aren't in an outstream player at all:
+        // Then ads are dissmissible IF the float itself is dismissible.
+        const adDismissible = adConfig && (!adConfig.outstream || (adConfig.outstream && adConfig.dismissible));
+
+        // Add a flag so that we know in CSS that any ads are dismissible
+        // This enables the close button even when ads are active
+        if (adDismissible) {
+            addClass(this.playerContainer, 'jw-flag-ad-dismissible');
+        }
+
+        // Any time the model changes, we should update the title
+        model.on('change:playlistItem', () => {
+            floatCloseBar.setTitle(getCurrentTitle());
+        }, this);
+
+        this.on('instreamchange', () => {
+            floatCloseBar.setTitle(getCurrentTitle());
+        });
     }
 }

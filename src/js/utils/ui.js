@@ -202,7 +202,7 @@ function initSelectListeners(ui) {
             return;
         }
 
-        if (e.isPrimary && target.tageName === 'BUTTON') {
+        if (e.isPrimary && target.tagName === 'BUTTON') {
             target.focus();
         }
         ui.lastStart = now();

@@ -24,6 +24,7 @@ import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import PIP_ON_ICON from 'assets/SVG/pip-on.svg';
 import PIP_OFF_ICON from 'assets/SVG/pip-off.svg';
 import CLOSE_ICON from 'assets/SVG/close.svg';
+import FLOATING_CLOSE_ICON from 'assets/SVG/floating-close.svg';
 import JW_LOGO from 'assets/SVG/jw-logo.svg';
 import svgParse from 'utils/svgParser';
 
@@ -31,6 +32,7 @@ let collection: XMLDocument | null = null;
 
 export function cloneIcon(name: string): Node | null {
     const icon = getCollection().querySelector(nameToClass(name));
+
     if (icon) {
         return clone(icon);
     }
@@ -42,6 +44,7 @@ export function cloneIcon(name: string): Node | null {
 
 export function cloneIcons(names: string): Node[] {
     const icons = getCollection().querySelectorAll(names.split(',').map(nameToClass).join(','));
+
     if (__DEBUG__ && !icons.length) {
         throw new Error('Icons not found ' + names);
     }
@@ -60,6 +63,7 @@ function getCollection(): XMLDocument {
     if (!collection) {
         collection = parseCollection();
     }
+
     return collection;
 }
 
@@ -91,6 +95,7 @@ function parseCollection(): XMLDocument {
         FULLSCREEN_EXIT_ICON +
         FULLSCREEN_ENTER_ICON +
         CLOSE_ICON +
+        FLOATING_CLOSE_ICON +
         JW_LOGO +
         '</xml>');
 }
