@@ -618,7 +618,6 @@ export default class Controls extends Events {
         }
         removeClass(this.playerContainer, 'jw-flag-autostart');
         this.controlbar.elements.time.element().setAttribute('tabindex', '-1');
-        this.trigger('instreamchange');
     }
 
     destroyInstream(model) {
@@ -628,7 +627,6 @@ export default class Controls extends Events {
             addClass(this.playerContainer, 'jw-flag-autostart');
         }
         this.controlbar.elements.time.element().setAttribute('tabindex', '0');
-        this.trigger('instreamchange');
     }
 
     setupFloating(api, model) {
@@ -668,28 +666,18 @@ export default class Controls extends Events {
         // Float is dismissible by default so even an undefined `floating.dismissible` needs to evaluate to true
         const floatDismissible = floatingConfig && floatingConfig.dismissible !== false;
 
+        // NOTE: When adConfig.dismissible == true, this class is set on the player container elsewhere
         if (floatDismissible) {
             addClass(this.playerContainer, 'jw-floating-dismissible');
         }
 
-        // Basically, the rule currently is:
-        // If an outstream player is dismissible OR we aren't in an outstream player at all:
-        // Then ads are dissmissible IF the float itself is dismissible.
-        const adDismissible = adConfig && (!adConfig.outstream || (adConfig.outstream && adConfig.dismissible));
-
-        // Add a flag so that we know in CSS that any ads are dismissible
-        // This enables the close button even when ads are active
-        if (adDismissible) {
-            addClass(this.playerContainer, 'jw-flag-ad-dismissible');
-        }
-
-        // Any time the model changes, we should update the title
+        // Any time the model changes, we should update the title...
         model.on('change:playlistItem', () => {
             floatCloseBar.setTitle(getCurrentTitle());
         }, this);
 
-        this.on('instreamchange', () => {
+        model.on('instreamMode', () => {
             floatCloseBar.setTitle(getCurrentTitle());
-        });
+        }, this);
     }
 }

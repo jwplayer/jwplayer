@@ -30,9 +30,11 @@ export default class FloatingCloseBar extends Events {
     setTitle(title) {
         if (title) {
             this.title.innerText = title;
+            this.title.setAttribute('aria-label', title);
         } else {
             // We set it to a space to stop the DIV from collapsing
             this.title.innerHTML = '&nbsp;';
+            this.title.setAttribute('aria-label', '');
         }
     }
 }
