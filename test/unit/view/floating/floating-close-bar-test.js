@@ -23,7 +23,7 @@ describe('FloatingCloseBar', () => {
             const floatIcon = containerDiv.querySelector('.jw-float-bar-icon');
             const title = containerDiv.querySelector('.jw-float-bar-title');
     
-            expect(floatIcon).to.be.instanceof(HTMLButtonElement);
+            expect(floatIcon).to.be.instanceof(HTMLDivElement);
             expect(floatIcon.getAttribute('aria-label')).to.equal('close');
             expect(title).to.be.instanceof(HTMLDivElement);
             expect(title.innerHTML).to.equal(' ');
@@ -46,7 +46,7 @@ describe('FloatingCloseBar', () => {
             const title = containerDiv.querySelector('.jw-float-bar-title');
     
             expect(floatIcon.getAttribute('aria-label')).to.equal('close');
-            expect(floatIcon).to.be.instanceof(HTMLButtonElement);
+            expect(floatIcon).to.be.instanceof(HTMLDivElement);
             expect(title).to.be.instanceof(HTMLDivElement);
             expect(title.innerHTML).to.equal('test title');
             expect(title.getAttribute('aria-label')).to.equal('test title');
