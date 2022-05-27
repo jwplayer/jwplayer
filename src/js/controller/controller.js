@@ -1335,8 +1335,7 @@ Object.assign(Controller.prototype, {
         if (playlist.length === 1
             && playlist[0].sources.length === 1
             && playlist[0].sources[0].type === 'mp4'
-            && model.get('repeat')
-            && !model.get('advertising')) {
+            && model.get('repeat')) {
             model.set('repeat', false);
             model.set('loop', true);
         } else {
