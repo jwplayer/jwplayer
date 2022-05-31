@@ -25,7 +25,7 @@
         }
     }
 
-    .jw-breakpoint-7 & {
+    .jw-breakpoint-7:not(.jw-flag-audio-player) & {
         max-height: 140px;
 
         .jw-button-container {
@@ -88,8 +88,10 @@
 
 .jw-button-container {
     display: -webkit-box;
+    /* stylelint-disable declaration-block-no-duplicate-properties */
     display: -webkit-flex;
     display: flex;
+    /* stylelint-enable declaration-block-no-duplicate-properties */
     flex-flow: row nowrap;
     flex: 1 1 auto;
     align-items: center;
