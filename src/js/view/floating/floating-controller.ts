@@ -150,7 +150,7 @@ export default class FloatingController {
     }
     startFloating(mobileFloatIntoPlace?: boolean): void {
         const playerBounds = this._playerBounds;
-        if (this.getFloatingPlayer() === null) {
+        if (this.getFloatingPlayer() === null && this._wrapperEl.querySelector('.jw-float-bar')) {
             this.setFloatingPlayer(this._playerEl);
 
             this.transitionFloating(true);

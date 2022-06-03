@@ -10,6 +10,11 @@ const createElementsForConstructor = () => {
         const el = document.createElement('div');
         els.push(el);
     }
+
+    const floatUI = document.createElement('div');
+    floatUI.className = 'jw-float-bar';
+    els[1].append(floatUI);
+
     return {
         player: els[0],
         wrapper: els[1],
