@@ -412,7 +412,9 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      */
     this.pause = function() {
         _data = { };
-        _adProgram.pause();
+        if (_adProgram) {
+            _adProgram.pause();
+        }
     };
 
     function _setDefaultClickHandler() {
