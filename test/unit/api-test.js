@@ -83,6 +83,9 @@ describe('Api', function() {
     it('bad events do not break player', function() {
         ApiSettings.debug = false;
 
+        const _consoleLog = console.log;
+        console.log = sinon.spy();
+
         const api = createApi('player');
         const validEvent = sinon.stub();
         const invalidEvent = sinon.stub().throws('TypeError');
@@ -98,6 +101,8 @@ describe('Api', function() {
         expect(invalidEvent).to.have.callCount(2);
         expect(validEvent).to.have.callCount(1);
         expect(console.log).to.have.callCount(2);
+
+        console.log = _consoleLog;
     });
 
     it('throws exceptions when debug is true', function() {
