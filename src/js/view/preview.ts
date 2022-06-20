@@ -36,7 +36,7 @@ class Preview {
         }
         this.image = null;
         let backgroundImage = '';
-        if (typeof img === 'string') {
+        if (typeof img === 'string' && img.length > 0) {
             backgroundImage = 'url("' + img + '")';
             image = this.image = new Image();
             image.src = img;
