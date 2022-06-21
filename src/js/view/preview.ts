@@ -28,7 +28,7 @@ class Preview {
             this.model.on('change:isFloating', this.enableZoomThumbnail, this);
         }
     }
-    setImage(img: HTMLImageElement): void {
+    setImage(img: string): void {
         // Remove onload function from previous image
         let image = this.image;
         if (image) {
