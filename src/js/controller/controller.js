@@ -651,6 +651,9 @@ Object.assign(Controller.prototype, {
             if (meta && meta.reason) {
                 return meta.reason;
             }
+            if (meta && meta.startTime) {
+                return 'jwstart';
+            }
             return 'unknown';
         }
 

@@ -105,8 +105,7 @@ describe('CoreShim', function() {
         });
     });
 
-    /*
-    ('uses jw_start when generateSEOMetadata is true', function () {
+    it('uses jw_start when generateSEOMetadata is true', function () {
         const path = addJwStartParam(window.location, 5);
 
         window.history.replaceState({ path }, '', path);
@@ -124,9 +123,9 @@ describe('CoreShim', function() {
 
         return core.init(options, api).then(function() {
             expect(core._model.get('autostart')).to.be.equal('viewable');
-            expect(core._model.get('playReason')).to.be.equal('unknown');
+            expect(core._model.get('playReason')).to.be.equal('jwstart');
             expect(event).to.be.eql({
-                playReason: 'unknown',
+                playReason: 'jwstart',
                 startTime: 5,
                 viewable: 0
             });
@@ -181,6 +180,4 @@ describe('CoreShim', function() {
             core.off('beforePlay', beforePlayListener);
         });
     });
-    */
-
 });
