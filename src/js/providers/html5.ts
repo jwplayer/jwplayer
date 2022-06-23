@@ -3,7 +3,7 @@ import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import {
     STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META, MEDIA_ERROR, WARNING,
-    MEDIA_VISUAL_QUALITY, MEDIA_TYPE, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, NATIVE_FULLSCREEN, STATE_LOADING,
+    MEDIA_VISUAL_QUALITY, MEDIA_TYPE, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, STATE_LOADING,
     AUDIO_TRACKS, AUDIO_TRACK_CHANGED
 } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
@@ -20,6 +20,8 @@ import createPlayPromise from 'providers/utils/play-promise';
 import { map, isFinite } from 'utils/underscore';
 import { now } from 'utils/date';
 import { PlayerError, MSG_LIVE_STREAM_DOWN, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
+import { setupWebkitListeners, removeWebkitListeners, getIosFullscreenState } from 'providers/utils/webkit-fullscreen-helper';
+import type { InternalHTMLVideoElement } from 'providers/default';
 import type { GenericObject } from 'types/generic.type';
 import type PlaylistItem from 'playlist/item';
 import type { PlaylistItemSource } from 'playlist/source';
@@ -71,17 +73,6 @@ interface HTML5Provider extends ProviderWithMixins {
     muteToggle: boolean;
     fairplay?: unknown;
 }
-
-type WebkitHTMLVideoElement = HTMLVideoElement & {
-    // eslint-disable-next-line no-undef
-    readonly audioTracks?: AudioTrackList;
-    webkitEnterFullScreen?(): void;
-    webkitEnterFullscreen?(): void;
-    webkitExitFullScreen?(): void;
-    webkitExitFullscreen?(): void;
-    webkitDisplayingFullscreen?: boolean;
-    webkitSupportsFullscreen?: boolean;
-};
 
 function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: GenericObject, mediaElement: HTMLVideoElement): void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -139,7 +130,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             }
             _this.currentTime = _videotag.currentTime;
             // Keep track of position before seek in iOS fullscreen
-            if (_iosFullscreenState && _timeBeforeSeek !== _videotag.currentTime) {
+            if (getIosFullscreenState() && _timeBeforeSeek !== _videotag.currentTime) {
                 setTimeBeforeSeek(_videotag.currentTime);
             }
             VideoEvents.timeupdate.call(_this);
@@ -238,16 +229,6 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
             }
         },
 
-        webkitbeginfullscreen(e: Event): void {
-            _iosFullscreenState = true;
-            _sendFullscreen(e);
-        },
-
-        webkitendfullscreen(e: Event): void {
-            _iosFullscreenState = false;
-            _sendFullscreen(e);
-        },
-
         error(): void {
             const { video } = _this;
             const error = video.error;
@@ -303,9 +284,11 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         renderNatively: renderNatively(_playerConfig.renderCaptionsNatively),
         eventsOn_(): void {
             _setupListeners(MediaEvents, _videotag);
+            setupWebkitListeners(_this, _videotag);
         },
         eventsOff_(): void {
             _removeListeners(MediaEvents, _videotag);
+            removeWebkitListeners(_videotag);
         },
         detachMedia(): void {
             VideoAttached.detachMedia.call(_this);
@@ -367,7 +350,7 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         }
     });
 
-    const _videotag: WebkitHTMLVideoElement = mediaElement;
+    const _videotag: InternalHTMLVideoElement = mediaElement;
     // wait for maria's quality level changes to merge
     const visualQuality: GenericObject = { level: {} };
     // Prefer the config timeout, which is allowed to be 0 and null by default
@@ -382,7 +365,6 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
     let _timeBeforeSeek: number | null = null;
     let _levels;
     let _currentQuality = -1;
-    let _iosFullscreenState = false;
     let _beforeResumeHandler = noop;
     let _audioTracks: SimpleAudioTrack[] | null = null;
     let _currentAudioTrackIndex = -1;
@@ -866,13 +848,6 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         _setCurrentAudioTrack(_selectedAudioTrackIndex);
     }
 
-    function _sendFullscreen(e: Event): void {
-        _this.trigger(NATIVE_FULLSCREEN, {
-            target: e.target,
-            jwstate: _iosFullscreenState
-        });
-    }
-
     this.setVisibility = function(state: boolean): void {
         state = !!state;
         if (state || OS.android) {
@@ -892,39 +867,8 @@ function VideoProvider(this: HTML5Provider, _playerId: string, _playerConfig: Ge
         }
     };
 
-    this.setFullscreen = function(state: boolean): boolean {
-        state = !!state;
-
-        // This implementation is for iOS and Android WebKit only
-        // This won't get called if the player container can go fullscreen
-        if (state) {
-            try {
-                const enterFullscreen =
-                    _videotag.webkitEnterFullscreen ||
-                    _videotag.webkitEnterFullScreen;
-                if (enterFullscreen) {
-                    enterFullscreen.apply(_videotag);
-                }
-
-            } catch (error) {
-                // object can't go fullscreen
-                return false;
-            }
-            return _this.getFullscreen();
-        }
-
-        const exitFullscreen =
-            _videotag.webkitExitFullscreen ||
-            _videotag.webkitExitFullScreen;
-        if (exitFullscreen) {
-            exitFullscreen.apply(_videotag);
-        }
-
-        return state;
-    };
-
     _this.getFullscreen = function(): boolean {
-        return _iosFullscreenState || !!_videotag.webkitDisplayingFullscreen;
+        return getIosFullscreenState() || !!_videotag.webkitDisplayingFullscreen;
     };
 
     this.setCurrentQuality = function(quality: number): void {

@@ -3,6 +3,7 @@ import {
     MEDIA_TYPE,
     InternalPlayerState,
 } from 'events/events';
+import { webkitSetFullscreen } from 'providers/utils/webkit-fullscreen-helper';
 import type * as Event from 'events/events';
 import type { TracksMixin, SimpleAudioTrack } from 'providers/tracks-mixin';
 import type { VideoActionsInt } from 'providers/video-actions-mixin';
@@ -12,6 +13,7 @@ import type { QualityLevel } from 'providers/data-normalizer';
 import type { PlaylistItemSource } from 'playlist/source';
 import type { PlayerError } from 'api/errors';
 import type { GenericObject, TextTrackLike } from 'types/generic.type';
+import type { WebkitHTMLVideoElement } from 'providers/utils/webkit-fullscreen-helper';
 
 const noop: () => void = function(): void { /* noop */ };
 const returnFalse: () => boolean = (() => false);
@@ -148,9 +150,13 @@ type ProviderEventNotifications = {
     [Event.MEDIA_COMPLETE]: void;
 }
 
+export type InternalHTMLVideoElement = HTMLVideoElement & WebkitHTMLVideoElement & {
+    // eslint-disable-next-line no-undef
+    readonly audioTracks?: AudioTrackList;
+};
 interface InternalProvider {
     state?: string;
-    video: HTMLVideoElement;
+    video: InternalHTMLVideoElement;
     instreamMode?: boolean;
     supportsPlaybackRate: boolean;
     seeking: boolean;
@@ -249,7 +255,7 @@ interface DefaultProvider {
     destroy: () => void; // frees memory
 
     setVisibility: () => void;
-    setFullscreen: () => void;
+    setFullscreen: (state: boolean) => void;
     getFullscreen: () => boolean;
     supportsFullscreen: () => boolean;
 
@@ -328,7 +334,9 @@ const DefaultProvider: DefaultProvider = {
     destroy: noop, // frees memory
 
     setVisibility: noop,
-    setFullscreen: noop,
+    setFullscreen: function(this: ImplementedProvider, state: boolean): boolean {
+        return webkitSetFullscreen(this, state);
+    },
     getFullscreen: returnFalse,
     supportsFullscreen: returnFalse,
 
