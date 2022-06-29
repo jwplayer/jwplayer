@@ -572,8 +572,10 @@ const Tracks: TracksMixin = {
         }
         for (let i = 0; i < parsedDataCueSets.length; i++) {
             if (parsedDataCueSets[i].length) {
-                const event = getId3CueMetaEvent(parsedDataCueSets[i]);
-                this.trigger(MEDIA_META_CUE_PARSED, event);
+                parsedDataCueSets[i].forEach(cue => {
+                    const event = getId3CueMetaEvent(cue);
+                    this.trigger(MEDIA_META_CUE_PARSED, event);
+                });
             }
         }
     },
@@ -600,8 +602,10 @@ const Tracks: TracksMixin = {
             return false;
         });
         if (dataCues.length) {
-            const event = getId3CueMetaEvent(dataCues);
-            this.trigger(MEDIA_META, event);
+            dataCues.forEach(cue => {
+                const event = getId3CueMetaEvent(cue);
+                this.trigger(MEDIA_META, event);
+            });
         }
     },
     ensureMetaTracksActive(this: ProviderWithMixins): void {
@@ -901,9 +905,9 @@ function getTextCueMetaEvent(cue: VTTCue): ProviderEvents['meta'] | null {
     return event;
 }
 
-function getId3CueMetaEvent(dataCues: TrackCueParsed[]): ProviderEvents['metadataCueParsed'] {
-    const metadata = parseID3(dataCues);
-    const metadataTime = dataCues[0].startTime;
+function getId3CueMetaEvent(dataCue: TrackCueParsed): ProviderEvents['metadataCueParsed'] | ProviderEvents['meta'] {
+    const metadata = parseID3(dataCue);
+    const metadataTime = dataCue.startTime;
     return {
         metadataType: 'id3',
         metadataTime,

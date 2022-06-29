@@ -25,7 +25,7 @@ export type SeekRange = {
     end: number;
 };
 
-export type MetadataType = 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity';
+export type MetadataType = 'media' | 'id3' | 'emsg' | 'date-range' | 'program-date-time' | 'scte-35' | 'discontinuity' | 'unknown';
 
 export type ProviderEvents = {
     [Event.PLAYER_STATE]: {
@@ -48,7 +48,7 @@ export type ProviderEvents = {
         seekRange?: SeekRange;
     };
     [Event.MEDIA_META]: {
-        metadataType: MetadataType | 'unknown';
+        metadataType: MetadataType;
         metadataTime?: number;
         metadata?: GenericObject;
         programDateTime?: string;

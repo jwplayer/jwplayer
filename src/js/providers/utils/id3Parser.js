@@ -83,94 +83,100 @@ function arrayToInt(array) {
     return parseInt(sizeString);
 }
 
-export function parseID3(activeCues = []) {
-    return activeCues.reduce(function(data, cue) {
-        if (!('value' in cue)) {
-            // Cue is not in Safari's key/data format
-            if ('data' in cue && cue.data instanceof ArrayBuffer) {
-                // EdgeHTML 13.10586 cue point format - contains raw data in an ArrayBuffer.
+export function parseID3(cue) {
+    const data = {};
+    if (!('value' in cue)) {
+        // Cue is not in Safari's key/data format
+        if ('data' in cue && cue.data instanceof ArrayBuffer) {
+            // EdgeHTML 13.10586 cue point format - contains raw data in an ArrayBuffer.
 
-                const oldCue = cue;
-                const array = new Uint8Array(oldCue.data);
-                let arrayLength = array.length;
+            const oldCue = cue;
+            const array = new Uint8Array(oldCue.data);
+            let arrayLength = array.length;
 
-                cue = { value: { key: '', data: '' } };
+            cue = { value: { key: '', data: '' } };
 
-                let i = 10;
-                while (i < 14 && i < array.length) {
-                    if (array[i] === 0) {
+            let i = 10;
+            while (i < 14 && i < array.length) {
+                if (array[i] === 0) {
+                    break;
+                }
+                cue.value.key += String.fromCharCode(array[i]);
+                i++;
+            }
+
+            // If the first byte is 3 (END_OF_TEXT) or 0 (NULL) then skip it
+            let startPos = 19;
+            let firstByte = array[startPos];
+            if (firstByte === 0x03 || firstByte === 0x00) {
+                firstByte = array[++startPos];
+                arrayLength--;
+            }
+
+            let infoDelimiterPosition = 0;
+            // Find info/value pair delimiter if present.
+            // If first byte shows theres utf 16 encoding, there is no info since info cannot be utf 16 encoded
+            if (firstByte !== 0x01 && firstByte !== 0x02) {
+                for (let j = startPos + 1; j < arrayLength; j++) {
+                    if (array[j] === 0x00) {
+                        infoDelimiterPosition = j - startPos;
                         break;
                     }
-                    cue.value.key += String.fromCharCode(array[i]);
-                    i++;
                 }
+            }
 
-                // If the first byte is 3 (END_OF_TEXT) or 0 (NULL) then skip it
-                let startPos = 19;
-                let firstByte = array[startPos];
-                if (firstByte === 0x03 || firstByte === 0x00) {
-                    firstByte = array[++startPos];
-                    arrayLength--;
-                }
-
-                let infoDelimiterPosition = 0;
-                // Find info/value pair delimiter if present.
-                // If first byte shows theres utf 16 encoding, there is no info since info cannot be utf 16 encoded
-                if (firstByte !== 0x01 && firstByte !== 0x02) {
-                    for (let j = startPos + 1; j < arrayLength; j++) {
-                        if (array[j] === 0x00) {
-                            infoDelimiterPosition = j - startPos;
-                            break;
-                        }
-                    }
-                }
-
-                if (infoDelimiterPosition > 0) {
-                    const info = utf8ArrayToStr(array.subarray(startPos, startPos += infoDelimiterPosition), 0);
-                    if (cue.value.key === 'PRIV') {
-                        if (info === 'com.apple.streaming.transportStreamTimestamp') {
-                            const ptsIs33Bit = syncSafeInt(array.subarray(startPos, startPos += 4)) & 0x00000001;
-                            const transportStreamTimestamp = syncSafeInt(array.subarray(startPos, startPos += 4)) +
-                                (ptsIs33Bit ? 0x100000000 : 0);
-                            cue.value.data = transportStreamTimestamp;
-                        } else {
-                            cue.value.data = utf8ArrayToStr(array, startPos + 1);
-                        }
-                        cue.value.info = info;
+            if (infoDelimiterPosition > 0) {
+                const info = utf8ArrayToStr(array.subarray(startPos, startPos += infoDelimiterPosition), 0);
+                if (cue.value.key === 'PRIV') {
+                    if (info === 'com.apple.streaming.transportStreamTimestamp') {
+                        const ptsIs33Bit = syncSafeInt(array.subarray(startPos, startPos += 4)) & 0x00000001;
+                        const transportStreamTimestamp = syncSafeInt(array.subarray(startPos, startPos += 4)) +
+                            (ptsIs33Bit ? 0x100000000 : 0);
+                        cue.value.data = transportStreamTimestamp;
                     } else {
-                        cue.value.info = info;
                         cue.value.data = utf8ArrayToStr(array, startPos + 1);
                     }
+                    cue.value.info = info;
                 } else {
-                    const encoding = array[startPos];
-                    if (encoding === 1 || encoding === 2) {
-                        cue.value.data = utf16BigEndianArrayToStr(array, startPos + 1);
-                    } else {
-                        cue.value.data = utf8ArrayToStr(array, startPos + 1);
-                    }
+                    cue.value.info = info;
+                    cue.value.data = utf8ArrayToStr(array, startPos + 1);
+                }
+            } else {
+                const encoding = array[startPos];
+                if (encoding === 1 || encoding === 2) {
+                    cue.value.data = utf16BigEndianArrayToStr(array, startPos + 1);
+                } else {
+                    cue.value.data = utf8ArrayToStr(array, startPos + 1);
                 }
             }
         }
+    }
 
-        // These friendly names mapping provides compatibility with our implementation prior to 7.3
-        if (Object.prototype.hasOwnProperty.call(friendlyNames, cue.value.key)) {
-            data[friendlyNames[cue.value.key]] = cue.value.data;
+    // These friendly names mapping provides compatibility with our implementation prior to 7.3
+    if (Object.prototype.hasOwnProperty.call(friendlyNames, cue.value.key)) {
+        data[friendlyNames[cue.value.key]] = cue.value.data;
+    }
+
+    /*
+    The meta event includes an object with flattened cue key/data pairs
+        e.g)
+        cue.value = { key: "TLEN", data: "03:50" }        
+        object = { TLEN: "03:50" }
+
+    If a cue also includes an info field, an object of info/data pairs for the cue key is created
+        e.g)
+        cue.value = { key: "WXXX", info: "captured", data: "abcd" }
+        object = { WXXX: { "captured" : "abcd" } }
+    */
+    if (cue.value.info) {
+        let collection = data[cue.value.key];
+        if (collection !== Object(collection)) {
+            collection = {};
+            data[cue.value.key] = collection;
         }
-        /* The meta event includes a metadata object with flattened cue key/data pairs
-         * If a cue also includes an info field, then create a collection of info/data pairs for the cue key
-         *   TLEN: 03:50                                        // key: "TLEN", data: "03:50"
-         *   WXXX: {"artworkURL":"http://domain.com/cover.jpg"} // key: "WXXX", info: "artworkURL" ...
-         */
-        if (cue.value.info) {
-            let collection = data[cue.value.key];
-            if (collection !== Object(collection)) {
-                collection = {};
-                data[cue.value.key] = collection;
-            }
-            collection[cue.value.info] = cue.value.data;
-        } else {
-            data[cue.value.key] = cue.value.data;
-        }
-        return data;
-    }, {});
+        collection[cue.value.info] = cue.value.data;
+    } else {
+        data[cue.value.key] = cue.value.data;
+    }
+    return data;
 }
