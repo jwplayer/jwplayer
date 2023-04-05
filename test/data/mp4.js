@@ -8,14 +8,14 @@ export default {
         file: undefined
     },
     starscape: {
-        file: 'http://playertest.longtailvideo.com/starscape.mp4',
-        image: 'http://playertest.longtailvideo.com/starscape.jpg',
+        file: '//playertest-cdn.longtailvideo.com/starscape.mp4',
+        image: '//playertest-cdn.longtailvideo.com/starscape.jpg',
         title: 'Impressive Starscape',
         description: 'Science is cool!'
     },
     stuffBreaking: {
-        file: 'http://playertest.longtailvideo.com/stuff_breaking.mp4',
-        image: 'http://playertest.longtailvideo.com/stuff_breaking.jpg',
+        file: '//playertest-cdn.longtailvideo.com/stuff_breaking.mp4',
+        image: '//playertest-cdn.longtailvideo.com/stuff_breaking.jpg',
         title: 'Stuff Breaking Spectacularly',
         description: 'Hopefully not this demo'
     },

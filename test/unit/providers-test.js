@@ -7,7 +7,7 @@ describe('Providers', function() {
 
     it('should choose html5 by default', function() {
         const htmlSources = {
-            mov: { file: 'http://playertest.longtailvideo.com/bunny.mov' },
+            mov: { file: '//playertest-cdn.longtailvideo.com/bunny.mov' },
             mp4: { file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4' },
             f4v: { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.f4v' },
             m4v: { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.m4v' },
@@ -35,16 +35,16 @@ describe('Providers', function() {
         }
         const unsupportedSources = {
             hls: {
-                file: 'http://playertest.longtailvideo.com/adaptive/bipbop/bipbopall.hls',
+                file: '//playertest-cdn.longtailvideo.com/adaptive/bipbop/bipbopall.hls',
                 type: 'm3u8'
             },
             androidhlsTrue: {
-                file: 'http://playertest.longtailvideo.com/adaptive/bipbop/bipbopall.hls',
+                file: '//playertest-cdn.longtailvideo.com/adaptive/bipbop/bipbopall.hls',
                 type: 'm3u8',
                 androidhls: true
             },
             androidhlsFalse: {
-                file: 'http://playertest.longtailvideo.com/adaptive/bipbop/bipbopall.hls',
+                file: '//playertest-cdn.longtailvideo.com/adaptive/bipbop/bipbopall.hls',
                 type: 'm3u8',
                 androidhls: false
             },

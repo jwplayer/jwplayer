@@ -44,17 +44,17 @@ describe('Skin Customization', function() {
     describe('getSkinName', function() {
 
         it('should return file name from stylesheet url', function() {
-            const skinName = getSkinName('https://playertest.longtailvideo.com/ethan.css');
+            const skinName = getSkinName('https://playertest-cdn.longtailvideo.com/ethan.css');
             expect(skinName).to.equal('ethan');
         });
 
         it('should return dashed file name from stylesheet url', function() {
-            const skinName = getSkinName('https://playertest.longtailvideo.com/ethan-skin.css');
+            const skinName = getSkinName('https://playertest-cdn.longtailvideo.com/ethan-skin.css');
             expect(skinName).to.equal('ethan-skin');
         });
 
         it('should return file name from stylesheet url with extra parameters', function() {
-            const skinName = getSkinName('https://playertest.longtailvideo.com/ethan.css?param');
+            const skinName = getSkinName('https://playertest-cdn.longtailvideo.com/ethan.css?param');
             expect(skinName).to.equal('ethan');
         });
 

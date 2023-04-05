@@ -17,17 +17,17 @@ export default class MockModel extends SimpleModel {
     setup(configuration) {
         const self = this;
         const playlistItem = Object.assign({
-            file: '//playertest.longtailvideo.com/bunny.mp4',
+            file: '//playertest-cdn.longtailvideo.com/bunny.mp4',
             image: '//d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
             title: 'Big Buck Bunny',
             description: 'One caption track',
             tracks: [
                 {
-                    file: '//playertest.longtailvideo.com/assets/os/captions/bunny-en.srt',
+                    file: '//playertest-cdn.longtailvideo.com/assets/os/captions/bunny-en.srt',
                     label: 'English'
                 },
                 {
-                    file: '//playertest.longtailvideo.com/assets/os/chapters/bunny-chapters.vtt',
+                    file: '//playertest-cdn.longtailvideo.com/assets/os/chapters/bunny-chapters.vtt',
                     kind: 'chapters'
                 }
             ]

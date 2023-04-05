@@ -101,7 +101,7 @@
                 schedule: {
                     adBreak: {
                         offset: 'pre',
-                        tag: 'http://playertest.longtailvideo.com/pre.xml'
+                        tag: '//playertest-cdn.longtailvideo.com/pre.xml'
                     }
                 }
             },

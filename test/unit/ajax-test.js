@@ -93,7 +93,7 @@ describe('utils.ajax', function() {
         const nonce = Math.random().toFixed(20).substr(2);
 
         return expectError({
-            url: '//playertest.longtailvideo.com/vast/preroll.xml?n=' + nonce,
+            url: '//playertest-cdn.longtailvideo.com/vast/preroll.xml?n=' + nonce,
             timeout: 0.0001,
             responseType: 'text'
         }, success => {
