@@ -117,11 +117,11 @@ grunt hooks
 
 ## Framework Integration
 
-While the JW team does not maintain any framework integrations of our own, there are developers in our community who do. We recommend the following libraries:
+The JW team officially maintains and supports framework integration for React.
 
 | Framework | Link |
 | --------- | ---- |
-| React |  https://github.com/micnews/react-jw-player |
+| React |  https://github.com/jwplayer/jwplayer-react |
 
 If you have a library which you believe is good enough to meet the needs of other developers using a certain framework, please open a pull request modifying the above table.
 
