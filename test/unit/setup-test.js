@@ -148,7 +148,7 @@ describe('api.setup', function() {
             preload: 'none',
             playlist: [{
                 sources: [
-                    { file: 'http://playertest.longtailvideo.com/mp4.mp4' }
+                    { file: '//playertest-cdn.longtailvideo.com/mp4.mp4' }
                 ]
             }]
         }).then(({ event, api }) => {
@@ -168,8 +168,8 @@ describe('api.setup', function() {
                 ]
             }, {
                 sources: [
-                    { file: 'http://playertest.longtailvideo.com/mp4.webm' },
-                    { file: 'http://playertest.longtailvideo.com/mp4.mp4' }
+                    { file: '//playertest-cdn.longtailvideo.com/mp4.webm' },
+                    { file: '//playertest-cdn.longtailvideo.com/mp4.mp4' }
                 ]
             }]
         }).then(({ event, api }) => {
@@ -195,7 +195,7 @@ describe('api.setup', function() {
                     remove: removeSpy1
                 },
                 preload: 'none',
-                file: 'http://playertest.longtailvideo.com/mp4.mp4'
+                file: '//playertest-cdn.longtailvideo.com/mp4.mp4'
             }).on('ready', function(event) {
                 resolve({ api, event });
             }).on('setupError', function(event) {
@@ -211,7 +211,7 @@ describe('api.setup', function() {
                         remove: removeSpy2
                     },
                     preload: 'none',
-                    file: 'http://playertest.longtailvideo.com/mp4.mp4'
+                    file: '//playertest-cdn.longtailvideo.com/mp4.mp4'
                 }).on('ready', function(event) {
                     resolve({ api, event });
                 }).on('setupError', function(event) {
