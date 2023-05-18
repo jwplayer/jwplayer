@@ -35,3 +35,13 @@ export class ButtonMenuItem extends MenuItem {
         this.active = false;
     }
 }
+
+export class ResetMenuItem extends MenuItem {
+    constructor(_content, _action, _template = itemButtonTemplate) {
+        super(_content, _action, _template);
+        this.statusEl = document.createElement('span');
+        this.statusEl.classList.add('jw-reset-status-message');
+        this.statusEl.setAttribute('aria-live', 'polite');
+        this.el.appendChild(this.statusEl);
+    }
+}

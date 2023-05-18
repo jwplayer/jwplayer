@@ -1,5 +1,5 @@
 import Menu from 'view/controls/components/menu/menu';
-import { MenuItem } from 'view/controls/components/menu/menu-item';
+import { MenuItem, ResetMenuItem } from 'view/controls/components/menu/menu-item';
 import { itemMenuTemplate } from 'view/controls/templates/menu/menu-item';
 import { _defaults as CaptionsDefaults } from 'view/captionsrenderer';
 import { captionStyleItems } from './utils';
@@ -150,7 +150,7 @@ class SettingsMenu extends Menu {
         };
         const persistedOptions = model.get('captions');
         const renderCaptionsSettings = (isReset) => {
-            const resetItem = new MenuItem(this.localization.reset, () => {
+            const resetItem = new ResetMenuItem(this.localization.reset, () => {
                 this.model.set('captions', Object.assign({}, CaptionsDefaults));
                 renderCaptionsSettings(true);
             });
@@ -188,9 +188,15 @@ class SettingsMenu extends Menu {
             });
             captionsSettingsItems.push(resetItem);
             captionsSettingsMenu.setMenuItems(captionsSettingsItems);
+            if (isReset) {
+                resetItem.statusEl.innerHTML = 'Reset Captions Successful';
+                resetItem.el.focus();
+                resetItem.el.addEventListener('blur', () => resetItem.statusEl.innerHTML = '');
+            } else {
+                resetItem.statusEl.innerHTML = '';
+            }
         };
         renderCaptionsSettings();
-    
     }
 
     onPlaylistItem() {
