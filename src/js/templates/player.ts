@@ -17,6 +17,7 @@ export default (id: string, ariaLabel: string): HTMLTemplateString => {
                 `<div class="jw-hidden-accessibility">` +
                     `<span class="jw-time-update" aria-live="assertive"></span>` +
                     `<span class="jw-volume-update" aria-live="assertive"></span>` +
+                    '<span class="jw-exit-fullscreen-confirmation" aria-live="assertive"></span>' +
                 `</div>` +
             `</div>` +
         `</div>`
