@@ -31,6 +31,7 @@ const webpackConfig = {
         libraryTarget: 'window',
         umdNamedDefine: true
     },
+    cache: {type: 'filesystem'},
     optimization: {
         splitChunks: false
     },
