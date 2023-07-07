@@ -64,7 +64,7 @@
     "sinon": "13.0.1",
     "sinon-chai": "3.7.0",
     "style-loader": "3.3.1",
-    "stylelint": "14.2.0",
+    "stylelint": "15.10.1",
     "svg-inline-loader": "0.8.0",
     "tslint": "5.20.1",
     "typescript": "4.5.2",
